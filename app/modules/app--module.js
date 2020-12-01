@@ -25,6 +25,7 @@ angular
         'ui.bootstrap',
         'angular-progress-arc',
     ]).config(function($sceDelegateProvider, environment) {
+<<<<<<< HEAD
 
         //
         // Wrap `console.log` for conditional logging.
@@ -37,6 +38,8 @@ angular
                 }
             };
         })(console.log);
+=======
+>>>>>>> d3f627054b121920412768e8a7483971b4502c93
 
         $sceDelegateProvider.resourceUrlWhitelist([
             // Allow same origin resource loads.
@@ -48,5 +51,15 @@ angular
             'https://dev.dnr.fielddoc.org/**',
             'https://dnr.fielddoc.org/**'
         ]);
+
+    /*wrap console.log to void arguments if production environment. */
+
+        (function (fn) {
+                console.log = function () {
+                    if (environment.name !== 'production') {
+                        fn.apply(void 0, arguments);
+                    }
+                };
+            })(console.log);
 
     });
