@@ -177,7 +177,7 @@
 
                                     <a class="snapshot--title" href="#" title="Delete export"
                                        data-ng-click="page.confirmDelete(export)"
-                                       data-ng-if="$root.user.properties.is_admin || export.organization_id == page.user.properties.organization.id || $root.user.properties.is_manager">
+                                       data-ng-if="$root.user.is_admin || export.organization_id == page.user.organization.id || $root.user.is_manager">
                                         <i class="material-icons">
                                             delete
                                         </i>

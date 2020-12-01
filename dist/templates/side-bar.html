@@ -29,14 +29,14 @@
                         group
                     </span>
                     <span data-ng-if="!$root.collapseSidebar">
-                        Organization
+                        Organizations
                     </span>
                 </a>
             </li>
 
              <!--END Working link for Organization Profile-->
             <li class="margin-b-50p">
-               <!-- <a href="/profile/{{page.user.properties.id}}" data-ng-class="{viewing: $root.viewState.profile}">
+               <!-- <a href="/profile/{{page.user.id}}" data-ng-class="{viewing: $root.viewState.profile}">
                -->
                 <a href="/profile/" data-ng-class="{viewing: $root.viewState.profile}">
                     <span class="material-icons"
@@ -82,7 +82,7 @@
                     </span>
                 </a>
             </li>
-            <li data-ng-if="$root.user.properties.is_admin || $root.user.properties.is_manager">
+            <li data-ng-if="$root.user.is_admin || $root.user.is_manager">
                 <a href="/tags" data-ng-class="{viewing: $root.viewState.tag}">
                     <span class="material-icons"
                           data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
@@ -98,12 +98,12 @@
 
     <nav role="navigation">
         <ul class="list-unstyled">
-            <!-- <li data-ng-if="$root.user.properties.is_admin || $root.user.properties.is_manager">
+            <!-- <li data-ng-if="$root.user.is_admin || $root.user.is_manager">
                 <a href="/awards" data-ng-class="{viewing: $root.viewState.award}">
                     Awards
                 </a>
             </li> -->
-            <!-- <li data-ng-if="$root.user.properties.is_admin || $root.user.properties.is_manager">
+            <!-- <li data-ng-if="$root.user.is_admin || $root.user.is_manager">
                 <a href="/funding-sources" data-ng-class="{viewing: $root.viewState.fundingSource}">
                     Funding Sources
                 </a>

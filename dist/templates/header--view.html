@@ -15,7 +15,12 @@
                        class="search"
                        value=""
                        style="width:70%;"
-                       placeholder="Search your workspace" data-ng-model="query" uib-typeahead="suggestion as suggestion.name for suggestion in fetchSuggestions($viewValue, 'workspace')" typeahead-on-select="routeTo($item, $model, $label)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html">
+                       placeholder="Search your workspace"
+                       data-ng-model="query"
+                       uib-typeahead="suggestion as suggestion.name for suggestion in fetchSuggestions($viewValue, 'workspace')"
+                       typeahead-on-select="routeTo($item, $model, $label)"
+                       typeahead-wait-ms="100"
+                       typeahead-template-url="templates/search--tpl.html">
             </div>
 
             <nav class="site-navigation-utility align-right">
@@ -23,7 +28,7 @@
                 <ul class="utility-navigation">
                     <li>
                         <a href="/account">
-                            {{$root.user.properties.first_name}}&nbsp;{{$root.user.properties.last_name}}
+                            {{$root.user.first_name}}&nbsp;{{$root.user.last_name}}
                         </a>
 
                     </li>

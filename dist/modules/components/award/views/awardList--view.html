@@ -27,17 +27,17 @@
 
             <input type="text" class="search-bar list-filter reveal fade-in t0" data-ng-if="!page.status.loading && page.awards.length > 10" data-ng-model="page.q" placeholder="Search your awards">
 
-            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !$root.user.properties.is_admin && !$root.user.properties.is_manager">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
 
-            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !page.selectedProgram.id && ($root.user.properties.is_admin || $root.user.properties.is_manager)">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !page.selectedProgram.id && ($root.user.is_admin || $root.user.is_manager)">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
 
-            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && page.selectedProgram.id > 0 && ($root.user.properties.is_admin || $root.user.properties.is_manager)">There are <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize> in this program.</p>
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && page.selectedProgram.id > 0 && ($root.user.is_admin || $root.user.is_manager)">There are <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize> in this program.</p>
 
-            <div class="collection-filter" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+            <div class="collection-filter" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
                 <form name="myForm">
                     <label for="programFilter"><strong>Filter by program:</strong></label>
                     <select name="programFilter" id="programFilter"
-                        data-ng-options="program.properties.name for program in $root.user.properties.programs track by program.id"
+                        data-ng-options="program.properties.name for program in $root.user.programs track by program.id"
                         data-ng-model="page.selectedProgram"
                         data-ng-change="page.loadFeatures()">
                         <option value="">All programs</option>

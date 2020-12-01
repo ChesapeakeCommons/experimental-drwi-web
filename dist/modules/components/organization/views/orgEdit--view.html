@@ -8,9 +8,9 @@
 
         <h1 class="inset">Edit Organization</h1>
 
-        <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && $root.user.properties.is_admin">
+        <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && $root.user.is_admin">
 
-            <div class="add--new--wrapper"  data-ng-if="!$root.user.properties.is_manager">
+            <div class="add--new--wrapper"  data-ng-if="!$root.user.is_manager">
                     <span>Back to organization summary</span>
                     <a class="add--new--btn" href="/organizations" data-ng-class="{viewing: $root.viewState.organizationProfile}">
                         <i class="material-icons">
@@ -90,9 +90,12 @@
 
     </div>
 
+    <div data-ng-include="'/templates/toolbars/organization.html'"></div>
+
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
-            <div data-ng-repeat="alert in page.alerts" data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
                 <span class="event--message">{{ alert.msg }}</span>
             </div>
         </div>

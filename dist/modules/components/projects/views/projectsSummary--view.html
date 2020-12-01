@@ -790,7 +790,7 @@
                         </a>
                     </div>
 
-                    <p data-ng-if="!page.status.loading && !$root.user.properties.is_admin && !$root.user.properties.is_manager">
+                    <p data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">
                         {{page.project.name}} has <strong>{{ (page.partnerships.length | number) || 0 }}</strong>
                         <ng-pluralize count="page.partnerships.length"
                                       when="{'one': 'partnership','other': 'partnerships'}"></ng-pluralize>

@@ -12,8 +12,8 @@
         <div class="main--ui">
 
 
-            <!--<div class="add--new--wrapper"  data-ng-if="!$root.user.properties.is_manager">-->
-            <div class="add--new--wrapper"  data-ng-if=" page.user.properties.id == page.member.id ">
+            <!--<div class="add--new--wrapper"  data-ng-if="!$root.user.is_manager">-->
+            <div class="add--new--wrapper"  data-ng-if=" page.user.id == page.member.id ">
                     <span>Edit profile</span>
                     <a class="add--new--btn" href="/account" data-ng-class="{viewing: $root.viewState.accountEdit}">
                         <i class="material-icons">
@@ -24,11 +24,11 @@
              <div class="flow2--profile-container reveal fade-in" style="">
                   <div class="flow2--left-field-profile" style="">
 
-                       <div class="user-avatar-wrapper" style=""  ng-if="page.user.properties.picture">
-                             <img class='user--avatar' style="" src="{{page.user.properties.picture}}">
+                       <div class="user-avatar-wrapper" style=""  ng-if="page.user.picture">
+                             <img class='user--avatar' style="" src="{{page.user.picture}}">
 
                         </div>
-                      <div class="user-avatar-wrapper" style=""  ng-if="!page.user.properties.picture">
+                      <div class="user-avatar-wrapper" style=""  ng-if="!page.user.picture">
                                  <img class='user--avatar' style="" src="/images/avatar-Default-1024x.png">
                           <!-- <i class="material-icons">
                                 person
@@ -43,26 +43,26 @@
                         <div class='flow2-text-container' style="float:left;" >
 
                            <h2 class="flow2-profile" style="">
-                                       {{page.user.properties.first_name}}  {{page.user.properties.last_name}}
+                                       {{page.user.first_name}}  {{page.user.last_name}}
                             </h2>
                         </div>
-                        <div style="float:left; margin-right:3em; clear:left;" ng-if="page.user.properties.title">
+                        <div style="float:left; margin-right:3em; clear:left;" ng-if="page.user.title">
 
                                 <p class="flow2-b">
-                                   {{page.user.properties.title}}
+                                   {{page.user.title}}
                                 </p>
 
                         </div>
-                        <div style="float:left; clear:left;" ng-if="page.user.properties.email">
+                        <div style="float:left; clear:left;" ng-if="page.user.email">
 
                             <p class="flow2-b">
-                                {{page.user.properties.email}}
+                                {{page.user.email}}
                             </p>
                         </div>
-                        <div style="float:left; clear:left;" ng-if="page.user.properties.bio">
+                        <div style="float:left; clear:left;" ng-if="page.user.bio">
 
                             <p class="flow2-b">
-                                {{page.user.properties.bio}}
+                                {{page.user.bio}}
                             </p>
                         </div>
 

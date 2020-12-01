@@ -10,7 +10,7 @@
 
         <div class="main--ui">
 
-             <div class="add--new--wrapper"  data-ng-if="!$root.user.properties.is_manager">
+             <div class="add--new--wrapper"  data-ng-if="!$root.user.is_manager">
 
                 <span>Back to profile</span>
 
@@ -30,23 +30,23 @@
 
                     <input type="file" class="form-control" id="profile-image" name="profile-image" file-model="page.image" />
 
-                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="!page.user.properties.picture">
+                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="!page.user.picture">
                         Choose a photo.
                     </p>
 
-                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="page.user.properties.picture">
+                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="page.user.picture">
                         Choose a new photo to replace the one below.
                     </p>
 
                 </div>
 
-                <div class="user-avatar-wrapper" data-ng-if="page.user.properties.picture">
+                <div class="user-avatar-wrapper" data-ng-if="page.user.picture">
 
-                    <div class="user-avatar user-avatar-lg" style="background-image: url({{ page.user.properties.picture }});"></div>
+                    <div class="user-avatar user-avatar-lg" style="background-image: url({{ page.user.picture }});"></div>
 
                 </div>
 
-                <div class="actions" data-ng-if="page.user.properties.picture">
+                <div class="actions" data-ng-if="page.user.picture">
 
                     <a class="snapshot--title" href="#" title="Delete image" data-ng-click="page.actions.removeImage()">
                        <i class="material-icons" style="color:#777777;">
@@ -58,17 +58,17 @@
 
                 <div class="form-element">
                     <span class="meta-label"><b>First name</b></span>
-                    <input type="text" class="form-control form-control-half" id="first_name" name="first_name" placeholder="First Name" data-ng-model="page.user.properties.first_name" required="required" tabindex="2" />
+                    <input type="text" class="form-control form-control-half" id="first_name" name="first_name" placeholder="First Name" data-ng-model="page.user.first_name" required="required" tabindex="2" />
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Last name</b></span>
-                    <input type="text" class="form-control form-control-half" id="last_name" name="last_name" placeholder="Last Name" data-ng-model="page.user.properties.last_name" required="required" tabindex="3" />
+                    <input type="text" class="form-control form-control-half" id="last_name" name="last_name" placeholder="Last Name" data-ng-model="page.user.last_name" required="required" tabindex="3" />
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Title</b></span>
-                    <input type="text" class="form-control form-control-half" id="title" name="title" placeholder="Title" data-ng-model="page.user.properties.title" tabindex="3" />
+                    <input type="text" class="form-control form-control-half" id="title" name="title" placeholder="Title" data-ng-model="page.user.title" tabindex="3" />
                 </div>
 
                  <div class="form-element">
@@ -88,15 +88,15 @@
 
                 <div class="form-element">
                     <span class="meta-label"><b>About me</b></span>
-                    <textarea rows="10" data-ng-model="page.user.properties.bio" class="form-control animate" msd-elastic id="bio" name="bio" placeholder="Say something about yourself.." maxlength="500">{{ page.user.properties.bio }}</textarea>
+                    <textarea rows="10" data-ng-model="page.user.bio" class="form-control animate" msd-elastic id="bio" name="bio" placeholder="Say something about yourself.." maxlength="500">{{ page.user.bio }}</textarea>
                     <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                        Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{ (page.user.properties.bio.length || 0) | number }} used)</strong>
+                        Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{ (page.user.bio.length || 0) | number }} used)</strong>
                     </p>
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Email</b></span>
-                    <input type="text" class="form-control" id="email" name="email" disabled="disabled" data-ng-model="page.user.properties.email" required="required" />
+                    <input type="text" class="form-control" id="email" name="email" disabled="disabled" data-ng-model="page.user.email" required="required" />
                     <p style="color: #9e9e9e; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
                         Email address is not editable
                     </p>

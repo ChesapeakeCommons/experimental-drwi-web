@@ -1,0 +1,167 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar"
+         data-ng-class="{'no-grow': $root.collapseSidebar}"
+         data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading your organizations&hellip;</p>
+            </div>
+        </div>
+
+        <div class="main--ui">
+
+            <div class="create-heading" data-ng-if="!page.status.loading">
+                <h1 class="margin-0">
+                    Organizations
+                    <span class="tally">
+                        {{ page.memberships.length | number }}
+                    </span>
+                </h1>
+            </div>
+
+            <div class="dyad margin-t-2"
+                 style="justify-content: flex-start;"
+                 data-ng-if="!page.status.loading">
+
+                <div class="table-view-ctrl"
+                     data-ng-if="!page.status.loading">
+                    <button type="button"
+                            title="Card mode"
+                            class="margin-r-50p"
+                            data-ng-class="{active: !page.viewTable}"
+                            data-ng-click="page.toggleTable()">
+                        <span class="material-icons margin-r-50p">
+                            view_module
+                        </span>
+                        <span>
+                            Card
+                        </span>
+                    </button>
+                    <button type="button"
+                            title="Table mode"
+                            data-ng-class="{active: page.viewTable}"
+                            data-ng-click="page.toggleTable()">
+                        <span class="material-icons margin-r-50p">
+                            table_view
+                        </span>
+                        <span>
+                            Table
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="features--container" data-ng-if="!page.status.loading">
+
+                <div data-ng-if="!page.memberships.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
+                0;">
+
+                    <ul class="selectable-group-items list-unstyled margin-t-2"
+                        style="grid-template-columns: repeat(1, 1fr);">
+
+                        <li class="card reveal fade-in">
+
+                            <div class="card--content"
+                                 style="display: flex; flex-flow: row nowrap; box-shadow: none; border: none;
+                                 border-radius: 4px; overflow: hidden;">
+
+                                <div class="description" style="width: 100%; border-right: none;">
+
+                                    <div class="body" style="padding: 4rem 0;">
+                                        <p style="font-style: normal; font-size: 1.2em; padding: 0; margin: 0;
+                                        text-align: center;">
+                                            <em>No memberships found.</em>
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <ul class="snapshot--cards list-unstyled"
+                    data-ng-if="page.memberships.length && !page.viewTable" style="margin-top: 2em;">
+
+                    <li class="card reveal fade-in"
+                        style="animation-delay: {{ $index * 50 }}ms;"
+                        data-ng-repeat="membership in page.memberships | filter: page.q">
+
+                        <div class="card--content">
+
+                            <img data-ng-if="membership.organization.picture"
+                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="auto" />
+
+                            <div class="name"
+                                 style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
+                                <span>{{ membership.organization.name }}</span>
+                            </div>
+
+                            <div class="body">
+
+                                <p class="pad-0 margin-0">
+                                    {{ (membership.organization.description || 'No description') | truncate:80 }}
+                                </p>
+
+                                <div class="actions">
+
+                                    <a class="snapshot--title" href="/organizations/{{ membership.organization.id }}" title="Project summary">
+                                        <i class="material-icons">
+                                            dashboard
+                                        </i>
+                                    </a>
+
+                                    <a class="snapshot--title" href="/organizations/{{ membership.organization.id }}/edit"
+                                       title="Edit project"
+                                       data-ng-if="page.permissions.write">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
+
+                                </div>
+
+                                <span>
+                                    <time datetime="{{ membership.organization.modified_on }}"
+                                          title="{{ membership.organization.modified_on }}">
+                                        Last updated {{ membership.organization.modified_on | date : 'mediumDate' }}
+                                    </time>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

@@ -42,7 +42,7 @@
                 <ng-pluralize count="page.summary.matches" when="{'one': 'match','other': 'matches'}"></ng-pluralize>.
             </p>
 
-            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
 
                 <div class="collection-filter drop-down program">
                     <button type="button" data-ng-class="{'open-btn': (page.showModal.program || (page.filters.program > 0))}" data-ng-click="page.showModal.program = !page.showModal.program">
@@ -104,12 +104,12 @@
                                         metric
                                         </i>
                                     </a> -->
-                                    <a class="snapshot--title" href="/metrics/{{ metric.id }}/edit" title="Edit metric" data-ng-if="$root.user.properties.id === metric.creator.id || $root.user.properties.organization_id === metric.organization.id || $root.user.properties.is_admin || $root.user.properties.is_manager">
+                                    <a class="snapshot--title" href="/metrics/{{ metric.id }}/edit" title="Edit metric" data-ng-if="$root.user.id === metric.creator.id || $root.user.organization_id === metric.organization.id || $root.user.is_admin || $root.user.is_manager">
                                         <i class="material-icons">
                                         edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete metric" data-ng-click="page.confirmDelete(metric)" data-ng-if="($root.user.properties.id === metric.creator.id || $root.user.properties.organization_id === metric.organization.id || $root.user.properties.is_admin) && !metric.automated && !metric.locked">
+                                    <a class="snapshot--title" href="#" title="Delete metric" data-ng-click="page.confirmDelete(metric)" data-ng-if="($root.user.id === metric.creator.id || $root.user.organization_id === metric.organization.id || $root.user.is_admin) && !metric.automated && !metric.locked">
                                         <i class="material-icons">
                                         delete
                                         </i>

@@ -1,4 +1,5 @@
 <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
+
     <ul>
         <li data-ng-class="{active: $root.toolbarState.dashboard}">
             <a href="/organizations/{{ page.feature.id }}">
@@ -7,7 +8,8 @@
                 </i>
             </a>
         </li>
-        <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.edit}">
+        <li data-ng-if="page.permissions.write && page.feature.has_owner"
+            data-ng-class="{active: $root.toolbarState.edit}">
             <a href="/organizations/{{ page.feature.id }}/edit">
                 <i class="material-icons">
                     edit
@@ -15,6 +17,6 @@
             </a>
         </li>
 
-
     </ul>
+
 </nav>

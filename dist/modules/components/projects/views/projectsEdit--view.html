@@ -44,7 +44,7 @@
                     Edit project
                 </h1>
                 <div class="collection-filter-group status_group margin-0"
-                     data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+                     data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
 
                     <span class="margin-r-1">
                         <strong>Status</strong>
@@ -130,7 +130,7 @@
                             <!--                            <h2>Profile</h2>-->
 
                             <!--                            <div class="collection-filter-group status_group"-->
-                            <!--                                 data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">-->
+                            <!--                                 data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">-->
 
                             <!--&lt;!&ndash;                                <div class="scope&#45;&#45;control status_dropdown_label">&ndash;&gt;-->
 
@@ -240,7 +240,7 @@
 
                         </section>
                         <!-- DATE INFO-->
-                        <div data-ng-if="page.user.properties.is_manager === true || page.user.properties.is_admin === true" >
+                        <div data-ng-if="page.user.is_manager === true || page.user.is_admin === true" >
                             <div class="scope--control status_dropdown_label"
                                  style="margin-bottom: 16px;">
                                 <span>Completion Date</span>

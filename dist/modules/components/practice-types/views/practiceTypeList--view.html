@@ -42,7 +42,7 @@
                 <ng-pluralize count="page.summary.matches" when="{'one': 'match','other': 'matches'}"></ng-pluralize>.
             </p>
 
-            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
 
                 <div class="collection-filter drop-down program">
                     <button type="button" data-ng-class="{'open-btn': (page.showModal.program || (page.filters.program > 0))}" data-ng-click="page.showModal.program = !page.showModal.program">
@@ -70,11 +70,11 @@
 
             </div>
 
-            <!-- <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !$root.user.properties.is_admin && !$root.user.properties.is_manager">You have <strong>{{ (page.featureCount | number) || 0 }}</strong> <ng-pluralize count="page.featureCount" when="{'one': 'practice','other': 'practices'}"></ng-pluralize>.</p>
+            <!-- <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">You have <strong>{{ (page.featureCount | number) || 0 }}</strong> <ng-pluralize count="page.featureCount" when="{'one': 'practice','other': 'practices'}"></ng-pluralize>.</p>
 
-            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">There <ng-pluralize count="page.featureCount" when="{'one': 'is','other': 'are'}"></ng-pluralize> <strong>{{ (page.featureCount | number) || 0 }}</strong> <ng-pluralize count="page.featureCount" when="{'one': 'practice','other': 'practices'}"></ng-pluralize> in this program.</p>
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">There <ng-pluralize count="page.featureCount" when="{'one': 'is','other': 'are'}"></ng-pluralize> <strong>{{ (page.featureCount | number) || 0 }}</strong> <ng-pluralize count="page.featureCount" when="{'one': 'practice','other': 'practices'}"></ng-pluralize> in this program.</p>
 
-            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
 
                 <div class="collection-filter drop-down program">
                     <button type="button" data-ng-class="{'open-btn': page.showProgramModal}" data-ng-click="page.showProgramModal = !page.showProgramModal">
@@ -134,12 +134,12 @@
                                         practice
                                         </i>
                                     </a> -->
-                                    <a class="snapshot--title" href="/practice-types/{{ practice.id }}/edit" title="Edit practice" data-ng-if="$root.user.properties.id === practice.creator.id || $root.user.properties.organization_id === practice.organization.id || $root.user.properties.is_admin || $root.user.properties.is_manager">
+                                    <a class="snapshot--title" href="/practice-types/{{ practice.id }}/edit" title="Edit practice" data-ng-if="$root.user.id === practice.creator.id || $root.user.organization_id === practice.organization.id || $root.user.is_admin || $root.user.is_manager">
                                         <i class="material-icons">
                                         edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete practice" data-ng-click="page.confirmDelete(practice)" data-ng-if="$root.user.properties.id === practice.creator.id || $root.user.properties.organization_id === practice.organization.id || $root.user.properties.is_admin">
+                                    <a class="snapshot--title" href="#" title="Delete practice" data-ng-click="page.confirmDelete(practice)" data-ng-if="$root.user.id === practice.creator.id || $root.user.organization_id === practice.organization.id || $root.user.is_admin">
                                         <i class="material-icons">
                                         delete
                                         </i>

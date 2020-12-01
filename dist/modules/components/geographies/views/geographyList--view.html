@@ -36,7 +36,7 @@
                 <ng-pluralize count="page.summary.matches" when="{'one': 'match','other': 'matches'}"></ng-pluralize>.
             </p>
 
-            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.properties.is_admin || $root.user.properties.is_manager)">
+            <div class="collection-filter-group" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
 
                 <div class="collection-filter drop-down program">
                     <button type="button" data-ng-class="{'open-btn': (page.showModal.program || (page.filters.program > 0))}" data-ng-click="page.showModal.program = !page.showModal.program">

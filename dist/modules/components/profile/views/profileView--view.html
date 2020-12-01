@@ -26,13 +26,13 @@
 
     <div class="content--container" data-ng-if="page.member.id">
 
-        <h1 class="inset" data-ng-if="page.member.id == page.user.properties.id">My Profile</h1>
+        <h1 class="inset" data-ng-if="page.member.id == page.user.id">My Profile</h1>
 
-        <h1 class="inset" data-ng-if="page.member.id != page.user.properties.id">Profile</h1>
+        <h1 class="inset" data-ng-if="page.member.id != page.user.id">Profile</h1>
 
         <div class="main--ui eveal fade-in">
 
-            <div class="add--new--wrapper reveal fade-in"  data-ng-if="page.member.id == page.user.properties.id">
+            <div class="add--new--wrapper reveal fade-in"  data-ng-if="page.member.id == page.user.id">
 
                 <span>Edit profile</span>
             
@@ -102,7 +102,7 @@
                     <div class="flow2-text-container" data-ng-if="page.member.bio">
 
                         <p class="flow2-b">
-                            {{ page.user.properties.bio }}
+                            {{ page.user.bio }}
                         </p>
             
                     </div>

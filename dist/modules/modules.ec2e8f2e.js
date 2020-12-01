@@ -144,7 +144,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1605803029673})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1606790237010})
 
 ;
 /**
@@ -388,9 +388,9 @@ angular.module('FieldDoc')
 
                                     $rootScope.user = Account.userObject;
                                     $rootScope.isLoggedIn = Account.hasToken();
-                                    $rootScope.isAdmin = Account.hasRole('admin');
+                                    $rootScope.isAdmin = userResponse.is_admin;
 
-                                    if ($rootScope.user.properties.organization) {
+                                    if ($rootScope.user.organization) {
 
                                         if ($rootScope.targetPath &&
                                             typeof $rootScope.targetPath === 'string') {
@@ -1253,11 +1253,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = self.user = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     //
                     // Setup page meta data
@@ -1332,11 +1328,7 @@ angular.module('FieldDoc')
 
                 $rootScope.user = Account.userObject = userResponse;
 
-                self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                };
+                self.permissions = {};
 
                 //
                 // Setup page meta data
@@ -1477,6 +1469,7 @@ angular.module('FieldDoc')
                     'creator',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'metrics',
                     'organization',
@@ -1627,11 +1620,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadDashboard();
 
@@ -2078,6 +2067,7 @@ angular.module('FieldDoc')
                 var excludedKeys = [
                     'creator',
                     'geographies',
+                    'images',
                     'last_modified_by',
                     'metrics'
                 ];
@@ -2284,11 +2274,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadDashboard();
 
@@ -2554,6 +2540,7 @@ angular.module('FieldDoc')
                 var excludedKeys = [
                     'creator',
                     'geometry',
+                    'images',
                     'metrics',
                     'last_modified_by',
                     'organizations',
@@ -2713,11 +2700,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadDashboard();
 
@@ -3046,6 +3029,7 @@ angular.module('FieldDoc')
                     'creator',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'organizations',
                     'organization',
@@ -3209,11 +3193,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadDashboard();
 
@@ -3247,7 +3227,7 @@ angular.module('FieldDoc')
 
             $routeProvider
                 .when('/organizations/:id/edit', {
-                    templateUrl: '/modules/components/organization/views/organizationEdit--view.html?t=' + environment.version,
+                    templateUrl: '/modules/components/organization/views/orgEdit--view.html?t=' + environment.version,
                     controller: 'OrganizationEditViewController',
                     controllerAs: 'page',
                     resolve: {
@@ -3256,28 +3236,28 @@ angular.module('FieldDoc')
                         }
                     }
                 }),
-            $routeProvider
-                .when('/organizations', {
-                    templateUrl: '/modules/components/organization/views/organizationProfile--view.html?t=' + environment.version,
-                    controller: 'OrganizationProfileViewController',
-                    controllerAs: 'page',
-                    resolve: {
-                        user: function(Account) {
-                            return Account.getUser();
+                $routeProvider
+                    .when('/organizations', {
+                        templateUrl: '/modules/components/organization/views/orgList--view.html?t=' + environment.version,
+                        controller: 'OrganizationListController',
+                        controllerAs: 'page',
+                        resolve: {
+                            user: function(Account) {
+                                return Account.getUser();
+                            }
                         }
-                    }
-                }),
-             $routeProvider
-                .when('/organizations/:id', {
-                    templateUrl: '/modules/components/organization/views/organizationProfile--view.html?t=' + environment.version,
-                    controller: 'OrganizationProfileViewController',
-                    controllerAs: 'page',
-                    resolve: {
-                        user: function(Account) {
-                            return Account.getUser();
+                    }),
+                $routeProvider
+                    .when('/organizations/:id', {
+                        templateUrl: '/modules/components/organization/views/orgProfile--view.html?t=' + environment.version,
+                        controller: 'OrganizationProfileViewController',
+                        controllerAs: 'page',
+                        resolve: {
+                            user: function(Account) {
+                                return Account.getUser();
+                            }
                         }
-                    }
-                });
+                    });
 
         });
 
@@ -3334,11 +3314,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = self.user = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     //
                     // Setup page meta data
@@ -3351,9 +3327,9 @@ angular.module('FieldDoc')
                     // Load organization data
                     //
 
-                    if (self.user.properties.organization) {
+                    if (self.user.organization) {
 
-                        self.loadOrganization(self.user.properties.organization_id);
+                        self.loadOrganization(self.user.organization_id);
 
                     } else {
 
@@ -3555,8 +3531,8 @@ angular.module('FieldDoc')
 
                 var _user = new User({
                     'id': self.user.id,
-                    'first_name': self.user.properties.first_name,
-                    'last_name': self.user.properties.last_name,
+                    'first_name': self.user.first_name,
+                    'last_name': self.user.last_name,
                     'organization_id': organizationId
                 });
 
@@ -3566,9 +3542,9 @@ angular.module('FieldDoc')
 
                     self.user = successResponse;
 
-                    if (self.user.properties.organization) {
+                    if (self.user.organization) {
 
-                        self.loadOrganization(self.user.properties.organization_id, true);
+                        self.loadOrganization(self.user.organization_id, true);
 
                     }
 
@@ -3652,12 +3628,12 @@ angular.module('FieldDoc')
 angular.module('FieldDoc')
     .controller('OrganizationProfileViewController',
         function(Project, Account, $location, $log, Notifications, $rootScope,
-            $route, $routeParams, user, User, Organization, SearchService, $timeout, Utility) {
+                 $route, $routeParams, user, User, Organization, SearchService, $timeout, Utility) {
 
             var self = this;
 
             $rootScope.viewState = {
-                'organizationProfile': true
+                'feature': true
             };
 
             self.status = {
@@ -3675,83 +3651,7 @@ angular.module('FieldDoc')
 
             var featureId = $routeParams.id;
 
-            //
-            // Assign project to a scoped variable
-            //
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = self.user = userResponse;
-                    console.log('userResponse',userResponse);
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
-                    console.log(" self.permissions", self.permissions);
-                    //
-                    // Setup page meta data
-                    //
-                    $rootScope.page = {
-                        'title': 'Organization Profile'
-                    };
-
-                    //
-                    // Load organization data
-                    //
-                    if(featureId && featureId != self.user.properties.organization) {
-                         console.log(0);
-
-                         self.loadOrganization(featureId);
-
-                         self.loadOrganizationProjects(featureId);
-
-                         self.loadOrganizationMembers(featureId);
-                    }
-
-                    else if (self.user.properties.organization) {
-                         console.log(1);
-
-                        self.loadOrganization(self.user.properties.organization_id);
-
-                        self.loadOrganizationProjects(self.user.properties.organization_id);
-
-                        self.loadOrganizationMembers(self.user.properties.organization_id);
-
-                    } else {
-                         console.log(2);
-
-                        self.status.loading = false;
-
-                    }
-
-
-
-                });
-
-
-            } else {
-
-                $location.path('/logout');
-
-            }
-
-            self.parseFeature = function(data) {
-
-                self.organizationProfile = data;
-                console.log(self.organizationProfile.description)
-                console.log('self.organizationProfile', self.organizationProfile);
-
-                     console.log("page.organizationProfile.id", self.organizationProfile.id);
-                    console.log("page.user.properties.organization",self.user.properties.organization.id);
-
-            };
-
-           self.loadOrganization = function(organizationId, postAssigment) {
+            self.loadOrganization = function(organizationId, postAssigment) {
 
                 Organization.profile({
                     id: organizationId
@@ -3759,14 +3659,16 @@ angular.module('FieldDoc')
 
                     console.log('self.organization', successResponse);
 
-                    self.parseFeature(successResponse);
+                    self.feature = successResponse;
+
+                    self.permissions = successResponse.permissions;
 
                     if (postAssigment) {
 
                         self.alerts = [{
                             'type': 'success',
                             'flag': 'Success!',
-                            'msg': 'Successfully added you to ' + self.organizationProfile.name + '.',
+                            'msg': 'Successfully added you to ' + self.feature.name + '.',
                             'prompt': 'OK'
                         }];
 
@@ -3784,7 +3686,7 @@ angular.module('FieldDoc')
 
                 });
 
-           };
+            };
 
             self.loadOrganizationProjects = function(organizationId, postAssigment) {
 
@@ -3819,7 +3721,7 @@ angular.module('FieldDoc')
                         self.alerts = [{
                             'type': 'success',
                             'flag': 'Success!',
-                            'msg': 'Successfully added you to ' + self.organizationProfile.name + '.',
+                            'msg': 'Successfully added you to ' + self.feature.name + '.',
                             'prompt': 'OK'
                         }];
 
@@ -3837,22 +3739,22 @@ angular.module('FieldDoc')
 
                 });
 
-           };
+            };
 
 
             self.parseMembers = function(members){
-                     console.log('members', members);
-                     var i = 0;
-                     for (var m in members) {
-                        if(  self.organizationMembers[i].picture != null){
-                            var picture =   self.members[i].picture;
-                            console.log(self.members[i].picture);
-                            self.members[i].picture = picture.replace("original", "square");
-                            console.log(self.members[i].picture);
+                console.log('members', members);
+                var i = 0;
+                for (var m in members) {
+                    if(  self.organizationMembers[i].picture != null){
+                        var picture =   self.members[i].picture;
+                        console.log(self.members[i].picture);
+                        self.members[i].picture = picture.replace("original", "square");
+                        console.log(self.members[i].picture);
 
-                         }
-                        i++;
-                      }
+                    }
+                    i++;
+                }
             }
 
             self.loadOrganizationMembers = function(organizationId, postAssigment) {
@@ -3863,20 +3765,20 @@ angular.module('FieldDoc')
 
                     console.log('self.organizationMembers', successResponse);
 
-                     self.organizationMembers = successResponse.features;
+                    self.organizationMembers = successResponse.features;
 
-                     self.members = successResponse.features;
+                    self.members = successResponse.features;
 
-                     self.parseMembers(self.members);
+                    self.parseMembers(self.members);
 
-                     self.memberCount = successResponse.count;
+                    self.memberCount = successResponse.count;
 
                     if (postAssigment) {
 
                         self.alerts = [{
                             'type': 'success',
                             'flag': 'Success!',
-                            'msg': 'Successfully added you to ' + self.organizationProfile.name + '.',
+                            'msg': 'Successfully added you to ' + self.feature.name + '.',
                             'prompt': 'OK'
                         }];
 
@@ -3894,10 +3796,10 @@ angular.module('FieldDoc')
 
                 });
 
-           };
+            };
 
 
-           self.confirmDelete = function(obj) {
+            self.confirmDelete = function(obj) {
 
                 self.deletionTarget = obj;
 
@@ -3966,6 +3868,155 @@ angular.module('FieldDoc')
                 });
 
             };
+
+            //
+            // Verify Account information for proper UI element display
+            //
+            if (Account.userObject && user) {
+
+                user.$promise.then(function(userResponse) {
+
+                    $rootScope.user = Account.userObject = self.user = userResponse;
+
+                    self.permissions = {};
+
+                    //
+                    // Setup page meta data
+                    //
+                    $rootScope.page = {
+                        'title': 'Organization'
+                    };
+
+                    //
+                    // Load organization data
+                    //
+                    if (featureId) {
+
+                        self.loadOrganization(featureId);
+
+                        self.loadOrganizationMembers(featureId);
+
+                    } else {
+
+                        self.status.loading = false;
+
+                    }
+
+                });
+
+
+            } else {
+
+                $location.path('/logout');
+
+            }
+
+        });
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
+    .controller('OrganizationListController',
+        function(Project, Account, $location, $log, Notifications, $rootScope,
+                 $route, $routeParams, user, User, Organization,
+                 SearchService, $timeout, Utility) {
+
+            var self = this;
+
+            $rootScope.viewState = {
+                'organizationProfile': true
+            };
+
+            self.status = {
+                loading: true,
+                processing: false
+            };
+
+            self.alerts = [];
+
+            function closeAlerts() {
+
+                self.alerts = [];
+
+            }
+
+            self.loadOrganization = function(organizationId, postAssigment) {
+
+                Organization.profile({
+                    id: organizationId
+                }).$promise.then(function(successResponse) {
+
+                    console.log('self.organization', successResponse);
+
+                    self.parseFeature(successResponse);
+
+                    if (postAssigment) {
+
+                        self.alerts = [{
+                            'type': 'success',
+                            'flag': 'Success!',
+                            'msg': 'Successfully added you to ' + self.organizationProfile.name + '.',
+                            'prompt': 'OK'
+                        }];
+
+                        $timeout(closeAlerts, 2000);
+
+                    }
+
+                    self.status.loading = false;
+
+                }, function(errorResponse) {
+
+                    console.error('Unable to load organization.');
+
+                    self.status.loading = false;
+
+                });
+
+            };
+
+            //
+            // Verify Account information for proper UI element display
+            //
+            if (Account.userObject && user) {
+
+                user.$promise.then(function(userResponse) {
+
+                    $rootScope.user = Account.userObject = self.user = userResponse;
+
+                    console.log('userResponse',userResponse);
+
+                    self.permissions = userResponse.permissions;
+
+                    console.log(" self.permissions", self.permissions);
+
+                    //
+                    // Setup page meta data
+                    //
+                    $rootScope.page = {
+                        'title': 'Organization Profile'
+                    };
+
+                    //
+                    // Load organization data
+                    //
+
+                    self.memberships = $rootScope.user.memberships;
+
+                    self.status.loading = false;
+
+                });
+
+
+            } else {
+
+                $location.path('/logout');
+
+            }
 
         });
 'use strict';
@@ -4253,6 +4304,52 @@ angular.module('FieldDoc')
                             // 'members',
                             'metric_types',
                             'partners',
+                            'practices',
+                            'practice_types',
+                            'properties',
+                            'tags',
+                            'targets',
+                            'tasks',
+                            'type',
+                            'sites'
+                        ].join(',');
+
+                        return Project.get({
+                            id: $route.current.params.projectId,
+                            exclude: exclude
+                        });
+
+                    }
+                }
+            })
+            .when('/projects/:projectId/images', {
+                templateUrl: '/modules/components/projects/views/projectImage--view.html?t=' + environment.version,
+                controller: 'ProjectImageController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    project: function(Project, $route) {
+
+                        var exclude = [
+                            'centroid',
+                            'creator',
+                            'dashboards',
+                            'extent',
+                            'geometry',
+                            'members',
+                            'metric_progress',
+                            'metric_types',
+                            // 'partners',
                             'practices',
                             'practice_types',
                             'properties',
@@ -4788,9 +4885,7 @@ angular.module('FieldDoc')
 
                     self.user = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     var programs = Utility.extractUserPrograms($rootScope.user);
 
@@ -6277,12 +6372,7 @@ angular.module('FieldDoc')
                     self.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: false,
-                        is_manager: false,
-                        is_admin: false
+                        can_edit: false
                     };
 
                     self.loadProject();
@@ -6605,6 +6695,7 @@ angular.module('FieldDoc')
                     'creator',
                     'extent',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'organization',
                     'program',
@@ -6811,9 +6902,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false,
                         can_delete: false
                     };
@@ -7042,6 +7130,7 @@ angular.module('FieldDoc')
                         'creator',
                         'extent',
                         'geometry',
+                        'images',
                         'last_modified_by',
                         'organization',
                         'program',
@@ -7226,9 +7315,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -7478,6 +7564,7 @@ angular.module('FieldDoc')
                     'creator',
                     'extent',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'organization',
                     'tags',
@@ -7851,9 +7938,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false,
                         can_delete: false
                     };
@@ -7978,9 +8062,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false,
                         can_delete: false
                     };
@@ -8161,6 +8242,7 @@ angular.module('FieldDoc')
                     'creator',
                     'extent',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'organization',
                     'program',
@@ -8328,6 +8410,279 @@ angular.module('FieldDoc')
             };
 
         });
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
+    .controller('ProjectImageController', function(
+        Account, Image, $location, $log, Project,
+        project, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
+
+        var self = this;
+
+        $rootScope.toolbarState = {
+            'editImages': true
+        };
+
+        $rootScope.page = {};
+
+        self.status = {
+            loading: true,
+            processing: false
+        };
+
+        self.showElements = function(delay) {
+
+            var ms = delay || 1000;
+
+            $timeout(function() {
+
+                self.status.loading = false;
+
+                self.status.processing = false;
+
+            }, ms);
+
+        };
+
+        self.alerts = [];
+
+        self.closeAlerts = function() {
+
+            self.alerts = [];
+
+        };
+
+        self.closeRoute = function () {
+
+            $location.path('projects');
+
+        };
+
+        self.processProject = function(data) {
+
+            self.project = data;
+
+            if (data.permissions) {
+
+                if (!data.permissions.read &&
+                    !data.permissions.write) {
+
+                    self.makePrivate = true;
+
+                }
+
+                self.permissions.can_edit = data.permissions.write;
+                self.permissions.can_delete = data.permissions.write;
+
+            }
+
+            delete self.project.organization;
+
+            self.projectType = data.category;
+
+            $rootScope.page.title = self.project.name ? self.project.name : 'Un-named Project';
+
+            if (Array.isArray(self.project.images)) {
+
+                self.project.images.sort(function (a, b) {
+
+                    return a.id < b.id;
+
+                });
+
+            }
+
+        };
+
+        self.loadProject = function() {
+
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'type',
+                'sites'
+            ].join(',');
+
+            Project.get({
+                id: $route.current.params.projectId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
+
+                console.log('self.project', successResponse);
+
+                self.processProject(successResponse);
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                self.showElements();
+
+            });
+
+        };
+
+        self.confirmDelete = function(obj, targetCollection) {
+
+            console.log('self.confirmDelete', obj, targetCollection);
+
+            if (self.deletionTarget &&
+                self.deletionTarget.collection === 'project') {
+
+                self.cancelDelete();
+
+            } else {
+
+                self.deletionTarget = {
+                    'collection': targetCollection,
+                    'feature': obj
+                };
+
+            }
+
+        };
+
+        self.cancelDelete = function() {
+
+            self.deletionTarget = null;
+
+        };
+
+        self.deleteFeature = function(featureType, index) {
+
+            console.log('self.deleteFeature', featureType, index);
+
+            var targetCollection;
+
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
+
+            switch (featureType) {
+
+                case 'image':
+
+                    targetCollection = Image;
+
+                    requestConfig.target = 'project:' + self.project.id;
+
+                    break;
+
+                default:
+
+                    targetCollection = Project;
+
+                    break;
+
+            }
+
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Successfully deleted ' + featureType + '.',
+                    'prompt': 'OK'
+                }];
+
+                if (featureType === 'image') {
+
+                    self.project.images.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadProject();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
+
+            }).catch(function(errorResponse) {
+
+                console.log('self.deleteFeature.errorResponse', errorResponse);
+
+                if (errorResponse.status === 409) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
+                        'prompt': 'OK'
+                    }];
+
+                } else if (errorResponse.status === 403) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                } else {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                }
+
+                $timeout(self.closeAlerts, 2000);
+
+            });
+
+        };
+
+        //
+        // Verify Account information for proper UI element display
+        //
+        if (Account.userObject && user) {
+
+            user.$promise.then(function(userResponse) {
+
+                $rootScope.user = Account.userObject = userResponse;
+
+                self.permissions = {
+                    can_edit: false
+                };
+
+                self.loadProject();
+
+            });
+
+        } else {
+
+            $location.path('/logout');
+
+        }
+
+    });
 'use strict';
 
 /**
@@ -8549,6 +8904,7 @@ angular.module('FieldDoc')
                     'dashboards',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -8866,9 +9222,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -9248,9 +9601,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false,
                             can_delete: false
                         };
@@ -9656,9 +10006,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false,
                             can_delete: false
                         };
@@ -10495,12 +10842,7 @@ angular.module('FieldDoc')
                     self.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: false,
-                        is_manager: false,
-                        is_admin: false
+                        can_edit: false
                     };
 
                     //
@@ -11288,12 +11630,7 @@ angular.module('FieldDoc')
                     self.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: false,
-                        is_manager: false,
-                        is_admin: false
+                        can_edit: false
                     };
 
                     //
@@ -11737,9 +12074,6 @@ angular.module('FieldDoc')
                     self.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false,
                         is_manager: false,
                         is_admin: false
@@ -11842,8 +12176,8 @@ angular.module('FieldDoc')
 
                 var _user = new User({
                     'id': self.user.id,
-                    'first_name': self.user.properties.first_name,
-                    'last_name': self.user.properties.last_name,
+                    'first_name': self.user.first_name,
+                    'last_name': self.user.last_name,
                     'organization_id': organization.id
                 });
 
@@ -11865,10 +12199,6 @@ angular.module('FieldDoc')
                         Account.getUser().$promise.then(function(userResponse) {
 
                             Account.userObject = userResponse;
-
-                            $rootScope.user = Account.userObject;
-                            $rootScope.isLoggedIn = Account.hasToken();
-                            $rootScope.isAdmin = Account.hasRole('admin');
 
                             $location.path('/');
 
@@ -11961,11 +12291,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = self.user = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     //
                     // Setup page meta data
@@ -12285,13 +12611,10 @@ angular.module('FieldDoc')
 
                         self.user = userResponse;
 
-                        if ($rootScope.user.properties.organization) {
+                        if ($rootScope.user.organization) {
                            
                             self.permissions = {
-                                isLoggedIn: Account.hasToken(),
-                                role: $rootScope.user.properties.roles[0],
-                                account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                                can_edit: true
+                                can_edit: false
                             };
 
                             self.loadPrograms();
@@ -12378,7 +12701,7 @@ angular.module('FieldDoc')
 angular.module('FieldDoc')
     .controller('AccountEditViewController',
         function(Account, $location, $log, Notifications, $rootScope, $routeParams,
-            $route, user, User, Image, SearchService, $timeout) {
+                 $route, user, User, Image, SearchService, $timeout) {
 
             var self = this;
 
@@ -12406,7 +12729,7 @@ angular.module('FieldDoc')
 
 
             }
-             var featureId = $routeParams.id;
+            var featureId = $routeParams.id;
 
 
 
@@ -12417,46 +12740,35 @@ angular.module('FieldDoc')
             // Verify Account information for proper UI element display
             //
             if (Account.userObject && user) {
-             //   if(!featureId){
-                  console.log("feature id not set");
-                    user.$promise.then(function(userResponse) {
 
-                        $rootScope.user = Account.userObject = self.user = userResponse;
+                console.log("feature id not set");
+                user.$promise.then(function(userResponse) {
 
-                    //    self.organizationSelection = self.user.properties.organization;
+                    $rootScope.user = Account.userObject = self.user = userResponse;
 
-                        self.organizationSelection =
-                                                    {
-                                                        id: self.user.properties.organization.id,
-                                                        name: self.user.properties.organization.properties.name,
-                                                        category: self.user.properties.organization.properties.category_id
+                    self.organizationSelection = {
+                        id: self.user.organization.id,
+                        name: self.user.organization.properties.name,
+                        category: self.user.organization.properties.category_id
 
-                                                    }
+                    };
 
-                        console.log("self.organizationSelection",self.organizationSelection);
+                    console.log("self.organizationSelection",self.organizationSelection);
 
-                        console.log("self.user", self.user);
+                    console.log("self.user", self.user);
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                    self.permissions = {};
 
-                        //
-                        // Setup page meta data
-                        //
-                        $rootScope.page = {
-                            'title': 'Profile'
-                        };
+                    //
+                    // Setup page meta data
+                    //
+                    $rootScope.page = {
+                        'title': 'Profile'
+                    };
 
-
-
-                    });
-
+                });
 
             } else {
-
 
                 //
                 // If there is not Account.userObject and no user object, then the
@@ -12470,7 +12782,7 @@ angular.module('FieldDoc')
 
             self.searchOrganizations = function(value) {
 
-                 self.createAlert = false;
+                self.createAlert = false;
 
                 return SearchService.organization({
                     q: value
@@ -12494,48 +12806,48 @@ angular.module('FieldDoc')
             self.actions = {
 
                 save: function() {
-                      self.status.processing = true;
+                    self.status.processing = true;
 
-                      if (typeof self.organizationSelection === 'string' || self.organizationSelection === null) {
-                            console.log("STRING");
-                            console.log(self.organizationSelection);
+                    if (typeof self.organizationSelection === 'string' || self.organizationSelection === null) {
+                        console.log("STRING");
+                        console.log(self.organizationSelection);
 
-                            self.createAlert = true;
+                        self.createAlert = true;
 
-                            self.alerts = [{
-                                'type': 'success',
-                                'flag': 'Success!',
-                                'msg': 'Select an organization to join.',
-                                'prompt': 'OK'
-                            }];
+                        self.alerts = [{
+                            'type': 'success',
+                            'flag': 'Success!',
+                            'msg': 'Select an organization to join.',
+                            'prompt': 'OK'
+                        }];
 
-                            $timeout(closeAlerts, 2000);
-                            self.status.processing = false;
+                        $timeout(closeAlerts, 2000);
+                        self.status.processing = false;
 
-                      } else {
-                            console.log("NOT STRING");
-                             if (self.image) {
+                    } else {
+                        console.log("NOT STRING");
+                        if (self.image) {
 
-                                var fileData = new FormData();
+                            var fileData = new FormData();
 
-                                fileData.append('image', self.image);
+                            fileData.append('image', self.image);
 
-                                Image.upload({
+                            Image.upload({
 
-                                }, fileData).$promise.then(function(successResponse) {
+                            }, fileData).$promise.then(function(successResponse) {
 
-                                    console.log('successResponse', successResponse);
+                                console.log('successResponse', successResponse);
 
-                                    self.user.properties.picture = successResponse.original;
+                                self.user.picture = successResponse.original;
 
-                                    self.updateUser();
+                                self.updateUser();
 
-                                });
+                            });
 
-                              } else {
-                                     self.updateUser();
-                              }
-                      }
+                        } else {
+                            self.updateUser();
+                        }
+                    }
 
 
 
@@ -12543,7 +12855,7 @@ angular.module('FieldDoc')
 
                 },
                 removeImage: function (){
-                    self.user.properties.picture = null;
+                    self.user.picture = null;
                     self.status.image.remove = true;
 
                     self.updateUser();
@@ -12552,51 +12864,51 @@ angular.module('FieldDoc')
 
             self.updateUser = function(){
 
-                    var _user = new User({
-                        'id': self.user.id,
-                        'first_name': self.user.properties.first_name,
-                        'last_name': self.user.properties.last_name,
-                        'picture': self.user.properties.picture,
-                        'bio': self.user.properties.bio,
-                        'title': self.user.properties.title,
-                        'organization_id': self.organizationSelection.id
-                    });
+                var _user = new User({
+                    'id': self.user.id,
+                    'first_name': self.user.first_name,
+                    'last_name': self.user.last_name,
+                    'picture': self.user.picture,
+                    'bio': self.user.bio,
+                    'title': self.user.title,
+                    'organization_id': self.organizationSelection.id
+                });
 
-                    _user.$update(function(successResponse) {
+                _user.$update(function(successResponse) {
 
-                        console.log('successResponse', successResponse);
+                    console.log('successResponse', successResponse);
 
-                        self.user.properties = successResponse.properties;
+                    self.user.properties = successResponse.properties;
 
-                        console.log('self.user.properties', self.user.properties )
+                    console.log('self.user.properties', self.user.properties )
 
-                        self.status.processing = false;
+                    self.status.processing = false;
 
-                        self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Profile updated.',
-                            'prompt': 'OK'
-                        }];
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Profile updated.',
+                        'prompt': 'OK'
+                    }];
 
-                        $timeout(closeAlerts, 2000);
+                    $timeout(closeAlerts, 2000);
 
-                    }, function(errorResponse) {
+                }, function(errorResponse) {
 
-                        console.log('errorResponse', errorResponse);
+                    console.log('errorResponse', errorResponse);
 
-                        self.status.processing = false;
+                    self.status.processing = false;
 
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Your profile could not be updated.',
-                            'prompt': 'OK'
-                        }];
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Your profile could not be updated.',
+                        'prompt': 'OK'
+                    }];
 
-                        $timeout(closeAlerts, 2000);
+                    $timeout(closeAlerts, 2000);
 
-                    });
+                });
 
             }
 
@@ -12702,11 +13014,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = self.user = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
                         console.log(" self.permissions", self.permissions);
                         //
                         // Setup page meta data
@@ -12715,7 +13023,7 @@ angular.module('FieldDoc')
                             'title': 'Profile'
                         };
 
-                        if(featureId && featureId != self.user.properties.id){
+                        if(featureId && featureId != self.user.id){
                                self.actions.getMember();
                         }else{
                             self.member = self.user.properties;
@@ -12927,6 +13235,29 @@ angular.module('FieldDoc')
                             return Site.get({
                                 id: $route.current.params.siteId,
                                 format: 'geojson'
+                            });
+                        }
+                    }
+                })
+                .when('/sites/:siteId/images', {
+                    templateUrl: '/modules/components/sites/views/siteImage--view.html?t=' + environment.version,
+                    controller: 'SiteImageController',
+                    controllerAs: 'page',
+                    resolve: {
+                        user: function(Account, $rootScope, $document) {
+
+                            $rootScope.targetPath = document.location.pathname;
+
+                            if (Account.userObject && !Account.userObject.id) {
+                                return Account.getUser();
+                            }
+
+                            return Account.userObject;
+
+                        },
+                        site: function(Site, $route) {
+                            return Site.get({
+                                id: $route.current.params.siteId
                             });
                         }
                     }
@@ -14083,11 +14414,7 @@ angular.module('FieldDoc')
 
                         self.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadSite();
 
@@ -14148,6 +14475,7 @@ angular.module('FieldDoc')
                         'dashboards',
                         'geographies',
                         'geometry',
+                        'images',
                         'last_modified_by',
                         'members',
                         'metrics',
@@ -14327,9 +14655,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -14641,6 +14966,7 @@ angular.module('FieldDoc')
                         'extent',
                         'geographies',
                         // 'geometry',
+                        'images',
                         'last_modified_by',
                         'members',
                         'metrics',
@@ -15059,9 +15385,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -15581,11 +15904,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadSite();
 
@@ -15596,6 +15915,279 @@ angular.module('FieldDoc')
             });
 
 })();
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
+    .controller('SiteImageController', function(
+        Account, Image, $location, $log, Site,
+        site, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
+
+        var self = this;
+
+        $rootScope.toolbarState = {
+            'editImages': true
+        };
+
+        $rootScope.page = {};
+
+        self.status = {
+            loading: true,
+            processing: false
+        };
+
+        self.showElements = function(delay) {
+
+            var ms = delay || 1000;
+
+            $timeout(function() {
+
+                self.status.loading = false;
+
+                self.status.processing = false;
+
+            }, ms);
+
+        };
+
+        self.alerts = [];
+
+        self.closeAlerts = function() {
+
+            self.alerts = [];
+
+        };
+
+        self.closeRoute = function () {
+
+            $location.path('sites');
+
+        };
+
+        self.processSite = function(data) {
+
+            self.site = data;
+
+            if (data.permissions) {
+
+                if (!data.permissions.read &&
+                    !data.permissions.write) {
+
+                    self.makePrivate = true;
+
+                }
+
+                self.permissions.can_edit = data.permissions.write;
+                self.permissions.can_delete = data.permissions.write;
+
+            }
+
+            delete self.site.organization;
+
+            self.siteType = data.category;
+
+            $rootScope.page.title = self.site.name ? self.site.name : 'Un-named Site';
+
+            if (Array.isArray(self.site.images)) {
+
+                self.site.images.sort(function (a, b) {
+
+                    return a.id < b.id;
+
+                });
+
+            }
+
+        };
+
+        self.loadSite = function() {
+
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'type',
+                'sites'
+            ].join(',');
+
+            Site.get({
+                id: $route.current.params.siteId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
+
+                console.log('self.site', successResponse);
+
+                self.processSite(successResponse);
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                self.showElements();
+
+            });
+
+        };
+
+        self.confirmDelete = function(obj, targetCollection) {
+
+            console.log('self.confirmDelete', obj, targetCollection);
+
+            if (self.deletionTarget &&
+                self.deletionTarget.collection === 'site') {
+
+                self.cancelDelete();
+
+            } else {
+
+                self.deletionTarget = {
+                    'collection': targetCollection,
+                    'feature': obj
+                };
+
+            }
+
+        };
+
+        self.cancelDelete = function() {
+
+            self.deletionTarget = null;
+
+        };
+
+        self.deleteFeature = function(featureType, index) {
+
+            console.log('self.deleteFeature', featureType, index);
+
+            var targetCollection;
+
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
+
+            switch (featureType) {
+
+                case 'image':
+
+                    targetCollection = Image;
+
+                    requestConfig.target = 'site:' + self.site.id;
+
+                    break;
+
+                default:
+
+                    targetCollection = Site;
+
+                    break;
+
+            }
+
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Successfully deleted ' + featureType + '.',
+                    'prompt': 'OK'
+                }];
+
+                if (featureType === 'image') {
+
+                    self.site.images.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadSite();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
+
+            }).catch(function(errorResponse) {
+
+                console.log('self.deleteFeature.errorResponse', errorResponse);
+
+                if (errorResponse.status === 409) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
+                        'prompt': 'OK'
+                    }];
+
+                } else if (errorResponse.status === 403) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                } else {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                }
+
+                $timeout(self.closeAlerts, 2000);
+
+            });
+
+        };
+
+        //
+        // Verify Account information for proper UI element display
+        //
+        if (Account.userObject && user) {
+
+            user.$promise.then(function(userResponse) {
+
+                $rootScope.user = Account.userObject = userResponse;
+
+                self.permissions = {
+                    can_edit: false
+                };
+
+                self.loadSite();
+
+            });
+
+        } else {
+
+            $location.path('/logout');
+
+        }
+
+    });
 'use strict';
 
 /**
@@ -15818,6 +16410,7 @@ angular.module('FieldDoc')
                     'extent',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -16136,9 +16729,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -16534,9 +17124,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -16970,6 +17557,8 @@ angular.module('FieldDoc')
 
                         }
 
+                        self.permissions = successResponse.permissions;
+
                         self.permissions.can_edit = successResponse.permissions.write;
                         self.permissions.can_delete = successResponse.permissions.write;
 
@@ -17259,11 +17848,7 @@ angular.module('FieldDoc')
 
                         self.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         //
                         // Set default query string params.
@@ -17420,9 +18005,9 @@ angular.module('FieldDoc')
                     }
                 }
             })
-            .when('/practices/:practiceId/photos', {
+            .when('/practices/:practiceId/images', {
                 templateUrl: '/modules/components/practices/views/practiceImage--view.html?t=' + environment.version,
-                controller: 'PracticePhotoController',
+                controller: 'PracticeImageController',
                 controllerAs: 'page',
                 resolve: {
                     user: function(Account, $rootScope, $document) {
@@ -17826,6 +18411,7 @@ angular.module('FieldDoc')
                     'dashboards',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -17883,7 +18469,7 @@ angular.module('FieldDoc')
 
                 if (self.practiceType) {
 
-                    self.practice.category_id = self.practiceType.id;
+                    self.practice.practice_type_id = self.practiceType.id;
 
                 }
 
@@ -18002,9 +18588,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -18729,9 +19312,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -19229,6 +19809,7 @@ angular.module('FieldDoc')
                     'dashboards',
                     'geographies',
                     // 'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -19888,10 +20469,7 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: true
+                        can_edit: false
                     };
 
                     self.loadPractice();
@@ -20109,11 +20687,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadPractice();
 
@@ -20480,6 +21054,7 @@ angular.module('FieldDoc')
                     'creator',
                     'extent',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'organization',
                     'project',
@@ -20699,11 +21274,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadPractice();
 
@@ -20736,19 +21307,16 @@ angular.module('FieldDoc')
  * @description
  */
 angular.module('FieldDoc')
-    .controller('PracticePhotoController', function(
-        Account, Image, $location, $log, mapbox, Media, Practice,
-        practice, $q, $rootScope, $route, $scope, $timeout,
-        $interval, site, user, Utility) {
+    .controller('PracticeImageController', function(
+        Account, Image, $location, $log, Practice,
+        practice, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
 
         var self = this;
 
         $rootScope.toolbarState = {
-            'editPhotos': true
+            'editImages': true
         };
-
-        self.files = Media;
-        self.files.images = [];
 
         $rootScope.page = {};
 
@@ -20779,15 +21347,11 @@ angular.module('FieldDoc')
 
         };
 
-       function closeRoute() {
+        self.closeRoute = function () {
 
-                    if(self.practice.site != null){
-                         $location.path(self.practice.links.site.html);
-                    }else{
+            $location.path('practices');
 
-                    } $location.path("/projects/"+self.practice.project.id);
-
-            }
+        };
 
         self.processPractice = function(data) {
 
@@ -20808,24 +21372,49 @@ angular.module('FieldDoc')
             }
 
             delete self.practice.organization;
-      //      delete self.practice.project;
-      //      delete self.practice.site;
 
             self.practiceType = data.category;
 
             $rootScope.page.title = self.practice.name ? self.practice.name : 'Un-named Practice';
 
-            self.practice.images.sort(function(a, b) {
+            if (Array.isArray(self.practice.images)) {
 
-                return a.id < b.id;
+                self.practice.images.sort(function (a, b) {
 
-            });
+                    return a.id < b.id;
+
+                });
+
+            }
 
         };
 
         self.loadPractice = function() {
 
-            practice.$promise.then(function(successResponse) {
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'type',
+                'sites'
+            ].join(',');
+
+            Practice.get({
+                id: $route.current.params.practiceId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
 
                 console.log('self.practice', successResponse);
 
@@ -20838,104 +21427,6 @@ angular.module('FieldDoc')
                 self.showElements();
 
             });
-
-        };
-
-        self.savePractice = function() {
-
-            self.status.processing = true;
-
-            var imageCollection = {
-                images: []
-            };
-
-            self.practice.images.forEach(function(image) {
-
-                imageCollection.images.push({
-                    id: image.id
-                });
-
-            });
-
-            if (self.files.images.length) {
-
-                var savedQueries = self.files.preupload(self.files.images);
-
-                $q.all(savedQueries).then(function(successResponse) {
-
-                    $log.log('Images::successResponse', successResponse);
-
-                    angular.forEach(successResponse, function(image) {
-
-                        imageCollection.images.push({
-
-                            id: image.id
-
-                        });
-
-                    });
-
-                    Practice.update({
-                        id: self.practice.id
-                    }, imageCollection).$promise.then(function(successResponse) {
-
-                        self.processPractice(successResponse);
-
-                        self.files.images = [];
-
-                        self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Photo library updated.',
-                            'prompt': 'OK'
-                        }];
-
-                        $timeout(self.closeAlerts, 2000);
-
-                        self.showElements(0);
-
-                    }, function(errorResponse) {
-
-                        self.showElements(0);
-
-                    });
-
-                }, function(errorResponse) {
-
-                    $log.log('errorResponse', errorResponse);
-
-                    self.showElements();
-
-                });
-
-            } else {
-
-                Practice.update({
-                        id: self.practice.id
-                    }, imageCollection).$promise.then(function(successResponse) {
-
-                    self.processPractice(successResponse);
-
-                    self.files.images = [];
-
-                    self.alerts = [{
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Photo library updated.',
-                        'prompt': 'OK'
-                    }];
-
-                    $timeout(self.closeAlerts, 2000);
-
-                    self.showElements();
-
-                }, function(errorResponse) {
-
-                    self.showElements();
-
-                });
-
-            }
 
         };
 
@@ -20971,23 +21462,17 @@ angular.module('FieldDoc')
 
             var targetCollection;
 
-            if (featureType === 'image') {
-
-                self.practice.images.splice(index, 1);
-
-                self.cancelDelete();
-
-                self.savePractice();
-
-                return;
-
-            }
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
 
             switch (featureType) {
 
                 case 'image':
 
                     targetCollection = Image;
+
+                    requestConfig.target = 'practice:' + self.practice.id;
 
                     break;
 
@@ -20999,18 +21484,30 @@ angular.module('FieldDoc')
 
             }
 
-            targetCollection.delete({
-                id: +self.deletionTarget.feature.id
-            }).$promise.then(function(data) {
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
 
                 self.alerts = [{
                     'type': 'success',
                     'flag': 'Success!',
-                    'msg': 'Successfully deleted this ' + featureType + '.',
+                    'msg': 'Successfully deleted ' + featureType + '.',
                     'prompt': 'OK'
                 }];
 
-                $timeout(self.closeRoute, 2000);
+                if (featureType === 'image') {
+
+                    self.practice.images.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadPractice();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
 
             }).catch(function(errorResponse) {
 
@@ -21021,7 +21518,7 @@ angular.module('FieldDoc')
                     self.alerts = [{
                         'type': 'error',
                         'flag': 'Error!',
-                        'msg': 'Unable to delete this ' + featureType + '. There are pending tasks affecting this feature.',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
                         'prompt': 'OK'
                     }];
 
@@ -21061,9 +21558,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                     can_edit: false
                 };
 
@@ -21309,6 +21803,7 @@ angular.module('FieldDoc')
                     'dashboards',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -21574,9 +22069,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -21834,6 +22326,7 @@ angular.module('FieldDoc')
                     'creator',
                     //        'extent',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'organization',
@@ -22308,11 +22801,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadPractice();
 
@@ -23013,11 +23502,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         //
                         //
@@ -23421,7 +23906,7 @@ angular.module('FieldDoc')
 
             var _programs = [];
 
-            user.properties.programs.forEach(function(program) {
+            user.programs.forEach(function(program) {
 
                 _programs.push(program.properties);
 
@@ -23441,9 +23926,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                     can_edit: false
                 };
 
@@ -23676,11 +24158,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadPracticeType();
 
@@ -23825,7 +24303,7 @@ angular.module('FieldDoc')
 
                 self.practiceType = new PracticeType({
                     // 'program_id': self.programId,
-                    'organization_id': $rootScope.user.properties.organization_id
+                    'organization_id': $rootScope.user.organization_id
                 });
 
                 self.practiceType.$save(function(successResponse) {
@@ -23974,9 +24452,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     var programs = Utility.extractUserPrograms($rootScope.user);
 
@@ -24399,7 +24875,7 @@ angular.module('FieldDoc')
 
             var _programs = [];
 
-            user.properties.programs.forEach(function(program) {
+            user.programs.forEach(function(program) {
 
                 _programs.push(program.properties);
 
@@ -24418,11 +24894,7 @@ angular.module('FieldDoc')
 
                 $rootScope.user = Account.userObject = userResponse;
 
-                self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                };
+                self.permissions = {};
 
                 self.programs = self.extractPrograms($rootScope.user);
 
@@ -24572,11 +25044,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadMetricType();
 
@@ -24723,7 +25191,7 @@ angular.module('FieldDoc')
 
                 self.metricType = new MetricType({
                     // 'program_id': self.programId,
-                    'organization_id': $rootScope.user.properties.organization_id
+                    'organization_id': $rootScope.user.organization_id
                 });
 
                 self.metricType.$save(function(successResponse) {
@@ -24874,9 +25342,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     var programs = Utility.extractUserPrograms($rootScope.user);
 
@@ -25121,11 +25587,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadCounty();
 
@@ -25358,11 +25820,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadWatershed();
 
@@ -25819,7 +26277,7 @@ angular.module('FieldDoc')
 
                     var _programs = [];
 
-                    user.properties.programs.forEach(function(program) {
+                    user.programs.forEach(function(program) {
 
                         _programs.push(program.properties);
 
@@ -25838,17 +26296,13 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.programs = self.extractPrograms($rootScope.user);
 
-                        if ($rootScope.user.properties.programs.length) {
+                        if ($rootScope.user.programs.length) {
 
-                            self.selectedProgram = $rootScope.user.properties.programs[0];
+                            self.selectedProgram = $rootScope.user.programs[0];
 
                         }
 
@@ -26116,7 +26570,7 @@ angular.module('FieldDoc')
 
                 var _programs = [];
 
-                user.properties.programs.forEach(function(program) {
+                user.programs.forEach(function(program) {
 
                     _programs.push(program.properties);
 
@@ -26151,9 +26605,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -26720,11 +27171,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadGeography();
 
@@ -27432,11 +27879,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         var programs = Utility.extractUserPrograms($rootScope.user);
 
@@ -27903,9 +28346,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -28426,11 +28866,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                    };
+                    self.permissions = {};
 
                     self.loadGeography();
 
@@ -28887,7 +29323,7 @@ angular.module('FieldDoc')
 
                     var _programs = [];
 
-                    user.properties.programs.forEach(function(program) {
+                    user.programs.forEach(function(program) {
 
                         _programs.push(program.properties);
 
@@ -28906,17 +29342,13 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.programs = self.extractPrograms($rootScope.user);
 
-                        if ($rootScope.user.properties.programs.length) {
+                        if ($rootScope.user.programs.length) {
 
-                            self.selectedProgram = $rootScope.user.properties.programs[0];
+                            self.selectedProgram = $rootScope.user.programs[0];
 
                         }
 
@@ -29184,7 +29616,7 @@ angular.module('FieldDoc')
 
                 var _programs = [];
 
-                user.properties.programs.forEach(function(program) {
+                user.programs.forEach(function(program) {
 
                     _programs.push(program.properties);
 
@@ -29219,9 +29651,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -29588,11 +30017,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadLayer();
 
@@ -29811,7 +30236,7 @@ angular.module('FieldDoc')
 
                     // self.layer = new LayerService({
                     //     'program_id': self.programId,
-                    //     'organization_id': $rootScope.user.properties.organization_id
+                    //     'organization_id': $rootScope.user.organization_id
                     // });
 
                     // self.layer.$save(function(successResponse) {
@@ -30147,7 +30572,7 @@ angular.module('FieldDoc')
 
                     var _programs = [];
 
-                    user.properties.programs.forEach(function(program) {
+                    user.programs.forEach(function(program) {
 
                         _programs.push(program.properties);
 
@@ -30166,17 +30591,13 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.programs = self.extractPrograms($rootScope.user);
 
-                        if ($rootScope.user.properties.programs.length) {
+                        if ($rootScope.user.programs.length) {
 
-                            self.selectedProgram = $rootScope.user.properties.programs[0];
+                            self.selectedProgram = $rootScope.user.programs[0];
 
                         }
 
@@ -30553,6 +30974,7 @@ angular.module('FieldDoc')
                     'creator',
                     'dashboards',
                     'geographies',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -30705,9 +31127,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -31338,10 +31757,7 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                            can_edit: true
+                            can_edit: false
                         };
 
                         self.loadProgram();
@@ -31488,9 +31904,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     programs.$promise.then(function(successResponse) {
 
@@ -31668,6 +32082,7 @@ angular.module('FieldDoc')
                     'dashboards',
                     'geographies',
                     'geometry',
+                    'images',
                     'last_modified_by',
                     'members',
                     'metrics',
@@ -31914,9 +32329,6 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                         can_edit: false
                     };
 
@@ -32190,11 +32602,7 @@ angular.module('FieldDoc')
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null
-                        };
+                        self.permissions = {};
 
                         self.loadProgram();
 
@@ -32615,10 +33023,7 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                            can_edit: true
+                            can_edit: false
                         };
 
                         self.loadProgram();
@@ -32891,10 +33296,7 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                            can_edit: true
+                            can_edit: false
                         };
 
                         self.loadProgram();
@@ -33273,9 +33675,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                     can_edit: false
                 };
 
@@ -33426,10 +33825,7 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: true
+                        can_edit: false
                     };
 
                     self.loadTag();
@@ -33715,9 +34111,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     self.loadTags();
 
@@ -34091,9 +34485,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -34475,9 +34866,6 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                             can_edit: false
                         };
 
@@ -34868,7 +35256,7 @@ angular.module('FieldDoc')
 
             var _programs = [];
 
-            user.properties.programs.forEach(function(program) {
+            user.programs.forEach(function(program) {
 
                 _programs.push(program);
 
@@ -34888,9 +35276,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                     can_edit: false
                 };
 
@@ -35041,10 +35426,7 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: true
+                        can_edit: false
                     };
 
                     self.loadAward();
@@ -35178,7 +35560,7 @@ angular.module('FieldDoc')
 
                 self.award = new Award({
                     // 'program_id': self.programId,
-                    'funder_id': $rootScope.user.properties.organization_id
+                    'funder_id': $rootScope.user.organization_id
                 });
 
                 self.award.$save(function(successResponse) {
@@ -35252,13 +35634,11 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
-                    if ($rootScope.user.properties.programs.length) {
+                    if ($rootScope.user.programs.length) {
 
-                        self.selectedProgram = $rootScope.user.properties.programs[0];
+                        self.selectedProgram = $rootScope.user.programs[0];
 
                     }
 
@@ -35612,7 +35992,7 @@ angular.module('FieldDoc')
 
             var _programs = [];
 
-            user.properties.programs.forEach(function(program) {
+            user.programs.forEach(function(program) {
 
                 _programs.push(program);
 
@@ -35632,9 +36012,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {
-                    isLoggedIn: Account.hasToken(),
-                    role: $rootScope.user.properties.roles[0],
-                    account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
                     can_edit: false
                 };
 
@@ -35785,10 +36162,7 @@ angular.module('FieldDoc')
                     $rootScope.user = Account.userObject = userResponse;
 
                     self.permissions = {
-                        isLoggedIn: Account.hasToken(),
-                        role: $rootScope.user.properties.roles[0],
-                        account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                        can_edit: true
+                        can_edit: false
                     };
 
                     self.loadFundingSource();
@@ -35922,7 +36296,7 @@ angular.module('FieldDoc')
 
                 self.fundingSource = new FundingSource({
                     'program_id': self.programId,
-                    'agent_id': $rootScope.user.properties.organization_id
+                    'agent_id': $rootScope.user.organization_id
                 });
 
                 self.fundingSource.$save(function(successResponse) {
@@ -35996,9 +36370,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     self.loadFeatures();
 
@@ -36244,10 +36616,7 @@ angular.module('FieldDoc')
                         $rootScope.user = Account.userObject = userResponse;
 
                         self.permissions = {
-                            isLoggedIn: Account.hasToken(),
-                            role: $rootScope.user.properties.roles[0],
-                            account: ($rootScope.account && $rootScope.account.length) ? $rootScope.account[0] : null,
-                            can_edit: true
+                            can_edit: false
                         };
 
                         self.loadModel();
@@ -36575,9 +36944,7 @@ angular.module('FieldDoc')
 
                     self.user = userResponse;
 
-                    self.permissions = {
-                        isLoggedIn: Account.hasToken()
-                    };
+                    self.permissions = {};
 
                     var programs = Utility.extractUserPrograms($rootScope.user);
 
@@ -38039,7 +38406,7 @@ angular
                     return false;
                 }
 
-                var $promise = User.get({
+                var $promise = User.single({
                     id: userId
                 });
 
@@ -38404,7 +38771,7 @@ angular
                 },
                 'delete': {
                     method: 'DELETE',
-                    url: environment.apiUrl.concat('/v1/data/image/:id')
+                    url: environment.apiUrl.concat('/v1/image/:id')
                 }
             });
 
@@ -38423,51 +38790,62 @@ angular
     angular.module('FieldDoc')
         .service('Media', function(Image, $q) {
             return {
-                images: new Array(), // empty image array for handling files
-                preupload: function(filesList, fieldName) {
+                images: [], // empty image array for handling files
+                preupload: function(filesList, fieldName, parent, parentId) {
                     /**Process all media prior to uploading to server.
 
-                    Create a usable array of deferred requests that will allow
-                    us to keep tabs on uploads, so that we know when all
-                    uploads have completed with an HTTP Response.
+                     Create a usable array of deferred requests that will allow
+                     us to keep tabs on uploads, so that we know when all
+                     uploads have completed with an HTTP Response.
 
-                    @param (array) filesList
-                        A list of files to process
+                     @param (array) filesList
+                     A list of files to process
 
-                    @return (array) savedQueries
-                        A list of deferred upload requests
-                    */
+                     @return (array) savedQueries
+                     A list of deferred upload requests
+                     */
 
                     var self = this,
                         savedQueries = [],
                         field = (fieldName) ? fieldName : 'image';
 
                     angular.forEach(filesList, function(_file) {
-                        savedQueries.push(self.upload(_file, field));
+                        savedQueries.push(
+                            self.upload(_file, field, parent, parentId)
+                        );
                     });
 
                     return savedQueries;
                 },
-                upload: function(file, field) {
+                upload: function(file, field, parent, parentId) {
                     /**Upload a single file to the server.
 
-                    Create a single deferred request that enables us to keep
-                    better track of all of the things that are happening so
-                    that we are defining in what order things happen.
+                     Create a single deferred request that enables us to keep
+                     better track of all of the things that are happening so
+                     that we are defining in what order things happen.
 
-                    @param (file) file
-                        A qualified Javascript `File` object
+                     @param (file) file
+                     A qualified Javascript `File` object
 
-                    @return (object) defer.promise
-                        A promise
-                    */
+                     @return (object) defer.promise
+                     A promise
+                     */
 
                     var defer = $q.defer(),
                         fileData = new FormData();
 
                     fileData.append(field, file);
 
-                    var request = Image.upload({}, fileData, function() {
+                    // if (typeof parent === 'string' &&
+                    //     typeof parentId === 'number') {
+                    //
+                    //     fileData.append(parent, parentId);
+                    //
+                    // }
+
+                    var request = Image.upload({
+                        target: parent + ':' + parentId
+                    }, fileData, function() {
                         defer.resolve(request);
                     });
 
@@ -39897,9 +40275,9 @@ angular.module('FieldDoc')
 
                 var _programs = [];
 
-                user.properties.programs.forEach(function(program) {
+                user.programs.forEach(function(program) {
 
-                    _programs.push(program.properties);
+                    _programs.push(program);
 
                 });
 
@@ -40790,30 +41168,34 @@ angular.module('FieldDoc')
 
 (function() {
 
-  'use strict';
+    'use strict';
 
-  /**
-   * @ngdoc service
-   * @name
-   * @description
-   */
-  angular.module('FieldDoc')
-    .service('User', function (environment, $resource) {
-      return $resource(environment.apiUrl.concat('/v1/data/user/:id'), {
-        id: '@id'
-      }, {
-        query: {
-          isArray: false
-        },
-        update: {
-          method: 'PATCH'
-        },
-        me: {
-          method: 'GET',
-          url: environment.apiUrl.concat('/v1/data/user/me')
-        }
-      });
-    });
+    /**
+     * @ngdoc service
+     * @name
+     * @description
+     */
+    angular.module('FieldDoc')
+        .service('User', function (environment, $resource) {
+            return $resource(environment.apiUrl.concat('/v1/data/user/:id'), {
+                id: '@id'
+            }, {
+                query: {
+                    isArray: false
+                },
+                update: {
+                    method: 'PATCH'
+                },
+                me: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/data/user/me')
+                },
+                single: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/user/:id')
+                }
+            });
+        });
 
 }());
 
@@ -43590,6 +43972,7 @@ angular.module('FieldDoc')
                         'program': '=?',
                         'project': '=?',
                         'report': '=?',
+                        'rootPath': '@',
                         'site': '=?',
                         'tail': '@'
                     },
@@ -44328,6 +44711,231 @@ angular.module('FieldDoc')
                             }
 
                         });
+
+                    }
+
+                };
+
+            }
+
+        ]);
+
+}());
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .directive('imageUploadDialog', [
+            'environment',
+            '$routeParams',
+            '$filter',
+            '$parse',
+            '$location',
+            '$timeout',
+            '$q',
+            'Dashboard',
+            'Program',
+            'Project',
+            'Site',
+            'Practice',
+            'Report',
+            'Media',
+            'Image',
+            function(environment, $routeParams, $filter, $parse, $location,
+                     $timeout, $q, Dashboard, Program, Project, Site, Practice,
+                     Report, Media, Image) {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        'alerts': '=?',
+                        'callback': '&',
+                        'featureType': '@featureType',
+                        'fileInput': '@fileInput',
+                        'parent': '=?',
+                        'visible': '=?'
+                    },
+                    templateUrl: function(elem, attrs) {
+
+                        return [
+                            // Base path
+                            'modules/shared/directives/',
+                            // Directive path
+                            'dialog/image/imageUploadDialog--view.html',
+                            // Query string
+                            '?t=' + environment.version
+                        ].join('');
+
+                    },
+                    link: function(scope, element, attrs) {
+
+                        var modelIdx = {
+                            'dashboard': Dashboard,
+                            'practice': Practice,
+                            'program': Program,
+                            'project': Project,
+                            'report': Report,
+                            'site': Site
+                        };
+
+                        scope.model = modelIdx[scope.featureType];
+
+                        if (typeof scope.model === 'undefined') {
+
+                            throw 'Un-recognized `featureType` parameter.';
+
+                        }
+
+                        scope.mediaManager = Media;
+
+                        scope.mediaManager.images = [];
+
+                        function closeAlerts() {
+
+                            scope.alerts = [];
+
+                        }
+
+                        scope.closeChildModal = function(refresh) {
+
+                            scope.processing = false;
+
+                            scope.uploadComplete = false;
+
+                            scope.uploadError = null;
+
+                            scope.mediaManager.images = [];
+
+                            scope.visible = false;
+
+                            if (refresh) scope.callback();
+
+                        };
+
+                        scope.resetFileInput = function(element) {
+
+                            element.value = null;
+
+                            scope.processing = false;
+
+                            scope.uploadComplete = false;
+
+                        };
+
+                        scope.hideTasks = function() {
+
+                            scope.pendingTasks = [];
+
+                            if (typeof scope.taskPoll !== 'undefined') {
+
+                                $interval.cancel(scope.taskPoll);
+
+                            }
+
+                        };
+
+                        scope.uploadImage = function() {
+
+                            console.log(
+                                'imageUploadDialog:uploadImage:mediaManager.images:',
+                                scope.mediaManager.images
+                            );
+
+                            var input = document.getElementById(scope.fileInput);
+
+                            scope.processing = true;
+
+                            var imageCollection = {
+                                images: []
+                            };
+
+                            scope.parent.images.forEach(function(image) {
+
+                                imageCollection.images.push({
+                                    id: image.id
+                                });
+
+                            });
+
+                            if (!scope.mediaManager.images) {
+
+                                scope.alerts = [{
+                                    'type': 'error',
+                                    'flag': 'Error!',
+                                    'msg': 'Please select an image.',
+                                    'prompt': 'OK'
+                                }];
+
+                                $timeout(closeAlerts, 2000);
+
+                                return false;
+
+                            }
+
+                            scope.processing = true;
+
+                            scope.progressMessage = 'Uploading…';
+
+                            var savedQueries = scope.mediaManager.preupload(
+                                scope.mediaManager.images,
+                                'image',
+                                scope.featureType,
+                                scope.parent.id);
+
+                            console.log(
+                                'ProjectImageController:saveImage:savedQueries:',
+                                savedQueries
+                            );
+
+                            $q.all(savedQueries).then(function(successResponse) {
+
+                                console.log('Images::successResponse', successResponse);
+
+                                angular.forEach(successResponse, function(image) {
+
+                                    imageCollection.images.push({
+                                        id: image.id
+                                    });
+
+                                });
+
+                                scope.model.update({
+                                    id: scope.parent.id
+                                }, imageCollection).$promise.then(function(successResponse) {
+
+                                    scope.progressMessage = 'Complete';
+
+                                    scope.uploadComplete = true;
+
+                                    scope.uploadError = null;
+
+                                    $timeout(function () {
+
+                                        scope.closeChildModal(true);
+
+                                    }, 1500);
+
+                                }, function(errorResponse) {
+
+                                    console.log('errorResponse', errorResponse);
+
+                                    scope.uploadError = errorResponse.data;
+
+                                    scope.resetFileInput(input);
+
+                                });
+
+                            }, function(errorResponse) {
+
+                                console.log('errorResponse', errorResponse);
+
+                                scope.uploadError = errorResponse.data;
+
+                                scope.resetFileInput(input);
+
+                            });
+
+                        };
 
                     }
 
