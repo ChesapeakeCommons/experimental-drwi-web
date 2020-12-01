@@ -13,7 +13,7 @@ angular.module('FieldDoc')
             var self = this;
 
             $rootScope.viewState = {
-                'feature': true
+                'organization': true
             };
 
             self.status = {

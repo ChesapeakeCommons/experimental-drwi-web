@@ -57,11 +57,13 @@
                     <div class="flex flex-dir-row flex-nwrap flex-align-center">
                         <span class="material-icons margin-r-50p"
                               style="color: #1C81E5;"
+                              title="Confirmed"
                               data-ng-if="member.confirmed">
                             verified_user
                         </span>
                         <span class="material-icons margin-r-50p"
                               style="color: #D44040;"
+                              title="Not confirmed"
                               data-ng-if="!member.confirmed">
                             block
                         </span>
@@ -93,11 +95,29 @@
                             <ul>
                                 <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
                                     <span class="material-icons margin-r-1"
-                                          style="pointer-events: none;">
-                                        delete
+                                          title="Confirm">
+                                        verified_user
                                     </span>
                                     <span style="pointer-events: none;">
-                                        Delete
+                                        Confirm
+                                    </span>
+                                </li>
+                                <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
+                                    <span class="material-icons margin-r-1"
+                                          style="pointer-events: none;">
+                                        admin_panel_settings
+                                    </span>
+                                    <span style="pointer-events: none;">
+                                        Change role
+                                    </span>
+                                </li>
+                                <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
+                                    <span class="material-icons margin-r-1"
+                                          style="pointer-events: none;">
+                                        block
+                                    </span>
+                                    <span style="pointer-events: none;">
+                                        Revoke
                                     </span>
                                 </li>
                             </ul>

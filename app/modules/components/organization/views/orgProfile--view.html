@@ -18,6 +18,7 @@
                     {{ page.feature.name }}
                     <span class="material-icons margin-l-50p"
                           style="color: #1C81E5;"
+                          title="Verified"
                           data-ng-if="page.feature.has_owner">
                         verified
                     </span>
@@ -120,13 +121,20 @@
 
             </div>
 
-            <h2 class="margin-0 margin-t-2 pad-0"
-                data-ng-if="page.members.length">Members</h2>
+            <div class="create-heading margin-t-2">
+                <h2 class="margin-0 pad-0"
+                    data-ng-if="page.members.length">
+                    Members
+                    <span class="tally">
+                        {{ page.members.length | number }}
+                    </span>
+                </h2>
+            </div>
 
             <div style="width: 100%;"
-                 table-view
+                 member-table
                  alerts="page.alerts"
-                 callback="page.loadExports(page.queryParams)"
+                 callback="page.loadOrganization(page.feature.id)"
                  feature-type="member"
                  index="page.members"
                  permissions="page.permissions"
