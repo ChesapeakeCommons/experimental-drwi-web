@@ -24,7 +24,7 @@ angular
         'collaborator',
         'ui.bootstrap',
         'angular-progress-arc',
-    ]).config(function($sceDelegateProvider) {
+    ]).config(function($sceDelegateProvider, environment) {
 
         $sceDelegateProvider.resourceUrlWhitelist([
             // Allow same origin resource loads.
@@ -36,5 +36,15 @@ angular
             'https://dev.dnr.fielddoc.org/**',
             'https://dnr.fielddoc.org/**'
         ]);
+
+    /*wrap console.log to void arguments if production environment. */
+
+        (function (fn) {
+                console.log = function () {
+                    if (environment.name !== 'production') {
+                        fn.apply(void 0, arguments);
+                    }
+                };
+            })(console.log);
 
     });
