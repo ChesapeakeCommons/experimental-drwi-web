@@ -43,6 +43,8 @@ angular.module('FieldDoc')
 
                     self.permissions = successResponse.permissions;
 
+                    self.permissions.write = successResponse.has_owner && self.permissions.write;
+
                     if (postAssigment) {
 
                         self.alerts = [{

@@ -24,7 +24,19 @@ angular
         'collaborator',
         'ui.bootstrap',
         'angular-progress-arc',
-    ]).config(function($sceDelegateProvider) {
+    ]).config(function($sceDelegateProvider, environment) {
+
+        //
+        // Wrap `console.log` for conditional logging.
+        //
+
+        (function (cl) {
+            console.log = function () {
+                if (environment.name !== 'production') {
+                    cl.apply(void 0, arguments);
+                }
+            };
+        })(console.log);
 
         $sceDelegateProvider.resourceUrlWhitelist([
             // Allow same origin resource loads.

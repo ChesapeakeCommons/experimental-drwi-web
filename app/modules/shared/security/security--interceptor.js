@@ -70,14 +70,20 @@
                 },
                 response: function(response) {
 
-                    $log.info('AuthorizationInterceptor::Response', response || $q.when(response));
+                    console.log(
+                        'AuthorizationInterceptor::Response',
+                        response || $q.when(response)
+                    );
 
                     return response || $q.when(response);
 
                 },
                 responseError: function(response) {
 
-                    $log.info('AuthorizationInterceptor::ResponseError', response || $q.when(response));
+                    console.log(
+                        'AuthorizationInterceptor::ResponseError',
+                        response || $q.when(response)
+                    );
 
                     if (response.status === 401 || response.status === 403) {
 

@@ -100,43 +100,38 @@
                                     $rootScope.isLoggedIn = Account.hasToken();
                                     $rootScope.isAdmin = userResponse.is_admin;
 
-                                    if ($rootScope.user.organization) {
+                                    console.log(
+                                        'login:submit:user:',
+                                        userResponse
+                                    );
 
-                                        if ($rootScope.targetPath &&
-                                            typeof $rootScope.targetPath === 'string') {
+                                    var nextPath = '/';
 
-                                            var targetPath = $rootScope.targetPath;
+                                    if ($rootScope.targetPath &&
+                                        typeof $rootScope.targetPath === 'string' &&
+                                        $rootScope.targetPath.indexOf('onboarding') < 0) {
 
-                                            $rootScope.targetPath = null;
+                                        nextPath = $rootScope.targetPath;
 
-                                            $location.path(targetPath);
+                                    }
 
-                                        } else {
+                                    console.log(
+                                        'login:submit:nextPath:',
+                                        nextPath
+                                    );
 
-                                            $location.path('/');
+                                    if ($rootScope.user.organization_id ||
+                                        $rootScope.user.memberships.length) {
 
-                                        }
+                                        $rootScope.targetPath = null;
+
+                                        $location.path(nextPath);
 
                                     } else {
 
                                         $location.path('/onboarding/organization');
 
                                     }
-
-                                    // if ($rootScope.targetPath &&
-                                    //     typeof $rootScope.targetPath === 'string') {
-
-                                    //     var targetPath = $rootScope.targetPath;
-
-                                    //     $rootScope.targetPath = null;
-
-                                    //     $location.path(targetPath);
-
-                                    // } else {
-
-                                    //     $location.path('/');
-
-                                    // }
 
                                 });
 

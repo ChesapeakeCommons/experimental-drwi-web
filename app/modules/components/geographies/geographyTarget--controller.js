@@ -70,7 +70,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load geography target matrix.');
+                    console.log('Unable to load geography target matrix.');
 
                 });
 
@@ -100,7 +100,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load geography');
+                    console.log('Unable to load geography');
 
                     self.status.processing = false;
 

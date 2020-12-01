@@ -105,7 +105,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load practice');
+                    console.log('Unable to load practice');
 
                     self.status.processing = false;
 

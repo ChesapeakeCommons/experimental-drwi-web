@@ -4,73 +4,100 @@
 
     <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
 
-    <div class="content--container">
+    <div class="content--container"
+         style="border-right: 1px solid #e0e0e0;">
 
-        <h1 class="inset">Edit Organization</h1>
+        <div class="main--ui reveal fade-in t0"
+             data-ng-if="!page.status.loading && page.permissions.write">
 
-        <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && $root.user.is_admin">
+            <div breadcrumb class="full-width"
+                 root-path="organizations"
+                 tail="{{ page.feature.name }}"></div>
 
-            <div class="add--new--wrapper"  data-ng-if="!$root.user.is_manager">
-                    <span>Back to organization summary</span>
-                    <a class="add--new--btn" href="/organizations" data-ng-class="{viewing: $root.viewState.organizationProfile}">
-                        <i class="material-icons">
-                        arrow_back
-                        </i>
-                    </a>
-                </div>
+            <div class="create-heading" data-ng-if="!page.status.loading">
+                <h1 class="margin-0">
+                    Edit organization
+                </h1>
+            </div>
 
-            <form role="form" class="form snackbar-container" method="POST" id="form" name="form" data-ng-submit="page.saveOrganization()">
+            <form role="form"
+                  class="form snackbar-container"
+                  method="POST"
+                  id="form"
+                  name="form"
+                  data-ng-submit="page.saveOrganization()">
 
                 <div class="form-element">
                     <span class="meta-label"><b>Name</b></span>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Name" data-ng-model="page.organization.name" required="required" />
+                    <input type="text" class="form-control" id="name" name="name"
+                           placeholder="Name"
+                           data-ng-model="page.feature.name"
+                           required="required" />
                 </div>
 
-
                 <div>
-                    <div class="form-element" style="">
-                        <span class="meta-label" style="border:0px solid red; margin-top:-10px;"><b>Organization Image</b></span>
-                        <input style="" type="file" class="form-control" id="org-image" name="org-image" file-model="page.image" />
-                        <p style="float:left; color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;" ng-if="!page.organization.picture">
-                        Choose an image to represent your organization.
+                    <div class="form-element">
+                        <span class="meta-label"
+                              style="border:0px solid red; margin-top:-10px;"><b>Organization Image</b></span>
+                        <input type="file"
+                               class="form-control"
+                               id="org-image"
+                               name="org-image"
+                               file-model="page.image" />
+                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"
+                           data-ng-if="!page.feature.picture">
+                            Choose an image to represent your organization.
                         </p>
-                        <p style="float:left; color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;" ng-if="page.organization.picture">
-                        Choose a new image to replace the one below.
+                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"
+                           data-ng-if="page.feature.picture">
+                            Choose a new image to replace the one below.
                         </p>
                     </div>
 
-                    <div style="border:0px solid blue;">
-                        <div class="form-element" style="margin-left:auto; margin-right:auto; margin-top:0em; width:70%; border: 0px solid red; margin-bottom:0px; padding-bottom:0.5em;" ng-if="page.organization.picture">
-                             <img class='' style="width:100%; height:auto;" src="{{page.organization.picture}}">
+                    <div>
+                        <div class="form-element"
+                             data-ng-if="page.feature.picture">
+                            <img style="width:100%; height:auto;" src="{{page.feature.picture}}">
                         </div>
 
-                        <div class="actions" style="margin-left:auto; margin-right:auto; width:70%; border:0px solid green; margin-bottom:1em; height:36px;" ng-if="page.organization.picture">
+                        <div class="actions"
+                             data-ng-if="page.feature.picture">
 
-                                <a class="snapshot--title" style="float:right;" href="#" title="Delete image" data-ng-click="page.removeImage()">
-                                   <i class="material-icons" style="color:#777777;">
-                                        delete
-                                    </i>
-                                </a>
+                            <a class="snapshot--title" style="float:right;" href="#"
+                               title="Delete image"
+                               data-ng-click="page.removeImage()">
+                                <i class="material-icons" style="color:#777777;">
+                                    delete
+                                </i>
+                            </a>
 
                         </div>
                     </div>
                 </div>
                 <div class="form-element">
                     <span class="meta-label"><b>Description</b></span>
-                    <textarea rows="10" data-ng-model="page.organization.description" class="form-control animate" msd-elastic id="description" name="description" placeholder="Description" maxlength="500">{{ page.organization.description }}</textarea>
+                    <textarea rows="10" data-ng-model="page.feature.description"
+                              class="form-control animate"
+                              msd-elastic id="description"
+                              name="description"
+                              placeholder="Description"
+                              maxlength="500">{{ page.feature.description }}</textarea>
                     <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                        Descriptions may contain up to 1,000 characters, including spaces and punctuation. <strong>({{ (page.organization.description.length || 0) | number }} used)</strong>
+                        Descriptions may contain up to 1,000 characters, including spaces and punctuation.
+                        <strong>({{ (page.feature.description.length || 0) | number }} used)</strong>
                     </p>
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Email</b></span>
-                    <input type="text" class="form-control" id="email" name="email" placeholder="Email" data-ng-model="page.organization.email" required="required" />
+                    <input type="text" class="form-control" id="email" name="email" placeholder="Email"
+                           data-ng-model="page.feature.email" required="required" />
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Website</b></span>
-                    <input type="url" class="form-control" id="website" name="website" placeholder="Website" data-ng-model="page.organization.website" />
+                    <input type="url" class="form-control" id="website" name="website" placeholder="Website"
+                           data-ng-model="page.feature.website" />
                 </div>
 
                 <div class="save--action--wrapper save--action--bottom" style="position: relative; z-index: 9999;">
@@ -92,7 +119,8 @@
 
     <div data-ng-include="'/templates/toolbars/organization.html'"></div>
 
-    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
             <div data-ng-repeat="alert in page.alerts"
                  data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
