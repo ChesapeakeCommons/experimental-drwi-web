@@ -93,7 +93,9 @@
                     <div class="action-modal-container">
                         <div class="action-modal" data-ng-if="modalManager.action === member.id">
                             <ul>
-                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'confirm')">
+                                <li class="delete-trigger"
+                                    data-ng-if="!member.confirmed"
+                                    data-ng-click="presentDialog(member, 'confirm')">
                                     <span class="material-icons margin-r-1"
                                           title="Confirm">
                                         verified_user
