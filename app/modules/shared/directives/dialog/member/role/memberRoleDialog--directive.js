@@ -3,22 +3,22 @@
     'use strict';
 
     angular.module('FieldDoc')
-        .directive('exportDialog', [
+        .directive('memberRoleDialog', [
             'environment',
             '$routeParams',
             '$filter',
             '$parse',
             '$location',
-            'Export',
+            'Membership',
             '$timeout',
-            function(environment, $routeParams, $filter, $parse, $location, Export, $timeout) {
+            function(environment, $routeParams, $filter, $parse,
+                     $location, Membership, $timeout) {
                 return {
                     restrict: 'EA',
                     scope: {
                         'alerts': '=?',
+                        'callback': '&',
                         'feature': '=?',
-                        'resetType': '=?',
-                        'type': '=?',
                         'visible': '=?'
                     },
                     templateUrl: function(elem, attrs) {
@@ -27,7 +27,9 @@
                             // Base path
                             'modules/shared/directives/',
                             // Directive path
-                            'dialog/export/exportDialog--view.html',
+                            'dialog/member/role/',
+                            // Directive file
+                            'memberRoleDialog--view.html',
                             // Query string
                             '?t=' + environment.version
                         ].join('');
@@ -35,11 +37,7 @@
                     },
                     link: function(scope, element, attrs) {
 
-                        scope.fileFormat = 'csv';
-
-                        scope.activeRadio = {
-                            csv: true
-                        };
+                        scope.activeRadio = {};
 
                         if (typeof scope.resetType === 'undefined') {
 
@@ -57,31 +55,28 @@
 
                             scope.visible = false;
 
-                            scope.fileFormat = 'csv';
-
-                            scope.activeRadio = {
-                                csv: true
-                            };
+                            scope.setRole(scope.feature.role);
 
                             if (scope.resetType) scope.type = undefined;
 
                         };
 
-                        scope.createExport = function(name, format) {
+                        scope.changeRole = function(role) {
 
-                            var newFeature = new Export({
-                                'feature_id': scope.feature.id,
-                                'name': name,
-                                'scope': scope.type,
-                                'format': format
-                            });
+                            console.log('m', Membership);
 
-                            newFeature.$save(function(successResponse) {
+                            var data = scope.feature;
+
+                            data.role = role;
+
+                            Membership.update({
+                                id: scope.feature.id
+                            }, data).$promise.then(function(successResponse) {
 
                                 scope.alerts = [{
                                     'type': 'success',
                                     'flag': 'Success!',
-                                    'msg': 'Successfully exported this ' + scope.label + '.',
+                                    'msg': 'Role changed.',
                                     'prompt': 'OK'
                                 }];
 
@@ -94,7 +89,7 @@
                                 scope.alerts = [{
                                     'type': 'error',
                                     'flag': 'Error!',
-                                    'msg': 'Something went wrong while exporting this ' + scope.label + '.',
+                                    'msg': 'Unable to change role.',
                                     'prompt': 'OK'
                                 }];
 
@@ -104,31 +99,33 @@
 
                         };
 
-                        scope.setFormat = function(format) {
+                        scope.setRole = function(role) {
 
                             console.log(
-                                'exportDialog:fileFormat:',
-                                scope.fileFormat
+                                'memberRoleDialog:role:',
+                                scope.role
                             );
 
-                            scope.fileFormat = format;
+                            scope.role = role;
 
                             scope.activeRadio = {};
 
-                            scope.activeRadio[format] = true;
+                            scope.activeRadio[role] = true;
 
                             console.log(
-                                'exportDialog:fileFormat[2]:',
-                                scope.fileFormat
+                                'memberRoleDialog:role[2]:',
+                                scope.role
                             );
 
                         };
 
-                        scope.$watch('type', function (newVal) {
+                        scope.$watch('feature', function (newVal) {
 
-                            if (typeof newVal === 'string') {
+                            if (newVal && newVal.role) {
 
-                                scope.label = newVal.replace(/_/g, ' ');
+                                scope.activeRadio = {};
+
+                                scope.activeRadio[newVal.role] = true;
 
                             }
 

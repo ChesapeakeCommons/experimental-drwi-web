@@ -61,6 +61,10 @@
                             action: undefined
                         };
 
+                        scope.dialogManager = {
+                            dialog: undefined
+                        };
+
                         scope.resetTip = function (key, membershipId) {
 
                             var existing = scope.tipManager[key];
@@ -89,23 +93,26 @@
 
                         };
 
-                        scope.presentDeletionDialog = function (membership) {
+                        scope.presentDialog = function (membership, action) {
+
+                            console.log(
+                                'memberTable:presentDialog',
+                                membership,
+                                action
+                            );
 
                             scope.membership = membership;
 
-                            scope.showDeletionDialog = true;
-
                             scope.modalManager = {};
 
-                        };
+                            scope.dialogManager = {};
 
-                        scope.presentExportDialog = function (membership) {
+                            scope.dialogManager[action] = true;
 
-                            scope.membership = membership;
-
-                            scope.showExportDialog = true;
-
-                            scope.modalManager = {};
+                            console.log(
+                                'memberTable:presentDialog:dialogManager',
+                                scope.dialogManager
+                            );
 
                         };
 
@@ -180,6 +187,11 @@
                             );
 
                             if (!element[0].contains(target)) {
+
+                                console.log(
+                                    'globalClick:memberTable:contains(target):',
+                                    element[0].contains(target)
+                                );
 
                                 scope.$apply(function () {
 

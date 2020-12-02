@@ -1,0 +1,109 @@
+<div class="creation-dialog-container" data-ng-if="visible">
+
+    <form class="dialog" style="width: auto; max-width: 640px;"
+          data-ng-submit="changeRole(role)">
+
+        <div class="title">
+            <span class="title-text">Change role</span>
+            <div class="dismiss-container">
+                <div class="dismiss" data-ng-click="closeChildModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="inputs">
+
+            <div>
+
+                <p class="prompt pad-0 margin-0 margin-b-1">
+                    Select a new role for <strong>{{ feature.user.name }}</strong> or cancel to preserve their
+                    current role.
+                </span>
+
+            </div>
+
+            <div>
+
+                <div class="radio-options margin-t-1 flex flex-dir-col flex-align-center flex-justify-start flex-wrap">
+
+                    <label data-ng-class="{'active': activeRadio.member}"
+                           for="member-role-option"
+                           style="width: 100%;"
+                           title="Comma-separated values">
+                        <span class="input-mask material-icons"
+                              data-ng-if="activeRadio.member">
+                            radio_button_checked
+                        </span>
+                        <span class="input-mask material-icons"
+                              data-ng-if="!activeRadio.member">
+                            radio_button_unchecked
+                        </span>
+                        <input type="radio"
+                               id="member-role-option"
+                               name="member-role"
+                               data-ng-model="role"
+                               data-ng-click="setRole('member')"
+                               value="member">
+                        <span>
+                            Member
+                        </span>
+                    </label>
+
+                    <p class="pad-0 margin-0 margin-t-1"
+                       style="font-size: .9rem;">
+                        Members can view an organization’s data and settings. They can also view and edit its
+                        projects but are not allowed to create or delete them.
+                    </p>
+
+                    <label data-ng-class="{'active': activeRadio.owner}"
+                           for="owner-format-option"
+                           class="margin-t-1"
+                           style="width: 100%;"
+                           title="Owner">
+                        <span class="input-mask material-icons"
+                              data-ng-if="activeRadio.owner">
+                            radio_button_checked
+                        </span>
+                        <span class="input-mask material-icons"
+                              data-ng-if="!activeRadio.owner">
+                            radio_button_unchecked
+                        </span>
+                        <input type="radio"
+                               id="owner-format-option"
+                               name="member-role"
+                               data-ng-model="role"
+                               data-ng-click="setRole('owner')"
+                               value="owner">
+                        <span>
+                            Owner
+                        </span>
+                    </label>
+
+                    <p class="pad-0 margin-0 margin-t-1"
+                       style="font-size: .9rem;">
+                        Owners have unrestricted access to an organization’s data and settings. They can add, modify,
+                        and delete projects and members.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="dialog-actions">
+            <button type="button" class="cancel" data-ng-click="closeChildModal()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm"
+                    data-ng-disabled="!role">
+                OK
+            </button>
+        </div>
+
+    </form>
+</div>

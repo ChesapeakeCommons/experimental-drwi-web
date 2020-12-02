@@ -93,7 +93,7 @@
                     <div class="action-modal-container">
                         <div class="action-modal" data-ng-if="modalManager.action === member.id">
                             <ul>
-                                <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
+                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'confirm')">
                                     <span class="material-icons margin-r-1"
                                           title="Confirm">
                                         verified_user
@@ -102,7 +102,7 @@
                                         Confirm
                                     </span>
                                 </li>
-                                <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
+                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'role')">
                                     <span class="material-icons margin-r-1"
                                           style="pointer-events: none;">
                                         admin_panel_settings
@@ -111,7 +111,7 @@
                                         Change role
                                     </span>
                                 </li>
-                                <li class="delete-trigger" data-ng-click="presentDeletionDialog(member)">
+                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'revoke')">
                                     <span class="material-icons margin-r-1"
                                           style="pointer-events: none;">
                                         block
@@ -139,3 +139,21 @@
     </table>
 
 </div>
+
+<div confirm-member-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     visible="dialogManager['confirm']"></div>
+
+<div revoke-member-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     visible="dialogManager['revoke']"></div>
+
+<div member-role-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     visible="dialogManager['role']"></div>
