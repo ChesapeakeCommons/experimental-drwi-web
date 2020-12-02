@@ -7,6 +7,19 @@
     <div class="content--container"
          style="border-right: 1px solid #e0e0e0;">
 
+        <section class="privacy-message reveal fade-in t0"
+                 data-ng-if="!page.status.loading && !page.permissions.write">
+
+            <p>
+                <i class="material-icons">
+                    lock
+                </i>
+            </p>
+
+            <p>You don’t have permission to edit this organization.</p>
+
+        </section>
+
         <div class="main--ui reveal fade-in t0"
              data-ng-if="!page.status.loading && page.permissions.write">
 

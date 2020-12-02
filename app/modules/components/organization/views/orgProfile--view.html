@@ -141,6 +141,20 @@
                  visible="true"
                  data-ng-if="page.members.length"></div>
 
+            <div class="empty-block-alert pad-y-2"
+                 style="border: 1px solid #e0e0e0; border-radius: .5rem;"
+                 data-ng-if="page.feature.membership_pending && !page.permissions.read && !page.permissions.write">
+                <p class="pad-0 margin-0 margin-t-2">
+                    <span class="material-icons">
+                        pending
+                    </span>
+                </p>
+                <p class="pad-0 margin-0 margin-y-2">
+                    Your membership is pending approval by an owner of this organization. Until then, you will not be
+                    able to view additional organization data or edit its projects.
+                </p>
+            </div>
+
         </div>
 
     </div>

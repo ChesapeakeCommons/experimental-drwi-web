@@ -74,7 +74,7 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = self.user = userResponse;
 
-                    console.log('userResponse',userResponse);
+                    console.log('userResponse', userResponse);
 
                     self.permissions = userResponse.permissions;
 
@@ -96,7 +96,6 @@ angular.module('FieldDoc')
                     self.status.loading = false;
 
                 });
-
 
             } else {
 
