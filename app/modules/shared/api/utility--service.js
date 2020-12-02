@@ -412,17 +412,25 @@ angular.module('FieldDoc')
 
                 var _programs = [];
 
-                user.programs.forEach(function(program) {
+                try {
 
-                    _programs.push(program);
+                    user.programs.forEach(function (program) {
 
-                });
+                        _programs.push(program);
 
-                _programs.sort(function(a, b) {
+                    });
 
-                    return a.id > b.id;
+                    _programs.sort(function (a, b) {
 
-                });
+                        return a.id > b.id;
+
+                    });
+
+                } catch (e) {
+
+                    return _programs;
+
+                }
 
                 return _programs;
 
