@@ -6,7 +6,7 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('AccountEditViewController',
+    .controller('AccountSettingsController',
         function(Account, $location, $log, Notifications, $rootScope, $routeParams,
                  $route, user, User, Image, SearchService, $timeout) {
 

@@ -6,7 +6,7 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('OrganizationProfileViewController',
+    .controller('OrganizationProfileController',
         function(Project, Account, $location, $log, Notifications, $rootScope,
                  $route, $routeParams, user, User, Organization, SearchService, $timeout, Utility) {
 
@@ -31,7 +31,7 @@ angular.module('FieldDoc')
 
             var featureId = $routeParams.id;
 
-            self.loadOrganization = function(organizationId, postAssigment) {
+            self.loadOrganization = function(organizationId) {
 
                 Organization.profile({
                     id: organizationId
@@ -44,19 +44,6 @@ angular.module('FieldDoc')
                     self.permissions = successResponse.permissions;
 
                     self.permissions.write = successResponse.has_owner && self.permissions.write;
-
-                    if (postAssigment) {
-
-                        self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Successfully added you to ' + self.feature.name + '.',
-                            'prompt': 'OK'
-                        }];
-
-                        $timeout(closeAlerts, 2000);
-
-                    }
 
                     self.status.loading = false;
 
@@ -123,7 +110,6 @@ angular.module('FieldDoc')
 
             };
 
-
             self.parseMembers = function(members){
                 console.log('members', members);
                 var i = 0;
@@ -137,9 +123,9 @@ angular.module('FieldDoc')
                     }
                     i++;
                 }
-            }
+            };
 
-            self.loadOrganizationMembers = function(organizationId, postAssigment) {
+            self.loadOrganizationMembers = function(organizationId) {
 
                 Organization.members({
                     id: organizationId
@@ -155,19 +141,6 @@ angular.module('FieldDoc')
 
                     self.memberCount = successResponse.count;
 
-                    if (postAssigment) {
-
-                        self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Successfully added you to ' + self.feature.name + '.',
-                            'prompt': 'OK'
-                        }];
-
-                        $timeout(closeAlerts, 2000);
-
-                    }
-
                     self.status.loading = false;
 
                 }, function(errorResponse) {
@@ -175,77 +148,6 @@ angular.module('FieldDoc')
                     console.error('Unable to load organization.');
 
                     self.status.loading = false;
-
-                });
-
-            };
-
-
-            self.confirmDelete = function(obj) {
-
-                self.deletionTarget = obj;
-
-            };
-
-            self.cancelDelete = function() {
-
-                self.deletionTarget = null;
-
-            };
-
-            self.deleteFeature = function(obj, index) {
-
-                Project.delete({
-                    id: obj.id
-                }).$promise.then(function(data) {
-
-                    self.deletionTarget = null;
-
-                    self.alerts = [{
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Successfully deleted this project.',
-                        'prompt': 'OK'
-                    }];
-
-                    self.projects.splice(index, 1);
-
-                    $timeout(closeAlerts, 2000);
-
-                }).catch(function(errorResponse) {
-
-                    console.log('self.deleteFeature.errorResponse', errorResponse);
-
-                    if (errorResponse.status === 409) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Unable to delete “' + obj.name + '”. There are pending tasks affecting this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else if (errorResponse.status === 403) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'You don’t have permission to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Something went wrong while attempting to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    }
-
-                    $timeout(closeAlerts, 2000);
 
                 });
 

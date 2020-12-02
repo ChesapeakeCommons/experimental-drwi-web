@@ -37,9 +37,20 @@
                             <div class="user-avatar user-avatar-sm"
                                  style="background-image: url('images/avatar-Default-1024x.png');"></div>
                         </div>
-                        <span style="display: block; width: auto;">
-                            {{ member.user.name | truncate:100 }}
-                        </span>
+                        <a href="/profile/{{ member.user.id }}"
+                           class="ellipsize"
+                           data-ng-if="member.user.id !== $root.user.id">
+                            <span style="display: block; width: auto;">
+                                {{ member.user.name | truncate:100 }}
+                            </span>
+                        </a>
+                        <a href="/account"
+                           class="ellipsize"
+                           data-ng-if="member.user.id === $root.user.id">
+                            <span style="display: block; width: auto;">
+                                {{ member.user.name | truncate:100 }}
+                            </span>
+                        </a>
                     </div>
                 </td>
                 <td class="info-enabled pad-1" style="width: 1%;">

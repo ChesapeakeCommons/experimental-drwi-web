@@ -51,42 +51,30 @@
 
                             scope.visible = false;
 
-                            if (scope.resetType) scope.type = undefined;
-
                             if (refresh && scope.callback) scope.callback();
 
                         };
 
-                        scope.deleteFeature = function() {
+                        scope.confirmMembership = function() {
 
-                            var targetId;
+                            var data = scope.feature;
 
-                            if (scope.feature.properties) {
+                            data.confirmed = true;
 
-                                targetId = scope.feature.properties.id;
-
-                            } else {
-
-                                targetId = scope.feature.id;
-
-                            }
-
-                            Membership.delete({
-                                id: +targetId
-                            }).$promise.then(function(data) {
+                            Membership.update({
+                                id: scope.feature.id
+                            }, data).$promise.then(function(data) {
 
                                 scope.alerts.push({
                                     'type': 'success',
                                     'flag': 'Success!',
-                                    'msg': 'Successfully deleted this ' + scope.featureType + '.',
+                                    'msg': 'Membership confirmed.',
                                     'prompt': 'OK'
                                 });
 
                                 scope.closeChildModal(true);
 
                                 $timeout(closeAlerts, 2000);
-
-                                // $timeout(closeRoute, 2000);
 
                             }).catch(function(errorResponse) {
 
@@ -99,7 +87,7 @@
                                     scope.alerts = [{
                                         'type': 'error',
                                         'flag': 'Error!',
-                                        'msg': 'Unable to delete “' + scope.feature.name + '”. There are pending tasks affecting this ' + scope.label + '.',
+                                        'msg': 'Unable to confirm membership.',
                                         'prompt': 'OK'
                                     }];
 
@@ -108,7 +96,7 @@
                                     scope.alerts = [{
                                         'type': 'error',
                                         'flag': 'Error!',
-                                        'msg': 'You don’t have permission to delete this ' + scope.label + '.',
+                                        'msg': 'You don’t have permission to confirm this membership.',
                                         'prompt': 'OK'
                                     }];
 
@@ -117,7 +105,7 @@
                                     scope.alerts = [{
                                         'type': 'error',
                                         'flag': 'Error!',
-                                        'msg': 'Something went wrong while attempting to delete this ' + scope.label + '.',
+                                        'msg': 'Something went wrong while attempting to confirm this membership.',
                                         'prompt': 'OK'
                                     }];
 
@@ -128,16 +116,6 @@
                             });
 
                         };
-
-                        scope.$watch('featureType', function (newVal) {
-
-                            if (typeof newVal === 'string') {
-
-                                scope.label = newVal.replace(/_/g, ' ').replace(/-/g, ' ');
-
-                            }
-
-                        });
 
                     }
 

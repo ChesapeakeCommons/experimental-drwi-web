@@ -51,13 +51,13 @@
 
                         }
 
-                        scope.closeChildModal = function() {
+                        scope.closeChildModal = function(refresh) {
 
                             scope.visible = false;
 
                             scope.setRole(scope.feature.role);
 
-                            if (scope.resetType) scope.type = undefined;
+                            if (refresh && scope.callback) scope.callback();
 
                         };
 
@@ -82,7 +82,7 @@
 
                                 $timeout(closeAlerts, 2000);
 
-                                scope.closeChildModal();
+                                scope.closeChildModal(true);
 
                             }, function(errorResponse) {
 

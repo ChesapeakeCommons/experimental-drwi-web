@@ -57,20 +57,8 @@
 
                         scope.deleteFeature = function() {
 
-                            var targetId;
-
-                            if (scope.feature.properties) {
-
-                                targetId = scope.feature.properties.id;
-
-                            } else {
-
-                                targetId = scope.feature.id;
-
-                            }
-
                             Membership.delete({
-                                id: +targetId
+                                id: scope.feature.id
                             }).$promise.then(function(data) {
 
                                 scope.alerts.push({

@@ -35,7 +35,7 @@
                 $routeProvider
                     .when('/organizations/:id', {
                         templateUrl: '/modules/components/organization/views/orgProfile--view.html?t=' + environment.version,
-                        controller: 'OrganizationProfileViewController',
+                        controller: 'OrganizationProfileController',
                         controllerAs: 'page',
                         resolve: {
                             user: function(Account) {

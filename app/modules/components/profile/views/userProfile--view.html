@@ -1,0 +1,115 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container"
+         data-ng-if="!page.status.loading && !page.permissions.read">
+
+        <section class="privacy-message reveal fade-in t0">
+        
+            <div class="main--ui reveal fade-in">
+        
+                <p>
+                    <i class="material-icons">
+                        lock
+                    </i>
+                </p>
+
+                <p>You don’t have permission to view this profile.</p>
+        
+            </div>
+        
+        </section>
+
+    </div>
+
+    <div class="content--container pad-2"
+         data-ng-if="!page.status.loading && page.permissions.read">
+
+        <div class="main--ui reveal fade-in">
+
+            <div class="flex flex-dir-row flex-wrap flex-align-start">
+
+                <div class="">
+
+                    <div class="user-avatar-wrapper pad-0 pad-r-2"
+                         data-ng-if="page.feature.picture">
+
+                        <div class="user-avatar user-avatar-lg"
+                             style="background-image: url('{{ page.feature.picture }}');"></div>
+
+                    </div>
+            
+                    <div class="user-avatar-wrapper pad-0 pad-r-2"
+                         data-ng-if="!page.feature.picture">
+
+                        <div class="user-avatar user-avatar-lg"
+                             style="background-image: url('/images/avatar-Default-1024x.png');"></div>
+                
+                    </div>
+
+                </div>
+
+                <div class="flow2--right-field-profile">
+            
+                    <div class="">
+
+                        <h2 class="margin-0 margin-b-50p">
+                            {{ page.feature.name || 'Anonymous' }}
+                        </h2>
+
+                    </div>
+            
+                    <div class=""
+                         data-ng-if="page.feature.title">
+
+                        <p class="">
+                        
+                            <span>
+                                {{ page.feature.title }}
+                            </span>
+            
+                        </p>
+
+                    </div>
+
+                    <div class=""
+                         data-ng-if="page.feature.email">
+
+                        <p class="">
+                            <a href="mailto:{page.feature.email">{{ page.feature.email }}</a>
+                        </p>
+                    
+                    </div>
+            
+                    <div class="">
+
+                        <p class="">
+                            {{ page.feature.bio || 'No bio provided.' }}
+                        </p>
+            
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>
