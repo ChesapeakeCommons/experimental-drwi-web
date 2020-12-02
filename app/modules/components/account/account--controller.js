@@ -6,14 +6,14 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('UserProfileController',
+    .controller('AccountController',
         function(Account, User, $location, $log, Notifications,
                  $rootScope, $routeParams, $route, user, Image, $timeout) {
 
             var self = this;
 
             $rootScope.viewState = {
-                'organization': true
+                'account': true
             };
 
             self.status = {
@@ -27,20 +27,18 @@ angular.module('FieldDoc')
                 self.alerts = [];
 
             }
-            
-            var featureId = $routeParams.id;
 
             self.getUser = function() {
 
-                User.single({
-                    id: featureId
-                }).$promise.then(function(successResponse) {
+                User.me().$promise.then(function(successResponse) {
 
                     self.feature = successResponse;
 
-                    self.permissions = successResponse.permissions;
-                    
-                    if (self.feature.picture) {
+                    if (Array.isArray(self.feature.images)) {
+
+                        self.feature.picture = self.feature.images[0].square;
+
+                    } else if (self.feature.picture) {
 
                         var picture = self.feature.picture;
 
@@ -66,7 +64,7 @@ angular.module('FieldDoc')
                     self.status.loading = false;
 
                 });
-                
+
             };
 
             //
@@ -76,7 +74,7 @@ angular.module('FieldDoc')
 
                 user.$promise.then(function(userResponse) {
 
-                    $rootScope.user = Account.userObject = userResponse;
+                    $rootScope.user = Account.userObject = self.user = userResponse;
 
                     self.permissions = {};
 
@@ -90,15 +88,8 @@ angular.module('FieldDoc')
                     //
                     // Load user data
                     //
-                    if (featureId) {
 
-                        self.getUser(featureId);
-
-                    } else {
-
-                        self.status.loading = false;
-
-                    }
+                    self.getUser();
 
                 });
 

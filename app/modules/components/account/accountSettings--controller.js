@@ -15,7 +15,7 @@ angular.module('FieldDoc')
             self.image = null;
 
             $rootScope.viewState = {
-                'profile': true
+                'account': true
             };
 
             self.status = {
@@ -34,11 +34,7 @@ angular.module('FieldDoc')
 
                 self.alerts = [];
 
-
             }
-            var featureId = $routeParams.id;
-
-
 
             //
             // Assign project to a scoped variable
@@ -49,18 +45,10 @@ angular.module('FieldDoc')
             if (Account.userObject && user) {
 
                 console.log("feature id not set");
+
                 user.$promise.then(function(userResponse) {
 
                     $rootScope.user = Account.userObject = self.user = userResponse;
-
-                    self.organizationSelection = {
-                        id: self.user.organization.id,
-                        name: self.user.organization.properties.name,
-                        category: self.user.organization.properties.category_id
-
-                    };
-
-                    console.log("self.organizationSelection",self.organizationSelection);
 
                     console.log("self.user", self.user);
 
@@ -87,85 +75,45 @@ angular.module('FieldDoc')
 
             }
 
-            self.searchOrganizations = function(value) {
-
-                self.createAlert = false;
-
-                return SearchService.organization({
-                    q: value
-                }).$promise.then(function(response) {
-
-                    console.log('SearchService.organization response', response);
-
-                    response.results.forEach(function(result) {
-
-                        result.category = null;
-
-                    });
-
-                    return response.results.slice(0, 5);
-
-                });
-
-            };
-
-
             self.actions = {
 
                 save: function() {
+
                     self.status.processing = true;
 
-                    if (typeof self.organizationSelection === 'string' || self.organizationSelection === null) {
-                        console.log("STRING");
-                        console.log(self.organizationSelection);
+                    if (self.image) {
 
-                        self.createAlert = true;
+                        var fileData = new FormData();
 
-                        self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Select an organization to join.',
-                            'prompt': 'OK'
-                        }];
+                        fileData.append('image', self.image);
 
-                        $timeout(closeAlerts, 2000);
-                        self.status.processing = false;
+                        Image.upload({
+
+                        }, fileData).$promise.then(function(successResponse) {
+
+                            console.log('successResponse', successResponse);
+
+                            self.user.picture = successResponse.original;
+
+                            self.updateUser();
+
+                        });
 
                     } else {
-                        console.log("NOT STRING");
-                        if (self.image) {
 
-                            var fileData = new FormData();
+                        self.updateUser();
 
-                            fileData.append('image', self.image);
-
-                            Image.upload({
-
-                            }, fileData).$promise.then(function(successResponse) {
-
-                                console.log('successResponse', successResponse);
-
-                                self.user.picture = successResponse.original;
-
-                                self.updateUser();
-
-                            });
-
-                        } else {
-                            self.updateUser();
-                        }
                     }
 
-
-
-
-
                 },
-                removeImage: function (){
+                removeImage: function () {
+
                     self.user.picture = null;
+
                     self.status.image.remove = true;
 
                     self.updateUser();
+
                 }
             };
 
@@ -177,8 +125,7 @@ angular.module('FieldDoc')
                     'last_name': self.user.last_name,
                     'picture': self.user.picture,
                     'bio': self.user.bio,
-                    'title': self.user.title,
-                    'organization_id': self.organizationSelection.id
+                    'title': self.user.title
                 });
 
                 _user.$update(function(successResponse) {

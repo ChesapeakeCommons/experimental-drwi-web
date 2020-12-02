@@ -4,31 +4,28 @@
 
     <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
 
-    <div class="content--container"
-         data-ng-if="!page.status.loading && !page.permissions.read">
+    <div class="content--container pad-0"
+         data-ng-if="!page.status.loading">
 
-        <section class="privacy-message reveal fade-in t0">
-        
-            <div class="main--ui reveal fade-in">
-        
-                <p>
-                    <i class="material-icons">
-                        lock
-                    </i>
-                </p>
+        <div class="main--ui reveal fade-in pad-2">
 
-                <p>You don’t have permission to view this profile.</p>
-        
+            <div class="create-heading" data-ng-if="!page.status.loading">
+                <h1 class="margin-0"></h1>
+                <a class="btn margin-r-1" style="padding: .5rem 1rem .5rem .7rem;"
+                   href="/account/settings">
+                    <span class="material-icons margin-r-50p">
+                        edit
+                    </span>
+                    Edit
+                </a>
+                <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
+                        data-ng-click="page.showUploadModal = !page.showUploadModal">
+                    <span class="material-icons margin-r-50p">
+                        add
+                    </span>
+                    Add image
+                </button>
             </div>
-        
-        </section>
-
-    </div>
-
-    <div class="content--container pad-2"
-         data-ng-if="!page.status.loading && page.permissions.read">
-
-        <div class="main--ui reveal fade-in">
 
             <div class="flex flex-dir-row flex-wrap flex-align-start">
 
@@ -57,7 +54,7 @@
                 </div>
 
                 <div class="flow2--right-field-profile">
-            
+
                     <div class="">
 
                         <h2 class="margin-0 margin-b-50p">
@@ -65,16 +62,16 @@
                         </h2>
 
                     </div>
-            
+
                     <div class=""
                          data-ng-if="page.feature.title">
 
                         <p class="">
-                        
+
                             <span>
                                 {{ page.feature.title }}
                             </span>
-            
+
                         </p>
 
                     </div>
@@ -85,15 +82,15 @@
                         <p class="">
                             <a href="mailto:{page.feature.email">{{ page.feature.email }}</a>
                         </p>
-                    
+
                     </div>
-            
+
                     <div class="">
 
                         <p class="">
                             {{ page.feature.bio || 'No bio provided.' }}
                         </p>
-            
+
                     </div>
 
                 </div>
@@ -113,6 +110,14 @@
             </div>
         </div>
     </div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.feature"
+         file-input="image-file-input"
+         callback="page.getUser()"
+         feature-type="user"
+         visible="page.showUploadModal"></div>
 
 </main>
 

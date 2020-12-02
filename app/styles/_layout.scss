@@ -890,7 +890,8 @@ h2 .tally {
 
     }
 
-    button {
+    button,
+    .btn {
         -moz-appearance: none;
         -webkit-appearance: none;
         appearance: none;
@@ -910,10 +911,12 @@ h2 .tally {
         cursor: pointer;
         user-select: none;
         box-shadow: none;
+        text-decoration: none !important;
         transition: all .2s cubic-bezier(.4,0,.2,1);
     }
 
-    button:hover {
+    button:hover,
+    .btn:hover {
         background: #212121;
         border: 1px solid #212121;
         font-size: 1rem;

@@ -6,99 +6,88 @@
 
     <div class="content--container">
 
-        <h1 class="inset">Edit Profile</h1>
+        <!--        <h1 class="inset">Edit Profile</h1>-->
 
         <div class="main--ui">
 
-             <div class="add--new--wrapper"  data-ng-if="!$root.user.is_manager">
+            <form role="form" class="form reveal fade-in t0"
+                  method="POST" id="form" name="form" data-ng-submit="page.actions.save()">
 
-                <span>Back to profile</span>
+<!--                <div class="form-element">-->
 
-                <a class="add--new--btn" href="/profile/" data-ng-class="{viewing: $root.viewState.accountView}">
-                    <i class="material-icons">
-                    arrow_back
-                    </i>
-                </a>
+<!--                    <span class="meta-label"><b>Profile Image</b></span>-->
 
-            </div>
+<!--                    <input type="file" class="form-control"-->
+<!--                           id="profile-image" name="profile-image" file-model="page.image" />-->
 
-            <form role="form" class="form reveal fade-in t0" method="POST" id="form" name="form" data-ng-submit="page.actions.save()">
+<!--                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="!page.user.picture">-->
+<!--                        Choose a photo.-->
+<!--                    </p>-->
 
-                <div class="form-element">
+<!--                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="page.user.picture">-->
+<!--                        Choose a new photo to replace the one below.-->
+<!--                    </p>-->
 
-                    <span class="meta-label"><b>Profile Image</b></span>
+<!--                </div>-->
 
-                    <input type="file" class="form-control" id="profile-image" name="profile-image" file-model="page.image" />
+<!--                <div class="user-avatar-wrapper" data-ng-if="page.user.picture">-->
 
-                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="!page.user.picture">
-                        Choose a photo.
-                    </p>
+<!--                    <div class="user-avatar user-avatar-lg" style="background-image: url({{ page.user.picture }});"></div>-->
 
-                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="page.user.picture">
-                        Choose a new photo to replace the one below.
-                    </p>
+<!--                </div>-->
 
-                </div>
+<!--                <div class="actions" data-ng-if="page.user.picture">-->
 
-                <div class="user-avatar-wrapper" data-ng-if="page.user.picture">
+<!--                    <a class="snapshot&#45;&#45;title" href="#" title="Delete image"-->
+<!--                       data-ng-click="page.actions.removeImage()">-->
+<!--                        <i class="material-icons" style="color:#777777;">-->
+<!--                            delete-->
+<!--                        </i>-->
+<!--                    </a>-->
 
-                    <div class="user-avatar user-avatar-lg" style="background-image: url({{ page.user.picture }});"></div>
-
-                </div>
-
-                <div class="actions" data-ng-if="page.user.picture">
-
-                    <a class="snapshot--title" href="#" title="Delete image" data-ng-click="page.actions.removeImage()">
-                       <i class="material-icons" style="color:#777777;">
-                            delete
-                        </i>
-                    </a>
-
-                </div>
+<!--                </div>-->
 
                 <div class="form-element">
                     <span class="meta-label"><b>First name</b></span>
-                    <input type="text" class="form-control form-control-half" id="first_name" name="first_name" placeholder="First Name" data-ng-model="page.user.first_name" required="required" tabindex="2" />
+                    <input type="text" class="form-control form-control-half"
+                           id="first_name" name="first_name" placeholder="First Name"
+                           data-ng-model="page.user.first_name" required="required" tabindex="2" />
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Last name</b></span>
-                    <input type="text" class="form-control form-control-half" id="last_name" name="last_name" placeholder="Last Name" data-ng-model="page.user.last_name" required="required" tabindex="3" />
-                </div>
-
-                <div class="form-element">
-                    <span class="meta-label"><b>Title</b></span>
-                    <input type="text" class="form-control form-control-half" id="title" name="title" placeholder="Title" data-ng-model="page.user.title" tabindex="3" />
-                </div>
-
-                 <div class="form-element">
-
-                    <span class="meta-label"><b>Organization</b></span>
-                    
-                    <div class="classification--search">
-
-                        <input type="search" class="form-control form-control-half search" placeholder="Search organizations" data-ng-model="page.organizationSelection" uib-typeahead="suggestion as suggestion.name for suggestion in page.searchOrganizations($viewValue)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html" tabindex="1"/>
-                        <p data-ng-if="page.createAlert" style="font-style: normal; font-size: 1em; color: #616161; margin: 1em 0;">
-                            This organization does not exist in FieldDoc. Please email to <a href="mailto:support@fielddoc.org">support@fielddoc.org</a> if you'd like us to create this organization.
-                        </p>
-
-                    </div>
-
-                 </div>
-
-                <div class="form-element">
-                    <span class="meta-label"><b>About me</b></span>
-                    <textarea rows="10" data-ng-model="page.user.bio" class="form-control animate" msd-elastic id="bio" name="bio" placeholder="Say something about yourself.." maxlength="500">{{ page.user.bio }}</textarea>
-                    <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                        Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{ (page.user.bio.length || 0) | number }} used)</strong>
-                    </p>
+                    <input type="text" class="form-control form-control-half"
+                           id="last_name" name="last_name" placeholder="Last Name"
+                           data-ng-model="page.user.last_name" required="required" tabindex="3" />
                 </div>
 
                 <div class="form-element">
                     <span class="meta-label"><b>Email</b></span>
-                    <input type="text" class="form-control" id="email" name="email" disabled="disabled" data-ng-model="page.user.email" required="required" />
+                    <input type="text" class="form-control" id="email" name="email"
+                           disabled="disabled" data-ng-model="page.user.email" required="required" />
                     <p style="color: #9e9e9e; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                        Email address is not editable
+                        Email address is not editable. Please <a href="mailto:support@fielddoc.org"
+                                                                 target="_blank">contact our support team</a> if you
+                        need to change the email address associated with your account.
+                    </p>
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><b>Title</b></span>
+                    <input type="text" class="form-control form-control-half"
+                           id="title" name="title" placeholder="Title"
+                           data-ng-model="page.user.title" tabindex="3" />
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><b>About me</b></span>
+                    <textarea rows="10" data-ng-model="page.user.bio"
+                              class="form-control animate" msd-elastic id="bio"
+                              name="bio" placeholder="Say something about yourself.."
+                              maxlength="500">{{ page.user.bio }}</textarea>
+                    <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+                        Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{
+                        (page.user.bio.length || 0) | number }} used)</strong>
                     </p>
                 </div>
 
@@ -123,7 +112,8 @@
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
-            <div data-ng-repeat="alert in page.alerts" data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
                 <span class="event--message">{{ alert.msg }}</span>
             </div>
         </div>

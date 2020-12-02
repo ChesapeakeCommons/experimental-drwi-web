@@ -17,11 +17,13 @@
             'Site',
             'Practice',
             'Report',
+            'User',
+            'Organization',
             'Media',
             'Image',
             function(environment, $routeParams, $filter, $parse, $location,
                      $timeout, $q, Dashboard, Program, Project, Site, Practice,
-                     Report, Media, Image) {
+                     Report, User, Organization, Media, Image) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -48,11 +50,13 @@
 
                         var modelIdx = {
                             'dashboard': Dashboard,
+                            'organization': Organization,
                             'practice': Practice,
                             'program': Program,
                             'project': Project,
                             'report': Report,
-                            'site': Site
+                            'site': Site,
+                            'user': User
                         };
 
                         scope.model = modelIdx[scope.featureType];
@@ -125,6 +129,12 @@
                             var imageCollection = {
                                 images: []
                             };
+
+                            if (!Array.isArray(scope.parent.images)) {
+
+                                scope.parent.images = [];
+
+                            }
 
                             scope.parent.images.forEach(function(image) {
 
