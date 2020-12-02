@@ -26,7 +26,7 @@
             </div>
 
             <div class="alignment-warning margin-t-1 margin-b-1 rad-50"
-                 data-ng-if="!page.feature.has_owner">
+                 data-ng-if="!page.status.loading && !page.feature.has_owner">
                 <div class="pad-1">
                     <p class="margin-0 margin-b-1">
                         <strong>Action required</strong>
@@ -161,7 +161,8 @@
 
     <div data-ng-include="'/templates/toolbars/organization.html'"></div>
 
-    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
             <div data-ng-repeat="alert in page.alerts"
                  data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
@@ -169,6 +170,14 @@
             </div>
         </div>
     </div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.feature"
+         file-input="image-file-input"
+         callback="page.loadOrganization(page.feature.id)"
+         feature-type="organization"
+         visible="page.showUploadModal"></div>
 
 </main>
 

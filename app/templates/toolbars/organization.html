@@ -1,7 +1,8 @@
 <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
 
     <ul>
-        <li data-ng-class="{active: $root.toolbarState.dashboard}">
+        <li data-ng-class="{active: $root.toolbarState.dashboard}"
+            title="Profile">
             <a href="/organizations/{{ page.feature.id }}">
                 <i class="material-icons">
                     dashboard
@@ -9,7 +10,16 @@
             </a>
         </li>
         <li data-ng-if="page.permissions.write && page.feature.has_owner"
-            data-ng-class="{active: $root.toolbarState.edit}">
+            title="Add image">
+            <a data-ng-click="page.showUploadModal = !page.showUploadModal">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write && page.feature.has_owner"
+            data-ng-class="{active: $root.toolbarState.edit}"
+            title="Edit">
             <a href="/organizations/{{ page.feature.id }}/edit">
                 <i class="material-icons">
                     edit

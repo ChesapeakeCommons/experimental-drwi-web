@@ -100,8 +100,11 @@
 
                         <div class="card--content">
 
+                            <div style="height: 240px; width: 100%; background: #EEEEEE;"
+                                 data-ng-if="!membership.organization.picture"></div>
+
                             <img data-ng-if="membership.organization.picture"
-                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="auto" />
+                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="240" />
 
                             <div class="name"
                                  style="background: #fff; border-bottom: none;">
@@ -142,7 +145,7 @@
 
                                     <a class="snapshot--title" href="/organizations/{{ membership.organization.id }}/edit"
                                        title="Edit organization"
-                                       data-ng-if="page.permissions.write && membership.role === 'owner'">
+                                       data-ng-if="membership.confirmed && membership.role === 'owner'">
                                         <i class="material-icons">
                                             edit
                                         </i>

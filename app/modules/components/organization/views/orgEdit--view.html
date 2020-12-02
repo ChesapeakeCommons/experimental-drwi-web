@@ -48,45 +48,46 @@
                            required="required" />
                 </div>
 
-                <div>
-                    <div class="form-element">
-                        <span class="meta-label"
-                              style="border:0px solid red; margin-top:-10px;"><b>Organization Image</b></span>
-                        <input type="file"
-                               class="form-control"
-                               id="org-image"
-                               name="org-image"
-                               file-model="page.image" />
-                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"
-                           data-ng-if="!page.feature.picture">
-                            Choose an image to represent your organization.
-                        </p>
-                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"
-                           data-ng-if="page.feature.picture">
-                            Choose a new image to replace the one below.
-                        </p>
-                    </div>
+<!--                <div>-->
+<!--                    <div class="form-element">-->
+<!--                        <span class="meta-label"-->
+<!--                              style="border:0px solid red; margin-top:-10px;"><b>Organization Image</b></span>-->
+<!--                        <input type="file"-->
+<!--                               class="form-control"-->
+<!--                               id="org-image"-->
+<!--                               name="org-image"-->
+<!--                               file-model="page.image" />-->
+<!--                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"-->
+<!--                           data-ng-if="!page.feature.picture">-->
+<!--                            Choose an image to represent your organization.-->
+<!--                        </p>-->
+<!--                        <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;"-->
+<!--                           data-ng-if="page.feature.picture">-->
+<!--                            Choose a new image to replace the one below.-->
+<!--                        </p>-->
+<!--                    </div>-->
 
-                    <div>
-                        <div class="form-element"
-                             data-ng-if="page.feature.picture">
-                            <img style="width:100%; height:auto;" src="{{page.feature.picture}}">
-                        </div>
+<!--                    <div>-->
+<!--                        <div class="form-element"-->
+<!--                             data-ng-if="page.feature.picture">-->
+<!--                            <img style="width:100%; height:auto;" src="{{page.feature.picture}}">-->
+<!--                        </div>-->
 
-                        <div class="actions"
-                             data-ng-if="page.feature.picture">
+<!--                        <div class="actions"-->
+<!--                             data-ng-if="page.feature.picture">-->
 
-                            <a class="snapshot--title" style="float:right;" href="#"
-                               title="Delete image"
-                               data-ng-click="page.removeImage()">
-                                <i class="material-icons" style="color:#777777;">
-                                    delete
-                                </i>
-                            </a>
+<!--                            <a class="snapshot&#45;&#45;title" style="float:right;" href="#"-->
+<!--                               title="Delete image"-->
+<!--                               data-ng-click="page.removeImage()">-->
+<!--                                <i class="material-icons" style="color:#777777;">-->
+<!--                                    delete-->
+<!--                                </i>-->
+<!--                            </a>-->
 
-                        </div>
-                    </div>
-                </div>
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
                 <div class="form-element">
                     <span class="meta-label"><b>Description</b></span>
                     <textarea rows="10" data-ng-model="page.feature.description"
@@ -94,7 +95,7 @@
                               msd-elastic id="description"
                               name="description"
                               placeholder="Description"
-                              maxlength="500">{{ page.feature.description }}</textarea>
+                              maxlength="1000">{{ page.feature.description }}</textarea>
                     <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
                         Descriptions may contain up to 1,000 characters, including spaces and punctuation.
                         <strong>({{ (page.feature.description.length || 0) | number }} used)</strong>
