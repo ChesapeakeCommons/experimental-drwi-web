@@ -29,13 +29,17 @@
             <tr data-ng-repeat="member in index | filter: q | orderBy: ['-role', 'user.last_name']">
                 <td class="pad-1" style="width: 1%; max-width: 20rem;">
                     <div style="display: flex; flex-flow: row nowrap; align-items: center;">
-                        <div class="margin-r-1" data-ng-if="member.picture">
+                        <div class="margin-r-1" data-ng-if="member.user.picture">
                             <div class="user-avatar user-avatar-sm"
-                                 style="background-image: url('{{ member.picture }}');"></div>
+                                 style="background-image: url('{{ member.user.picture }}');"></div>
                         </div>
-                        <div class="margin-r-1" data-ng-if="!member.picture">
-                            <div class="user-avatar user-avatar-sm"
-                                 style="background-image: url('images/avatar-Default-1024x.png');"></div>
+                        <div class="margin-r-1" data-ng-if="!member.user.picture">
+                            <div style="color: #424242; background: #EEEEEE; border-radius: 50%;"
+                                 class="user-avatar user-avatar-sm flex flex-dir-col flex-justify-center flex-align-center">
+                                <span class="material-icons md-24">
+                                    account_circle
+                                </span>
+                            </div>
                         </div>
                         <a href="/profile/{{ member.user.id }}"
                            class="ellipsize"
