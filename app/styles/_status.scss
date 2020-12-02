@@ -62,7 +62,8 @@
     }
 }
 
-.status-draft {
+.status-draft,
+.status-pending {
     //background-color: $color-status-draft;
     //background-color: #fdeadb;
     background-color: #fef4ed;
@@ -90,7 +91,8 @@
 
 }
 
-.status-complete {
+.status-complete,
+.status-owner {
     //background-color: $color-status-complete;
     //background-color: #dbeefd;
     background-color: #edf7fe;
@@ -100,6 +102,17 @@
 
     .dot {
         background-color: #2196F3;
+    }
+
+}
+
+.status-member {
+    background-color: #F5F5F5;
+    color: #616161;
+    border: 1px solid #BDBDBD;
+
+    .dot {
+        background-color: #616161;
     }
 
 }

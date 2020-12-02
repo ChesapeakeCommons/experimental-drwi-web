@@ -108,6 +108,22 @@
                                 <span>{{ membership.organization.name }}</span>
                             </div>
 
+                            <div class="status-wrapper"
+                                 title="Role: {{ membership.role | capitalAttribute }}"
+                                 data-ng-if="!membership.confirmed">
+                                <div class="status status-pending">
+                                    <span>Pending</span>
+                                </div>
+                            </div>
+
+                            <div class="status-wrapper"
+                                 title="Role: {{ membership.role | capitalAttribute }}"
+                                 data-ng-if="membership.confirmed">
+                                <div class="status status-{{ membership.role }}">
+                                    <span>{{ membership.role | capitalAttribute }}</span>
+                                </div>
+                            </div>
+
                             <div class="body">
 
                                 <p class="pad-0 margin-0">
