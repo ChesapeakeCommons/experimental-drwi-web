@@ -364,7 +364,7 @@ img.partner-logo{
 
 .org-meta {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column-reverse nowrap;
     align-items: flex-start;
     justify-content: flex-start;
 
@@ -372,12 +372,12 @@ img.partner-logo{
         display: flex;
         flex-direction: column;
         justify-content: center;
-        flex-basis: 50%;
+        flex-basis: 100%;
         flex-grow: 1;
-        max-width: 50%;
 
         &:first-of-type {
             align-items: flex-start;
+            margin-top: 2rem;
         }
 
     }
@@ -404,6 +404,30 @@ img.partner-logo{
             max-width: 20rem;
             height: auto;
             max-height: 20rem;
+        }
+
+    }
+
+}
+
+@media (min-width: 1200px) {
+
+    .org-meta {
+        flex-flow: row wrap;
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-basis: 50%;
+            flex-grow: 1;
+            max-width: 50%;
+
+            &:first-of-type {
+                align-items: flex-start;
+                margin-top: 0;
+            }
+
         }
 
     }

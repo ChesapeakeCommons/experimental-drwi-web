@@ -20,29 +20,37 @@
                             return Account.getUser();
                         }
                     }
-                }),
-                $routeProvider
-                    .when('/organizations', {
-                        templateUrl: '/modules/components/organization/views/orgList--view.html?t=' + environment.version,
-                        controller: 'OrganizationListController',
-                        controllerAs: 'page',
-                        resolve: {
-                            user: function(Account) {
-                                return Account.getUser();
-                            }
+                })
+                .when('/organizations', {
+                    templateUrl: '/modules/components/organization/views/orgList--view.html?t=' + environment.version,
+                    controller: 'OrganizationListController',
+                    controllerAs: 'page',
+                    resolve: {
+                        user: function(Account) {
+                            return Account.getUser();
                         }
-                    }),
-                $routeProvider
-                    .when('/organizations/:id', {
-                        templateUrl: '/modules/components/organization/views/orgProfile--view.html?t=' + environment.version,
-                        controller: 'OrganizationProfileController',
-                        controllerAs: 'page',
-                        resolve: {
-                            user: function(Account) {
-                                return Account.getUser();
-                            }
+                    }
+                })
+                .when('/organizations/:id', {
+                    templateUrl: '/modules/components/organization/views/orgProfile--view.html?t=' + environment.version,
+                    controller: 'OrganizationProfileController',
+                    controllerAs: 'page',
+                    resolve: {
+                        user: function(Account) {
+                            return Account.getUser();
                         }
-                    });
+                    }
+                })
+                .when('/organizations/:id/images', {
+                    templateUrl: '/modules/components/organization/views/orgImage--view.html?t=' + environment.version,
+                    controller: 'OrganizationImageController',
+                    controllerAs: 'page',
+                    resolve: {
+                        user: function(Account) {
+                            return Account.getUser();
+                        }
+                    }
+                });
 
         });
 

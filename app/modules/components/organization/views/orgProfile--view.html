@@ -7,63 +7,69 @@
     <div class="content--container"
          style="border-right: 1px solid #e0e0e0;">
 
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading organization data&hellip;</p>
+            </div>
+        </div>
+
         <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading">
 
             <div breadcrumb class="full-width"
                  root-path="organizations"
                  tail="{{ page.feature.name }}"></div>
 
-            <div class="create-heading" data-ng-if="!page.status.loading">
-                <h1 class="margin-0">
-                    {{ page.feature.name }}
-                    <span class="material-icons margin-l-50p"
-                          style="color: #1C81E5;"
-                          title="Verified"
-                          data-ng-if="page.feature.has_owner">
-                        verified
-                    </span>
-                </h1>
-            </div>
-
-            <div class="alignment-warning margin-t-1 margin-b-1 rad-50"
-                 data-ng-if="!page.status.loading && !page.feature.has_owner">
-                <div class="pad-1">
-                    <p class="margin-0 margin-b-1">
-                        <strong>Action required</strong>
-                    </p>
-                    <p class="margin-0 margin-b-1">
-                        This organization is un-verified and doesn’t have any owners. Owners are users with full
-                        administrative access to an organization’s data and settings, including members and projects.
-                    </p>
-                    <p class="margin-0">
-                        Please <a href="mailto:support@fielddoc.org" target="_blank">contact our support team</a> as
-                        soon as possible and let us know who the owners should be for this organization.
-                    </p>
-                </div>
-            </div>
-
-            <div class="last-modified-summary margin-y-1">
-
-                <div data-ng-if="page.feature.modified_on"
-                     class="modtime">
-                    Last modified by {{ page.feature.last_modified_by.name }} on {{ page.feature.modified_on |
-                    date:'fullDate' }} at {{ page.feature.modified_on | localTime | date:'h:mm' }} {{ page.feature.modified_on | localTime | date:'a' }}
-                </div>
-
-                <div class="history-link-wrapper">
-                    <span class="material-icons">
-                        history
-                    </span>
-                    <a href="/organizations/{{ page.feature.id }}/history">
-                        View change log
-                    </a>
-                </div>
-
-            </div>
-
             <div class="org-meta">
 
                 <div class="flex-dir-col pad-r-2">
+
+                    <div class="create-heading" data-ng-if="!page.status.loading">
+                        <h1 class="margin-0">
+                            {{ page.feature.name }}
+                            <span class="material-icons margin-l-50p"
+                                  style="color: #1C81E5;"
+                                  title="Verified"
+                                  data-ng-if="page.feature.has_owner">
+                                verified
+                            </span>
+                        </h1>
+                    </div>
+
+                    <div class="alignment-warning margin-t-1 margin-b-1 rad-50"
+                         data-ng-if="!page.status.loading && !page.feature.has_owner">
+                        <div class="pad-1">
+                            <p class="margin-0 margin-b-1">
+                                <strong>Action required</strong>
+                            </p>
+                            <p class="margin-0 margin-b-1">
+                                This organization is un-verified and doesn’t have any owners. Owners are users with full
+                                administrative access to an organization’s data and settings, including members and projects.
+                            </p>
+                            <p class="margin-0">
+                                Please <a href="mailto:support@fielddoc.org" target="_blank">contact our support team</a> as
+                                soon as possible and let us know who the owners should be for this organization.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="last-modified-summary margin-y-1">
+
+                        <div data-ng-if="page.feature.modified_on"
+                             class="modtime">
+                            Last modified by {{ page.feature.last_modified_by.name }} on {{ page.feature.modified_on |
+                            date:'fullDate' }} at {{ page.feature.modified_on | localTime | date:'h:mm' }} {{ page.feature.modified_on | localTime | date:'a' }}
+                        </div>
+
+                        <div class="history-link-wrapper">
+                            <span class="material-icons">
+                                history
+                            </span>
+                            <a href="/organizations/{{ page.feature.id }}/history">
+                                View change log
+                            </a>
+                        </div>
+
+                    </div>
 
                     <div>
                         <p>
