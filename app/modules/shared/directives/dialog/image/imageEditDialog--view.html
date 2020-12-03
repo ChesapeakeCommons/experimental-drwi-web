@@ -15,35 +15,43 @@
 
             <div>
 
-                <span class="prompt">
-                    Select an image file to upload. FieldDoc currently supports PNG and JPEG formats.
-                </span>
-
-                <input type="file"
-                       class="form-control"
-                       id="{{ fileInput }}"
-                       name="images"
-                       file-upload
-                       file-model="mediaManager.images[0]"
-                       accept=".png,.jpg,.jpeg"/>
-
-                <div class="upload-error" style="margin: 1rem 0 0;"
-                     data-ng-if="uploadError">
-                    <div style="display: flex; flex-flow: row nowrap; align-items: center;">
-                        <span class="material-icons" style="color: #d70000;">
-                            error
-                        </span>
-                        <span>
-                            <strong>&nbsp;Upload error</strong>
-                        </span>
-                    </div>
-                    <p style="margin: 1rem 0; font-size: 0.9rem;">
-                        {{ uploadError.message || 'Unable to read file.'}}
-                    </p>
-                    <p style="margin: 0; font-size: 0.9rem;">
-                        Please double check that your image file is supported.
+                <div class="form-element margin-0">
+                    <span class="meta-label">
+                        <strong>Caption</strong>
+                    </span>
+                    <textarea class="form-control animate"
+                              data-ng-model="feature.caption"
+                              msd-elastic
+                              id="caption"
+                              name="caption"
+                              rows="5"
+                              maxlength="250">{{ feature.caption }}</textarea>
+                    <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+                        Descriptions may contain up to 250 characters, including spaces and
+                        punctuation. <strong>({{ (feature.caption.length || 0) | number }} used)</strong>
                     </p>
                 </div>
+
+                <div class="scope--control margin-0">
+                    <span data-ng-class="{on: feature.featured}"
+                          style="font-size: .9rem; color: #212121; font-weight: bold;">
+                        Featured
+                    </span>
+                    <span></span>
+                    <label class="switch">
+                        <input class="inputdemo"
+                               type="checkbox"
+                               data-ng-model="feature.featured">
+                        <div class="slider round"></div>
+                    </label>
+                    <span></span>
+                </div>
+
+                <p class="margin-0 margin-t-1" style="font-size: .9rem;">
+                    Featured images take priority throughout FieldDoc in areas that display graphics. By default,
+                    FieldDoc will use the first image in a collection when it needs to make a thumbnail. You can
+                    override this behavior by setting a featured image.
+                </p>
 
             </div>
 
@@ -51,20 +59,23 @@
         <div class="dyad">
             <div class="dialog-actions">
                 <button type="button" class="cancel"
+                        style="height: 2.5rem;"
                         data-ng-click="closeChildModal()">
                     <span>
                         Cancel
                     </span>
                 </button>
-                <button type="button" class="confirm" data-ng-class="{complete: uploadComplete}"
-                        data-ng-click="uploadImage()" data-ng-disabled="!mediaManager.images.length">
+                <button type="button" class="confirm"
+                        style="height: 2.5rem;"
+                        data-ng-class="{complete: uploadComplete}"
+                        data-ng-click="saveImage()">
                     <span class="material-icons margin-r-50p" data-ng-if="uploadComplete">
                         done
                     </span>
                     <span data-ng-if="!processing">
                         OK
                     </span>
-                    <span data-ng-if="processing">
+                    <span data-ng-if="processing && progressMessage">
                         {{ progressMessage }}
                     </span>
                 </button>

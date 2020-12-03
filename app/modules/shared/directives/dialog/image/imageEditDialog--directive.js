@@ -20,6 +20,8 @@
                         'alerts': '=?',
                         'callback': '&',
                         'feature': '=?',
+                        'parent': '=?',
+                        'parentType': '@',
                         'visible': '=?'
                     },
                     templateUrl: function (elem, attrs) {
@@ -58,11 +60,19 @@
 
                         scope.saveImage = function () {
 
+                            var requestConfig = {
+                                id: scope.feature.id,
+                                target: scope.parentType + ':' + scope.parent.id
+                            };
+
                             scope.progressMessage = 'Saving…';
 
-                            Image.update({
-                                id: scope.parent.id
-                            }, scope.feature).$promise.then(function (successResponse) {
+                            scope.processing = true;
+
+                            Image.update(
+                                requestConfig,
+                                scope.feature
+                            ).$promise.then(function (successResponse) {
 
                                 scope.progressMessage = 'Complete';
 
@@ -82,7 +92,9 @@
 
                                 scope.uploadError = errorResponse.data;
 
-                                scope.progressMessage = 'OK';
+                                scope.progressMessage = undefined;
+
+                                scope.processing = false;
 
                             });
 

@@ -107,10 +107,12 @@
                                      data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === image.id && page.deletionTarget.collection === 'image')}">
                                     <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this image?</p>
                                     <div class="actions" style="flex: 0;">
-                                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('image', $index)">
+                                        <a class="snapshot--title" href="#" title="Delete forever"
+                                           data-ng-click="page.deleteFeature('image', $index)">
                                             Yes
                                         </a>
-                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                                        <a class="snapshot--title" href="#" title="Cancel"
+                                           data-ng-click="page.cancelDelete()">
                                             Cancel
                                         </a>
                                     </div>
@@ -185,6 +187,8 @@
          alerts="page.alerts"
          feature="page.targetImage"
          callback="page.loadOrganization(page.feature.id)"
+         parent="page.feature"
+         parent-type="organization"
          visible="page.showEditModal"></div>
 
 </main>
