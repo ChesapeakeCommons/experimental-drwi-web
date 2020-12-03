@@ -41,28 +41,26 @@
                                 </span>
                             </div>
                         </div>
-                        <a href="/profile/{{ member.user.id }}"
-                           class="ellipsize"
-                           data-ng-if="member.user.id !== $root.user.id">
-                            <span style="display: block; width: auto;">
-                                {{ member.user.name | truncate:100 }}
-                            </span>
+                        <div>
+                            <a href="/profile/{{ member.user.id }}"
+                               class="ellipsize"
+                               data-ng-if="member.user.id !== $root.user.id">
+                                <span style="display: block; width: auto;">
+                                    {{ member.user.name | truncate:100 }}
+                                </span>
+                            </a>
+                            <a href="/account"
+                               class="ellipsize"
+                               data-ng-if="member.user.id === $root.user.id">
+                                <span style="display: block; width: auto;">
+                                    {{ member.user.name | truncate:100 }}
+                                </span>
+                            </a>
                             <span class="margin-t-25p"
                                   style="display: block; width: auto; font-size: .9rem; color: #757575;">
                                 {{ member.user.alias | truncate:10:false }}
                             </span>
-                        </a>
-                        <a href="/account"
-                           class="ellipsize"
-                           data-ng-if="member.user.id === $root.user.id">
-                            <span style="display: block; width: auto;">
-                                {{ member.user.name | truncate:100 }}
-                            </span>
-                            <span class="margin-t-25p"
-                                  style="display: block; width: auto; font-size: .9rem; color: #757575;">
-                                {{ member.user.alias | truncate:10:false }}
-                            </span>
-                        </a>
+                        </div>
                     </div>
                 </td>
                 <td class="info-enabled pad-1" style="width: 1%;">
