@@ -11,7 +11,7 @@
                 <th class="pad-1">
                     <strong>Joined</strong>
                 </th>
-                <th class="pad-1">
+                <th class="pad-1" colspan="2">
                     <strong>Confirmed</strong>
                 </th>
                 <th class="pad-1">
@@ -76,7 +76,7 @@
                         </span>
                     </div>
                 </td>
-                <td class="pad-1" style="width: 1%;">
+                <td class="info-enabled pad-1" style="width: .1%;">
                     <div class="flex flex-dir-row flex-nwrap flex-align-center">
                         <span class="material-icons margin-r-50p"
                               style="color: #1C81E5;"
@@ -93,6 +93,35 @@
                         <span>
                             {{ member.confirmed | boolToString | capitalAttribute }}
                         </span>
+                    </div>
+                </td>
+                <td class="info-enabled pad-1" style="width: 1%;">
+                    <div class="flex flex-dir-row flex-nwrap flex-align-center">
+                        <div class="info-tip"
+                             data-ng-if="tipManager.confirmed === member.id && member.confirmed">
+                            Confirmed by {{ member.confirmed_by.name }} on {{ member.confirmed_at | date : 'fullDate'
+                            }}.
+                        </div>
+                        <div class="info-tip"
+                             data-ng-if="tipManager.confirmed === member.id && !member.confirmed">
+                            Confirmation pending. This user does not have editing privileges.
+                        </div>
+                        <span data-ng-if="member.confirmed">
+                            <time datetime="{{ member.confirmed_at }}"
+                                  title="{{ member.confirmed_at }}">
+                                {{ member.confirmed_at | date : 'mediumDate' }} &middot; {{ member.confirmed_at |
+                                localTime | date:'h:mm' }} {{ member.confirmed_at | localTime | date:'a' }}
+                            </time>
+                        </span>
+                        <span data-ng-if="!member.confirmed">
+                            Confirmation pending.
+                        </span>
+                        <button type="button" class="margin-l-50p"
+                                data-ng-click="resetTip('confirmed', member.id)">
+                            <span class="material-icons md-18">
+                                info
+                            </span>
+                        </button>
                     </div>
                 </td>
                 <td class="pad-1" style="width: 1%;">

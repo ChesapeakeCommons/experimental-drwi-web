@@ -199,8 +199,7 @@
                                         'globalClick:memberTable:event:$apply'
                                     );
 
-                                    if (typeof scope.tipManager.created !== 'undefined' ||
-                                        typeof scope.tipManager.modified !== 'undefined') {
+                                    if (typeof scope.tipManager.confirmed !== 'undefined') {
 
                                         console.log(
                                             'globalClick:memberTable:event:$apply:closeTip',
