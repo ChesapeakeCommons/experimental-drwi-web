@@ -103,8 +103,13 @@
                             <div style="height: 240px; width: 100%; background: #EEEEEE;"
                                  data-ng-if="!membership.organization.picture"></div>
 
-                            <img data-ng-if="membership.organization.picture"
-                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="240" />
+                            <div style="min-height: 240px; width: 100%; background-color: #EEEEEE; background-image:
+                            url('{{ membership.organization.picture }}'); background-size: cover;
+                            background-position: center center;"
+                                 data-ng-if="membership.organization.picture"></div>
+
+<!--                            <img data-ng-if="membership.organization.picture"-->
+<!--                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="240" />-->
 
                             <div class="name"
                                  style="background: #fff; border-bottom: none;">
@@ -156,8 +161,9 @@
                                 <span>
                                     <time datetime="{{ membership.organization.modified_on }}"
                                           title="{{ membership.organization.modified_on }}">
-                                        Last updated {{ membership.organization.modified_on | date : 'mediumDate' }}
-                                    </time>
+                                        Last updated {{ membership.organization.modified_on | localTime | date:'mediumDate' }} &middot; {{
+                                    membership.organization.modified_on | localTime | date:'h:mm' }} {{ membership.organization.modified_on | localTime | date:'a'
+                                    }}</time>
                                 </span>
 
                             </div>
