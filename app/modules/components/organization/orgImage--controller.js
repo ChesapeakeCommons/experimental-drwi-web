@@ -143,7 +143,7 @@ angular.module('FieldDoc')
 
                     if (featureType === 'image') {
 
-                        self.project.images.splice(index, 1);
+                        self.feature.images.splice(index, 1);
 
                         self.cancelDelete();
 
