@@ -12,7 +12,8 @@
             </div>
         </div>
 
-        <section class="privacy-message reveal fade-in t0" data-ng-if="!page.status.loading && page.makePrivate">
+        <section class="privacy-message reveal fade-in t0"
+                 data-ng-if="!page.status.loading && !page.permissions.read">
 
             <p>
                 <i class="material-icons">
@@ -20,35 +21,16 @@
                 </i>
             </p>
 
-            <p>This practice is private.</p>
+            <p>You don’t have permission to edit this organization.</p>
 
         </section>
 
-        <div breadcrumb class="full-width"
-             pad="true"
-             program="page.project.program"
-             project="page.project"
-             tail="Images"></div>
-
         <div class="main--ui reveal fade-in t0"
-             data-ng-if="!page.status.loading && page.makePrivate">
+             data-ng-if="!page.status.loading && page.permissions.read">
 
-            <div class="privacy-message reveal fade-in t0">
-
-                <p>
-                    <i class="material-icons">
-                        lock
-                    </i>
-                </p>
-
-                <p>This feature is currently not available.</p>
-
-            </div>
-
-        </div>
-
-        <div class="main--ui reveal fade-in t0"
-             data-ng-if="!page.status.loading && !page.makePrivate">
+            <div breadcrumb class="full-width"
+                 organization="page.feature"
+                 tail="Images"></div>
 
             <div class="create-heading" data-ng-if="!page.status.loading">
                 <h1 class="margin-0">
@@ -137,12 +119,21 @@
                                 <p style="font-style: normal; color: #616161; font-size: 0.9em;">{{ (image.caption || 'No caption') | truncate:80 }}</p>
 
                                 <div class="actions">
-                                    <a class="snapshot--title" href="{{ image.original }}" title="Save image" target="_blank">
+                                    <a class="snapshot--title" href="{{ image.original }}"
+                                       title="Save image" target="_blank">
                                         <i class="material-icons">
                                             save_alt
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete image" data-ng-click="page.confirmDelete(image, 'image')">
+                                    <a class="snapshot--title" href="#" title="Edit image"
+                                       data-ng-click="page.presentEditDialog(image)"
+                                       data-ng-if="page.permissions.write">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="#" title="Delete image"
+                                       data-ng-click="page.confirmDelete(image, 'image')">
                                         <i class="material-icons">
                                             delete
                                         </i>
@@ -189,6 +180,12 @@
          callback="page.loadOrganization(page.feature.id)"
          feature-type="organization"
          visible="page.showUploadModal"></div>
+
+    <div image-edit-dialog
+         alerts="page.alerts"
+         feature="page.targetImage"
+         callback="page.loadOrganization(page.feature.id)"
+         visible="page.showEditModal"></div>
 
 </main>
 

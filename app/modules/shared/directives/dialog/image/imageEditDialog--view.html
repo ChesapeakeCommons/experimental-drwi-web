@@ -1,0 +1,74 @@
+<div class="creation-dialog-container import-dialog-container" data-ng-if="visible">
+    <div class="dialog">
+        <div class="title">
+            <span class="title-text">Edit image</span>
+            <div class="dismiss-container">
+                <div class="dismiss" data-ng-click="closeChildModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs">
+
+            <div>
+
+                <span class="prompt">
+                    Select an image file to upload. FieldDoc currently supports PNG and JPEG formats.
+                </span>
+
+                <input type="file"
+                       class="form-control"
+                       id="{{ fileInput }}"
+                       name="images"
+                       file-upload
+                       file-model="mediaManager.images[0]"
+                       accept=".png,.jpg,.jpeg"/>
+
+                <div class="upload-error" style="margin: 1rem 0 0;"
+                     data-ng-if="uploadError">
+                    <div style="display: flex; flex-flow: row nowrap; align-items: center;">
+                        <span class="material-icons" style="color: #d70000;">
+                            error
+                        </span>
+                        <span>
+                            <strong>&nbsp;Upload error</strong>
+                        </span>
+                    </div>
+                    <p style="margin: 1rem 0; font-size: 0.9rem;">
+                        {{ uploadError.message || 'Unable to read file.'}}
+                    </p>
+                    <p style="margin: 0; font-size: 0.9rem;">
+                        Please double check that your image file is supported.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="dyad">
+            <div class="dialog-actions">
+                <button type="button" class="cancel"
+                        data-ng-click="closeChildModal()">
+                    <span>
+                        Cancel
+                    </span>
+                </button>
+                <button type="button" class="confirm" data-ng-class="{complete: uploadComplete}"
+                        data-ng-click="uploadImage()" data-ng-disabled="!mediaManager.images.length">
+                    <span class="material-icons margin-r-50p" data-ng-if="uploadComplete">
+                        done
+                    </span>
+                    <span data-ng-if="!processing">
+                        OK
+                    </span>
+                    <span data-ng-if="processing">
+                        {{ progressMessage }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

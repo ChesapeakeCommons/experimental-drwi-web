@@ -20,12 +20,13 @@
 
         </section>
 
+        <div breadcrumb class="full-width"
+             organization="page.feature"
+             pad="true"
+             tail="Edit"></div>
+
         <div class="main--ui reveal fade-in t0"
              data-ng-if="!page.status.loading && page.permissions.write">
-
-            <div breadcrumb class="full-width"
-                 root-path="organizations"
-                 tail="{{ page.feature.name }}"></div>
 
             <div class="create-heading" data-ng-if="!page.status.loading">
                 <h1 class="margin-0">
