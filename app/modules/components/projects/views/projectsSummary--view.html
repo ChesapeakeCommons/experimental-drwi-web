@@ -880,6 +880,13 @@
                     </i>
                 </a>
             </li>
+            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.map}">
+                <a href="/maps?target=project:{{ page.project.id }}" title="Map">
+                    <i class="material-icons">
+                        map
+                    </i>
+                </a>
+            </li>
             <li data-ng-if="page.permissions.can_edit"
                 style="border-top: 1px solid #e0e0e0;">
                 <a href="/projects/{{ page.project.id }}/edit" title="Edit">

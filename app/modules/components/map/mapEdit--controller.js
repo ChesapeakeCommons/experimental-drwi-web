@@ -7,7 +7,7 @@
  */
 angular.module('FieldDoc')
     .controller('MapEditController',
-        function(Account, $location, $log, Map, map,
+        function(Account, $location, $log, MapInterface, $routeParams,
                  $rootScope, FilterStore, $route, user,
                  SearchService, $timeout, Utility, $interval) {
 
@@ -105,35 +105,15 @@ angular.module('FieldDoc')
 
                 self.status.processing = true;
 
-                self.scrubFeature(self.map);
+                self.scrubFeature(self.feature);
 
-                var exclude = [
-                    'centroid',
-                    'creator',
-                    'dashboards',
-                    'extent',
-                    'geometry',
-                    'members',
-                    'metric_types',
-                    // 'partners',
-                    'practices',
-                    'practice_types',
-                    'properties',
-                    'tags',
-                    'targets',
-                    'tasks',
-                    'type',
-                    'sites'
-                ].join(',');
+                MapInterface.update({
+                    id: $route.current.params.id
+                }, self.feature).then(function(successResponse) {
 
-                console.log("self.map --> submit", self.map);
+                    self.feature = successResponse;
 
-                Map.update({
-                    id: $route.current.params.mapId,
-                    exclude: exclude
-                }, self.map).then(function(successResponse) {
-
-                    self.processFeature(successResponse);
+                    self.permissions = successResponse.permissions;
 
                     self.alerts = [{
                         'type': 'success',
@@ -163,6 +143,33 @@ angular.module('FieldDoc')
 
             };
 
+            self.loadMap = function () {
+
+                console.log(
+                    'loadMap:$routeParams:id:',
+                    $routeParams.id
+                )
+
+                MapInterface.get({
+                    id: $route.current.params.id
+                }).$promise.then(function(successResponse) {
+
+                    self.feature = successResponse;
+
+                    self.permissions = successResponse.permissions;
+
+                    self.showElements();
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load map data.');
+
+                    self.showElements();
+
+                });
+
+            };
+
             //
             // Verify Account information for proper UI element display
             //
@@ -180,21 +187,7 @@ angular.module('FieldDoc')
                     // Assign map to a scoped variable
                     //
 
-                    map.$promise.then(function(successResponse) {
-
-                        self.feature = successResponse;
-
-                        self.permissions = successResponse.permissions;
-
-                        self.showElements();
-
-                    }, function(errorResponse) {
-
-                        console.log('Unable to load map data.');
-
-                        self.showElements();
-
-                    });
+                    self.loadMap();
 
                 });
 

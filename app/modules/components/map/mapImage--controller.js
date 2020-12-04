@@ -7,8 +7,8 @@
  */
 angular.module('FieldDoc')
     .controller('MapImageController', function(
-        Account, Image, $location, $log, Map,
-        map, $q, $rootScope, $route, $scope,
+        Account, Image, $location, $log, MapInterface,
+        $q, $rootScope, $route, $scope, $routeParams,
         $timeout, $interval, user) {
 
         var self = this;
@@ -54,78 +54,21 @@ angular.module('FieldDoc')
 
         self.processMap = function(data) {
 
-            self.map = data;
+            self.feature = data;
+            
+            self.permissions = data.permissions;
 
-            if (data.permissions) {
+            $rootScope.page.title = self.feature.name ? self.feature.name : 'Un-titled Map';
 
-                if (!data.permissions.read &&
-                    !data.permissions.write) {
+            if (Array.isArray(self.feature.images)) {
 
-                    self.makePrivate = true;
-
-                }
-
-                self.permissions.can_edit = data.permissions.write;
-                self.permissions.can_delete = data.permissions.write;
-
-            }
-
-            delete self.map.organization;
-
-            self.mapType = data.category;
-
-            $rootScope.page.title = self.map.name ? self.map.name : 'Un-named Map';
-
-            if (Array.isArray(self.map.images)) {
-
-                self.map.images.sort(function (a, b) {
+                self.feature.images.sort(function (a, b) {
 
                     return a.id < b.id;
 
                 });
 
             }
-
-        };
-
-        self.loadMap = function() {
-
-            var exclude = [
-                'centroid',
-                'creator',
-                'dashboards',
-                'extent',
-                'geometry',
-                'members',
-                'metric_progress',
-                'metric_types',
-                // 'partners',
-                'practices',
-                'practice_types',
-                'properties',
-                'tags',
-                'targets',
-                'tasks',
-                'type',
-                'sites'
-            ].join(',');
-
-            Map.get({
-                id: $route.current.params.mapId,
-                exclude: exclude
-            }).$promise.then(function(successResponse) {
-
-                console.log('self.map', successResponse);
-
-                self.processMap(successResponse);
-
-                self.showElements();
-
-            }, function(errorResponse) {
-
-                self.showElements();
-
-            });
 
         };
 
@@ -171,13 +114,11 @@ angular.module('FieldDoc')
 
                     targetCollection = Image;
 
-                    requestConfig.target = 'map:' + self.map.id;
+                    requestConfig.target = 'map:' + self.feature.id;
 
                     break;
 
                 default:
-
-                    targetCollection = Map;
 
                     break;
 
@@ -194,11 +135,11 @@ angular.module('FieldDoc')
 
                 if (featureType === 'image') {
 
-                    self.map.images.splice(index, 1);
+                    self.feature.images.splice(index, 1);
 
                     self.cancelDelete();
 
-                    self.loadMap();
+                    self.loadMapInterface();
 
                     $timeout(self.closeAlerts, 1500);
 
@@ -247,6 +188,28 @@ angular.module('FieldDoc')
 
         };
 
+        self.loadMap = function () {
+
+            MapInterface.get({
+                id: $route.current.params.id
+            }).$promise.then(function(successResponse) {
+
+                self.feature = successResponse;
+
+                self.permissions = successResponse.permissions;
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                console.log('Unable to load map data.');
+
+                self.showElements();
+
+            });
+
+        };
+
         //
         // Verify Account information for proper UI element display
         //
@@ -256,9 +219,13 @@ angular.module('FieldDoc')
 
                 $rootScope.user = Account.userObject = userResponse;
 
-                self.permissions = {
-                    can_edit: false
-                };
+                self.permissions = {};
+
+                self.user = $rootScope.user;
+
+                //
+                // Assign map to a scoped variable
+                //
 
                 self.loadMap();
 

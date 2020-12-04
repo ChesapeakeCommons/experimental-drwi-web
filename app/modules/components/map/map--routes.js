@@ -12,7 +12,7 @@ angular.module('FieldDoc')
     .config(function($routeProvider, environment) {
 
         $routeProvider
-            .when('/maps/:mapId', {
+            .when('/maps', {
                 templateUrl: '/modules/components/map/views/mapSummary--view.html?t=' + environment.version,
                 controller: 'MapSummaryController',
                 controllerAs: 'page',
@@ -27,34 +27,28 @@ angular.module('FieldDoc')
 
                         return Account.userObject;
 
-                    },
-                    map: function(Map, $route) {
+                    }
+                }
+            })
+            .when('/maps/:id', {
+                templateUrl: '/modules/components/map/views/mapSummary--view.html?t=' + environment.version,
+                controller: 'MapSummaryController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
 
-                        var exclude = [
-                            'centroid',
-                            'creator',
-                            'dashboards',
-                            'geometry',
-                            'members',
-                            'metric_types',
-                            'practices',
-                            'practice_types',
-                            'properties',
-                            'targets',
-                            'tasks',
-                            'type',
-                            'sites'
-                        ].join(',');
+                        $rootScope.targetPath = document.location.pathname;
 
-                        return Map.get({
-                            id: $route.current.params.mapId,
-                            exclude: exclude
-                        });
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
 
                     }
                 }
             })
-            .when('/maps/:mapId/edit', {
+            .when('/maps/:id/edit', {
                 templateUrl: '/modules/components/map/views/mapEdit--view.html?t=' + environment.version,
                 controller: 'MapEditController',
                 controllerAs: 'page',
@@ -69,37 +63,10 @@ angular.module('FieldDoc')
 
                         return Account.userObject;
 
-                    },
-                    map: function(Map, $route) {
-
-                        var exclude = [
-                            'centroid',
-                            'creator',
-                            'dashboards',
-                            'extent',
-                            'geometry',
-                            'members',
-                            'metric_types',
-                            // 'partners',
-                            'practices',
-                            'practice_types',
-                            'properties',
-                            'tags',
-                            'targets',
-                            'tasks',
-                            'type',
-                            'sites'
-                        ].join(',');
-
-                        return Map.get({
-                            id: $route.current.params.mapId,
-                            exclude: exclude
-                        });
-
                     }
                 }
             })
-            .when('/maps/:mapId/images', {
+            .when('/maps/:id/images', {
                 templateUrl: '/modules/components/map/views/mapImage--view.html?t=' + environment.version,
                 controller: 'MapImageController',
                 controllerAs: 'page',
@@ -113,34 +80,6 @@ angular.module('FieldDoc')
                         }
 
                         return Account.userObject;
-
-                    },
-                    map: function(Map, $route) {
-
-                        var exclude = [
-                            'centroid',
-                            'creator',
-                            'dashboards',
-                            'extent',
-                            'geometry',
-                            'members',
-                            'metric_progress',
-                            'metric_types',
-                            // 'partners',
-                            'practices',
-                            'practice_types',
-                            'properties',
-                            'tags',
-                            'targets',
-                            'tasks',
-                            'type',
-                            'sites'
-                        ].join(',');
-
-                        return Map.get({
-                            id: $route.current.params.mapId,
-                            exclude: exclude
-                        });
 
                     }
                 }

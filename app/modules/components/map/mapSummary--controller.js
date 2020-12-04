@@ -2,16 +2,16 @@
 
 /**
  * @ngdoc function
- * @name FieldDoc.controller:MapviewController
+ * @name FieldDoc.controller:MapInterfaceviewController
  * @description
- * # MapviewController
+ * # MapInterfaceviewController
  * Controller of the FieldDoc
  */
 angular.module('FieldDoc')
     .controller('MapSummaryController',
-        function(Account, Notifications, $rootScope, Map, $routeParams,
+        function(Account, Notifications, $rootScope, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 map, Utility, $interval) {
+                 Utility, $interval) {
 
             var self = this;
 
@@ -54,7 +54,7 @@ angular.module('FieldDoc')
 
             };
 
-            self.showElements = function(createMap) {
+            self.showElements = function(createMapInterface) {
 
                 $timeout(function() {
 
@@ -70,7 +70,7 @@ angular.module('FieldDoc')
             // Assign map to a scoped variable
             //
 
-            self.loadMap = function() {
+            self.loadMapInterface = function() {
 
                 map.$promise.then(function(successResponse) {
 
@@ -84,7 +84,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    console.log('loadMap.errorResponse', errorResponse);
+                    console.log('loadMapInterface.errorResponse', errorResponse);
 
                     self.showElements(false);
 
@@ -110,11 +110,11 @@ angular.module('FieldDoc')
 
             self.loadMetrics = function() {
 
-                Map.progress({
+                MapInterface.progress({
                     id: self.map.id
                 }).$promise.then(function(successResponse) {
 
-                    console.log('Map metrics', successResponse);
+                    console.log('MapInterface metrics', successResponse);
 
                     Utility.processMetrics(successResponse.features);
 
@@ -152,23 +152,64 @@ angular.module('FieldDoc')
                 $location.reload();
             };
 
+            self.loadMap = function () {
+
+                var params = {};
+
+                if ($routeParams.id) {
+
+                    params.id = +$routeParams.id;
+
+                } else {
+
+                    params = $location.search();
+
+                }
+
+                MapInterface.query(
+                    params
+                ).$promise.then(function(successResponse) {
+
+                    self.feature = successResponse;
+
+                    self.permissions = successResponse.permissions;
+
+                    self.showElements();
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load map data.');
+
+                    self.showElements();
+
+                });
+
+            };
+
             //
             // Verify Account information for proper UI element display
             //
-
             if (Account.userObject && user) {
 
                 user.$promise.then(function(userResponse) {
 
                     $rootScope.user = Account.userObject = userResponse;
 
-                    self.user = Account.userObject = userResponse;
-
                     self.permissions = {};
+
+                    self.user = $rootScope.user;
+
+                    //
+                    // Assign map to a scoped variable
+                    //
 
                     self.loadMap();
 
                 });
+
+            } else {
+
+                $location.path('/logout');
 
             }
 
