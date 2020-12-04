@@ -124,6 +124,8 @@ angular.module('FieldDoc')
 
                     $timeout(self.closeAlerts, 2000);
 
+                    self.status.processing = false;
+
                 }).catch(function(error) {
 
                     // Do something with the error

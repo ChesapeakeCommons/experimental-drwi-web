@@ -1,0 +1,37 @@
+<nav id="toolbar" class="toolbar"
+     style="float: none; width: auto;" data-ng-if="$root.user.id">
+    <ul>
+        <li>
+            <a href="/maps/{{ page.feature.id }}"
+               data-ng-class="{active: $root.toolbarState.dashboard}" title="Summary">
+                <span class="material-icons">
+                    dashboard
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write && page.feature.picture"
+            title="Add image">
+            <a href="/organizations/{{ page.feature.id }}/images">
+                <span class="material-icons">
+                    photo_library
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write && !page.feature.picture"
+            title="Add image">
+            <a data-ng-click="page.showUploadModal = !page.showUploadModal">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write"
+            data-ng-class="{active: $root.toolbarState.edit}" title="Edit">
+            <a href="/maps/{{ page.feature.id }}/edit">
+                <span class="material-icons">
+                    edit
+                </span>
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -8,7 +8,7 @@
 
         <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
             <div class="progress--container">
-                <p style="font-weight: bold;" class="color-pulse">Loading project data&hellip;</p>
+                <p style="font-weight: bold;" class="color-pulse">Loading map data&hellip;</p>
             </div>
         </div>
 
@@ -21,7 +21,7 @@
                 </i>
             </p>
 
-            <p>This project is private.</p>
+            <p>This map is private.</p>
 
         </section>
 
@@ -31,10 +31,10 @@
             <div class="module--grid">
 
                 <div breadcrumb class="full-width"
-                     program="page.project.program"
-                     project="page.project"></div>
+                     program="page.feature.program"
+                     project="page.feature"></div>
 
-                <div class="archive-notice" data-ng-if="page.project.archived">
+                <div class="archive-notice" data-ng-if="page.feature.archived">
                     <span class="material-icons">
                         archive
                     </span>
@@ -46,23 +46,23 @@
                     <article class="pad space-right shadow reveal fade-in t0">
 
                         <h1 class="margin-0 margin-b-1">
-                            {{ page.project.name || 'Un-named' }}
+                            {{ page.feature.name || 'Un-named' }}
                         </h1>
 
                         <div class="last-modified-summary">
 
-                            <div data-ng-if="page.project.id && page.project.last_modified_by.first_name && page.project.last_modified_by.last_name"
+                            <div data-ng-if="page.feature.id && page.feature.last_modified_by.first_name && page.feature.last_modified_by.last_name"
                                  class="modtime">
-                                Last modified by {{ page.project.last_modified_by.first_name }} {{
-                                page.project.last_modified_by.last_name }} on {{ page.project.modified_on | localTime
-                                | date:'fullDate' }} at {{ page.project.modified_on | localTime | date:'h:mm' }} {{ page.project.modified_on | localTime | date:'a' }}
+                                Last modified by {{ page.feature.last_modified_by.first_name }} {{
+                                page.feature.last_modified_by.last_name }} on {{ page.feature.modified_on | localTime
+                                | date:'fullDate' }} at {{ page.feature.modified_on | localTime | date:'h:mm' }} {{ page.feature.modified_on | localTime | date:'a' }}
                             </div>
 
                             <div class="status-wrapper margin-0 margin-y-1 pad-0"
-                                 title="Status: {{ page.project.status | capitalAttribute }}">
-                                <div class="status status-{{ page.project.status }}">
+                                 title="Status: {{ page.feature.status | capitalAttribute }}">
+                                <div class="status status-{{ page.feature.status }}">
                                     <span class="dot"></span>
-                                    <span>{{ page.project.status | capitalAttribute }}</span>
+                                    <span>{{ page.feature.status | capitalAttribute }}</span>
                                 </div>
                             </div>
 
@@ -70,7 +70,7 @@
                                 <span class="material-icons">
                                     history
                                 </span>
-                                <a href="/projects/{{ page.project.id }}/history">
+                                <a href="/projects/{{ page.feature.id }}/history">
                                     View change log
                                 </a>
                             </div>
@@ -78,16 +78,16 @@
                         </div>
 
                         <div class="summary-warning-link-wrapper"
-                             data-ng-if="!page.project.program.id">
+                             data-ng-if="!page.feature.program.id">
                                 <span class="material-icons">
                                     error
                                 </span>
-                            <a href="/projects/{{ page.project.id }}/grant">
+                            <a href="/projects/{{ page.feature.id }}/grant">
                                 Please add a funding program to this project.
                             </a>
                         </div>
 
-                        <p data-ng-bind-html="page.project.description"></p>
+                        <p data-ng-bind-html="page.feature.description"></p>
 
                         <div data-ng-if="page.tags && page.tags.length">
 
@@ -480,14 +480,14 @@
                              data-ng-if="page.practicesSummary && page.practicesSummary.feature_count > 4">
                             <a title="Batch delete"
                                class="block-link margin-r-1"
-                               href="/projects/{{ page.project.id }}/batch-practice-delete"
+                               href="/projects/{{ page.feature.id }}/batch-practice-delete"
                                data-ng-if="page.permissions.can_edit">
                                 <span class="material-icons margin-r-50p">
                                       delete_sweep
                                 </span>
                                 Batch delete
                             </a>
-                            <a href="/projects/{{ page.project.id }}/practices"
+                            <a href="/projects/{{ page.feature.id }}/practices"
                                title="View all practices"
                                class="block-link">
                                 View all
@@ -692,14 +692,14 @@
                              data-ng-if="page.summary && page.summary.feature_count > 4">
                             <a title="Batch delete"
                                class="block-link margin-r-1"
-                               href="/projects/{{ page.project.id }}/batch-delete"
+                               href="/projects/{{ page.feature.id }}/batch-delete"
                                data-ng-if="page.permissions.can_edit">
                                 <span class="material-icons margin-r-50p">
                                       delete_sweep
                                 </span>
                                 Batch delete
                             </a>
-                            <a href="/projects/{{ page.project.id }}/sites"
+                            <a href="/projects/{{ page.feature.id }}/sites"
                                class="view-all-link">
                                 View all
                                 <span class="material-icons">
@@ -791,7 +791,7 @@
                     </div>
 
                     <p data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">
-                        {{page.project.name}} has <strong>{{ (page.partnerships.length | number) || 0 }}</strong>
+                        {{page.feature.name}} has <strong>{{ (page.partnerships.length | number) || 0 }}</strong>
                         <ng-pluralize count="page.partnerships.length"
                                       when="{'one': 'partnership','other': 'partnerships'}"></ng-pluralize>
                         .
@@ -843,89 +843,7 @@
 
     </div>
 
-    <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
-        <ul>
-<!--            <li data-ng-class="{active: $root.toolbarState.dashboard}">-->
-<!--                <a href="/projects/{{ page.project.id }}" title="Summary">-->
-<!--                    <i class="material-icons">-->
-<!--                        dashboard-->
-<!--                    </i>-->
-<!--                </a>-->
-<!--            </li>-->
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.grant}">
-                <a href="/projects/{{ page.project.id }}/grant" title="Program">
-                    <i class="material-icons">
-                        account_balance
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="/projects/{{ page.project.id }}/users" title="Collaborators">
-                    <i class="material-icons">
-                        group
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.partnerships}">
-                <a href="/projects/{{ page.project.id }}/partnerships" title="Partnerships">
-                    <i class="material-icons">
-                        group_work
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
-                <a href="/projects/{{ page.project.id }}/tags" title="Tags">
-                    <i class="material-icons">
-                        local_offer
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit"
-                style="border-top: 1px solid #e0e0e0;">
-                <a href="/projects/{{ page.project.id }}/edit" title="Edit">
-                    <i class="material-icons">
-                        edit
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="#"
-                   title="Export"
-                   data-ng-click="page.showExportDialog = !page.showExportDialog">
-                    <i class="material-icons">
-                        cloud_download
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="#" data-ng-click="page.print()" title="Print">
-                    <i class="material-icons">
-                        print
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup"
-                     data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.project.id && page.deletionTarget.collection === 'project'">
-                    <p>Do you want to delete this project?</p>
-                    <div class="actions">
-                        <a class="snapshot--title" href="#" title="Delete forever"
-                           data-ng-click="page.deleteFeature('project')">
-                            Yes
-                        </a>
-                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-                <a href="#" data-ng-click="page.confirmDelete(page.project, 'project')" title="Delete">
-                    <i class="material-icons">
-                        delete
-                    </i>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <div data-ng-include="'/templates/toolbars/map.html'"></div>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
@@ -936,12 +854,12 @@
         </div>
     </div>
 
-    <div creation-dialog alerts="page.alerts" parent="page.project.id" organization="page.project.organization_id"
+    <div creation-dialog alerts="page.alerts" parent="page.feature.id" organization="page.feature.organization_id"
          type="page.childType" visible="page.showChildModal"></div>
 
     <div export-dialog
          alerts="page.alerts"
-         feature="page.project"
+         feature="page.feature"
          reset-type="false"
          type="'project'"
          visible="page.showExportDialog"></div>

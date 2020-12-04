@@ -99,77 +99,7 @@
 
     </div>
 
-    <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
-        <ul>
-            <li>
-                <a href="/maps/{{ page.feature.id }}"
-                   data-ng-class="{active: $root.toolbarState.dashboard}" title="Summary">
-                    <i class="material-icons">
-                        dashboard
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: $root.toolbarState.edit}" title="Edit">
-                <a href="/maps/{{ page.feature.id }}/edit">
-                    <i class="material-icons">
-                        edit
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: $root.toolbarState.grant}" title="Program">
-                <a href="/maps/{{ page.feature.id }}/grant">
-                    <i class="material-icons">
-                        account_balance
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="/maps/{{ page.feature.id }}/users" title="Collaborators">
-                    <i class="material-icons">
-                        group
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: $root.toolbarState.partnerships}">
-                <a href="/maps/{{ page.feature.id }}/partnerships" title="Partnerships">
-                    <i class="material-icons">
-                        group_work
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: $root.toolbarState.editTags}">
-                <a href="/maps/{{ page.feature.id }}/tags" title="Tags">
-                    <i class="material-icons">
-                        local_offer
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget">
-                    <p>Do you want to delete this map?</p>
-                    <div class="actions">
-                        <a class="snapshot--title" href="#" title="Delete forever"
-                           data-ng-click="page.deleteFeature()">
-                            Yes
-                        </a>
-                        <a class="snapshot--title" href="#" title="Cancel"
-                           data-ng-click="page.cancelDelete()">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-                <a href="#" data-ng-click="page.confirmDelete(page.map)" title="Delete">
-                    <i class="material-icons">
-                        delete
-                    </i>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <div data-ng-include="'/templates/toolbars/map.html'"></div>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
