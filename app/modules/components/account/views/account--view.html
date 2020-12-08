@@ -125,14 +125,14 @@
                                 <strong>IP Address</strong>
                             </th>
                             <th class="pad-1" colspan="2">
-                                <strong>Timestamp</strong>
+                                <strong>Access time</strong>
                             </th>
                         </tr>
                     </thead>
 
                     <tbody>
 
-                        <tr data-ng-repeat="log in page.logs | orderBy: '-timestamp'">
+                        <tr data-ng-repeat="log in page.logs track by $index | orderBy: '-timestamp'">
                             <td class="pad-1" style="width: 1%; max-width: 20rem;">
                                 <span style="display: inline-block;">
                                     {{ log.browser | browserName }}
@@ -158,9 +158,9 @@
                                 <div>
                                     <span>
                                         <time datetime="{{ log.timestamp }}"
-                                              title="{{ log.timestamp }}">
-                                            {{ log.timestamp | date : 'mediumDate' }} &middot; {{ log.timestamp |
-                                            localTime | date:'h:mm' }} {{ log.timestamp | localTime | date:'a' }}
+                                              title="{{ log.timestamp | date : 'mediumDate' }} &middot; {{ log.timestamp |
+                                            localTime | date:'h:mm' }} {{ log.timestamp | localTime | date:'a' }}">
+                                            {{ log.timestamp | elapsedTime:true }}
                                         </time>
                                     </span>
                                 </div>
