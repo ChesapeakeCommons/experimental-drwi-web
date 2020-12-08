@@ -97,6 +97,82 @@
 
             </div>
 
+            <div class="create-heading margin-t-5">
+                <h2 class="margin-0 pad-0"
+                    data-ng-if="page.logs && page.logs.length">
+                    Security log
+                </h2>
+            </div>
+
+            <p class="pad-0 margin-0 margin-t-1"
+               style="font-size: .9rem; max-width: 50%;">
+                FieldDoc keeps track of your logins to protect your account from unauthorized use. If you
+                notice any suspicious activity, please <a href="mailto:support@fielddoc.org">contact our
+                support team</a> right away.
+            </p>
+
+            <div class="table-view margin-t-2"
+                 data-ng-if="page.logs && page.logs.length">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th class="pad-1">
+                                <strong>Browser</strong>
+                            </th>
+                            <th class="pad-1">
+                                <strong>IP Address</strong>
+                            </th>
+                            <th class="pad-1" colspan="2">
+                                <strong>Timestamp</strong>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr data-ng-repeat="log in page.logs | orderBy: '-timestamp'">
+                            <td class="pad-1" style="width: 1%; max-width: 20rem;">
+                                <span style="display: inline-block;">
+                                    {{ log.browser | browserName }}
+                                </span>
+                                <span style="display: inline-block;"
+                                      data-ng-if="log.version.length">
+                                    {{ log.version }}
+                                </span>
+                                <span style="display: inline-block;"
+                                      data-ng-if="log.version.length">
+                                    on
+                                </span>
+                                <span style="display: inline-block;">
+                                    {{ log.platform | platformName }}
+                                </span>
+                            </td>
+                            <td class="pad-1" style="width: 1%;">
+                                <span>
+                                    {{ log.remote_addr }}
+                                </span>
+                            </td>
+                            <td class="info-enabled pad-1" style="width: 1%;">
+                                <div>
+                                    <span>
+                                        <time datetime="{{ log.timestamp }}"
+                                              title="{{ log.timestamp }}">
+                                            {{ log.timestamp | date : 'mediumDate' }} &middot; {{ log.timestamp |
+                                            localTime | date:'h:mm' }} {{ log.timestamp | localTime | date:'a' }}
+                                        </time>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
     </div>

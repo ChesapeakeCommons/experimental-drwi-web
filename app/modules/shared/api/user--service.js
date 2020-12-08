@@ -22,6 +22,10 @@
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/data/user/me')
                 },
+                securityLog: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/user/security-log')
+                },
                 single: {
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/user/:id')

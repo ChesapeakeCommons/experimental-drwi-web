@@ -28,6 +28,28 @@ angular.module('FieldDoc')
 
             }
 
+            self.getAccessLogs = function() {
+
+                User.securityLog().$promise.then(function(successResponse) {
+
+                    self.feature = successResponse;
+
+                    self.logs = successResponse.features;
+
+                    self.status.processing = false;
+
+                }, function(errorResponse) {
+
+                    self.status.processing = false;
+
+                    $timeout(closeAlerts, 2000);
+
+                    self.status.loading = false;
+
+                });
+
+            };
+
             self.getUser = function() {
 
                 User.me().$promise.then(function(successResponse) {
@@ -90,6 +112,8 @@ angular.module('FieldDoc')
                     //
 
                     self.getUser();
+
+                    self.getAccessLogs();
 
                 });
 
