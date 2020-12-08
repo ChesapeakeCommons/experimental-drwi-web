@@ -1,0 +1,61 @@
+<!--<div data-ng-include="'/templates/header&#45;&#45;view.html'"></div>-->
+
+<main class="site--content--flow atlas fluid-content clearfix distinguish">
+
+    <div id="map">
+
+        <div class="mapboxgl-layer-ctrl"
+             data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
+            <i class="material-icons">
+                layers
+            </i>
+            <div class="layer-group" data-ng-show="page.showLayerOptions">
+                <form>
+                    <label data-ng-repeat="style in page.mapStyles"
+                           data-ng-class="{'active': page.activeStyle === $index}"
+                           title="{{ style.name }}">
+                        <input type="radio" id="base-style-{{ $index }}" name="active-style"
+                               data-ng-model="page.activeStyle" data-ng-value="{{ $index }}"
+                               data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
+                    </label>
+                </form>
+                <form class="layers" data-ng-show="page.layers && page.layers.length">
+                    <label for="layer-{{ $index }}" data-ng-repeat="layer in page.layers"
+                           data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
+                        <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                               data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                               data-ng-change="page.toggleLayer(layer)">
+                        <span> {{ layer.name }}</span>
+                        <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                            <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                 style="background: {{ color }};"></div>
+                        </div>
+                    </label>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+<!--    <div class="progress&#45;&#45;modal reveal fade-in t0" data-ng-if="page.status.loading">-->
+<!--        <div class="progress&#45;&#45;container">-->
+<!--            <p style="font-weight: bold;" class="color-pulse">Loading map data&hellip;</p>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <section class="privacy-message reveal fade-in t0"
+             data-ng-if="!page.status.loading && page.makePrivate">
+
+        <p>
+            <i class="material-icons">
+                lock
+            </i>
+        </p>
+
+        <p>This map is private.</p>
+
+    </section>
+
+</main>
+
+<!--<div data-ng-include="'/templates/footer&#45;&#45;view.html'"></div>-->

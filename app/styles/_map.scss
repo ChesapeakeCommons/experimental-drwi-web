@@ -5,6 +5,7 @@
 // specifications.
 //
 
+#map,
 .map,
 .leaflet-container.map {
     height: 30em;
@@ -50,7 +51,38 @@
 
     .project--popup {
         display: flex;
-        flex-flow: column;
+        flex-flow: column nowrap;
+        font-size: .9rem;
+        max-width: 320px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        border-radius: .25rem;
+        overflow: hidden;
+
+        .focus-btn {
+            width: 100%;
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .image {
+            height: 100%;
+            width: 100%;
+            min-height: 200px;
+            background-color: #EEEEEE;
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .meta-group {
+            display: flex;
+            flex-flow: column nowrap;
+        }
 
         .title--group {
             display: flex;

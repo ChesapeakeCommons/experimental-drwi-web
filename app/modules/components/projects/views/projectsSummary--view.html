@@ -873,6 +873,26 @@
                     </i>
                 </a>
             </li>
+
+            <!-- Images -->
+
+            <li data-ng-if="page.permissions.can_edit && page.project.picture"
+                title="Images">
+                <a href="/projects/{{ page.project.id }}/images">
+                <span class="material-icons">
+                    photo_library
+                </span>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit && !page.project.picture"
+                title="Add image">
+                <a data-ng-click="page.showImageModal = !page.showImageModal">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+                </a>
+            </li>
+
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
                 <a href="/projects/{{ page.project.id }}/tags" title="Tags">
                     <i class="material-icons">
@@ -952,6 +972,14 @@
          reset-type="false"
          type="'project'"
          visible="page.showExportDialog"></div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.project"
+         file-input="image-file-input"
+         callback="page.loadProject()"
+         feature-type="project"
+         visible="page.showImageModal"></div>
 
 </main>
 

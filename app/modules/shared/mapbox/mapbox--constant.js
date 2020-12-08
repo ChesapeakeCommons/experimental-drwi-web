@@ -27,6 +27,7 @@ angular.module('Mapbox')
         ],
         defaultOptions: {
             center: [0, 0], // starting position [lng, lat]
-            zoom: 2 // starting zoom
+            zoom: 2, // starting zoom,
+            maxZoom: 20
         }
     });

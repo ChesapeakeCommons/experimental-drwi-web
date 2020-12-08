@@ -615,6 +615,26 @@
                     </i>
                 </a>
             </li>
+
+            <!-- Images -->
+
+            <li data-ng-if="page.permissions.write && page.site.picture"
+                title="Images">
+                <a href="/sites/{{ page.site.id }}/images">
+                <span class="material-icons">
+                    photo_library
+                </span>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write && !page.site.picture"
+                title="Add image">
+                <a data-ng-click="page.showImageModal = !page.showImageModal">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+                </a>
+            </li>
+
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
                 <a href="/sites/{{ page.site.id }}/tags" title="Tags">
                     <i class="material-icons">
@@ -686,6 +706,14 @@
          reset-type="false"
          type="'site'"
          visible="page.showExportDialog"></div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.site"
+         file-input="image-file-input"
+         callback="page.loadSite()"
+         feature-type="site"
+         visible="page.showImageModal"></div>
 
 </main>
 

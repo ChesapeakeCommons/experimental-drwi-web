@@ -8,10 +8,8 @@
      * @description
      */
     angular.module('FieldDoc')
-        .service('Watershed', function(environment, Preprocessors, $resource) {
-            return $resource(environment.apiUrl.concat('/v1/data/watershed/:id'), {
-                id: '@id'
-            }, {
+        .service('DrexelInterface', function(environment, Preprocessors, $resource) {
+            return $resource('http://watersheds-staging.cci.drexel.edu/api/bmp\\/', {}, {
                 query: {
                     isArray: false,
                     cache: true
@@ -23,8 +21,7 @@
                 },
                 delineate: {
                     method: 'POST',
-                    isArray: false,
-                    url: 'http://watersheds-staging.cci.drexel.edu/api/bmp\\/'
+                    isArray: false
                 }
             });
         });

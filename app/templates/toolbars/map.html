@@ -9,9 +9,17 @@
                 </span>
             </a>
         </li>
+        <li data-ng-if="page.permissions.write"
+            title="Launch map">
+            <a href="/atlas/{{ page.feature.id }}">
+                <span class="material-icons">
+                    launch
+                </span>
+            </a>
+        </li>
         <li data-ng-if="page.permissions.write && page.feature.picture"
             title="Add image">
-            <a href="/organizations/{{ page.feature.id }}/images">
+            <a href="/maps/{{ page.feature.id }}/images">
                 <span class="material-icons">
                     photo_library
                 </span>

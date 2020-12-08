@@ -71,6 +71,25 @@
             </a>
         </li>
 
+        <!-- Images -->
+
+        <li data-ng-if="page.permissions.write && page.feature.picture"
+            title="Images">
+            <a href="/practices/{{ page.feature.id }}/images">
+                <span class="material-icons">
+                    photo_library
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write && !page.feature.picture"
+            title="Add image">
+            <a data-ng-click="page.showImageModal = !page.showImageModal">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+            </a>
+        </li>
+
         <!-- Reports -->
 
         <li data-ng-if="practice.permissions.write && nextAction === 'edit_targets'">
