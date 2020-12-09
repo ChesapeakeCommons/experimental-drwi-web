@@ -213,7 +213,7 @@ angular.module('FieldDoc')
                     contentEl
                 );
 
-                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - 50 - 10) + 'px';
+                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - 50) + 'px';
 
                 contentEl.style.opacity = 1;
 
