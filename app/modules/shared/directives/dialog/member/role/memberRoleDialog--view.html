@@ -54,9 +54,18 @@
                     </label>
 
                     <p class="pad-0 margin-0 margin-t-1"
-                       style="font-size: .9rem;">
+                       style="font-size: .9rem;"
+                       data-ng-if="parentType === 'organization'">
                         Members can view an organization’s data and settings. They can also view and edit its
                         projects but are not allowed to create or delete them.
+                    </p>
+
+                    <p class="pad-0 margin-0 margin-t-1"
+                       style="font-size: .9rem;"
+                       data-ng-if="parentType === 'project'">
+                        Members can view a project’s data and settings, including other members, sites, practices, and
+                        reports. They can edit sites, practices, and reports. Members are not allowed to delete any
+                        project-related features that they didn’t create themselves.
                     </p>
 
                     <label data-ng-class="{'active': activeRadio.owner}"
@@ -84,9 +93,18 @@
                     </label>
 
                     <p class="pad-0 margin-0 margin-t-1"
-                       style="font-size: .9rem;">
+                       style="font-size: .9rem;"
+                       data-ng-if="parentType === 'organization'">
                         Owners have unrestricted access to an organization’s data and settings. They can add, modify,
                         and delete projects and members.
+                    </p>
+
+                    <p class="pad-0 margin-0 margin-t-1"
+                       style="font-size: .9rem;"
+                       data-ng-if="parentType === 'project'">
+                        Owners have unrestricted access to a project’s data and settings. They can add, modify,
+                        and delete any type of project-related feature, including members, sites, practices,
+                        and reports.
                     </p>
 
                 </div>

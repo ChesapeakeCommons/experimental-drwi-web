@@ -13,10 +13,17 @@
             </div>
         </div>
         <div class="inputs">
-            <p class="prompt" style="word-break: break-word;">
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'organization'">
                 You’re about to remove <strong>{{ feature.user.name }}</strong> from this organization. They will be
                 unable to view or modify this organization’s data and settings, including projects. (The user
                 can still be given direct collaborator access on individual projects). Do you want to proceed?
+            </p>
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'project'">
+                You’re about to remove <strong>{{ feature.user.name }}</strong> from this project. They will be
+                unable to view or modify its data and settings, including sites, practices, and reports. Do you
+                want to proceed?
             </p>
         </div>
         <div class="dyad">
