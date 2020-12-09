@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div class="panel-toggle pad-0 pad-y-50p"
+<div class="panel-toggle pad-0 pad-y-1"
      data-ng-click="page.toggleSidebar()"
      data-ng-if="!page.status.loading">
     <span class="material-icons" data-ng-if="page.collapsed">
@@ -72,13 +72,12 @@
 
         <div class="tab--controls" data-ng-if="!page.status.loading">
 
-            <button class="trigger--search tab"
-                    data-ng-class="{'active': page.activeTab.collection === 'metric'}"
-                    type="button"
-                    data-ng-click="page.setTab('metric')"
-                    title="Metrics">
+            <h2 data-ng-class="{'active': page.activeTab.collection === 'metric'}"
+                style="font-size: 1.25rem; font-weight: 500; line-height: 1.75rem;"
+                class="margin-0 pad-0"
+                title="Metrics">
                 Metrics
-            </button>
+            </h2>
 
         </div>
 
@@ -158,20 +157,23 @@
                         <table class="table table-practices with-metrics" data-ng-repeat="model in page.metrics.models">
 
                             <thead>
-                            <tr>
-                                <th>
-                                    <strong>{{ model.datum.name }}</strong>
-                                    <p style="color: #616161; margin: 0; padding-top: 2em; font-size: 0.9em;">
-                                        The following metric values were generated using data and algorithms supplied by
-                                        the {{ model.datum.name }} model. You can find more information about this model
-                                        <a href="/models/{{ model.datum.id }}">here</a>.
-                                    </p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                <th class="table-metrics-header">Estimated value</th>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        <span style="font-size: .9rem; font-weight: 500;">
+                                            {{ model.datum.name }}
+                                        </span>
+                                        <p style="color: #616161; margin: 0; padding-top: 2em; font-size: 0.9em;">
+                                            The following metric values were generated using data and algorithms
+                                            supplied by the {{ model.datum.name }} model. You can find more
+                                            information about this model <a href="/models/{{ model.datum.id }}">here
+                                        </a>.
+                                        </p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th class="table-column-wide table-metrics-header">&nbsp;</th>
+                                    <th class="table-metrics-header">Estimated value</th>
+                                </tr>
                             </thead>
 
                             <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">

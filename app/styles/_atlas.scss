@@ -247,12 +247,17 @@
             }
 
             .banner {
-                height: 200px;
+                height: 240px;
                 background-color: #EEEEEE;
                 background-position: center center;
                 background-repeat: no-repeat;
                 background-size: cover;
                 border-radius: .5rem .5rem 0 0;
+                
+                .outer-controls {
+                    border: none !important;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
+                }
             }
 
             .panel-toggle {

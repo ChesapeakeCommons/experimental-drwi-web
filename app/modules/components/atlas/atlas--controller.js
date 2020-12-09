@@ -51,10 +51,10 @@ angular.module('FieldDoc')
             };
 
             self.padding = {
-                top: 40,
-                right: 40,
-                bottom: 40,
-                left: 40
+                top: 100,
+                right: 100,
+                bottom: 100,
+                left: 100
             };
 
             self.presentChildModal = function(featureType) {
@@ -252,11 +252,11 @@ angular.module('FieldDoc')
 
                 var panelEl = document.querySelector('.sidebar');
 
-                var offset = panelEl.offsetWidth + 40;
+                var offset = panelEl.offsetWidth + 100;
 
                 if (self.collapsed) {
 
-                    offset = 40;
+                    offset = 100;
 
                 }
 
@@ -300,7 +300,7 @@ angular.module('FieldDoc')
 
                 var elem = document.querySelector('.sidebar');
 
-                self.padding.left = self.collapsed ? 40 : elem.offsetWidth + 40;
+                self.padding.left = self.collapsed ? 100 : elem.offsetWidth + 100;
 
                 console.log(
                     'self.toggleSidebar:padding:',
