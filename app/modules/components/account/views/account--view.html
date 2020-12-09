@@ -134,18 +134,18 @@
 
                         <tr data-ng-repeat="log in page.logs track by $index | orderBy: '-timestamp'">
                             <td class="pad-1" style="width: 1%; max-width: 20rem;">
-                                <span style="display: inline-block;">
+                                <span style="display: inline;">
                                     {{ log.browser | browserName }}
                                 </span>
-                                <span style="display: inline-block;"
+                                <span style="display: inline;"
                                       data-ng-if="log.version.length">
                                     {{ log.version }}
                                 </span>
-                                <span style="display: inline-block;"
+                                <span style="display: inline;"
                                       data-ng-if="log.version.length">
                                     on
                                 </span>
-                                <span style="display: inline-block;">
+                                <span style="display: inline;">
                                     {{ log.platform | platformName }}
                                 </span>
                             </td>

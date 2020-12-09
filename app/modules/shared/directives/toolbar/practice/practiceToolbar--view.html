@@ -108,23 +108,6 @@
                     <a href="#" data-ng-click="presentChildModal()">
                         Click here to create one.
                     </a>
-              <!--      <div style="border:0px solid red;
-                                position: absolute;
-                                float:right;
-                                height:20px;
-                                width: 20px;
-                                display: block;
-                                right: 4px;
-                                top: 0px;
-                            "
-                         data-ng-click="closePrompt()">
-
-                        <i class="material-icons">
-                            close
-                        </i>
-
-                    </div>
-                    -->
                 </div>
             </div>
             <a href="#" title="Reports" data-ng-click="presentChildModal()">
@@ -142,6 +125,16 @@
             <a href="/practices/{{ practice.id }}/tags" title="Tags">
                 <i class="material-icons">
                     local_offer
+                </i>
+            </a>
+        </li>
+
+        <!-- Map -->
+
+        <li data-ng-if="practice.permissions.write" data-ng-class="{active: toolbarState === 'map'}">
+            <a href="/maps?target=practice:{{ practice.id }}" title="Map">
+                <i class="material-icons">
+                    map
                 </i>
             </a>
         </li>

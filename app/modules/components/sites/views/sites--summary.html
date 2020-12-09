@@ -601,14 +601,17 @@
 <!--                    </i>-->
 <!--                </a>-->
 <!--            </li>-->
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editLocation}">
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.editLocation}">
                 <a href="/sites/{{ page.site.id }}/location" title="Location">
                     <i class="material-icons">
                         location_on
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.viewGeographies}">
+
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.viewGeographies}">
                 <a href="/sites/{{ page.site.id }}/geographies" title="Geography">
                     <i class="material-icons">
                         public
@@ -618,7 +621,7 @@
 
             <!-- Images -->
 
-            <li data-ng-if="page.permissions.write && page.site.picture"
+            <li data-ng-if="page.permissions.can_edit && page.site.picture"
                 title="Images">
                 <a href="/sites/{{ page.site.id }}/images">
                 <span class="material-icons">
@@ -626,7 +629,8 @@
                 </span>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.write && !page.site.picture"
+
+            <li data-ng-if="page.permissions.can_edit && !page.site.picture"
                 title="Add image">
                 <a data-ng-click="page.showImageModal = !page.showImageModal">
                 <span class="material-icons">
@@ -635,13 +639,30 @@
                 </a>
             </li>
 
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
+            <!-- Tags -->
+
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.editTags}">
                 <a href="/sites/{{ page.site.id }}/tags" title="Tags">
                     <i class="material-icons">
                         local_offer
                     </i>
                 </a>
             </li>
+
+            <!-- Map -->
+
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: toolbarState === 'map'}">
+                <a href="/maps?target=site:{{ page.site.id }}" title="Map">
+                    <i class="material-icons">
+                        map
+                    </i>
+                </a>
+            </li>
+
+            <!-- Edit -->
+
             <li data-ng-if="page.permissions.can_edit"
                 data-ng-class="{active: $root.toolbarState.edit}"
                 style="border-top: 1px solid #e0e0e0;">
@@ -651,6 +672,7 @@
                     </i>
                 </a>
             </li>
+
             <li data-ng-if="page.permissions.can_edit">
                 <a href="#"
                    title="Export"
@@ -660,6 +682,7 @@
                     </i>
                 </a>
             </li>
+
             <li data-ng-if="page.permissions.can_edit">
                 <a href="#" data-ng-click="page.print()" title="Print">
                     <i class="material-icons">
@@ -667,8 +690,10 @@
                     </i>
                 </a>
             </li>
+
             <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.site.id && page.deletionTarget.collection === 'site'">
+                <div class="confirm--delete--popup"
+                     data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.site.id && page.deletionTarget.collection === 'site'">
                     <p>Do you want to delete this site?</p>
                     <div class="actions">
                         <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('site')">
@@ -685,7 +710,9 @@
                     </i>
                 </a>
             </li>
+
         </ul>
+
     </nav>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">

@@ -43,6 +43,13 @@ angular.module('FieldDoc')
                 loading: true
             };
 
+            self.padding = {
+                top: 40,
+                right: 40,
+                bottom: 40,
+                left: 40
+            };
+
             self.presentChildModal = function(featureType) {
 
                 if (featureType !== 'practice' &&
@@ -61,6 +68,12 @@ angular.module('FieldDoc')
                     self.status.loading = false;
 
                     self.status.processing = false;
+
+                    $timeout(function() {
+
+                        self.sizeSidebar();
+
+                    }, 0);
 
                     if (createMap) {
 
@@ -170,6 +183,8 @@ angular.module('FieldDoc')
 
                     // self.showElements(true);
 
+                    self.fitMap();
+
                     self.populateMap();
 
                 }, function(errorResponse) {
@@ -182,33 +197,96 @@ angular.module('FieldDoc')
 
             };
 
+            self.sizeSidebar = function() {
+
+                var body = document.querySelector('body');
+
+                var elem = document.querySelector('.sidebar');
+
+                elem.style.height = (body.offsetHeight - 80) + 'px';
+
+            };
+
+            self.positionSidebar = function(elem) {
+
+                var transform = 'translateX(' + 0 + 'px)';
+
+                if (self.collapsed) {
+
+                    transform = 'translateX(-' + elem.offsetWidth + 'px)';
+
+                }
+
+                elem.style.transform = transform;
+
+            };
+
+            self.getLeftMapOffset = function() {
+
+                var panelEl = document.querySelector('.sidebar');
+
+                var offset = panelEl.offsetWidth + 40;
+
+                if (self.collapsed) {
+
+                    offset = 40;
+
+                }
+
+                return offset;
+
+            };
+
+            self.offsetMap = function(collapsed, offset) {
+
+                console.log(
+                    'self.offsetMap:',
+                    collapsed,
+                    offset
+                );
+
+                var padding = {
+                    left: 0
+                };
+
+                if (!collapsed && offset) {
+
+                    padding.left = offset;
+
+                }
+
+                self.map.easeTo({
+                    padding: padding,
+                    duration: 500
+                });
+
+            };
+
+            self.toggleSidebar = function() {
+
+                self.collapsed = !self.collapsed;
+
+                console.log(
+                    'self.toggleSidebar:collapsed',
+                    self.collapsed
+                );
+
+                var elem = document.querySelector('.sidebar');
+
+                self.padding.left = self.collapsed ? 40 : elem.offsetWidth + 40;
+
+                console.log(
+                    'self.toggleSidebar:padding:',
+                    self.padding
+                );
+
+                self.fitMap(true);
+
+                self.positionSidebar(elem);
+
+            };
+
             self.delineateWatershed = function(practice) {
-
-                // var data = {
-                //     // "bmp_type": "Forest Buffer",
-                //     // "bmp_group": "Polygon Drainage",
-                //     'bmp_short_name': 'riparianbuffers',
-                //     'bmp_geometry': practice.geometry
-                // };
-
-                // DrexelInterface.delineate(
-                //     {},
-                //     params
-                // ).$promise.then(function(successResponse) {
-                //
-                //     console.log(
-                //         'delineateWatershed:successResponse:',
-                //         successResponse
-                //     )
-                //
-                // }, function(errorResponse) {
-                //
-                //     console.error(
-                //         'delineateWatershed:errorResponse:',
-                //         errorResponse
-                //     )
-                //
-                // });
 
                 $http({
                     method: 'POST',
@@ -264,7 +342,7 @@ angular.module('FieldDoc')
                         );
 
                         self.map.fitBounds(bounds, {
-                            padding: 40
+                            padding: self.padding
                         });
 
                     } catch (e) {
@@ -284,7 +362,7 @@ angular.module('FieldDoc')
 
             };
 
-            self.populateMap = function() {
+            self.fitMap = function(linear) {
 
                 var bounds;
 
@@ -315,14 +393,20 @@ angular.module('FieldDoc')
                 if (bounds && typeof bounds !== 'undefined') {
 
                     self.map.fitBounds(bounds, {
-                        padding: 40
+                        linear: linear ? linear : false,
+                        padding: self.padding
                     });
 
                 }
 
-                var featureType = self.feature.primary_node.properties.type;
+            };
 
-                if (featureType === 'practice') {
+            self.populateMap = function() {
+
+                self.featureType = self.feature.primary_node.properties.type;
+
+                if (self.featureType === 'practice' ||
+                    self.featureType === 'site') {
 
                     self.delineateWatershed(self.feature.primary_node);
 
@@ -332,7 +416,7 @@ angular.module('FieldDoc')
 
                     var sourceSpec = AtlasMapManager.createSource(
                         self.feature.primary_node,
-                        featureType
+                        self.featureType
                     );
 
                     console.log(
@@ -344,7 +428,7 @@ angular.module('FieldDoc')
 
                     var layerSpec = AtlasMapManager.createLayer(
                         sourceSpec,
-                        featureType
+                        self.featureType
                     );
 
                     console.log(
@@ -362,7 +446,7 @@ angular.module('FieldDoc')
 
                         console.warn(e);
 
-                        if (featureType === 'project') {
+                        if (self.featureType === 'project') {
 
                             try {
 
@@ -498,9 +582,11 @@ angular.module('FieldDoc')
 
                     console.log("Loading Map");
 
+                    // self.toggleSidebar();
+
                     var nav = new mapboxgl.NavigationControl();
 
-                    self.map.addControl(nav, 'top-left');
+                    self.map.addControl(nav, 'bottom-right');
 
                     var scale = new mapboxgl.ScaleControl({
                         maxWidth: 80,
@@ -508,6 +594,25 @@ angular.module('FieldDoc')
                     });
 
                     self.map.addControl(scale);
+
+                    var geocoder = new MapboxGeocoder({
+                        accessToken: mapboxgl.accessToken,
+                        clearOnBlur: true,
+                        countries: 'us',
+                        mapboxgl: mapboxgl,
+                        marker: false,
+                        minLength: 3,
+                        placeholder: 'Find addresses and places'
+                    });
+
+                    // var geocoder = new mapboxgl.GeolocateControl({
+                    //     positionOptions: {
+                    //         enableHighAccuracy: true
+                    //     },
+                    //     trackUserLocation: true
+                    // });
+
+                    document.getElementById('geocoder').appendChild(geocoder.onAdd(self.map));
 
                     // self.map.addControl(new mapboxgl.GeolocateControl({
                     //     positionOptions: {
@@ -526,12 +631,14 @@ angular.module('FieldDoc')
 
                     }
 
+                    self.padding.left = self.getLeftMapOffset();
+
                     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);
 
                     var bounds = turf.bbox(line);
 
                     self.map.fitBounds(bounds, {
-                        padding: 40
+                        padding: self.padding
                     });
 
                     self.loadMap();
@@ -552,6 +659,8 @@ angular.module('FieldDoc')
                     self.permissions = {};
 
                     self.user = $rootScope.user;
+
+                    $rootScope.page.title = 'Atlas';
 
                     //
                     // Assign map to a scoped variable
