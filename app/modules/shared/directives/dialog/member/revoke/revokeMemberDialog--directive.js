@@ -19,6 +19,7 @@
                         'alerts': '=?',
                         'callback': '&',
                         'feature': '=?',
+                        'parentType': '@',
                         'visible': '=?'
                     },
                     templateUrl: function(elem, attrs) {
@@ -36,6 +37,13 @@
 
                     },
                     link: function(scope, element, attrs) {
+
+                        if (scope.parentType !== 'organization' &&
+                            scope.parentType !== 'project') {
+
+                            throw 'Unsupported `parent-type` setting.';
+
+                        }
 
                         function closeAlerts() {
 
@@ -58,7 +66,8 @@
                         scope.deleteFeature = function() {
 
                             Membership.delete({
-                                id: scope.feature.id
+                                id: scope.feature.id,
+                                type: scope.parentType
                             }).$promise.then(function(data) {
 
                                 scope.alerts.push({

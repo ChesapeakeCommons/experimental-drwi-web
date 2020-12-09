@@ -19,6 +19,7 @@
                         'featureType': '@',
                         'includeMod': '=?',
                         'index': '=?',
+                        'parentType': '@',
                         'permissions': '=?',
                         'visible': '=?'
                     },
@@ -42,6 +43,13 @@
 
                     },
                     link: function (scope, element, attrs) {
+
+                        if (scope.parentType !== 'organization' &&
+                            scope.parentType !== 'project') {
+
+                            throw 'Unsupported `parent-type` setting.';
+
+                        }
 
                         $window.scrollTo(0, 0);
 
@@ -69,6 +77,8 @@
 
                             var existing = scope.tipManager[key];
 
+                            scope.modalManager = {};
+
                             scope.tipManager = {};
 
                             if (existing === membershipId) return;
@@ -82,6 +92,8 @@
                         scope.toggleActionModal = function (membershipId) {
 
                             var existing = scope.modalManager.action;
+
+                            scope.tipManager = {};
 
                             scope.modalManager = {};
 

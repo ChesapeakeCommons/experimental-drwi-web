@@ -19,6 +19,7 @@
                         'alerts': '=?',
                         'callback': '&',
                         'feature': '=?',
+                        'parentType': '@',
                         'visible': '=?'
                     },
                     templateUrl: function(elem, attrs) {
@@ -37,6 +38,18 @@
                     },
                     link: function(scope, element, attrs) {
 
+                        console.log(
+                            'memberRoleDialog:parentType:',
+                            scope.parentType
+                        );
+
+                        if (scope.parentType !== 'organization' &&
+                            scope.parentType !== 'project') {
+
+                            throw 'Unsupported `parent-type` setting.';
+
+                        }
+
                         scope.activeRadio = {};
 
                         if (typeof scope.resetType === 'undefined') {
@@ -52,6 +65,10 @@
                         }
 
                         scope.closeChildModal = function(refresh) {
+
+                            console.log(
+                                'memberRoleDialog:closeChildModal:'
+                            );
 
                             scope.visible = false;
 
@@ -70,7 +87,8 @@
                             data.role = role;
 
                             Membership.update({
-                                id: scope.feature.id
+                                id: scope.feature.id,
+                                type: scope.parentType
                             }, data).$promise.then(function(successResponse) {
 
                                 scope.alerts = [{
