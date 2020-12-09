@@ -11,7 +11,8 @@ angular.module('FieldDoc')
     .controller('AtlasController',
         function(Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval, AtlasMapManager, AtlasDataManager, DrexelInterface) {
+                 Utility, $interval, AtlasMapManager, AtlasDataManager, DrexelInterface,
+                 Practice, Project) {
 
             var self = this;
 
@@ -21,6 +22,12 @@ angular.module('FieldDoc')
 
             $rootScope.toolbarState = {
                 'dashboard': true
+            };
+
+            self.clsMap = {
+                practice: Practice,
+                site: Site,
+                project: Project
             };
 
             $rootScope.page = {};
@@ -61,39 +68,13 @@ angular.module('FieldDoc')
 
             };
 
-            self.showElements = function(createMap) {
+            self.showElements = function() {
 
                 $timeout(function() {
 
                     self.status.loading = false;
 
                     self.status.processing = false;
-
-                    $timeout(function() {
-
-                        self.sizeSidebar();
-
-                    }, 0);
-
-                    if (createMap) {
-
-                        console.log("CREATE MAP");
-
-                        $timeout(function() {
-
-                            console.log("MAKING THE MAP");
-
-                            if (!self.mapOptions) {
-
-                                self.mapOptions = self.getMapOptions();
-
-                            }
-
-                            self.createMap(self.mapOptions);
-
-                        }, 0);
-
-                    }
 
                 }, 0);
 
@@ -115,27 +96,33 @@ angular.module('FieldDoc')
 
             };
 
-            self.loadMetrics = function() {
-
-                MapInterface.progress({
-                    id: self.map.id
-                }).$promise.then(function(successResponse) {
-
-                    console.log('MapInterface metrics', successResponse);
-
-                    Utility.processMetrics(successResponse.features);
-
-                    self.metrics = Utility.groupByModel(successResponse.features);
-
-                    console.log('self.metrics', self.metrics);
-
-                }, function(errorResponse) {
-
-                    console.log('errorResponse', errorResponse);
-
-                });
-
-            };
+            // self.loadMetrics = function() {
+            //
+            //     MapInterface.progress({
+            //         id: self.map.id
+            //     }).$promise.then(function(successResponse) {
+            //
+            //         console.log('MapInterface metrics', successResponse);
+            //
+            //         Utility.processMetrics(successResponse.features);
+            //
+            //         self.metrics = Utility.groupByModel(successResponse.features);
+            //
+            //         console.log('self.metrics', self.metrics);
+            //
+            //         $timeout(function () {
+            //
+            //             self.resizeMainContent();
+            //
+            //         }, 50);
+            //
+            //     }, function(errorResponse) {
+            //
+            //         console.log('errorResponse', errorResponse);
+            //
+            //     });
+            //
+            // };
 
             self.showMetricModal = function(metric) {
 
@@ -181,19 +168,57 @@ angular.module('FieldDoc')
 
                     self.permissions = successResponse.permissions;
 
-                    // self.showElements(true);
+                    self.featureType = self.feature.primary_node.properties.type;
+
+                    self.featureClass = self.clsMap[self.featureType];
+
+                    self.showElements();
 
                     self.fitMap();
 
                     self.populateMap();
 
+                    self.loadMetrics();
+
                 }, function(errorResponse) {
 
                     console.log('Unable to load map data.');
 
-                    // self.showElements(true);
+                    self.showElements();
 
                 });
+
+            };
+
+            self.resizeMainContent = function() {
+
+                var bodyEl = document.querySelector('body');
+
+                console.log(
+                    'self.resizeMainContent:body:',
+                    bodyEl
+                );
+
+                var controlsEl = document.querySelector('.outer-controls-container');
+
+                console.log(
+                    'self.resizeMainContent:controlsEl:',
+                    controlsEl
+                );
+
+                var contentEl = document.querySelector('.main-content-container');
+
+                console.log(
+                    'self.resizeMainContent:contentEl:',
+                    contentEl
+                );
+
+                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - 50 - 10) + 'px';
+
+                console.log(
+                    'self.resizeMainContent:contentEl:height:',
+                    contentEl.style.height
+                );
 
             };
 
@@ -203,7 +228,7 @@ angular.module('FieldDoc')
 
                 var elem = document.querySelector('.sidebar');
 
-                elem.style.height = (body.offsetHeight - 80) + 'px';
+                elem.style.height = (body.offsetHeight - 50) + 'px';
 
             };
 
@@ -584,16 +609,20 @@ angular.module('FieldDoc')
 
                     // self.toggleSidebar();
 
-                    var nav = new mapboxgl.NavigationControl();
-
-                    self.map.addControl(nav, 'bottom-right');
+                    // var nav = new mapboxgl.NavigationControl();
+                    //
+                    // self.map.addControl(nav, 'bottom-right');
 
                     var scale = new mapboxgl.ScaleControl({
                         maxWidth: 80,
                         unit: 'imperial'
                     });
 
-                    self.map.addControl(scale);
+                    self.map.addControl(scale, 'bottom-right');
+
+                    var nav = new mapboxgl.NavigationControl();
+
+                    self.map.addControl(nav, 'bottom-right');
 
                     var geocoder = new MapboxGeocoder({
                         accessToken: mapboxgl.accessToken,
@@ -647,6 +676,52 @@ angular.module('FieldDoc')
 
             };
 
+            self.stageMap = function(createMap) {
+
+                self.sizeSidebar();
+
+                if (createMap) {
+
+                    if (!self.mapOptions) {
+
+                        self.mapOptions = self.getMapOptions();
+
+                    }
+
+                    self.createMap(self.mapOptions);
+
+                }
+
+            };
+
+            self.loadMetrics = function() {
+
+                self.featureClass.progress({
+                    id: self.feature.primary_node.properties.id
+                }).$promise.then(function(successResponse) {
+
+                    // console.log('Project metrics', successResponse);
+
+                    Utility.processMetrics(successResponse.features);
+
+                    self.metrics = Utility.groupByModel(successResponse.features);
+
+                    console.log('self.metrics', self.metrics);
+
+                    $timeout(function () {
+
+                        self.resizeMainContent();
+
+                    }, 50);
+
+                }, function(errorResponse) {
+
+                    console.log('errorResponse', errorResponse);
+
+                });
+
+            };
+
             //
             // Verify Account information for proper UI element display
             //
@@ -666,7 +741,7 @@ angular.module('FieldDoc')
                     // Assign map to a scoped variable
                     //
 
-                    self.showElements(true);
+                    self.stageMap(true);
 
                 });
 
