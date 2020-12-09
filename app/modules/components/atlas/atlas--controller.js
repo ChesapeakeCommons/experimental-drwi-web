@@ -215,6 +215,8 @@ angular.module('FieldDoc')
 
                 contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - 50 - 10) + 'px';
 
+                contentEl.style.opacity = 1;
+
                 console.log(
                     'self.resizeMainContent:contentEl:height:',
                     contentEl.style.height

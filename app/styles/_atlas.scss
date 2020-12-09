@@ -162,7 +162,7 @@
             background-color: #FFFFFF;
             border-radius: .5rem;
             //overflow-y: scroll;
-            transition: transform .5s;
+            transition: translate .5s, height .2s cubic-bezier(.4,0,.2,1);
             z-index: 2;
 
             .main-content-container {
@@ -213,6 +213,33 @@
                     .geocoder-container {
                         flex-grow: 1;
                         flex-shrink: 1;
+
+                        ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+                            color: #616161;
+                        }
+
+                        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+                            color: #616161;
+                            opacity: 1;
+                        }
+
+                        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+                            color: #616161;
+                            opacity:  1;
+                        }
+
+                        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+                            color: #616161;
+                        }
+
+                        ::-ms-input-placeholder { /* Microsoft Edge */
+                            color: #616161;
+                        }
+
+                        ::placeholder { /* Most modern browsers support this now. */
+                            color: #616161;
+                        }
+
                     }
 
                 }
