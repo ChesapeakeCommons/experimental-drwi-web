@@ -16,6 +16,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            var BOTTOM_OFFSET = 48;
+
             $rootScope.viewState = {
                 'map': true
             };
@@ -213,7 +215,7 @@ angular.module('FieldDoc')
                     contentEl
                 );
 
-                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - 50) + 'px';
+                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - BOTTOM_OFFSET) + 'px';
 
                 contentEl.style.opacity = 1;
 
@@ -230,7 +232,7 @@ angular.module('FieldDoc')
 
                 var elem = document.querySelector('.sidebar');
 
-                elem.style.height = (body.offsetHeight - 50) + 'px';
+                elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
 
             };
 

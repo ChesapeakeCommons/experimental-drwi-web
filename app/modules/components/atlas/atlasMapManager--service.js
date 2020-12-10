@@ -39,18 +39,18 @@ angular.module('FieldDoc')
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#757575',
+                        'circle-color': '#00C8FF',
                         'circle-radius': 8,
                         'circle-stroke-width': 1,
-                        'circle-stroke-color': '#424242'
+                        'circle-stroke-color': '#00C8FF'
                     },
                     'fill': {
-                        'fill-color': '#757575',
+                        'fill-color': '#00C8FF',
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#424242'
                     },
                     'line': {
-                        'line-color': '#757575',
+                        'line-color': '#00C8FF',
                         'line-width': 2
                     }
                 }
