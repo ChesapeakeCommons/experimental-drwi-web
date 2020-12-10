@@ -32,6 +32,12 @@ angular.module('FieldDoc')
                 project: Project
             };
 
+            self.layers = [{
+                id: 'fd.delineation.1',
+                name: 'Drainage',
+                selected: true
+            }];
+
             $rootScope.page = {};
 
             self.alerts = [];
@@ -334,7 +340,7 @@ angular.module('FieldDoc')
                         "type": "Feature",
                         "geometry": successResponse.data,
                         "properties": {
-                            "id": Date.now()
+                            "id": '1'
                         }
                     };
 
@@ -515,13 +521,31 @@ angular.module('FieldDoc')
 
             };
 
-            self.toggleLayer = function(layer) {
+            self.toggleDrainage = function() {
 
-                console.log('self.toggleLayer --> layer', layer);
+                self.toggleLayer('fd.delineation.1');
 
-                var layerId = layer.spec.id;
+            };
+
+            self.toggleLayer = function(layerId) {
+
+                console.log(
+                    'self.toggleLayer:layerId:',
+                    layerId
+                );
 
                 var visibility = self.map.getLayoutProperty(layerId, 'visibility');
+
+                console.log(
+                    'self.toggleLayer:visibility:',
+                    visibility
+                );
+
+                //
+                // If undefined, assume that layers have the default visibility.
+                //
+                
+                visibility = typeof visibility === 'string' ? visibility : 'visible';
 
                 if (visibility === 'visible') {
 
