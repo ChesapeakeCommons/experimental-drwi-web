@@ -11,8 +11,8 @@ angular.module('FieldDoc')
     .controller('AtlasController',
         function(Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval, AtlasMapManager, AtlasDataManager, DrexelInterface,
-                 Practice, Project, LayerUtil, SourceUtil, PopupUtil) {
+                 Utility, $interval, AtlasDataManager,
+                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil) {
 
             var self = this;
 
@@ -152,7 +152,12 @@ angular.module('FieldDoc')
 
                     self.showElements();
 
-                    self.fitMap();
+                    MapUtil.fitMap(
+                        self.map,
+                        self.feature.primary_node,
+                        self.padding,
+                        false
+                    );
 
                     self.populateMap();
 
@@ -242,31 +247,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.offsetMap = function(collapsed, offset) {
-
-                console.log(
-                    'self.offsetMap:',
-                    collapsed,
-                    offset
-                );
-
-                var padding = {
-                    left: 0
-                };
-
-                if (!collapsed && offset) {
-
-                    padding.left = offset;
-
-                }
-
-                self.map.easeTo({
-                    padding: padding,
-                    duration: 500
-                });
-
-            };
-
             self.toggleSidebar = function() {
 
                 self.collapsed = !self.collapsed;
@@ -285,7 +265,12 @@ angular.module('FieldDoc')
                     self.padding
                 );
 
-                self.fitMap(true);
+                self.fitMap(
+                    self.map,
+                    self.feature.primary_node,
+                    self.padding,
+                    true
+                );
 
                 self.positionSidebar(elem);
 
@@ -372,45 +357,6 @@ angular.module('FieldDoc')
                     );
 
                 });
-
-            };
-
-            self.fitMap = function(linear) {
-
-                var bounds;
-
-                try {
-
-                    try {
-
-                        bounds = turf.bbox(
-                            self.feature.primary_node.properties.extent
-                        );
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                        bounds = turf.bbox(
-                            self.feature.primary_node.geometry
-                        );
-
-                    }
-
-                } catch (e) {
-
-                    console.warn(e);
-
-                }
-
-                if (bounds && typeof bounds !== 'undefined') {
-
-                    self.map.fitBounds(bounds, {
-                        linear: linear ? linear : false,
-                        padding: self.padding
-                    });
-
-                }
 
             };
 
@@ -516,7 +462,7 @@ angular.module('FieldDoc')
                     layerId
                 );
 
-                LayerUtil.toggleLayer(layerid, self.map);
+                LayerUtil.toggleLayer(layerId, self.map);
 
             };
 

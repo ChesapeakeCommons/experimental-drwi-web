@@ -288,6 +288,44 @@ angular.module('FieldDoc')
 
                 return tpl;
 
+            },
+            fitMap: function(map, feature, linear) {
+
+                var bounds;
+
+                try {
+
+                    try {
+
+                        bounds = turf.bbox(
+                            feature.properties.extent
+                        );
+
+                    } catch (e) {
+
+                        console.warn(e);
+
+                        bounds = turf.bbox(
+                            feature.geometry
+                        );
+
+                    }
+
+                } catch (e) {
+
+                    console.warn(e);
+
+                }
+
+                if (bounds && typeof bounds !== 'undefined') {
+
+                    map.fitBounds(bounds, {
+                        linear: linear ? linear : false,
+                        padding: self.padding
+                    });
+
+                }
+
             }
 
         };
