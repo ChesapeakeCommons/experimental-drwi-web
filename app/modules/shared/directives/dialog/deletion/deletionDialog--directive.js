@@ -58,7 +58,7 @@
 
                         if (typeof scope.model === 'undefined') {
 
-                            throw 'Un-recognized `featureType` parameter.';
+                            throw new Error('Un-recognized `featureType` parameter.');
 
                         }
 

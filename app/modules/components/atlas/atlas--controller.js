@@ -12,11 +12,13 @@ angular.module('FieldDoc')
         function(Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasMapManager, AtlasDataManager, DrexelInterface,
-                 Practice, Project) {
+                 Practice, Project, LayerUtil, SourceUtil, PopupUtil) {
 
             var self = this;
 
             var BOTTOM_OFFSET = 48;
+
+            var DRAINAGE_ID = 'fd.delineation.1';
 
             $rootScope.viewState = {
                 'map': true
@@ -33,9 +35,9 @@ angular.module('FieldDoc')
             };
 
             self.layers = [{
-                id: 'fd.delineation.1',
+                id: DRAINAGE_ID,
                 name: 'Drainage',
-                selected: true
+                selected: false
             }];
 
             $rootScope.page = {};
@@ -45,12 +47,6 @@ angular.module('FieldDoc')
             function closeAlerts() {
 
                 self.alerts = [];
-
-            }
-
-            function closeRoute() {
-
-                $location.path('/maps');
 
             }
 
@@ -104,34 +100,6 @@ angular.module('FieldDoc')
 
             };
 
-            // self.loadMetrics = function() {
-            //
-            //     MapInterface.progress({
-            //         id: self.map.id
-            //     }).$promise.then(function(successResponse) {
-            //
-            //         console.log('MapInterface metrics', successResponse);
-            //
-            //         Utility.processMetrics(successResponse.features);
-            //
-            //         self.metrics = Utility.groupByModel(successResponse.features);
-            //
-            //         console.log('self.metrics', self.metrics);
-            //
-            //         $timeout(function () {
-            //
-            //             self.resizeMainContent();
-            //
-            //         }, 50);
-            //
-            //     }, function(errorResponse) {
-            //
-            //         console.log('errorResponse', errorResponse);
-            //
-            //     });
-            //
-            // };
-
             self.showMetricModal = function(metric) {
 
                 console.log('self.showMetricModal', metric);
@@ -156,17 +124,19 @@ angular.module('FieldDoc')
 
             self.loadMap = function () {
 
-                var params = {};
+                var params = {
+                    id: +$location.search().origin
+                };
 
-                if ($routeParams.id) {
-
-                    params.id = +$routeParams.id;
-
-                } else {
-
-                    params = $location.search();
-
-                }
+                // if ($routeParams.id) {
+                //
+                //     params.id = +$routeParams.id;
+                //
+                // } else {
+                //
+                //     params = $location.search();
+                //
+                // }
 
                 MapInterface.query(
                     params
@@ -340,11 +310,11 @@ angular.module('FieldDoc')
                         "type": "Feature",
                         "geometry": successResponse.data,
                         "properties": {
-                            "id": '1'
+                            "id": DRAINAGE_ID
                         }
                     };
 
-                    var sourceSpec = AtlasMapManager.createSource(
+                    var sourceSpec = SourceUtil.createSource(
                         feature,
                         'delineation'
                     );
@@ -354,9 +324,11 @@ angular.module('FieldDoc')
                         sourceSpec
                     );
 
+                    SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
+
                     self.map.addSource(sourceSpec.id, sourceSpec.config);
 
-                    var layerSpec = AtlasMapManager.createLayer(
+                    var layerSpec = LayerUtil.createLayer(
                         sourceSpec,
                         'delineation'
                     );
@@ -367,6 +339,12 @@ angular.module('FieldDoc')
                     );
 
                     layerSpec.id = sourceSpec.id;
+
+                    layerSpec.layout = {
+                        visibility: 'none'
+                    };
+
+                    LayerUtil.trackLayer(layerSpec);
 
                     self.map.addLayer(layerSpec);
 
@@ -449,7 +427,7 @@ angular.module('FieldDoc')
 
                 try {
 
-                    var sourceSpec = AtlasMapManager.createSource(
+                    var sourceSpec = SourceUtil.createSource(
                         self.feature.primary_node,
                         self.featureType
                     );
@@ -459,9 +437,11 @@ angular.module('FieldDoc')
                         sourceSpec
                     );
 
+                    SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
+
                     self.map.addSource(sourceSpec.id, sourceSpec.config);
 
-                    var layerSpec = AtlasMapManager.createLayer(
+                    var layerSpec = LayerUtil.createLayer(
                         sourceSpec,
                         self.featureType
                     );
@@ -475,6 +455,8 @@ angular.module('FieldDoc')
 
                         layerSpec.id = sourceSpec.id;
 
+                        LayerUtil.trackLayer(layerSpec);
+
                         self.map.addLayer(layerSpec);
 
                     } catch (e) {
@@ -485,7 +467,7 @@ angular.module('FieldDoc')
 
                             try {
 
-                                var popupHtml = AtlasMapManager.createPopup(
+                                var popupHtml = PopupUtil.createPopup(
                                     self.feature.id,
                                     self.feature.primary_node,
                                     'project',
@@ -523,7 +505,7 @@ angular.module('FieldDoc')
 
             self.toggleDrainage = function() {
 
-                self.toggleLayer('fd.delineation.1');
+                self.toggleLayer(DRAINAGE_ID);
 
             };
 
@@ -534,28 +516,7 @@ angular.module('FieldDoc')
                     layerId
                 );
 
-                var visibility = self.map.getLayoutProperty(layerId, 'visibility');
-
-                console.log(
-                    'self.toggleLayer:visibility:',
-                    visibility
-                );
-
-                //
-                // If undefined, assume that layers have the default visibility.
-                //
-                
-                visibility = typeof visibility === 'string' ? visibility : 'visible';
-
-                if (visibility === 'visible') {
-
-                    self.map.setLayoutProperty(layerId, 'visibility', 'none');
-
-                } else {
-
-                    self.map.setLayoutProperty(layerId, 'visibility', 'visible');
-
-                }
+                LayerUtil.toggleLayer(layerid, self.map);
 
             };
 
@@ -565,27 +526,18 @@ angular.module('FieldDoc')
 
                 console.log('self.switchMapStyle --> index', index);
 
-                var center = self.map.getCenter();
+                console.log(
+                    'self.switchMapStyle:currentStyle',
+                    self.map.getStyle()
+                );
 
-                var zoom = self.map.getZoom();
+                LayerUtil.removeLayers(self.map);
 
-                if (center.lng && center.lat) {
-
-                    self.mapOptions.center = [center.lng, center.lat];
-
-                }
-
-                if (zoom) {
-
-                    self.mapOptions.zoom = zoom;
-
-                }
+                SourceUtil.removeSources(self.map);
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
-                self.map.remove();
-
-                self.createMap(self.mapOptions);
+                self.map.setStyle(self.mapStyles[index].url);
 
             };
 
@@ -619,27 +571,115 @@ angular.module('FieldDoc')
 
                 if (!options) return;
 
-                console.log('self.createMap --> Starting...');
-
-                var tgt = document.getElementById('map');
-
-                console.log(
-                    'self.createMap --> tgt',
-                    tgt);
-
-                console.log('self.createMap --> options', options);
-
                 self.map = new mapboxgl.Map(options);
+
+                self.map.on('styledata', function() {
+
+                    //
+                    // Update stored layers.
+                    //
+
+                    LayerUtil.trackLayers(self.map);
+
+                    //
+                    // Update stored sources.
+                    //
+
+                    SourceUtil.trackSources(self.map);
+
+                });
+
+                self.map.on('idle', function() {
+
+                    //
+                    // Retrieve stored layers.
+                    //
+
+                    var preservedLayers = LayerUtil.list();
+
+                    //
+                    // Retrieve stored sources.
+                    //
+
+                    var preservedSources = SourceUtil.list();
+
+                    if (preservedSources) {
+
+                        //
+                        // Remove stored sources. They will be restored in
+                        // the following loop calls.
+                        //
+
+                        SourceUtil.removeAll();
+
+                        preservedSources.forEach(function (source) {
+
+                            console.log(
+                                'Adding preserved source:',
+                                source
+                            );
+
+                            //
+                            // If source not present on map object, add it.
+                            //
+
+                            if (self.map.getSource(source.id) === undefined) {
+
+                                self.map.addSource(source.id, source.config);
+
+                            }
+
+                            //
+                            // Track source in stored sources.
+                            //
+
+                            SourceUtil.trackSource(source.id, source.config);
+
+                        });
+
+                    }
+
+                    if (preservedLayers) {
+
+                        //
+                        // Remove stored layers. They will be restored in
+                        // the following loop calls.
+                        //
+
+                        LayerUtil.removeAll();
+
+                        preservedLayers.forEach(function (layer) {
+
+                            console.log(
+                                'Adding preserved layer:',
+                                layer
+                            );
+
+                            //
+                            // If layer not present on map object, add it.
+                            //
+
+                            if (self.map.getLayer(layer.id) === undefined) {
+
+                                self.map.addLayer(layer);
+
+                            }
+
+                            //
+                            // Track layer in stored layers.
+                            //
+
+                            LayerUtil.trackLayer(layer);
+
+                        });
+
+                    }
+
+                });
 
                 self.map.on('load', function() {
 
                     console.log("Loading Map");
-
-                    // self.toggleSidebar();
-
-                    // var nav = new mapboxgl.NavigationControl();
-                    //
-                    // self.map.addControl(nav, 'bottom-right');
 
                     var scale = new mapboxgl.ScaleControl({
                         maxWidth: 80,
@@ -661,13 +701,6 @@ angular.module('FieldDoc')
                         minLength: 3,
                         placeholder: 'Find addresses and places'
                     });
-
-                    // var geocoder = new mapboxgl.GeolocateControl({
-                    //     positionOptions: {
-                    //         enableHighAccuracy: true
-                    //     },
-                    //     trackUserLocation: true
-                    // });
 
                     document.getElementById('geocoder').appendChild(geocoder.onAdd(self.map));
 

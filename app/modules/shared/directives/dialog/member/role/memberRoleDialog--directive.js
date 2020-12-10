@@ -46,7 +46,7 @@
                         if (scope.parentType !== 'organization' &&
                             scope.parentType !== 'project') {
 
-                            throw 'Unsupported `parent-type` setting.';
+                            throw new Error('Unsupported `parent-type` setting.');
 
                         }
 
