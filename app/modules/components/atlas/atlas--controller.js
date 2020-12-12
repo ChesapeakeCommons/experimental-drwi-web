@@ -28,6 +28,16 @@ angular.module('FieldDoc')
                 'polygon'
             ];
 
+            var URL_COMPONENTS = [
+                ['practice', 'line'],
+                ['practice', 'point'],
+                ['practice', 'polygon'],
+                ['site', 'line'],
+                ['site', 'point'],
+                ['site', 'polygon'],
+                ['project', 'point'],
+            ];
+
             var BOTTOM_OFFSET = 48;
 
             var DRAINAGE_ID = 'fd.delineation.1';
@@ -134,13 +144,13 @@ angular.module('FieldDoc')
                 $location.reload();
             };
 
-            self.loadNodeLayer = function (nodeType) {
+            self.updateNodeLayer = function (nodeType, geometryType) {
 
                 var zoom = self.map.getZoom();
 
                 if (zoom < 12 && nodeType === 'practice') return;
 
-                if (zoom < 10 && nodeType === 'site') return;
+                if (zoom < 8 && nodeType === 'site') return;
 
                 var boundsArray = self.map.getBounds().toArray();
 
@@ -176,7 +186,8 @@ angular.module('FieldDoc')
                 var params = {
                     bbox: boundsArray,
                     exclude: exclude,
-                    type: self.featureType,
+                    featureType: nodeType,
+                    geometryType: geometryType,
                     // id: self.primaryNode.properties.id,
                     zoom: zoom
                 }
@@ -186,17 +197,30 @@ angular.module('FieldDoc')
                 ).$promise.then(function(successResponse) {
 
                     console.log(
-                        'loadNodeLayer:successResponse:',
+                        'updateNodeLayer:successResponse:',
                         successResponse
                     );
 
                     self.nodeLayer = successResponse;
 
-                    self.nodeLayer.features.forEach(function (feature) {
+                    var sourceId = 'fd.' + nodeType + '.' + geometryType;
 
-                        self.populateMap(feature);
+                    var source = self.map.getSource(sourceId);
 
-                    });
+                    if (source !== undefined) {
+
+                        source.setData({
+                            'type': successResponse.type,
+                            'features': successResponse.features
+                        });
+
+                    }
+
+                    // self.nodeLayer.features.forEach(function (feature) {
+                    //
+                    //     self.populateMap(feature);
+                    //
+                    // });
 
                 }, function(errorResponse) {
 
@@ -223,7 +247,7 @@ angular.module('FieldDoc')
                 // ).$promise.then(function(successResponse) {
                 //
                 //     console.log(
-                //         'loadNodeLayer:successResponse:',
+                //         'updateNodeLayer:successResponse:',
                 //         successResponse
                 //     );
                 //
@@ -582,9 +606,9 @@ angular.module('FieldDoc')
 
                     // if (self.map.getZoom >= 12) {
 
-                        LayerUtil.trackLayer(layerSpec);
+                    LayerUtil.trackLayer(layerSpec);
 
-                        MapUtil.addLayer(self.map, layerSpec);
+                    MapUtil.addLayer(self.map, layerSpec);
 
                     // }
 
@@ -661,9 +685,9 @@ angular.module('FieldDoc')
                         // if ((featureType === 'practice' && self.map.getZoom >= 12) ||
                         //     (featureType === 'site' && self.map.getZoom >= 8)) {
 
-                            LayerUtil.trackLayer(layerSpec);
+                        LayerUtil.trackLayer(layerSpec);
 
-                            MapUtil.addLayer(self.map, layerSpec);
+                        MapUtil.addLayer(self.map, layerSpec);
 
                         // }
 
@@ -800,15 +824,15 @@ angular.module('FieldDoc')
                 //     return [NODE_LAYER_TYPES[i], GEOMETRY_TYPES[i]];
                 // });
 
-                var urlComponents = [
-                    ['practice', 'line'],
-                    ['practice', 'point'],
-                    ['practice', 'polygon'],
-                    ['site', 'line'],
-                    ['site', 'point'],
-                    ['site', 'polygon'],
-                    ['project', 'point'],
-                ];
+                // var urlComponents = [
+                //     ['practice', 'line'],
+                //     ['practice', 'point'],
+                //     ['practice', 'polygon'],
+                //     ['site', 'line'],
+                //     ['site', 'point'],
+                //     ['site', 'polygon'],
+                //     ['project', 'point'],
+                // ];
                 //
                 // NODE_LAYER_TYPES.forEach(function (nodeType, index) {
                 //
@@ -819,17 +843,18 @@ angular.module('FieldDoc')
                 //
                 // });
 
-                console.log(
-                    'self.addGeoJSONSources:urlComponents:',
-                    urlComponents);
+                // console.log(
+                //     'self.addGeoJSONSources:urlComponents:',
+                //     urlComponents);
 
-                urlComponents.forEach(function (component) {
+                URL_COMPONENTS.forEach(function (component) {
 
                     console.log(
                         'self.addGeoJSONSources:component:',
                         component);
 
-                    var source = SourceUtil.createURLSource(component[0], component[1]);
+                    var source = SourceUtil.createURLSource(
+                        component[0], component[1]);
 
                     console.log(
                         'self.addGeoJSONSources:source:',
@@ -944,7 +969,7 @@ angular.module('FieldDoc')
 
                     // if (self.primaryNode !== undefined) {
                     //
-                    //     self.loadNodeLayer();
+                    //     self.updateNodeLayer();
                     //
                     // }
 
@@ -952,7 +977,7 @@ angular.module('FieldDoc')
                     //
                     //     $timeout(function () {
                     //
-                    //         self.loadNodeLayer(nodeType);
+                    //         self.updateNodeLayer(nodeType);
                     //
                     //     }, 2000);
                     //
@@ -962,9 +987,15 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
+                    URL_COMPONENTS.forEach(function (component) {
+
+                        self.updateNodeLayer(component[0], component[1]);
+
+                    });
+
                     // if (self.primaryNode !== undefined) {
                     //
-                    //     self.loadNodeLayer();
+                    //     self.updateNodeLayer();
                     //
                     // }
 
@@ -972,7 +1003,7 @@ angular.module('FieldDoc')
                     //
                     //     $timeout(function () {
                     //
-                    //         self.loadNodeLayer(nodeType);
+                    //         self.updateNodeLayer(nodeType);
                     //
                     //     }, 2000);
                     //
