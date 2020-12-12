@@ -59,9 +59,15 @@ angular.module('FieldDoc')
                 'paintSpec': {
                     'circle': {
                         'circle-color': '#df063e',
-                        'circle-radius': 8,
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
                         'circle-stroke-width': 1,
-                        'circle-stroke-color': '#005e7d'
+                        'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
                         'fill-color': '#df063e',
@@ -79,9 +85,15 @@ angular.module('FieldDoc')
                 'paintSpec': {
                     'circle': {
                         'circle-color': '#a94efe',
-                        'circle-radius': 8,
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
                         'circle-stroke-width': 1,
-                        'circle-stroke-color': '#005e7d'
+                        'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
                         'fill-color': '#a94efe',
@@ -98,10 +110,16 @@ angular.module('FieldDoc')
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#fbb03b',
-                        'circle-radius': 8,
+                        'circle-color': '#2196F3',
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
                         'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FF0033'
+                        'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
                         'fill-color': '#fbb03b',

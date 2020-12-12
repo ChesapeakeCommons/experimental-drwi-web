@@ -148,9 +148,9 @@ angular.module('FieldDoc')
 
                 var zoom = self.map.getZoom();
 
-                if (zoom < 12 && nodeType === 'practice') return;
+                if (zoom < 14 && nodeType === 'practice') return;
 
-                if (zoom < 8 && nodeType === 'site') return;
+                if (zoom < 10 && nodeType === 'site') return;
 
                 var boundsArray = self.map.getBounds().toArray();
 
@@ -283,6 +283,10 @@ angular.module('FieldDoc')
 
                     // self.feature = successResponse;
 
+                    delete successResponse.$promise;
+
+                    delete successResponse.$resolved;
+
                     self.permissions = successResponse.permissions;
 
                     self.primaryNode = successResponse;
@@ -295,7 +299,7 @@ angular.module('FieldDoc')
 
                     if (!self.primaryNode.hasOwnProperty('properties')) {
 
-                        self.primaryNode.properties = successResponse;
+                        self.primaryNode.properties = self.primaryNode;
 
                     }
 
@@ -881,9 +885,92 @@ angular.module('FieldDoc')
 
                     if (component[0] === 'project') {
 
-                        layerSpec.minzoom = 4;
+                        layerSpec.minzoom = 9;
 
                         layerSpec.maxzoom = 14;
+
+                        // layerSpec.layout = {
+                        //     'text-field': ['get', 'name'],
+                        //     'text-variable-anchor': [
+                        //         'top', 'bottom', 'left', 'right'
+                        //     ],
+                        //     'text-radial-offset': 0.5,
+                        //     'text-justify': 'auto'
+                        // }
+
+                        var labelLayer = {
+                            'id': 'fd.project-label',
+                            'type': 'symbol',
+                            'source': source.id,
+                            'minzoom': 9,
+                            'maxzoom': 14,
+                            'layout': {
+                                'symbol-placement': 'point',
+                                'text-anchor': 'bottom',
+                                'text-field': ['get', 'name'],
+                                'text-variable-anchor': [
+                                    'top', 'bottom', 'left', 'right'
+                                ],
+                                // 'text-font': [
+                                //     'DIN Offc Pro Medium',
+                                //     'Arial Unicode MS Bold'
+                                // ],
+                                'text-font': {
+                                    'stops': [
+                                        [
+                                            9,
+                                            [
+                                                'DIN Offc Pro Regular',
+                                                'Arial Unicode MS Regular'
+                                            ]
+                                        ],
+                                        [
+                                            11,
+                                            [
+                                                'DIN Offc Pro Regular',
+                                                'Arial Unicode MS Regular'
+                                            ]
+                                        ],
+                                        [
+                                            14,
+                                            [
+                                                'DIN Offc Pro Medium',
+                                                'Arial Unicode MS Bold'
+                                            ]
+                                        ]
+                                    ]
+                                },
+                                'text-size': [
+                                    'interpolate',
+                                    ['exponential', 0.5],
+                                    ['zoom'],
+                                    9,
+                                    12,
+                                    14,
+                                    16
+                                ],
+                                'text-radial-offset': 0.5,
+                                'text-justify': 'auto'
+                            },
+                            'paint': {
+                                'text-halo-width': 1,
+                                'text-halo-color': 'rgba(255,255,255,0.75)',
+                                'text-halo-blur': 1,
+                                'text-color': [
+                                    'interpolate',
+                                    ['exponential', 0.5],
+                                    ['zoom'],
+                                    9,
+                                    '#616161',
+                                    14,
+                                    '#212121'
+                                ]
+                            }
+                        };
+
+                        LayerUtil.trackLayer(labelLayer);
+
+                        self.map.addLayer(labelLayer);
 
                     }
 
@@ -904,6 +991,8 @@ angular.module('FieldDoc')
                     }
 
                     try {
+
+                        LayerUtil.trackLayer(layerSpec);
 
                         MapUtil.addLayer(self.map, layerSpec);
 
@@ -950,6 +1039,64 @@ angular.module('FieldDoc')
                 });
 
                 self.map.on('styledata', function() {
+
+                    if (self.map.getLayer('fd.project-label') !== undefined) {
+
+                        if (self.mapOptions.style.indexOf('satellite') >= 0) {
+
+                            try {
+
+                                self.map.setPaintProperty(
+                                    'fd.project-label',
+                                    'text-color',
+                                    '#FFFFFF'
+                                );
+
+                                self.map.setPaintProperty(
+                                    'fd.project-label',
+                                    'text-halo-color',
+                                    '#212121'
+                                );
+
+                            } catch (e) {
+
+                                console.warn(e);
+
+                            }
+
+                        } else {
+
+                            try {
+
+                                self.map.setPaintProperty(
+                                    'fd.project-label',
+                                    'text-color',
+                                    [
+                                        'interpolate',
+                                        ['exponential', 0.5],
+                                        ['zoom'],
+                                        9,
+                                        '#616161',
+                                        14,
+                                        '#212121'
+                                    ]
+                                );
+
+                                self.map.setPaintProperty(
+                                    'fd.project-label',
+                                    'text-halo-color',
+                                    'rgba(255,255,255,0.75)'
+                                );
+
+                            } catch (e) {
+
+                                console.warn(e);
+
+                            }
+
+                        }
+
+                    }
 
                     //
                     // Update stored layers.
