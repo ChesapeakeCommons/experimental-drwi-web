@@ -93,6 +93,26 @@ angular.module('FieldDoc')
                         'line-width': 2
                     }
                 }
+            },
+            'project': {
+                'prefix': 'si',
+                'paintSpec': {
+                    'circle': {
+                        'circle-color': '#fbb03b',
+                        'circle-radius': 8,
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FF0033'
+                    },
+                    'fill': {
+                        'fill-color': '#fbb03b',
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#FF0033'
+                    },
+                    'line': {
+                        'line-color': '#fbb03b',
+                        'line-width': 2
+                    }
+                }
             }
         };
 
@@ -131,33 +151,15 @@ angular.module('FieldDoc')
 
                 }
 
-                var layerId = 'layer-' + sourceSpec.id;
+                var layerId = sourceSpec.id;
 
-                var layerType;
-
-                var paintSpec;
-
-                if (geometryType === 'Polygon' ||
-                    geometryType === 'MultiPolygon') {
-
-                    layerType = 'fill';
-
-                } else if (geometryType === 'Line' ||
-                    geometryType === 'LineString') {
-
-                    layerType = 'line';
-
-                } else if (geometryType === 'Point') {
-
-                    layerType = 'circle';
-
-                }
+                var layerType = this.getType(geometryType);
 
                 console.log(
                     'LayerUtil:createLayer:layerType',
                     layerType);
 
-                paintSpec = config[featureType].paintSpec[layerType];
+                var paintSpec = this.getPaint(featureType, layerType);
 
                 console.log(
                     'LayerUtil:createLayer:paintSpec',
@@ -175,6 +177,82 @@ angular.module('FieldDoc')
             dropLayer: function (layer) {
 
                 delete this._index[layer.id];
+
+            },
+            getIds: function (map, nodeType) {
+
+                var nodeTypes = [
+                    'practice',
+                    'site',
+                    'project'
+                ];
+
+                var layers = map.getStyle().layers;
+
+                var fdArray = [];
+
+                layers.forEach(function (layer) {
+
+                    if (layer.id.startsWith('fd.') &&
+                        map.getLayer(layer.id)) {
+
+                        if (nodeTypes.indexOf(nodeType) >= 0) {
+
+                            if (layer.id.indexOf(nodeType) >= 0) {
+
+                                fdArray.push(layer.id);
+
+                            }
+
+                        } else {
+
+                            fdArray.push(layer.id);
+
+                        }
+
+                    }
+
+                });
+
+                return fdArray;
+
+            },
+            getPaint: function (featureType, layerType) {
+
+                console.log(
+                    'LayerUtil:getPaint:featureType',
+                    featureType);
+
+                console.log(
+                    'LayerUtil:getPaint:layerType',
+                    layerType);
+
+                return config[featureType].paintSpec[layerType];
+
+            },
+            getType: function (geometryType) {
+
+                geometryType = geometryType.toLowerCase();
+
+                var layerType;
+
+                if (geometryType === 'polygon' ||
+                    geometryType === 'multipolygon') {
+
+                    layerType = 'fill';
+
+                } else if (geometryType === 'line' ||
+                    geometryType === 'linestring') {
+
+                    layerType = 'line';
+
+                } else if (geometryType === 'point') {
+
+                    layerType = 'circle';
+
+                }
+
+                return layerType;
 
             },
             list: function () {

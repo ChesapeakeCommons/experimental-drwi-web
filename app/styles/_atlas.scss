@@ -187,7 +187,7 @@
                 flex-flow: column nowrap;
                 align-items: flex-start;
                 justify-content: flex-start;
-                padding: .5rem;
+                padding: .5rem .5rem 0 .5rem;
                 width: 100%;
 
                 .outer-controls {
@@ -240,6 +240,13 @@
                             color: #616161;
                         }
 
+                        .geocoder {
+                            position: relative;
+                            z-index: 1;
+                            width: 100%;
+                            margin: 0 !important;
+                        }
+
                     }
 
                 }
@@ -253,6 +260,7 @@
                 background-repeat: no-repeat;
                 background-size: cover;
                 border-radius: .5rem .5rem 0 0;
+                padding: .5rem !important;
                 
                 .outer-controls {
                     border: none !important;

@@ -1,6 +1,5 @@
 <div class="outer-controls-container"
-     data-ng-class="{banner: page.feature.primary_node.properties.picture}"
-     style="background-image: url('{{ page.feature.primary_node.properties.picture }}');">
+     data-ng-class="{banner: page.primaryNode.properties.picture}">
     <div class="outer-controls pad-0 pad-x-50p">
         <div class="menu-toggle">
             <span class="material-icons">
@@ -8,7 +7,7 @@
             </span>
         </div>
         <div class="geocoder-container">
-            <div id="geocoder"></div>
+            <div class="geocoder"></div>
         </div>
     </div>
 </div>
@@ -31,7 +30,7 @@
         <div class="metadata--card">
 
             <h1 class="margin-0 pad-0" data-ng-if="!page.status.loading">
-                {{ page.feature.primary_node.properties.name }}
+                {{ page.primaryNode.properties.name }}
             </h1>
 
             <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1">
@@ -43,7 +42,7 @@
             </div>
 
             <p data-ng-if="!page.status.loading">
-                {{ page.feature.description || page.feature.primary_node.properties.description || 'No description provided'
+                {{ page.feature.description || page.primaryNode.properties.description || 'No description provided'
                 }}
             </p>
 

@@ -73,17 +73,17 @@
 
         <!-- Images -->
 
-        <li data-ng-if="page.permissions.write && page.feature.picture"
+        <li data-ng-if="practice.permissions.write && practice.picture"
             title="Images">
-            <a href="/practices/{{ page.feature.id }}/images">
+            <a href="/practices/{{ practice.id }}/images">
                 <span class="material-icons">
                     photo_library
                 </span>
             </a>
         </li>
-        <li data-ng-if="page.permissions.write && !page.feature.picture"
+        <li data-ng-if="practice.permissions.write && !practice.picture"
             title="Add image">
-            <a data-ng-click="page.showImageModal = !page.showImageModal">
+            <a data-ng-click="toggleImageModal()">
                 <span class="material-icons">
                     add_photo_alternate
                 </span>
@@ -131,13 +131,22 @@
 
         <!-- Map -->
 
-        <li data-ng-if="practice.permissions.write" data-ng-class="{active: toolbarState === 'map'}">
-            <a href="/maps?target=practice:{{ practice.id }}" title="Map">
-                <i class="material-icons">
+        <li data-ng-if="practice.permissions.write && practice.maps.length"
+            title="Launch map">
+            <a href="/atlas?origin=practice:{{ practice.maps[0].id }}" target="_blank">
+                <span class="material-icons">
                     map
-                </i>
+                </span>
             </a>
         </li>
+
+<!--        <li data-ng-if="practice.permissions.write" data-ng-class="{active: toolbarState === 'map'}">-->
+<!--            <a href="/maps?target=practice:{{ practice.id }}" title="Map">-->
+<!--                <i class="material-icons">-->
+<!--                    map-->
+<!--                </i>-->
+<!--            </a>-->
+<!--        </li>-->
 
         <!-- Edit -->
 
@@ -259,3 +268,11 @@
      reset-type="false"
      type="'practice'"
      visible="showExportDialog"></div>
+
+<div image-upload-dialog
+     alerts="page.alerts"
+     parent="practice"
+     file-input="image-file-input"
+     callback="page.loadPractice()"
+     feature-type="practice"
+     visible="showImageModal"></div>

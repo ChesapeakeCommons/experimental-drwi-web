@@ -903,13 +903,22 @@
 
             <!-- Map -->
 
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.map}">
-                <a href="/maps?target=project:{{ page.project.id }}" title="Map">
-                    <i class="material-icons">
-                        map
-                    </i>
+            <li data-ng-if="page.permissions.can_edit && page.project.maps.length"
+                title="Launch map">
+                <a href="/atlas?origin=project:{{ page.project.maps[0].id }}" target="_blank">
+                <span class="material-icons">
+                    map
+                </span>
                 </a>
             </li>
+
+<!--            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.map}">-->
+<!--                <a href="/maps?target=project:{{ page.project.id }}" title="Map">-->
+<!--                    <i class="material-icons">-->
+<!--                        map-->
+<!--                    </i>-->
+<!--                </a>-->
+<!--            </li>-->
 
             <li data-ng-if="page.permissions.can_edit"
                 style="border-top: 1px solid #e0e0e0;">

@@ -92,6 +92,16 @@
                         };
 
                         //
+                        // Handling for image modal.
+                        //
+
+                        scope.toggleImageModal = function() {
+
+                            scope.showImageModal = !scope.showImageModal;
+
+                        };
+
+                        //
                         // Handling for report creation modal.
                         //
 

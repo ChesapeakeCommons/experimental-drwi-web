@@ -16,6 +16,7 @@ angular.module('FieldDoc')
                 templateUrl: '/modules/components/atlas/views/atlas--view.html?t=' + environment.version,
                 controller: 'AtlasController',
                 controllerAs: 'page',
+                reloadOnSearch: false,
                 resolve: {
                     user: function(Account, $rootScope, $document) {
 
@@ -34,6 +35,7 @@ angular.module('FieldDoc')
                 templateUrl: '/modules/components/atlas/views/atlas--view.html?t=' + environment.version,
                 controller: 'AtlasController',
                 controllerAs: 'page',
+                reloadOnSearch: false,
                 resolve: {
                     user: function(Account, $rootScope, $document) {
 

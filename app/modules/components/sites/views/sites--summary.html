@@ -652,14 +652,23 @@
 
             <!-- Map -->
 
-            <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: toolbarState === 'map'}">
-                <a href="/maps?target=site:{{ page.site.id }}" title="Map">
-                    <i class="material-icons">
-                        map
-                    </i>
+            <li data-ng-if="page.permissions.can_edit && page.site.maps.length"
+                title="Launch map">
+                <a href="/atlas?origin=site:{{ page.site.maps[0].id }}" target="_blank">
+                <span class="material-icons">
+                    map
+                </span>
                 </a>
             </li>
+
+<!--            <li data-ng-if="page.permissions.can_edit"-->
+<!--                data-ng-class="{active: toolbarState === 'map'}">-->
+<!--                <a href="/maps?target=site:{{ page.site.id }}" title="Map">-->
+<!--                    <i class="material-icons">-->
+<!--                        map-->
+<!--                    </i>-->
+<!--                </a>-->
+<!--            </li>-->
 
             <!-- Edit -->
 

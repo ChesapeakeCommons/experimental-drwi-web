@@ -9,12 +9,24 @@
  */
 angular.module('FieldDoc')
     .controller('AtlasController',
-        function(Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
+        function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval, AtlasDataManager,
+                 Utility, $interval, AtlasDataManager, ipCookie,
                  Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil) {
 
             var self = this;
+
+            var NODE_LAYER_TYPES = [
+                'practice',
+                'site',
+                'project'
+            ];
+
+            var GEOMETRY_TYPES = [
+                'line',
+                'point',
+                'polygon'
+            ];
 
             var BOTTOM_OFFSET = 48;
 
@@ -122,11 +134,208 @@ angular.module('FieldDoc')
                 $location.reload();
             };
 
-            self.loadMap = function () {
+            self.loadNodeLayer = function (nodeType) {
+
+                var zoom = self.map.getZoom();
+
+                if (zoom < 12 && nodeType === 'practice') return;
+
+                if (zoom < 10 && nodeType === 'site') return;
+
+                var boundsArray = self.map.getBounds().toArray();
+
+                boundsArray = [
+                    boundsArray[0].join(','),
+                    boundsArray[1].join(',')
+                ].join(',');
+
+                console.log(
+                    'boundsArray:',
+                    boundsArray
+                );
+
+                var layerIds = LayerUtil.getIds(self.map, nodeType);
+
+                var exclude = [];
+
+                layerIds.forEach(function (id) {
+
+                    var tokens = id.split('.');
+
+                    exclude.push(tokens[tokens.length - 1]);
+
+                });
+
+                exclude = exclude.join(',');
+
+                console.log(
+                    'exclude:',
+                    exclude
+                );
 
                 var params = {
-                    id: +$location.search().origin
+                    bbox: boundsArray,
+                    exclude: exclude,
+                    type: self.featureType,
+                    // id: self.primaryNode.properties.id,
+                    zoom: zoom
+                }
+
+                MapInterface.featureLayer(
+                    params
+                ).$promise.then(function(successResponse) {
+
+                    console.log(
+                        'loadNodeLayer:successResponse:',
+                        successResponse
+                    );
+
+                    self.nodeLayer = successResponse;
+
+                    self.nodeLayer.features.forEach(function (feature) {
+
+                        self.populateMap(feature);
+
+                    });
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load node layer data.');
+
+                    self.showElements();
+
+                });
+
+                // var boundsArray = self.map.getBounds().toArray();
+                //
+                // boundsArray = [
+                //     boundsArray[0].join(','),
+                //     boundsArray[1].join(',')
+                // ].join(',');
+                //
+                // console.log(
+                //     'boundsArray:',
+                //     boundsArray
+                // );
+
+                // MapInterface.nodeLayer(
+                //     params
+                // ).$promise.then(function(successResponse) {
+                //
+                //     console.log(
+                //         'loadNodeLayer:successResponse:',
+                //         successResponse
+                //     );
+                //
+                //     self.nodeLayer = successResponse;
+                //
+                //     self.nodeLayer.features.forEach(function (feature) {
+                //
+                //         self.populateMap(feature);
+                //
+                //     });
+                //
+                // }, function(errorResponse) {
+                //
+                //     console.log('Unable to load node layer data.');
+                //
+                //     self.showElements();
+                //
+                // });
+
+            };
+
+            self.fetchPrimaryNode = function (featureType, featureId) {
+
+                var cls = self.clsMap[featureType];
+
+                var params = {
+                    id: featureId
                 };
+
+                cls.getSingle(
+                    params
+                ).$promise.then(function(successResponse) {
+
+                    // self.feature = successResponse;
+
+                    self.permissions = successResponse.permissions;
+
+                    self.primaryNode = successResponse;
+
+                    if (!self.primaryNode.hasOwnProperty('type')) {
+
+                        self.primaryNode.type = 'Feature';
+
+                    }
+
+                    if (!self.primaryNode.hasOwnProperty('properties')) {
+
+                        self.primaryNode.properties = successResponse;
+
+                    }
+
+                    self.featureType = self.primaryNode.type;
+
+                    self.featureClass = self.clsMap[self.featureType];
+
+                    // var params = {};
+                    //
+                    // params.origin = self.featureType + ':' + self.feature.id;
+                    //
+                    // $location.search(params);
+
+                    self.showElements();
+
+                    MapUtil.fitMap(
+                        self.map,
+                        self.primaryNode,
+                        self.padding,
+                        false
+                    );
+
+                    self.populateMap(self.primaryNode, true);
+
+                    self.loadMetrics();
+
+                    //
+                    // Set banner image in side panel.
+                    //
+
+                    self.clearBannerImage();
+
+                    if (self.primaryNode.properties.picture) {
+
+                        self.setBannerImage();
+
+                    }
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load map data.');
+
+                    self.showElements();
+
+                });
+
+            };
+
+            self.loadMap = function (featureType, featureId) {
+
+                // var params = {
+                //     id: +$location.search().origin
+                // };
+
+                var params = $location.search();
+
+                if (typeof featureType === 'string' &&
+                    typeof featureId === 'number') {
+
+                    params = {
+                        target: featureType + ':' + featureId
+                    }
+
+                }
 
                 // if ($routeParams.id) {
                 //
@@ -146,22 +355,42 @@ angular.module('FieldDoc')
 
                     self.permissions = successResponse.permissions;
 
-                    self.featureType = self.feature.primary_node.properties.type;
+                    self.primaryNode = self.feature.primary_node;
+
+                    self.featureType = self.primaryNode.properties.type;
 
                     self.featureClass = self.clsMap[self.featureType];
+
+                    var params = {};
+
+                    params.origin = self.featureType + ':' + self.feature.id;
+
+                    $location.search(params);
 
                     self.showElements();
 
                     MapUtil.fitMap(
                         self.map,
-                        self.feature.primary_node,
+                        self.primaryNode,
                         self.padding,
                         false
                     );
 
-                    self.populateMap();
+                    self.populateMap(self.primaryNode, true);
 
                     self.loadMetrics();
+
+                    //
+                    // Set banner image in side panel.
+                    //
+
+                    self.clearBannerImage();
+
+                    if (self.primaryNode.properties.picture) {
+
+                        self.setBannerImage();
+
+                    }
 
                 }, function(errorResponse) {
 
@@ -204,6 +433,28 @@ angular.module('FieldDoc')
                     'self.resizeMainContent:contentEl:height:',
                     contentEl.style.height
                 );
+
+            };
+
+            self.clearBannerImage = function() {
+
+                var controlEl = document.querySelector(
+                    '.outer-controls-container'
+                );
+
+                controlEl.style.backgroundImage = 'none';
+
+            };
+
+            self.setBannerImage = function() {
+
+                var controlEl = document.querySelector(
+                    '.outer-controls-container'
+                );
+
+                var bgImg = 'url(' + self.primaryNode.properties.picture + ')';
+
+                controlEl.style.backgroundImage = bgImg;
 
             };
 
@@ -265,9 +516,9 @@ angular.module('FieldDoc')
                     self.padding
                 );
 
-                self.fitMap(
+                MapUtil.fitMap(
                     self.map,
-                    self.feature.primary_node,
+                    self.primaryNode,
                     self.padding,
                     true
                 );
@@ -311,7 +562,7 @@ angular.module('FieldDoc')
 
                     SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
 
-                    self.map.addSource(sourceSpec.id, sourceSpec.config);
+                    MapUtil.addSource(self.map, sourceSpec.id, sourceSpec.config);
 
                     var layerSpec = LayerUtil.createLayer(
                         sourceSpec,
@@ -329,25 +580,29 @@ angular.module('FieldDoc')
                         visibility: 'none'
                     };
 
-                    LayerUtil.trackLayer(layerSpec);
+                    // if (self.map.getZoom >= 12) {
 
-                    self.map.addLayer(layerSpec);
+                        LayerUtil.trackLayer(layerSpec);
 
-                    try {
+                        MapUtil.addLayer(self.map, layerSpec);
 
-                        var bounds = turf.bbox(
-                            feature.geometry
-                        );
+                    // }
 
-                        self.map.fitBounds(bounds, {
-                            padding: self.padding
-                        });
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                    }
+                    // try {
+                    //
+                    //     var bounds = turf.bbox(
+                    //         feature.geometry
+                    //     );
+                    //
+                    //     self.map.fitBounds(bounds, {
+                    //         padding: self.padding
+                    //     });
+                    //
+                    // } catch (e) {
+                    //
+                    //     console.warn(e);
+                    //
+                    // }
 
                 }, function errorCallback(errorResponse) {
 
@@ -360,22 +615,24 @@ angular.module('FieldDoc')
 
             };
 
-            self.populateMap = function() {
+            self.populateMap = function(feature, delineate) {
 
-                self.featureType = self.feature.primary_node.properties.type;
+                delineate = delineate || false;
 
-                if (self.featureType === 'practice' ||
-                    self.featureType === 'site') {
+                var featureType = feature.properties.type;
 
-                    self.delineateWatershed(self.feature.primary_node);
+                if ((featureType === 'practice' ||
+                    featureType === 'site') && delineate) {
+
+                    self.delineateWatershed(feature);
 
                 }
 
                 try {
 
                     var sourceSpec = SourceUtil.createSource(
-                        self.feature.primary_node,
-                        self.featureType
+                        feature,
+                        featureType
                     );
 
                     console.log(
@@ -385,11 +642,11 @@ angular.module('FieldDoc')
 
                     SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
 
-                    self.map.addSource(sourceSpec.id, sourceSpec.config);
+                    MapUtil.addSource(self.map, sourceSpec.id, sourceSpec.config);
 
                     var layerSpec = LayerUtil.createLayer(
                         sourceSpec,
-                        self.featureType
+                        featureType
                     );
 
                     console.log(
@@ -401,28 +658,33 @@ angular.module('FieldDoc')
 
                         layerSpec.id = sourceSpec.id;
 
-                        LayerUtil.trackLayer(layerSpec);
+                        // if ((featureType === 'practice' && self.map.getZoom >= 12) ||
+                        //     (featureType === 'site' && self.map.getZoom >= 8)) {
 
-                        self.map.addLayer(layerSpec);
+                            LayerUtil.trackLayer(layerSpec);
+
+                            MapUtil.addLayer(self.map, layerSpec);
+
+                        // }
 
                     } catch (e) {
 
                         console.warn(e);
 
-                        if (self.featureType === 'project') {
+                        if (featureType === 'project') {
 
                             try {
 
                                 var popupHtml = PopupUtil.createPopup(
                                     self.feature.id,
-                                    self.feature.primary_node,
+                                    feature,
                                     'project',
                                     self.activeStyle);
 
                                 var marker = new mapboxgl.Marker()
                                     .setLngLat([
-                                        self.feature.primary_node.properties.centroid.coordinates[0],
-                                        self.feature.primary_node.properties.centroid.coordinates[1]
+                                        feature.properties.centroid.coordinates[0],
+                                        feature.properties.centroid.coordinates[1]
                                     ])
                                     .setPopup(
                                         new mapboxgl.Popup({
@@ -477,9 +739,9 @@ angular.module('FieldDoc')
                     self.map.getStyle()
                 );
 
-                LayerUtil.removeLayers(self.map);
-
-                SourceUtil.removeSources(self.map);
+                // LayerUtil.removeLayers(self.map);
+                //
+                // SourceUtil.removeSources(self.map);
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
@@ -509,7 +771,124 @@ angular.module('FieldDoc')
 
                 self.mapOptions.style = self.mapStyles[0].url;
 
+                self.mapOptions.transformRequest = function(url, resourceType) {
+
+                    var sessionCookie = ipCookie('FIELDDOC_SESSION');
+
+                    if (resourceType === 'Source' &&
+                        url.startsWith(environment.apiUrl)) {
+
+                        return {
+                            url: url,
+                            headers: {
+                                'Authorization': 'Bearer ' + sessionCookie
+                            },
+                            credentials: 'include'  // Include cookies for cross-origin requests
+                        }
+
+                    }
+
+                };
+
                 return self.mapOptions;
+
+            };
+
+            self.addGeoJSONSources = function () {
+
+                // var urlComponents = NODE_LAYER_TYPES.map(function(e, i) {
+                //     return [NODE_LAYER_TYPES[i], GEOMETRY_TYPES[i]];
+                // });
+
+                var urlComponents = [
+                    ['practice', 'line'],
+                    ['practice', 'point'],
+                    ['practice', 'polygon'],
+                    ['site', 'line'],
+                    ['site', 'point'],
+                    ['site', 'polygon'],
+                    ['project', 'point'],
+                ];
+                //
+                // NODE_LAYER_TYPES.forEach(function (nodeType, index) {
+                //
+                //     urlComponents.push([
+                //         nodeType,
+                //         GEOMETRY_TYPES[index]
+                //     ]);
+                //
+                // });
+
+                console.log(
+                    'self.addGeoJSONSources:urlComponents:',
+                    urlComponents);
+
+                urlComponents.forEach(function (component) {
+
+                    console.log(
+                        'self.addGeoJSONSources:component:',
+                        component);
+
+                    var source = SourceUtil.createURLSource(component[0], component[1]);
+
+                    console.log(
+                        'self.addGeoJSONSources:source:',
+                        source);
+
+                    try {
+
+                        MapUtil.addSource(self.map, source.id, source.config);
+
+                    } catch (e) {
+
+                        console.warn(e);
+
+                    }
+
+                    var type = LayerUtil.getType(component[1]);
+
+                    var layerSpec = {
+                        id: source.id,
+                        source: source.id,
+                        type: type,
+                        paint: LayerUtil.getPaint(component[0], type)
+                    };
+
+                    if (component[0] === 'project') {
+
+                        layerSpec.minzoom = 4;
+
+                        layerSpec.maxzoom = 14;
+
+                    }
+
+                    if (component[0] === 'practice') {
+
+                        layerSpec.minzoom = 14;
+
+                        layerSpec.maxzoom = 22;
+
+                    }
+
+                    if (component[0] === 'site') {
+
+                        layerSpec.minzoom = 10;
+
+                        layerSpec.maxzoom = 14;
+
+                    }
+
+                    try {
+
+                        MapUtil.addLayer(self.map, layerSpec);
+
+                    } catch (e) {
+
+                        console.warn(e);
+
+                    }
+
+                });
 
             };
 
@@ -518,6 +897,32 @@ angular.module('FieldDoc')
                 if (!options) return;
 
                 self.map = new mapboxgl.Map(options);
+
+                self.map.on('click', function (e) {
+
+                    var features = self.map.queryRenderedFeatures(e.point);
+
+                    if (features.length) {
+
+                        var target = features[0];
+
+                        if (target.properties.id !== self.primaryNode.properties.id) {
+
+                            self.fetchPrimaryNode(
+                                target.properties.type,
+                                target.properties.id
+                            );
+
+                        }
+
+                    }
+
+                    console.log(
+                        'map.click:features:',
+                        features
+                    );
+
+                });
 
                 self.map.on('styledata', function() {
 
@@ -532,6 +937,46 @@ angular.module('FieldDoc')
                     //
 
                     SourceUtil.trackSources(self.map);
+
+                });
+
+                self.map.on('zoomend', function() {
+
+                    // if (self.primaryNode !== undefined) {
+                    //
+                    //     self.loadNodeLayer();
+                    //
+                    // }
+
+                    // NODE_LAYER_TYPES.forEach(function (nodeType) {
+                    //
+                    //     $timeout(function () {
+                    //
+                    //         self.loadNodeLayer(nodeType);
+                    //
+                    //     }, 2000);
+                    //
+                    // });
+
+                });
+
+                self.map.on('moveend', function() {
+
+                    // if (self.primaryNode !== undefined) {
+                    //
+                    //     self.loadNodeLayer();
+                    //
+                    // }
+
+                    // NODE_LAYER_TYPES.forEach(function (nodeType) {
+                    //
+                    //     $timeout(function () {
+                    //
+                    //         self.loadNodeLayer(nodeType);
+                    //
+                    //     }, 2000);
+                    //
+                    // });
 
                 });
 
@@ -648,7 +1093,7 @@ angular.module('FieldDoc')
                         placeholder: 'Find addresses and places'
                     });
 
-                    document.getElementById('geocoder').appendChild(geocoder.onAdd(self.map));
+                    document.querySelector('.geocoder').appendChild(geocoder.onAdd(self.map));
 
                     // self.map.addControl(new mapboxgl.GeolocateControl({
                     //     positionOptions: {
@@ -679,6 +1124,8 @@ angular.module('FieldDoc')
 
                     self.loadMap();
 
+                    self.addGeoJSONSources();
+
                 });
 
             };
@@ -704,7 +1151,7 @@ angular.module('FieldDoc')
             self.loadMetrics = function() {
 
                 self.featureClass.progress({
-                    id: self.feature.primary_node.properties.id
+                    id: self.primaryNode.properties.id
                 }).$promise.then(function(successResponse) {
 
                     // console.log('Project metrics', successResponse);

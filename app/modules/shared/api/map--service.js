@@ -16,6 +16,18 @@
                 query: {
                     isArray: false
                 },
+                // featureLayer: {
+                //     method: 'GET',
+                //     url: environment.apiUrl.concat('/v1/feature-layer')
+                // },
+                featureLayer: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/feature-layer/:featureType/:geometryType')
+                },
+                nodeLayer: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/:featureType/:id/layer')
+                },
                 update: {
                     method: 'PATCH',
                     url: environment.apiUrl.concat('/v1/map/:id')
