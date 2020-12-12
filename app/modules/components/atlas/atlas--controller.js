@@ -1136,7 +1136,13 @@ angular.module('FieldDoc')
 
                     URL_COMPONENTS.forEach(function (component) {
 
-                        self.updateNodeLayer(component[0], component[1]);
+                        $timeout(function () {
+
+                            self.updateNodeLayer(component[0], component[1]);
+
+                        }, 1000);
+
+                        // self.updateNodeLayer(component[0], component[1]);
 
                     });
 

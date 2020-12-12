@@ -22,6 +22,7 @@
                 // },
                 featureLayer: {
                     method: 'GET',
+                    cache: true,
                     url: environment.apiUrl.concat('/v1/feature-layer/:featureType/:geometryType')
                 },
                 nodeLayer: {

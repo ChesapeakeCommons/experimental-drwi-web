@@ -111,13 +111,22 @@ angular.module('FieldDoc')
                 'paintSpec': {
                     'circle': {
                         'circle-color': '#2196F3',
-                        'circle-radius': {
-                            'base': 2,
-                            'stops': [
-                                [12, 4],
-                                [22, 24]
-                            ]
-                        },
+                        // 'circle-radius': {
+                        //     'base': 2,
+                        //     'stops': [
+                        //         [12, 8],
+                        //         [22, 24]
+                        //     ]
+                        // },
+                        'circle-radius': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            9,
+                            2,
+                            14,
+                            6
+                        ],
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
                     },
