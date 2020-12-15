@@ -56,7 +56,8 @@ angular.module('FieldDoc')
                             features: [
                                 feature
                             ]
-                        }
+                        },
+                        generateId: true
                     }
                 };
 
@@ -97,7 +98,8 @@ angular.module('FieldDoc')
                     id: idString,
                     config: {
                         type: 'geojson',
-                        data: url
+                        data: url,
+                        generateId: true
                     }
                 };
 
@@ -160,6 +162,23 @@ angular.module('FieldDoc')
                         map.removeSource(key);
 
                     }
+
+                });
+
+            },
+            resetFeatureStates: function (map, urlComponents) {
+
+                urlComponents.forEach(function (combination) {
+
+                    var layerId = [
+                        'fd',
+                        combination[0],
+                        combination[1]
+                    ].join('.');
+
+                    map.removeFeatureState({
+                        source: layerId
+                    });
 
                 });
 

@@ -32,7 +32,7 @@ angular
 
         (function (fn) {
             console.log = function () {
-                if (environment.name !== 'livedev') {
+                if (environment.name !== 'production') {
                     fn.apply(void 0, arguments);
                 }
             };

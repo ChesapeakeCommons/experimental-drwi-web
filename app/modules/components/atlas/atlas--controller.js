@@ -28,15 +28,7 @@ angular.module('FieldDoc')
                 'polygon'
             ];
 
-            var URL_COMPONENTS = [
-                ['practice', 'line'],
-                ['practice', 'point'],
-                ['practice', 'polygon'],
-                ['site', 'line'],
-                ['site', 'point'],
-                ['site', 'polygon'],
-                ['project', 'point'],
-            ];
+            self.urlComponents = LayerUtil.getUrlComponents();
 
             var BOTTOM_OFFSET = 48;
 
@@ -164,19 +156,12 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
-                var layerIds = LayerUtil.getIds(self.map, nodeType);
+                // var layerIds = LayerUtil.getIds(self.map, nodeType);
 
-                var exclude = [];
+                var fetchedFeatures = AtlasDataManager.getFetchedKeys(
+                    nodeType, geometryType);
 
-                layerIds.forEach(function (id) {
-
-                    var tokens = id.split('.');
-
-                    exclude.push(tokens[tokens.length - 1]);
-
-                });
-
-                exclude = exclude.join(',');
+                var exclude = fetchedFeatures.join(',');
 
                 console.log(
                     'exclude:',
@@ -188,7 +173,6 @@ angular.module('FieldDoc')
                     exclude: exclude,
                     featureType: nodeType,
                     geometryType: geometryType,
-                    // id: self.primaryNode.properties.id,
                     zoom: zoom
                 }
 
@@ -207,20 +191,28 @@ angular.module('FieldDoc')
 
                     var source = self.map.getSource(sourceId);
 
+                    var fetchedFeatures = AtlasDataManager.getFetched(
+                        nodeType, geometryType);
+
+                    var updatedFeatures = successResponse.features.concat(
+                        fetchedFeatures
+                    );
+
+                    successResponse.features.forEach(function (feature) {
+
+                        AtlasDataManager.trackFeature(
+                            nodeType, geometryType, feature);
+
+                    });
+
                     if (source !== undefined) {
 
                         source.setData({
                             'type': successResponse.type,
-                            'features': successResponse.features
+                            'features': updatedFeatures
                         });
 
                     }
-
-                    // self.nodeLayer.features.forEach(function (feature) {
-                    //
-                    //     self.populateMap(feature);
-                    //
-                    // });
 
                 }, function(errorResponse) {
 
@@ -229,43 +221,6 @@ angular.module('FieldDoc')
                     self.showElements();
 
                 });
-
-                // var boundsArray = self.map.getBounds().toArray();
-                //
-                // boundsArray = [
-                //     boundsArray[0].join(','),
-                //     boundsArray[1].join(',')
-                // ].join(',');
-                //
-                // console.log(
-                //     'boundsArray:',
-                //     boundsArray
-                // );
-
-                // MapInterface.nodeLayer(
-                //     params
-                // ).$promise.then(function(successResponse) {
-                //
-                //     console.log(
-                //         'updateNodeLayer:successResponse:',
-                //         successResponse
-                //     );
-                //
-                //     self.nodeLayer = successResponse;
-                //
-                //     self.nodeLayer.features.forEach(function (feature) {
-                //
-                //         self.populateMap(feature);
-                //
-                //     });
-                //
-                // }, function(errorResponse) {
-                //
-                //     console.log('Unable to load node layer data.');
-                //
-                //     self.showElements();
-                //
-                // });
 
             };
 
@@ -322,7 +277,7 @@ angular.module('FieldDoc')
                         false
                     );
 
-                    self.populateMap(self.primaryNode, true);
+                    // self.populateMap(self.primaryNode, true);
 
                     self.loadMetrics();
 
@@ -404,7 +359,7 @@ angular.module('FieldDoc')
                         false
                     );
 
-                    self.populateMap(self.primaryNode, true);
+                    // self.populateMap(self.primaryNode, true);
 
                     self.loadMetrics();
 
@@ -612,7 +567,11 @@ angular.module('FieldDoc')
 
                     LayerUtil.trackLayer(layerSpec);
 
-                    MapUtil.addLayer(self.map, layerSpec);
+                    MapUtil.addLayer(
+                        self.map,
+                        layerSpec,
+                        'drainage'
+                    );
 
                     // }
 
@@ -691,7 +650,11 @@ angular.module('FieldDoc')
 
                         LayerUtil.trackLayer(layerSpec);
 
-                        MapUtil.addLayer(self.map, layerSpec);
+                        MapUtil.addLayer(
+                            self.map,
+                            layerSpec,
+                            featureType
+                        );
 
                         // }
 
@@ -822,6 +785,48 @@ angular.module('FieldDoc')
 
             };
 
+            self.addReferenceLayers = function () {
+
+                self.map.addSource('empty', {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    }
+                });
+
+                //
+                // The project layer has the highest z-index priority.
+                //
+
+                self.map.addLayer({
+                    id: 'project-index',
+                    type: 'symbol',
+                    source: 'empty'
+                });
+
+                //
+                // The practice layer has the second-highest z-index priority.
+                //
+
+                self.map.addLayer({
+                    id: 'practice-index',
+                    type: 'symbol',
+                    source: 'empty'
+                }, 'project-index'); // Place this layer below projects.
+
+                //
+                // The site layer has the lowest z-index priority.
+                //
+
+                self.map.addLayer({
+                    id: 'project-index',
+                    type: 'symbol',
+                    source: 'empty'
+                }, 'practice-index'); // Place this layer below projects and practices.
+
+            };
+
             self.addGeoJSONSources = function () {
 
                 // var urlComponents = NODE_LAYER_TYPES.map(function(e, i) {
@@ -851,7 +856,7 @@ angular.module('FieldDoc')
                 //     'self.addGeoJSONSources:urlComponents:',
                 //     urlComponents);
 
-                URL_COMPONENTS.forEach(function (component) {
+                self.urlComponents.forEach(function (component) {
 
                     console.log(
                         'self.addGeoJSONSources:component:',
@@ -889,88 +894,15 @@ angular.module('FieldDoc')
 
                         layerSpec.maxzoom = 14;
 
-                        // layerSpec.layout = {
-                        //     'text-field': ['get', 'name'],
-                        //     'text-variable-anchor': [
-                        //         'top', 'bottom', 'left', 'right'
-                        //     ],
-                        //     'text-radial-offset': 0.5,
-                        //     'text-justify': 'auto'
-                        // }
-
-                        var labelLayer = {
-                            'id': 'fd.project-label',
-                            'type': 'symbol',
-                            'source': source.id,
-                            'minzoom': 9,
-                            'maxzoom': 14,
-                            'layout': {
-                                'symbol-placement': 'point',
-                                'text-anchor': 'bottom',
-                                'text-field': ['get', 'name'],
-                                'text-variable-anchor': [
-                                    'top', 'bottom', 'left', 'right'
-                                ],
-                                // 'text-font': [
-                                //     'DIN Offc Pro Medium',
-                                //     'Arial Unicode MS Bold'
-                                // ],
-                                'text-font': {
-                                    'stops': [
-                                        [
-                                            9,
-                                            [
-                                                'DIN Offc Pro Regular',
-                                                'Arial Unicode MS Regular'
-                                            ]
-                                        ],
-                                        [
-                                            11,
-                                            [
-                                                'DIN Offc Pro Regular',
-                                                'Arial Unicode MS Regular'
-                                            ]
-                                        ],
-                                        [
-                                            14,
-                                            [
-                                                'DIN Offc Pro Medium',
-                                                'Arial Unicode MS Bold'
-                                            ]
-                                        ]
-                                    ]
-                                },
-                                'text-size': [
-                                    'interpolate',
-                                    ['exponential', 0.5],
-                                    ['zoom'],
-                                    9,
-                                    12,
-                                    14,
-                                    16
-                                ],
-                                'text-radial-offset': 0.5,
-                                'text-justify': 'auto'
-                            },
-                            'paint': {
-                                'text-halo-width': 1,
-                                'text-halo-color': 'rgba(255,255,255,0.75)',
-                                'text-halo-blur': 1,
-                                'text-color': [
-                                    'interpolate',
-                                    ['exponential', 0.5],
-                                    ['zoom'],
-                                    9,
-                                    '#616161',
-                                    14,
-                                    '#212121'
-                                ]
-                            }
-                        };
+                        var labelLayer = LayerUtil.createLabelLayer(
+                            source,
+                            component[0],
+                            component[1]
+                        );
 
                         LayerUtil.trackLayer(labelLayer);
 
-                        self.map.addLayer(labelLayer);
+                        self.map.addLayer(labelLayer, 'site-index');
 
                     }
 
@@ -986,7 +918,7 @@ angular.module('FieldDoc')
 
                         layerSpec.minzoom = 10;
 
-                        layerSpec.maxzoom = 14;
+                        layerSpec.maxzoom = 16;
 
                     }
 
@@ -994,7 +926,11 @@ angular.module('FieldDoc')
 
                         LayerUtil.trackLayer(layerSpec);
 
-                        MapUtil.addLayer(self.map, layerSpec);
+                        MapUtil.addLayer(
+                            self.map,
+                            layerSpec,
+                            component[0]
+                        );
 
                     } catch (e) {
 
@@ -1134,7 +1070,7 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    URL_COMPONENTS.forEach(function (component) {
+                    self.urlComponents.forEach(function (component) {
 
                         $timeout(function () {
 
@@ -1308,7 +1244,69 @@ angular.module('FieldDoc')
 
                     self.loadMap();
 
+                    self.addReferenceLayers();
+
                     self.addGeoJSONSources();
+
+                });
+
+                self.urlComponents.forEach(function (combination) {
+
+                    var layerId = [
+                        'fd',
+                        combination[0],
+                        combination[1]
+                    ].join('.');
+
+                    self.map.removeFeatureState({
+                        source: layerId
+                    });
+
+                });
+
+                self.urlComponents.forEach(function (combination) {
+
+                    var layerId = [
+                        'fd',
+                        combination[0],
+                        combination[1]
+                    ].join('.');
+
+                    self.map.on('click', layerId, function (e) {
+
+                        console.log(
+                            'map:click:layerId',
+                            layerId
+                        );
+
+                        if (e.features.length > 0) {
+
+                            console.log(
+                                'map:click:focusedFeature',
+                                e.features[0]
+                            );
+
+                            if (typeof self.focusedFeature === 'number') {
+
+                                self.map.removeFeatureState({
+                                    source: layerId,
+                                    id: self.focusedFeature
+                                });
+
+                            }
+
+                            self.focusedFeature = e.features[0].id;
+
+                            self.map.setFeatureState({
+                                source: layerId,
+                                id: self.focusedFeature,
+                            }, {
+                                clicked: true
+                            });
+
+                        }
+
+                    });
 
                 });
 

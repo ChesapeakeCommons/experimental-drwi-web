@@ -23,6 +23,22 @@ angular.module('FieldDoc')
 
         self.defaultExtent;
 
+        var fetchedFeatures = {
+            'practice': {
+                'line': [],
+                'point': [],
+                'polygon': []
+            },
+            'site': {
+                'line': [],
+                'point': [],
+                'polygon': []
+            },
+            'project': {
+                'point': []
+            }
+        };
+
         return {
             getPractice: function(featureId, callback) {
 
@@ -298,6 +314,43 @@ angular.module('FieldDoc')
                     });
 
                 }
+
+            },
+            getFetched: function (featureType, geometryType) {
+
+                return fetchedFeatures[featureType][geometryType];
+
+            },
+            getFetchedKeys: function (featureType, geometryType) {
+
+                var index = fetchedFeatures[featureType][geometryType];
+
+                if (Array.isArray(index)) {
+
+                    var vals = [];
+
+                    index.forEach(function (feature) {
+
+                        vals.push(feature.properties.id);
+
+                    })
+
+                    return vals;
+
+                }
+
+                return [];
+
+            },
+            trackFeature: function (featureType, geometryType, feature) {
+
+                // var index = fetchedFeatures[featureType];
+                //
+                // if (Array.isArray(index) && index.indexOf(feature.id) < 0) {
+
+                    fetchedFeatures[featureType][geometryType].push(feature);
+
+                // }
 
             }
 

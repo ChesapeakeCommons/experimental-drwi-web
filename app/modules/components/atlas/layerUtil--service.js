@@ -13,23 +13,110 @@ angular.module('FieldDoc')
         // Let's set an internal reference to this service
         var self = this;
 
-        var config = {
+        var labelConfig = {
+            'project': {
+                'point': {
+                    'id': 'fd.project-label',
+                    'type': 'symbol',
+                    'minzoom': 9,
+                    'maxzoom': 14,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    9,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    11,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    14,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            9,
+                            12,
+                            14,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            9,
+                            '#616161',
+                            14,
+                            '#212121'
+                        ]
+                    }
+                }
+            }
+        };
+
+        var paintConfig = {
             'delineation': {
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#00C8FF',
+                        // 'circle-color': '#00C8FF',
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#00C8FF'
+                        ],
                         'circle-radius': 8,
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#00C8FF'
                     },
                     'fill': {
-                        'fill-color': '#00C8FF',
+                        // 'fill-color': '#00C8FF',
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#00C8FF'
+                        ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#424242'
                     },
                     'line': {
-                        'line-color': '#00C8FF',
+                        // 'line-color': '#00C8FF',
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#00C8FF'
+                        ],
                         'line-width': 2
                     }
                 }
@@ -58,7 +145,13 @@ angular.module('FieldDoc')
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#df063e',
+                        // 'circle-color': '#df063e',
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#df063e'
+                        ],
                         'circle-radius': {
                             'base': 2,
                             'stops': [
@@ -70,12 +163,24 @@ angular.module('FieldDoc')
                         'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
-                        'fill-color': '#df063e',
+                        // 'fill-color': '#df063e',
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#df063e'
+                        ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
                     },
                     'line': {
-                        'line-color': '#df063e',
+                        // 'line-color': '#df063e',
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#df063e'
+                        ],
                         'line-width': 2
                     }
                 }
@@ -84,7 +189,13 @@ angular.module('FieldDoc')
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#a94efe',
+                        // 'circle-color': '#a94efe',
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#a94efe'
+                        ],
                         'circle-radius': {
                             'base': 2,
                             'stops': [
@@ -96,12 +207,24 @@ angular.module('FieldDoc')
                         'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
-                        'fill-color': '#a94efe',
+                        // 'fill-color': '#a94efe',
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#a94efe'
+                        ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
                     },
                     'line': {
-                        'line-color': '#a94efe',
+                        // 'line-color': '#a94efe',
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#a94efe'
+                        ],
                         'line-width': 2
                     }
                 }
@@ -110,7 +233,13 @@ angular.module('FieldDoc')
                 'prefix': 'si',
                 'paintSpec': {
                     'circle': {
-                        'circle-color': '#2196F3',
+                        // 'circle-color': '#2196F3',
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#2196F3'
+                        ],
                         // 'circle-radius': {
                         //     'base': 2,
                         //     'stops': [
@@ -131,17 +260,39 @@ angular.module('FieldDoc')
                         'circle-stroke-color': '#FFFFFF'
                     },
                     'fill': {
-                        'fill-color': '#fbb03b',
+                        // 'fill-color': '#fbb03b',
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#2196F3'
+                        ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#FF0033'
                     },
                     'line': {
-                        'line-color': '#fbb03b',
+                        // 'line-color': '#fbb03b',
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'clicked'], false],
+                            '#ff0000',
+                            '#2196F3'
+                        ],
                         'line-width': 2
                     }
                 }
             }
         };
+
+        var URL_COMPONENTS = [
+            ['practice', 'line'],
+            ['practice', 'point'],
+            ['practice', 'polygon'],
+            ['site', 'line'],
+            ['site', 'point'],
+            ['site', 'polygon'],
+            ['project', 'point'],
+        ];
 
         return {
             createLayer: function(sourceSpec, featureType) {
@@ -200,6 +351,23 @@ angular.module('FieldDoc')
                 };
 
             },
+            createLabelLayer: function (source, nodeType, layerType) {
+
+                try {
+
+                    var layerConfig = labelConfig[nodeType][layerType];
+
+                    layerConfig.source = source.id;
+
+                    return layerConfig;
+
+                } catch (e) {
+
+                    return undefined;
+
+                }
+
+            },
             _index: {},
             dropLayer: function (layer) {
 
@@ -244,6 +412,27 @@ angular.module('FieldDoc')
                 return fdArray;
 
             },
+            getBeforeId: function (featureType) {
+
+                if (featureType === 'practice') {
+
+                    return 'project-index';
+
+                }
+
+                if (featureType === 'site') {
+
+                    return 'practice-index';
+
+                }
+
+                if (featureType === 'drainage') {
+
+                    return 'site-index';
+
+                }
+
+            },
             getPaint: function (featureType, layerType) {
 
                 console.log(
@@ -254,7 +443,7 @@ angular.module('FieldDoc')
                     'LayerUtil:getPaint:layerType',
                     layerType);
 
-                return config[featureType].paintSpec[layerType];
+                return paintConfig[featureType].paintSpec[layerType];
 
             },
             getType: function (geometryType) {
@@ -280,6 +469,11 @@ angular.module('FieldDoc')
                 }
 
                 return layerType;
+
+            },
+            getUrlComponents: function () {
+
+                return URL_COMPONENTS;
 
             },
             list: function () {
