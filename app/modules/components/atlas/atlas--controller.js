@@ -11,26 +11,12 @@ angular.module('FieldDoc')
     .controller('AtlasController',
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval, AtlasDataManager, ipCookie,
+                 Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie,
                  Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil) {
 
             var self = this;
 
-            var NODE_LAYER_TYPES = [
-                'practice',
-                'site',
-                'project'
-            ];
-
-            var GEOMETRY_TYPES = [
-                'line',
-                'point',
-                'polygon'
-            ];
-
             self.urlComponents = LayerUtil.getUrlComponents();
-
-            var BOTTOM_OFFSET = 48;
 
             var DRAINAGE_ID = 'fd.delineation.1';
 
@@ -98,44 +84,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.refreshMetricProgress = function () {
-
-                var progressPoll = $interval(function() {
-
-                    self.loadMetrics();
-
-                }, 4000);
-
-                $timeout(function () {
-
-                    $interval.cancel(progressPoll);
-
-                }, 20000);
-
-            };
-
-            self.showMetricModal = function(metric) {
-
-                console.log('self.showMetricModal', metric);
-
-                self.selectedMetric = metric;
-
-                self.displayModal = true;
-
-            };
-
-            self.closeMetricModal = function() {
-
-                self.selectedMetric = null;
-
-                self.displayModal = false;
-
-            };
-
-            self.reloadPage = function() {
-                $location.reload();
-            };
-
             self.updateNodeLayer = function (nodeType, geometryType) {
 
                 var zoom = self.map.getZoom();
@@ -156,8 +104,6 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
-                // var layerIds = LayerUtil.getIds(self.map, nodeType);
-
                 var fetchedFeatures = AtlasDataManager.getFetchedKeys(
                     nodeType, geometryType);
 
@@ -174,7 +120,7 @@ angular.module('FieldDoc')
                     featureType: nodeType,
                     geometryType: geometryType,
                     zoom: zoom
-                }
+                };
 
                 MapInterface.featureLayer(
                     params
@@ -236,8 +182,6 @@ angular.module('FieldDoc')
                     params
                 ).$promise.then(function(successResponse) {
 
-                    // self.feature = successResponse;
-
                     delete successResponse.$promise;
 
                     delete successResponse.$resolved;
@@ -269,11 +213,12 @@ angular.module('FieldDoc')
 
                     }
 
-                    // var params = {};
-                    //
-                    // params.origin = self.featureType + ':' + self.feature.id;
-                    //
-                    // $location.search(params);
+                    var urlData = AtlasDataManager.createURLData(
+                        self.primaryNode,
+                        false
+                    );
+
+                    $location.search(urlData);
 
                     self.showElements();
 
@@ -290,11 +235,13 @@ angular.module('FieldDoc')
                     // Set banner image in side panel.
                     //
 
-                    self.clearBannerImage();
+                    AtlasLayoutUtil.clearBannerImage();
 
                     if (self.primaryNode.properties.picture) {
 
-                        self.setBannerImage();
+                        AtlasLayoutUtil.setBannerImage(
+                            self.primaryNode
+                        );
 
                     }
 
@@ -305,72 +252,6 @@ angular.module('FieldDoc')
                     self.showElements();
 
                 });
-
-            };
-
-            self.resizeMainContent = function() {
-
-                var bodyEl = document.querySelector('body');
-
-                console.log(
-                    'self.resizeMainContent:body:',
-                    bodyEl
-                );
-
-                var controlsEl = document.querySelector('.outer-controls-container');
-
-                console.log(
-                    'self.resizeMainContent:controlsEl:',
-                    controlsEl
-                );
-
-                var contentEl = document.querySelector('.main-content-container');
-
-                console.log(
-                    'self.resizeMainContent:contentEl:',
-                    contentEl
-                );
-
-                contentEl.style.height = (bodyEl.offsetHeight - controlsEl.offsetHeight - BOTTOM_OFFSET) + 'px';
-
-                contentEl.style.opacity = 1;
-
-                console.log(
-                    'self.resizeMainContent:contentEl:height:',
-                    contentEl.style.height
-                );
-
-            };
-
-            self.clearBannerImage = function() {
-
-                var controlEl = document.querySelector(
-                    '.outer-controls-container'
-                );
-
-                controlEl.style.backgroundImage = 'none';
-
-            };
-
-            self.setBannerImage = function() {
-
-                var controlEl = document.querySelector(
-                    '.outer-controls-container'
-                );
-
-                var bgImg = 'url(' + self.primaryNode.properties.picture + ')';
-
-                controlEl.style.backgroundImage = bgImg;
-
-            };
-
-            self.sizeSidebar = function() {
-
-                var body = document.querySelector('body');
-
-                var elem = document.querySelector('.sidebar');
-
-                elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
 
             };
 
@@ -385,22 +266,6 @@ angular.module('FieldDoc')
                 }
 
                 elem.style.transform = transform;
-
-            };
-
-            self.getLeftMapOffset = function() {
-
-                var panelEl = document.querySelector('.sidebar');
-
-                var offset = panelEl.offsetWidth + 100;
-
-                if (self.collapsed) {
-
-                    offset = 100;
-
-                }
-
-                return offset;
 
             };
 
@@ -550,8 +415,8 @@ angular.module('FieldDoc')
                             headers: {
                                 'Authorization': 'Bearer ' + sessionCookie
                             },
-                            credentials: 'include'  // Include cookies for cross-origin requests
-                        }
+                            credentials: 'include'  // Include cookies for cross-origin requests.
+                        };
 
                     }
 
@@ -985,7 +850,7 @@ angular.module('FieldDoc')
 
                     }
 
-                    self.padding.left = self.getLeftMapOffset();
+                    self.padding.left = AtlasLayoutUtil.getLeftMapOffset();
 
                     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);
 
@@ -1056,7 +921,7 @@ angular.module('FieldDoc')
 
             self.stageMap = function(createMap) {
 
-                self.sizeSidebar();
+                AtlasLayoutUtil.sizeSidebar();
 
                 if (createMap) {
 
@@ -1088,7 +953,7 @@ angular.module('FieldDoc')
 
                     $timeout(function () {
 
-                        self.resizeMainContent();
+                        AtlasLayoutUtil.resizeMainContent();
 
                     }, 50);
 

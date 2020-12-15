@@ -328,11 +328,23 @@ angular.module('FieldDoc')
 
                 if (centroid !== undefined) {
 
-                    origin = [
-                        centroid.coordinates[1],
-                        centroid.coordinates[0],
-                        12
-                    ].join(',');
+                    if (centroid.hasOwnProperty('coordinates')) {
+
+                        origin = [
+                            centroid.coordinates[0],
+                            centroid.coordinates[1],
+                            12
+                        ].join(',');
+
+                    } else {
+
+                        origin = [
+                            centroid.geometry.coordinates[0],
+                            centroid.geometry.coordinates[1],
+                            12
+                        ].join(',');
+
+                    }
 
                 }
 
@@ -363,7 +375,17 @@ angular.module('FieldDoc')
             },
             getCentroid: function (feature) {
 
+                console.log(
+                    'getCentroid:feature',
+                    feature
+                );
+
                 var featureType = feature.type;
+
+                console.log(
+                    'getCentroid:featureType',
+                    featureType
+                );
 
                 if (featureType === 'project') {
 
@@ -379,6 +401,11 @@ angular.module('FieldDoc')
 
                         var line = turf.lineString(feature.geometry.coordinates);
 
+                        console.log(
+                            'getCentroid:line',
+                            line
+                        );
+
                         return turf.centroid(line);
 
                     }
@@ -386,6 +413,16 @@ angular.module('FieldDoc')
                     if (geometryType === 'polygon') {
 
                         var polygon = turf.polygon(feature.geometry.coordinates);
+
+                        console.log(
+                            'getCentroid:polygon',
+                            polygon
+                        );
+
+                        console.log(
+                            'getCentroid:centroid',
+                            turf.centroid(polygon)
+                        );
 
                         return turf.centroid(polygon);
 
@@ -473,13 +510,7 @@ angular.module('FieldDoc')
             },
             trackFeature: function (featureType, geometryType, feature) {
 
-                // var index = fetchedFeatures[featureType];
-                //
-                // if (Array.isArray(index) && index.indexOf(feature.id) < 0) {
-
                 fetchedFeatures[featureType][geometryType].push(feature);
-
-                // }
 
             }
 
