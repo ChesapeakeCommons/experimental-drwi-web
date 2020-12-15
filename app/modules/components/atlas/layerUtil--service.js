@@ -86,38 +86,10 @@ angular.module('FieldDoc')
             'delineation': {
                 'prefix': 'si',
                 'paintSpec': {
-                    'circle': {
-                        // 'circle-color': '#00C8FF',
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#00C8FF'
-                        ],
-                        'circle-radius': 8,
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#00C8FF'
-                    },
                     'fill': {
-                        // 'fill-color': '#00C8FF',
-                        'fill-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#00C8FF'
-                        ],
+                        'fill-color': '#00C8FF',
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#424242'
-                    },
-                    'line': {
-                        // 'line-color': '#00C8FF',
-                        'line-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#00C8FF'
-                        ],
-                        'line-width': 2
                     }
                 }
             },
@@ -148,9 +120,9 @@ angular.module('FieldDoc')
                         // 'circle-color': '#df063e',
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#df063e'
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
+                            '#3fd48a'
                         ],
                         'circle-radius': {
                             'base': 2,
@@ -166,9 +138,9 @@ angular.module('FieldDoc')
                         // 'fill-color': '#df063e',
                         'fill-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#df063e'
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
+                            '#3fd48a'
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
@@ -177,9 +149,9 @@ angular.module('FieldDoc')
                         // 'line-color': '#df063e',
                         'line-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
-                            '#df063e'
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
+                            '#3fd48a'
                         ],
                         'line-width': 2
                     }
@@ -192,8 +164,8 @@ angular.module('FieldDoc')
                         // 'circle-color': '#a94efe',
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
                             '#a94efe'
                         ],
                         'circle-radius': {
@@ -210,8 +182,8 @@ angular.module('FieldDoc')
                         // 'fill-color': '#a94efe',
                         'fill-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
                             '#a94efe'
                         ],
                         'fill-opacity': 0.4,
@@ -221,8 +193,8 @@ angular.module('FieldDoc')
                         // 'line-color': '#a94efe',
                         'line-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
-                            '#ff0000',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#D43F3F',
                             '#a94efe'
                         ],
                         'line-width': 2
@@ -236,7 +208,7 @@ angular.module('FieldDoc')
                         // 'circle-color': '#2196F3',
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
+                            ['boolean', ['feature-state', 'focus'], false],
                             '#ff0000',
                             '#2196F3'
                         ],
@@ -263,7 +235,7 @@ angular.module('FieldDoc')
                         // 'fill-color': '#fbb03b',
                         'fill-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
+                            ['boolean', ['feature-state', 'focus'], false],
                             '#ff0000',
                             '#2196F3'
                         ],
@@ -274,7 +246,7 @@ angular.module('FieldDoc')
                         // 'line-color': '#fbb03b',
                         'line-color': [
                             'case',
-                            ['boolean', ['feature-state', 'clicked'], false],
+                            ['boolean', ['feature-state', 'focus'], false],
                             '#ff0000',
                             '#2196F3'
                         ],

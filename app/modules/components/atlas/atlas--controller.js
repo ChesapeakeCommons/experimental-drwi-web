@@ -563,8 +563,6 @@ angular.module('FieldDoc')
                         visibility: 'none'
                     };
 
-                    // if (self.map.getZoom >= 12) {
-
                     LayerUtil.trackLayer(layerSpec);
 
                     MapUtil.addLayer(
@@ -572,24 +570,6 @@ angular.module('FieldDoc')
                         layerSpec,
                         'drainage'
                     );
-
-                    // }
-
-                    // try {
-                    //
-                    //     var bounds = turf.bbox(
-                    //         feature.geometry
-                    //     );
-                    //
-                    //     self.map.fitBounds(bounds, {
-                    //         padding: self.padding
-                    //     });
-                    //
-                    // } catch (e) {
-                    //
-                    //     console.warn(e);
-                    //
-                    // }
 
                 }, function errorCallback(errorResponse) {
 
@@ -645,9 +625,6 @@ angular.module('FieldDoc')
 
                         layerSpec.id = sourceSpec.id;
 
-                        // if ((featureType === 'practice' && self.map.getZoom >= 12) ||
-                        //     (featureType === 'site' && self.map.getZoom >= 8)) {
-
                         LayerUtil.trackLayer(layerSpec);
 
                         MapUtil.addLayer(
@@ -655,8 +632,6 @@ angular.module('FieldDoc')
                             layerSpec,
                             featureType
                         );
-
-                        // }
 
                     } catch (e) {
 
@@ -729,10 +704,6 @@ angular.module('FieldDoc')
                     'self.switchMapStyle:currentStyle',
                     self.map.getStyle()
                 );
-
-                // LayerUtil.removeLayers(self.map);
-                //
-                // SourceUtil.removeSources(self.map);
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
@@ -828,33 +799,6 @@ angular.module('FieldDoc')
             };
 
             self.addGeoJSONSources = function () {
-
-                // var urlComponents = NODE_LAYER_TYPES.map(function(e, i) {
-                //     return [NODE_LAYER_TYPES[i], GEOMETRY_TYPES[i]];
-                // });
-
-                // var urlComponents = [
-                //     ['practice', 'line'],
-                //     ['practice', 'point'],
-                //     ['practice', 'polygon'],
-                //     ['site', 'line'],
-                //     ['site', 'point'],
-                //     ['site', 'polygon'],
-                //     ['project', 'point'],
-                // ];
-                //
-                // NODE_LAYER_TYPES.forEach(function (nodeType, index) {
-                //
-                //     urlComponents.push([
-                //         nodeType,
-                //         GEOMETRY_TYPES[index]
-                //     ]);
-                //
-                // });
-
-                // console.log(
-                //     'self.addGeoJSONSources:urlComponents:',
-                //     urlComponents);
 
                 self.urlComponents.forEach(function (component) {
 
@@ -1048,26 +992,6 @@ angular.module('FieldDoc')
 
                 });
 
-                self.map.on('zoomend', function() {
-
-                    // if (self.primaryNode !== undefined) {
-                    //
-                    //     self.updateNodeLayer();
-                    //
-                    // }
-
-                    // NODE_LAYER_TYPES.forEach(function (nodeType) {
-                    //
-                    //     $timeout(function () {
-                    //
-                    //         self.updateNodeLayer(nodeType);
-                    //
-                    //     }, 2000);
-                    //
-                    // });
-
-                });
-
                 self.map.on('moveend', function() {
 
                     self.urlComponents.forEach(function (component) {
@@ -1078,25 +1002,7 @@ angular.module('FieldDoc')
 
                         }, 1000);
 
-                        // self.updateNodeLayer(component[0], component[1]);
-
                     });
-
-                    // if (self.primaryNode !== undefined) {
-                    //
-                    //     self.updateNodeLayer();
-                    //
-                    // }
-
-                    // NODE_LAYER_TYPES.forEach(function (nodeType) {
-                    //
-                    //     $timeout(function () {
-                    //
-                    //         self.updateNodeLayer(nodeType);
-                    //
-                    //     }, 2000);
-                    //
-                    // });
 
                 });
 
@@ -1242,25 +1148,11 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    self.loadMap();
+                    self.extractUrlParams();
 
                     self.addReferenceLayers();
 
                     self.addGeoJSONSources();
-
-                });
-
-                self.urlComponents.forEach(function (combination) {
-
-                    var layerId = [
-                        'fd',
-                        combination[0],
-                        combination[1]
-                    ].join('.');
-
-                    self.map.removeFeatureState({
-                        source: layerId
-                    });
 
                 });
 
@@ -1278,6 +1170,9 @@ angular.module('FieldDoc')
                             'map:click:layerId',
                             layerId
                         );
+
+                        SourceUtil.resetFeatureStates(
+                            self.map, self.urlComponents);
 
                         if (e.features.length > 0) {
 
@@ -1301,7 +1196,7 @@ angular.module('FieldDoc')
                                 source: layerId,
                                 id: self.focusedFeature,
                             }, {
-                                clicked: true
+                                focus: true
                             });
 
                         }
@@ -1357,6 +1252,53 @@ angular.module('FieldDoc')
                 });
 
             };
+
+            self.extractUrlParams = function () {
+
+                var params = $location.search();
+
+                console.log(
+                    'extractUrlParams:params:',
+                    params
+                );
+
+                self.origin = AtlasDataManager.getOrigin(params);
+
+                console.log(
+                    'extractUrlParams:origin:',
+                    self.origin
+                );
+
+                self.nodeData = AtlasDataManager.getData(params);
+
+                console.log(
+                    'extractUrlParams:nodeData:',
+                    self.nodeData
+                );
+
+                self.fetchPrimaryNode(
+                    self.nodeData.featureType,
+                    self.nodeData.featureId
+                );
+
+            };
+
+            $scope.$on('$routeUpdate', function () {
+
+                var params = $location.search();
+
+                self.extractUrlParams(params);
+
+            });
+
+            window.addEventListener('popstate', function (event) {
+                // The popstate event is fired each time when the current history entry changes.
+
+                var params = $location.search();
+
+                self.extractUrlParams(params);
+
+            }, false);
 
             //
             // Verify Account information for proper UI element display

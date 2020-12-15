@@ -223,7 +223,6 @@
                         'tags',
                         'targets',
                         'tasks',
-                        'type',
                         'sites'
                     ].join(',');
 

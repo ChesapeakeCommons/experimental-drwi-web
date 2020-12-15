@@ -168,7 +168,6 @@
                         'reports',
                         'targets',
                         'tasks',
-                        'type',
                         'site',
                         'sites',
                         'status',

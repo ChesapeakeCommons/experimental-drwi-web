@@ -208,7 +208,6 @@ angular.module('FieldDoc')
                     'tags',
                     'targets',
                     'tasks',
-                    'type',
                     'practices'
                 ].join(',');
 

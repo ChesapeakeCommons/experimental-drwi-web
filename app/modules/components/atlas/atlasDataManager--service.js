@@ -316,6 +316,84 @@ angular.module('FieldDoc')
                 }
 
             },
+            createURLData: function (feature) {
+
+                var origin = '-77.0147,38.9101,12';
+
+                var params = {};
+
+                var centroid = this.getCentroid(feature);
+
+                if (centroid !== undefined) {
+
+                    origin = [
+                        centroid.coordinates[1],
+                        centroid.coordinates[0],
+                        12
+                    ].join(',');
+
+                }
+
+                params.origin = encodeURIComponent(
+                    origin
+                ).replace(/\./g, '%2E');
+
+                var node = feature.type + ':' + feature.id;
+
+                params.data = btoa(node);
+
+                var str = [];
+
+                for (var key in params) {
+
+                    str.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+
+                }
+
+                return str.join('&');
+
+            },
+            getCentroid: function (feature) {
+
+                var featureType = feature.type;
+
+                if (featureType === 'project') {
+
+                    return feature.centroid;
+
+                }
+
+                try {
+
+                    var geometryType = feature.geometry.type.toLowerCase();
+
+                    if (geometryType === 'linestring') {
+
+                        var line = turf.lineString(feature.geometry.coordinates);
+
+                        return turf.centroid(line);
+
+                    }
+
+                    if (geometryType === 'polygon') {
+
+                        var polygon = turf.polygon(feature.geometry.coordinates);
+
+                        return turf.centroid(polygon);
+
+                    }
+
+                } catch (e) {
+
+                    console.warn(e);
+
+                    return undefined;
+
+                }
+
+                return undefined;
+
+            },
             getFetched: function (featureType, geometryType) {
 
                 return fetchedFeatures[featureType][geometryType];
@@ -342,13 +420,56 @@ angular.module('FieldDoc')
                 return [];
 
             },
+            getOrigin: function (params) {
+
+                try {
+
+                    var origin = decodeURIComponent(params.origin);
+
+                    var tokens = origin.split(',');
+
+                    return {
+                        lng: +tokens[0],
+                        lat: +tokens[1],
+                        zoom: +tokens[2]
+                    }
+
+                } catch (e) {
+
+                    return undefined;
+
+                }
+
+            },
+            getData: function (params) {
+
+                try {
+
+                    var data = decodeURIComponent(params.data);
+
+                    var str = atob(data);
+
+                    var tokens = str.split(':');
+
+                    return {
+                        featureType: tokens[0],
+                        featureId: +tokens[1]
+                    }
+
+                } catch (e) {
+
+                    return undefined;
+
+                }
+
+            },
             trackFeature: function (featureType, geometryType, feature) {
 
                 // var index = fetchedFeatures[featureType];
                 //
                 // if (Array.isArray(index) && index.indexOf(feature.id) < 0) {
 
-                    fetchedFeatures[featureType][geometryType].push(feature);
+                fetchedFeatures[featureType][geometryType].push(feature);
 
                 // }
 
