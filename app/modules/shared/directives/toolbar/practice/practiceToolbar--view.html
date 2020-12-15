@@ -133,7 +133,7 @@
 
         <li data-ng-if="practice.permissions.write && practice.maps.length"
             title="Launch map">
-            <a href="/atlas?origin=practice:{{ practice.maps[0].id }}" target="_blank">
+            <a href="/atlas?{{ atlasParams }}" target="_blank">
                 <span class="material-icons">
                     map
                 </span>

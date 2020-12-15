@@ -26,9 +26,10 @@
             'practice',
             'LayerService',
             'MapManager',
+            'AtlasDataManager',
             function(Account, $location, $timeout, $log, Report, $rootScope,
                 $route, Utility, user, Project, Site, $window, mapbox,
-                Practice, practice, LayerService, MapManager) {
+                Practice, practice, LayerService, MapManager, AtlasDataManager) {
 
                 var self = this,
                     practiceId = $route.current.params.practiceId;

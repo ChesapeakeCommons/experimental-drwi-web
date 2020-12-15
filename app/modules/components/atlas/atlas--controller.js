@@ -262,6 +262,13 @@ angular.module('FieldDoc')
 
                     self.featureClass = self.clsMap[self.featureType];
 
+                    if ((featureType === 'practice' ||
+                        featureType === 'site')) {
+
+                        self.delineateWatershed(self.primaryNode);
+
+                    }
+
                     // var params = {};
                     //
                     // params.origin = self.featureType + ':' + self.feature.id;
@@ -276,90 +283,6 @@ angular.module('FieldDoc')
                         self.padding,
                         false
                     );
-
-                    // self.populateMap(self.primaryNode, true);
-
-                    self.loadMetrics();
-
-                    //
-                    // Set banner image in side panel.
-                    //
-
-                    self.clearBannerImage();
-
-                    if (self.primaryNode.properties.picture) {
-
-                        self.setBannerImage();
-
-                    }
-
-                }, function(errorResponse) {
-
-                    console.log('Unable to load map data.');
-
-                    self.showElements();
-
-                });
-
-            };
-
-            self.loadMap = function (featureType, featureId) {
-
-                // var params = {
-                //     id: +$location.search().origin
-                // };
-
-                var params = $location.search();
-
-                if (typeof featureType === 'string' &&
-                    typeof featureId === 'number') {
-
-                    params = {
-                        target: featureType + ':' + featureId
-                    }
-
-                }
-
-                // if ($routeParams.id) {
-                //
-                //     params.id = +$routeParams.id;
-                //
-                // } else {
-                //
-                //     params = $location.search();
-                //
-                // }
-
-                MapInterface.query(
-                    params
-                ).$promise.then(function(successResponse) {
-
-                    self.feature = successResponse;
-
-                    self.permissions = successResponse.permissions;
-
-                    self.primaryNode = self.feature.primary_node;
-
-                    self.featureType = self.primaryNode.properties.type;
-
-                    self.featureClass = self.clsMap[self.featureType];
-
-                    var params = {};
-
-                    params.origin = self.featureType + ':' + self.feature.id;
-
-                    $location.search(params);
-
-                    self.showElements();
-
-                    MapUtil.fitMap(
-                        self.map,
-                        self.primaryNode,
-                        self.padding,
-                        false
-                    );
-
-                    // self.populateMap(self.primaryNode, true);
 
                     self.loadMetrics();
 
@@ -510,12 +433,12 @@ angular.module('FieldDoc')
 
             };
 
-            self.delineateWatershed = function(practice) {
+            self.delineateWatershed = function(feature) {
 
                 $http({
                     method: 'POST',
                     url: 'http://watersheds.cci.drexel.edu/api/watershedboundary/',
-                    data: practice,
+                    data: feature.geometry,
                     headers: {
                         'Authorization-Bypass': true
                     }
@@ -525,7 +448,7 @@ angular.module('FieldDoc')
                         'delineateWatershed:successResponse:',
                         successResponse);
 
-                    var feature = {
+                    var drainageFeature = {
                         "type": "Feature",
                         "geometry": successResponse.data,
                         "properties": {
@@ -533,147 +456,29 @@ angular.module('FieldDoc')
                         }
                     };
 
-                    var sourceSpec = SourceUtil.createSource(
-                        feature,
-                        'delineation'
-                    );
+                    // set drainage source data
 
-                    console.log(
-                        'sourceSpec:',
-                        sourceSpec
-                    );
+                    var source = self.map.getSource(DRAINAGE_ID);
 
-                    SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
+                    if (source !== undefined) {
 
-                    MapUtil.addSource(self.map, sourceSpec.id, sourceSpec.config);
+                        source.setData({
+                            type: 'FeatureCollection',
+                            'features': [
+                                drainageFeature
+                            ]
+                        });
 
-                    var layerSpec = LayerUtil.createLayer(
-                        sourceSpec,
-                        'delineation'
-                    );
-
-                    console.log(
-                        'layerSpec:',
-                        layerSpec
-                    );
-
-                    layerSpec.id = sourceSpec.id;
-
-                    layerSpec.layout = {
-                        visibility: 'none'
-                    };
-
-                    LayerUtil.trackLayer(layerSpec);
-
-                    MapUtil.addLayer(
-                        self.map,
-                        layerSpec,
-                        'drainage'
-                    );
+                    }
 
                 }, function errorCallback(errorResponse) {
 
                     console.log(
-                        'delineateWatershed:successResponse:',
+                        'delineateWatershed:errorResponse:',
                         errorResponse
                     );
 
                 });
-
-            };
-
-            self.populateMap = function(feature, delineate) {
-
-                delineate = delineate || false;
-
-                var featureType = feature.properties.type;
-
-                if ((featureType === 'practice' ||
-                    featureType === 'site') && delineate) {
-
-                    self.delineateWatershed(feature);
-
-                }
-
-                try {
-
-                    var sourceSpec = SourceUtil.createSource(
-                        feature,
-                        featureType
-                    );
-
-                    console.log(
-                        'sourceSpec:',
-                        sourceSpec
-                    );
-
-                    SourceUtil.trackSource(sourceSpec.id, sourceSpec.config);
-
-                    MapUtil.addSource(self.map, sourceSpec.id, sourceSpec.config);
-
-                    var layerSpec = LayerUtil.createLayer(
-                        sourceSpec,
-                        featureType
-                    );
-
-                    console.log(
-                        'layerSpec:',
-                        layerSpec
-                    );
-
-                    try {
-
-                        layerSpec.id = sourceSpec.id;
-
-                        LayerUtil.trackLayer(layerSpec);
-
-                        MapUtil.addLayer(
-                            self.map,
-                            layerSpec,
-                            featureType
-                        );
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                        if (featureType === 'project') {
-
-                            try {
-
-                                var popupHtml = PopupUtil.createPopup(
-                                    self.feature.id,
-                                    feature,
-                                    'project',
-                                    self.activeStyle);
-
-                                var marker = new mapboxgl.Marker()
-                                    .setLngLat([
-                                        feature.properties.centroid.coordinates[0],
-                                        feature.properties.centroid.coordinates[1]
-                                    ])
-                                    .setPopup(
-                                        new mapboxgl.Popup({
-                                            maxWidth: 'none'
-                                        }).setDOMContent(popupHtml)
-                                    ) // add popup
-                                    .addTo(self.map);
-
-                            } catch (e) {
-
-                                console.warn(e);
-
-                            }
-
-                        }
-
-                    }
-
-                } catch (e) {
-
-                    console.error(e);
-
-                }
 
             };
 
@@ -758,6 +563,42 @@ angular.module('FieldDoc')
 
             self.addReferenceLayers = function () {
 
+                //
+                // Add source and layer for site and practice
+                // watershed delineations (drainages).
+                //
+
+                var drainageSourceConfig = {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: []
+                    }
+                };
+
+                SourceUtil.trackSource(DRAINAGE_ID, drainageSourceConfig);
+
+                MapUtil.addSource(self.map, DRAINAGE_ID, drainageSourceConfig);
+
+                var paintSpec = LayerUtil.getPaint('delineation', 'fill');
+
+                var drainageLayerSpec = {
+                    id: DRAINAGE_ID,
+                    source: DRAINAGE_ID,
+                    type: 'fill',
+                    paint: paintSpec
+                };
+
+                drainageLayerSpec.layout = {
+                    visibility: 'none'
+                };
+
+                LayerUtil.trackLayer(drainageLayerSpec);
+
+                //
+                // Add index layers to facilitate order control.
+                //
+
                 self.map.addSource('empty', {
                     type: 'geojson',
                     data: {
@@ -787,14 +628,20 @@ angular.module('FieldDoc')
                 }, 'project-index'); // Place this layer below projects.
 
                 //
-                // The site layer has the lowest z-index priority.
+                // The site layer has the second-lowest z-index priority.
                 //
 
                 self.map.addLayer({
-                    id: 'project-index',
+                    id: 'site-index',
                     type: 'symbol',
                     source: 'empty'
                 }, 'practice-index'); // Place this layer below projects and practices.
+
+                //
+                // The drainage layer has the lowest z-index priority.
+                //
+
+                self.map.addLayer(drainageLayerSpec, 'site-index');
 
             };
 

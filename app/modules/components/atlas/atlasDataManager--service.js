@@ -316,7 +316,9 @@ angular.module('FieldDoc')
                 }
 
             },
-            createURLData: function (feature) {
+            createURLData: function (feature, toString) {
+
+                toString = typeof toString === 'boolean' ? toString : true;
 
                 var origin = '-77.0147,38.9101,12';
 
@@ -340,17 +342,23 @@ angular.module('FieldDoc')
 
                 var node = feature.type + ':' + feature.id;
 
-                params.data = btoa(node);
+                params.data = encodeURIComponent(btoa(node));
 
-                var str = [];
+                if (toString) {
 
-                for (var key in params) {
+                    var str = [];
 
-                    str.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                    for (var key in params) {
+
+                        str.push(encodeURIComponent(key) + '=' + params[key]);
+
+                    }
+
+                    return str.join('&');
 
                 }
 
-                return str.join('&');
+                return params;
 
             },
             getCentroid: function (feature) {

@@ -654,7 +654,7 @@
 
             <li data-ng-if="page.permissions.can_edit && page.site.maps.length"
                 title="Launch map">
-                <a href="/atlas?origin=site:{{ page.site.maps[0].id }}" target="_blank">
+                <a href="/atlas?{{ page.atlasParams }}" target="_blank">
                 <span class="material-icons">
                     map
                 </span>
