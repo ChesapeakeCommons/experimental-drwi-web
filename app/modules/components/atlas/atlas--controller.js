@@ -12,13 +12,13 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie,
-                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil) {
+                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil, LayerLabel) {
 
             var self = this;
 
             self.urlComponents = LayerUtil.getUrlComponents();
 
-            var DRAINAGE_ID = 'fd.delineation.1';
+            var DRAINAGE_ID = 'fd.delineation';
 
             $rootScope.viewState = {
                 'map': true
@@ -104,19 +104,19 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
-                var fetchedFeatures = AtlasDataManager.getFetchedKeys(
-                    nodeType, geometryType);
-
-                var exclude = fetchedFeatures.join(',');
-
-                console.log(
-                    'exclude:',
-                    exclude
-                );
+                // var fetchedFeatures = AtlasDataManager.getFetchedKeys(
+                //     nodeType, geometryType);
+                //
+                // var exclude = fetchedFeatures.join(',');
+                //
+                // console.log(
+                //     'exclude:',
+                //     exclude
+                // );
 
                 var params = {
                     bbox: boundsArray,
-                    exclude: exclude,
+                    // exclude: exclude,
                     featureType: nodeType,
                     geometryType: geometryType,
                     zoom: zoom
@@ -215,7 +215,11 @@ angular.module('FieldDoc')
 
                     var urlData = AtlasDataManager.createURLData(
                         self.primaryNode,
-                        false
+                        false,
+                        {
+                            style: self.styleString,
+                            zoom: self.map.getZoom()
+                        }
                     );
 
                     $location.search(urlData);
@@ -377,7 +381,12 @@ angular.module('FieldDoc')
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
-                self.map.setStyle(self.mapStyles[index].url);
+                self.map.setStyle(
+                    self.mapStyles[index].url,
+                    {
+                        diff: false
+                    }
+                );
 
             };
 
@@ -464,13 +473,17 @@ angular.module('FieldDoc')
                 // Add index layers to facilitate order control.
                 //
 
-                self.map.addSource('empty', {
+                var emptySourceConfig = {
                     type: 'geojson',
                     data: {
                         type: 'FeatureCollection',
                         features: []
                     }
-                });
+                };
+
+                self.map.addSource('empty', emptySourceConfig);
+
+                SourceUtil.trackSource('empty', emptySourceConfig);
 
                 //
                 // The project and label layers have the highest z-index priority.
@@ -531,15 +544,15 @@ angular.module('FieldDoc')
                         'self.addGeoJSONSources:source:',
                         source);
 
-                    try {
-
-                        MapUtil.addSource(self.map, source.id, source.config);
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                    }
+                    // try {
+                    //
+                    //     MapUtil.addSource(self.map, source.id, source.config);
+                    //
+                    // } catch (e) {
+                    //
+                    //     console.warn(e);
+                    //
+                    // }
 
                     var type = LayerUtil.getType(component[1]);
 
@@ -556,31 +569,31 @@ angular.module('FieldDoc')
 
                     layerSpec.maxzoom = zoomSpec.max;
 
-                    var labelLayer = LayerUtil.createLabelLayer(
-                        source,
-                        component[0],
-                        component[1]
-                    );
+                    // var labelLayer = LayerUtil.createLabelLayer(
+                    //     source,
+                    //     component[0],
+                    //     component[1]
+                    // );
 
-                    labelLayer.minzoom = zoomSpec.min;
+                    // labelLayer.minzoom = zoomSpec.min;
+                    //
+                    // labelLayer.maxzoom = zoomSpec.max;
+                    //
+                    // LayerUtil.trackLayer(labelLayer);
 
-                    labelLayer.maxzoom = zoomSpec.max;
-
-                    LayerUtil.trackLayer(labelLayer);
-
-                    try {
-
-                        MapUtil.addLayer(
-                            self.map,
-                            labelLayer,
-                            component[0] + '-label'
-                        );
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                    }
+                    // try {
+                    //
+                    //     MapUtil.addLayer(
+                    //         self.map,
+                    //         labelLayer,
+                    //         component[0] + '-label'
+                    //     );
+                    //
+                    // } catch (e) {
+                    //
+                    //     console.warn(e);
+                    //
+                    // }
 
                     try {
 
@@ -636,9 +649,13 @@ angular.module('FieldDoc')
 
                 self.map.on('styledata', function() {
 
+                    // if (!self.map.loaded()) return;
+
                     if (self.map.getLayer('fd.project-label') !== undefined) {
 
                         if (self.mapOptions.style.indexOf('satellite') >= 0) {
+
+                            self.styleString = 'satellite';
 
                             try {
 
@@ -661,6 +678,8 @@ angular.module('FieldDoc')
                             }
 
                         } else {
+
+                            self.styleString = 'street';
 
                             try {
 
@@ -694,21 +713,44 @@ angular.module('FieldDoc')
 
                     }
 
+                    self.populateMap();
+
                     //
                     // Update stored layers.
                     //
 
-                    LayerUtil.trackLayers(self.map);
+                    // LayerUtil.trackLayers(self.map);
 
                     //
                     // Update stored sources.
                     //
 
-                    SourceUtil.trackSources(self.map);
+                    // SourceUtil.trackSources(self.map);
+
+                    //
+                    // Update URL data.
+                    //
+
+                    if (self.primaryNode) {
+
+                        // var urlData = AtlasDataManager.createURLData(
+                        //     self.primaryNode,
+                        //     false,
+                        //     {
+                        //         style: self.styleString,
+                        //         zoom: self.map.getZoom()
+                        //     }
+                        // );
+                        //
+                        // $location.search(urlData);
+
+                    }
 
                 });
 
                 self.map.on('moveend', function() {
+
+                    // if (!self.map.loaded()) return;
 
                     self.urlComponents.forEach(function (component) {
 
@@ -728,85 +770,85 @@ angular.module('FieldDoc')
                     // Retrieve stored layers.
                     //
 
-                    var preservedLayers = LayerUtil.list();
-
+                    // var preservedLayers = LayerUtil.list();
                     //
-                    // Retrieve stored sources.
+                    // //
+                    // // Retrieve stored sources.
+                    // //
                     //
-
-                    var preservedSources = SourceUtil.list();
-
-                    if (preservedSources) {
-
-                        //
-                        // Remove stored sources. They will be restored in
-                        // the following loop calls.
-                        //
-
-                        SourceUtil.removeAll();
-
-                        preservedSources.forEach(function (source) {
-
-                            console.log(
-                                'Adding preserved source:',
-                                source
-                            );
-
-                            //
-                            // If source not present on map object, add it.
-                            //
-
-                            if (self.map.getSource(source.id) === undefined) {
-
-                                self.map.addSource(source.id, source.config);
-
-                            }
-
-                            //
-                            // Track source in stored sources.
-                            //
-
-                            SourceUtil.trackSource(source.id, source.config);
-
-                        });
-
-                    }
-
-                    if (preservedLayers) {
-
-                        //
-                        // Remove stored layers. They will be restored in
-                        // the following loop calls.
-                        //
-
-                        LayerUtil.removeAll();
-
-                        preservedLayers.forEach(function (layer) {
-
-                            console.log(
-                                'Adding preserved layer:',
-                                layer
-                            );
-
-                            //
-                            // If layer not present on map object, add it.
-                            //
-
-                            if (self.map.getLayer(layer.id) === undefined) {
-
-                                self.map.addLayer(layer);
-
-                            }
-
-                            //
-                            // Track layer in stored layers.
-                            //
-
-                            LayerUtil.trackLayer(layer);
-
-                        });
-
-                    }
+                    // var preservedSources = SourceUtil.list();
+                    //
+                    // if (preservedSources) {
+                    //
+                    //     //
+                    //     // Remove stored sources. They will be restored in
+                    //     // the following loop calls.
+                    //     //
+                    //
+                    //     SourceUtil.removeAll();
+                    //
+                    //     preservedSources.forEach(function (source) {
+                    //
+                    //         console.log(
+                    //             'Adding preserved source:',
+                    //             source
+                    //         );
+                    //
+                    //         //
+                    //         // If source not present on map object, add it.
+                    //         //
+                    //
+                    //         if (self.map.getSource(source.id) === undefined) {
+                    //
+                    //             self.map.addSource(source.id, source.config);
+                    //
+                    //         }
+                    //
+                    //         //
+                    //         // Track source in stored sources.
+                    //         //
+                    //
+                    //         SourceUtil.trackSource(source.id, source.config);
+                    //
+                    //     });
+                    //
+                    // }
+                    //
+                    // if (preservedLayers) {
+                    //
+                    //     //
+                    //     // Remove stored layers. They will be restored in
+                    //     // the following loop calls.
+                    //     //
+                    //
+                    //     LayerUtil.removeAll();
+                    //
+                    //     preservedLayers.forEach(function (layer) {
+                    //
+                    //         console.log(
+                    //             'Adding preserved layer:',
+                    //             layer
+                    //         );
+                    //
+                    //         //
+                    //         // If layer not present on map object, add it.
+                    //         //
+                    //
+                    //         if (self.map.getLayer(layer.id) === undefined) {
+                    //
+                    //             self.map.addLayer(layer);
+                    //
+                    //         }
+                    //
+                    //         //
+                    //         // Track layer in stored layers.
+                    //         //
+                    //
+                    //         LayerUtil.trackLayer(layer);
+                    //
+                    //     });
+                    //
+                    // }
 
                 });
 
@@ -864,11 +906,27 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    self.extractUrlParams();
+                    // self.extractUrlParams(
+                    //     $location.search(),
+                    //     true
+                    // );
 
-                    self.addReferenceLayers();
+                    // LayerUtil.addReferenceSources(self.map);
+                    //
+                    // LayerUtil.addReferenceLayers(self.map);
+                    //
+                    // LayerLabel.addLabelLayers(self.map);
+
+                    // self.addReferenceLayers();
+
+                    self.populateMap();
 
                     self.addGeoJSONSources();
+
+                    self.extractUrlParams(
+                        $location.search(),
+                        true
+                    );
 
                 });
 
@@ -923,6 +981,16 @@ angular.module('FieldDoc')
 
             };
 
+            self.populateMap = function () {
+
+                LayerUtil.addReferenceSources(self.map);
+
+                LayerUtil.addReferenceLayers(self.map);
+
+                LayerLabel.addLabelLayers(self.map);
+
+            };
+
             self.stageMap = function(createMap) {
 
                 AtlasLayoutUtil.sizeSidebar();
@@ -969,9 +1037,9 @@ angular.module('FieldDoc')
 
             };
 
-            self.extractUrlParams = function () {
+            self.extractUrlParams = function (params, reload) {
 
-                var params = $location.search();
+                // var params = $location.search();
 
                 console.log(
                     'extractUrlParams:params:',
@@ -998,10 +1066,14 @@ angular.module('FieldDoc')
 
                 var nodeTokens = nodeString.split('.');
 
-                self.fetchPrimaryNode(
-                    nodeTokens[0],
-                    +nodeTokens[1]
-                );
+                if (reload) {
+
+                    self.fetchPrimaryNode(
+                        nodeTokens[0],
+                        +nodeTokens[1]
+                    );
+
+                }
 
             };
 
@@ -1009,7 +1081,7 @@ angular.module('FieldDoc')
 
                 var params = $location.search();
 
-                self.extractUrlParams(params);
+                self.extractUrlParams(params, false);
 
             });
 
@@ -1018,7 +1090,7 @@ angular.module('FieldDoc')
 
                 var params = $location.search();
 
-                self.extractUrlParams(params);
+                self.extractUrlParams(params, true);
 
             }, false);
 

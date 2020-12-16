@@ -16,17 +16,17 @@ angular.module('FieldDoc')
 
         var fetchedFeatures = {
             'practice': {
-                'line': [],
-                'point': [],
-                'polygon': []
+                'line': {},
+                'point': {},
+                'polygon': {}
             },
             'site': {
-                'line': [],
-                'point': [],
-                'polygon': []
+                'line': {},
+                'point': {},
+                'polygon': {}
             },
             'project': {
-                'point': []
+                'point': {}
             }
         };
 
@@ -186,21 +186,23 @@ angular.module('FieldDoc')
 
                 var index = fetchedFeatures[featureType][geometryType];
 
-                if (Array.isArray(index)) {
+                return Object.keys(index);
 
-                    var vals = [];
-
-                    index.forEach(function (feature) {
-
-                        vals.push(feature.properties.id);
-
-                    })
-
-                    return vals;
-
-                }
-
-                return [];
+                // if (Array.isArray(index)) {
+                //
+                //     var vals = [];
+                //
+                //     index.forEach(function (feature) {
+                //
+                //         vals.push(feature.properties.id);
+                //
+                //     })
+                //
+                //     return vals;
+                //
+                // }
+                //
+                // return [];
 
             },
             getOrigin: function (params) {
@@ -257,7 +259,7 @@ angular.module('FieldDoc')
             },
             trackFeature: function (featureType, geometryType, feature) {
 
-                fetchedFeatures[featureType][geometryType].push(feature);
+                fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
 
             }
 

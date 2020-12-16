@@ -13,6 +13,65 @@ angular.module('FieldDoc')
         // Let's set an internal reference to this service
         var self = this;
 
+        var FEATURE_SOURCES = {
+            'fd.practice.point': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.line': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.polygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.point': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.line': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.polygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.project.point': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            }
+        };
+
         var index = {};
 
         return {

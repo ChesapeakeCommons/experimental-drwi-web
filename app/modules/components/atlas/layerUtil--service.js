@@ -13,6 +13,94 @@ angular.module('FieldDoc')
         // Let's set an internal reference to this service
         var self = this;
 
+        var DRAINAGE_ID = 'fd.delineation';
+
+        var EMPTY_SOURCE = {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            },
+            generateId: true
+        };
+
+        var REFERENCE_SOURCES = {
+            'empty': EMPTY_SOURCE,
+            'fd.delineation': EMPTY_SOURCE,
+            'fd.practice.point': EMPTY_SOURCE,
+            'fd.practice.line': EMPTY_SOURCE,
+            'fd.practice.polygon': EMPTY_SOURCE,
+            'fd.site.point': EMPTY_SOURCE,
+            'fd.site.line': EMPTY_SOURCE,
+            'fd.site.polygon': EMPTY_SOURCE,
+            'fd.project.point': EMPTY_SOURCE
+        };
+
+        var REFERENCE_LAYERS = [
+            //
+            // The project and label layers have the highest z-index priority.
+            //
+            {
+                sourceConfig: EMPTY_SOURCE,
+                layerConfig: {
+                    id: 'project-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: ''
+            },
+            {
+                sourceConfig: EMPTY_SOURCE,
+                layerConfig: {
+                    id: 'label-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: ''
+            },
+            //
+            // The practice layer has the second-highest z-index priority.
+            //
+            {
+                sourceConfig: EMPTY_SOURCE,
+                layerConfig: {
+                    id: 'practice-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: 'project-index'
+            },
+            //
+            // The site layer has the second-lowest z-index priority.
+            //
+            {
+                sourceConfig: EMPTY_SOURCE,
+                layerConfig: {
+                    id: 'site-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                sourceConfig: EMPTY_SOURCE,
+                layerConfig: {
+                    id: DRAINAGE_ID,
+                    source: DRAINAGE_ID,
+                    type: 'fill',
+                    paint: {
+                        'fill-color': '#00C8FF',
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#424242'
+                    },
+                    layout: {
+                        visibility: 'none'
+                    }
+                },
+                beforeId: 'site-index'
+            }
+        ];
+
         var zoomConfig = {
             practice: {
                 min: 14,
@@ -670,6 +758,38 @@ angular.module('FieldDoc')
         ];
 
         return {
+            addReferenceLayers: function (map) {
+
+                REFERENCE_LAYERS.forEach(function (layer) {
+
+                    if (map.getLayer(layer.layerConfig.id) === undefined) {
+
+                        map.addLayer(layer.layerConfig, layer.beforeId);
+
+                    }
+
+                });
+
+            },
+            addReferenceSources: function (map) {
+
+                for (var key in REFERENCE_SOURCES) {
+
+                    if (map.getSource(key) === undefined) {
+
+                        map.addSource(key, REFERENCE_SOURCES[key]);
+
+                    }
+
+                }
+
+                // REFERENCE_SOURCES.forEach(function (source) {
+                //
+                //     map.addSource(source.sourceId, source.sourceConfig);
+                //
+                // });
+
+            },
             createLayer: function(sourceSpec, featureType) {
 
                 console.log(
@@ -865,7 +985,13 @@ angular.module('FieldDoc')
                     'LayerUtil:getZoom:featureType',
                     featureType);
 
-                return zoomConfig[featureType];
+                if (zoomConfig.hasOwnProperty(featureType)) {
+
+                    return zoomConfig[featureType];
+
+                }
+
+                return zoomConfig;
 
             },
             list: function () {
