@@ -985,16 +985,22 @@ angular.module('FieldDoc')
                     self.origin
                 );
 
-                self.nodeData = AtlasDataManager.getData(params);
+                var dataObj = AtlasDataManager.getData(params);
 
                 console.log(
-                    'extractUrlParams:nodeData:',
-                    self.nodeData
+                    'extractUrlParams:dataObj:',
+                    dataObj
                 );
 
+                self.styleString = dataObj.style;
+
+                var nodeString = dataObj.node;
+
+                var nodeTokens = nodeString.split('.');
+
                 self.fetchPrimaryNode(
-                    self.nodeData.featureType,
-                    self.nodeData.featureId
+                    nodeTokens[0],
+                    +nodeTokens[1]
                 );
 
             };
