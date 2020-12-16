@@ -473,11 +473,17 @@ angular.module('FieldDoc')
                 });
 
                 //
-                // The project layer has the highest z-index priority.
+                // The project and label layers have the highest z-index priority.
                 //
 
                 self.map.addLayer({
                     id: 'project-index',
+                    type: 'symbol',
+                    source: 'empty'
+                });
+
+                self.map.addLayer({
+                    id: 'label-index',
                     type: 'symbol',
                     source: 'empty'
                 });
@@ -544,37 +550,35 @@ angular.module('FieldDoc')
                         paint: LayerUtil.getPaint(component[0], type)
                     };
 
-                    if (component[0] === 'project') {
+                    var zoomSpec = LayerUtil.getZoom(component[0]);
 
-                        layerSpec.minzoom = 9;
+                    layerSpec.minzoom = zoomSpec.min;
 
-                        layerSpec.maxzoom = 14;
+                    layerSpec.maxzoom = zoomSpec.max;
 
-                        var labelLayer = LayerUtil.createLabelLayer(
-                            source,
-                            component[0],
-                            component[1]
+                    var labelLayer = LayerUtil.createLabelLayer(
+                        source,
+                        component[0],
+                        component[1]
+                    );
+
+                    labelLayer.minzoom = zoomSpec.min;
+
+                    labelLayer.maxzoom = zoomSpec.max;
+
+                    LayerUtil.trackLayer(labelLayer);
+
+                    try {
+
+                        MapUtil.addLayer(
+                            self.map,
+                            labelLayer,
+                            component[0] + '-label'
                         );
 
-                        LayerUtil.trackLayer(labelLayer);
+                    } catch (e) {
 
-                        self.map.addLayer(labelLayer, 'site-index');
-
-                    }
-
-                    if (component[0] === 'practice') {
-
-                        layerSpec.minzoom = 14;
-
-                        layerSpec.maxzoom = 22;
-
-                    }
-
-                    if (component[0] === 'site') {
-
-                        layerSpec.minzoom = 10;
-
-                        layerSpec.maxzoom = 16;
+                        console.warn(e);
 
                     }
 

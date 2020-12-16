@@ -13,13 +13,28 @@ angular.module('FieldDoc')
         // Let's set an internal reference to this service
         var self = this;
 
+        var zoomConfig = {
+            practice: {
+                min: 14,
+                max: 22
+            },
+            site: {
+                min: 10,
+                max: 16
+            },
+            project: {
+                min: 9,
+                max: 14
+            }
+        };
+
         var labelConfig = {
-            'project': {
-                'point': {
-                    'id': 'fd.project-label',
+            'practice': {
+                'polygon': {
+                    'id': 'fd.practice-polygon-label',
                     'type': 'symbol',
-                    'minzoom': 9,
-                    'maxzoom': 14,
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
                     'layout': {
                         'symbol-placement': 'point',
                         'text-anchor': 'bottom',
@@ -30,21 +45,21 @@ angular.module('FieldDoc')
                         'text-font': {
                             'stops': [
                                 [
-                                    9,
+                                    zoomConfig.practice.min,
                                     [
                                         'DIN Offc Pro Regular',
                                         'Arial Unicode MS Regular'
                                     ]
                                 ],
                                 [
-                                    11,
+                                    zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
                                     [
                                         'DIN Offc Pro Regular',
                                         'Arial Unicode MS Regular'
                                     ]
                                 ],
                                 [
-                                    14,
+                                    zoomConfig.practice.max,
                                     [
                                         'DIN Offc Pro Medium',
                                         'Arial Unicode MS Bold'
@@ -56,9 +71,9 @@ angular.module('FieldDoc')
                             'interpolate',
                             ['exponential', 0.5],
                             ['zoom'],
-                            9,
+                            zoomConfig.practice.min,
                             12,
-                            14,
+                            zoomConfig.practice.max,
                             16
                         ],
                         'text-radial-offset': 0.5,
@@ -72,9 +87,397 @@ angular.module('FieldDoc')
                             'interpolate',
                             ['exponential', 0.5],
                             ['zoom'],
-                            9,
+                            zoomConfig.practice.min,
                             '#616161',
-                            14,
+                            zoomConfig.practice.max,
+                            '#212121'
+                        ]
+                    }
+                },
+                'line': {
+                    'id': 'fd.practice-line-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.practice.min,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.practice.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.practice.min,
+                            12,
+                            zoomConfig.practice.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.practice.min,
+                            '#616161',
+                            zoomConfig.practice.max,
+                            '#212121'
+                        ]
+                    }
+                },
+                'point': {
+                    'id': 'fd.practice-point-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.practice.min,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.practice.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.practice.min,
+                            12,
+                            zoomConfig.practice.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.practice.min,
+                            '#616161',
+                            zoomConfig.practice.max,
+                            '#212121'
+                        ]
+                    }
+                }
+            },
+            'site': {
+                'polygon': {
+                    'id': 'fd.site-polygon-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.site.min + 1,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min + 1,
+                            12,
+                            zoomConfig.site.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min + 1,
+                            '#616161',
+                            zoomConfig.site.max,
+                            '#212121'
+                        ]
+                    }
+                },
+                'line': {
+                    'id': 'fd.site-line-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.site.min + 1,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min + 1,
+                            12,
+                            zoomConfig.site.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min + 1,
+                            '#616161',
+                            zoomConfig.site.max,
+                            '#212121'
+                        ]
+                    }
+                },
+                'point': {
+                    'id': 'fd.site-point-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.site.min + 1,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.site.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min + 1,
+                            12,
+                            zoomConfig.site.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.site.min,
+                            '#616161',
+                            zoomConfig.site.max,
+                            '#212121'
+                        ]
+                    }
+                }
+            },
+            'project': {
+                'point': {
+                    'id': 'fd.project-label',
+                    'type': 'symbol',
+                    'minzoom': zoomConfig.project.min,
+                    'maxzoom': zoomConfig.project.max,
+                    'layout': {
+                        'symbol-placement': 'point',
+                        'text-anchor': 'bottom',
+                        'text-field': ['get', 'name'],
+                        'text-variable-anchor': [
+                            'top', 'bottom', 'left', 'right'
+                        ],
+                        'text-font': {
+                            'stops': [
+                                [
+                                    zoomConfig.project.min,
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.project.min + Math.ceil((zoomConfig.project.max - zoomConfig.project.min) / 2),
+                                    [
+                                        'DIN Offc Pro Regular',
+                                        'Arial Unicode MS Regular'
+                                    ]
+                                ],
+                                [
+                                    zoomConfig.project.max,
+                                    [
+                                        'DIN Offc Pro Medium',
+                                        'Arial Unicode MS Bold'
+                                    ]
+                                ]
+                            ]
+                        },
+                        'text-size': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.project.min,
+                            12,
+                            zoomConfig.project.max,
+                            16
+                        ],
+                        'text-radial-offset': 0.5,
+                        'text-justify': 'auto'
+                    },
+                    'paint': {
+                        'text-halo-width': 1,
+                        'text-halo-color': 'rgba(255,255,255,0.75)',
+                        'text-halo-blur': 1,
+                        'text-color': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.project.min,
+                            '#616161',
+                            zoomConfig.project.max,
                             '#212121'
                         ]
                     }
@@ -121,7 +524,7 @@ angular.module('FieldDoc')
                         'circle-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#3fd48a'
                         ],
                         'circle-radius': {
@@ -139,7 +542,7 @@ angular.module('FieldDoc')
                         'fill-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#3fd48a'
                         ],
                         'fill-opacity': 0.4,
@@ -150,7 +553,7 @@ angular.module('FieldDoc')
                         'line-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#3fd48a'
                         ],
                         'line-width': 2
@@ -165,7 +568,7 @@ angular.module('FieldDoc')
                         'circle-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#a94efe'
                         ],
                         'circle-radius': {
@@ -183,7 +586,7 @@ angular.module('FieldDoc')
                         'fill-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#a94efe'
                         ],
                         'fill-opacity': 0.4,
@@ -194,7 +597,7 @@ angular.module('FieldDoc')
                         'line-color': [
                             'case',
                             ['boolean', ['feature-state', 'focus'], false],
-                            '#D43F3F',
+                            '#C81E1E',
                             '#a94efe'
                         ],
                         'line-width': 2
@@ -386,6 +789,12 @@ angular.module('FieldDoc')
             },
             getBeforeId: function (featureType) {
 
+                if (featureType.indexOf('label') >= 0) {
+
+                    return 'label-index';
+
+                }
+
                 if (featureType === 'practice') {
 
                     return 'project-index';
@@ -403,6 +812,8 @@ angular.module('FieldDoc')
                     return 'site-index';
 
                 }
+
+                return '';
 
             },
             getPaint: function (featureType, layerType) {
@@ -446,6 +857,15 @@ angular.module('FieldDoc')
             getUrlComponents: function () {
 
                 return URL_COMPONENTS;
+
+            },
+            getZoom: function (featureType) {
+
+                console.log(
+                    'LayerUtil:getZoom:featureType',
+                    featureType);
+
+                return zoomConfig[featureType];
 
             },
             list: function () {

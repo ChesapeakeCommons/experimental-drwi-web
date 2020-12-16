@@ -15,7 +15,22 @@ angular.module('FieldDoc')
         return {
             addLayer: function(map, layer, featureType) {
 
+                console.log(
+                    'MapUtil:addLayer:layer:',
+                    layer
+                );
+
+                console.log(
+                    'MapUtil:addLayer:featureType:',
+                    featureType
+                );
+
                 var beforeId = LayerUtil.getBeforeId(featureType);
+
+                console.log(
+                    'MapUtil:addLayer:beforeId:',
+                    beforeId
+                );
 
                 if (map.getLayer(layer.id) !== undefined) {
 
