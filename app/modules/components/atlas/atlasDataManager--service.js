@@ -33,6 +33,13 @@ angular.module('FieldDoc')
         return {
             createURLData: function (feature, toString, options) {
 
+                console.log(
+                    'createURLData:feature:',
+                    feature
+                );
+
+                toString = typeof toString === 'boolean' ? toString : true;
+
                 var style;
 
                 var zoom;
@@ -45,13 +52,21 @@ angular.module('FieldDoc')
 
                 } catch (e) {
 
-                    style = 'street';
+                    style = 'streets';
 
                     zoom = 12;
 
                 }
 
-                toString = typeof toString === 'boolean' ? toString : true;
+                console.log(
+                    'createURLData:style:',
+                    style
+                );
+
+                console.log(
+                    'createURLData:zoom:',
+                    zoom
+                );
 
                 var origin = '-77.0147,38.9101,' + zoom;
 
@@ -239,6 +254,11 @@ angular.module('FieldDoc')
                     var datum = {};
 
                     entities.forEach(function (entity) {
+
+                        console.log(
+                            'getData:entity:',
+                            entity
+                        );
 
                         var tokens = entity.split(':');
 

@@ -151,6 +151,14 @@ angular.module('FieldDoc')
 
                     });
 
+                    LayerUtil.updateSource(
+                        sourceId,
+                        {
+                            'type': successResponse.type,
+                            'features': successResponse.features
+                        }
+                    );
+
                     if (source !== undefined) {
 
                         source.setData({
@@ -173,6 +181,8 @@ angular.module('FieldDoc')
             self.fetchPrimaryNode = function (featureType, featureId) {
 
                 var cls = self.clsMap[featureType];
+
+                if (cls === undefined) return;
 
                 var params = {
                     id: featureId
@@ -368,9 +378,9 @@ angular.module('FieldDoc')
 
             };
 
-            self.switchMapStyle = function(styleId, index) {
+            self.switchMapStyle = function(style, index) {
 
-                console.log('self.switchMapStyle --> styleId', styleId);
+                console.log('self.switchMapStyle --> styleId', style);
 
                 console.log('self.switchMapStyle --> index', index);
 
@@ -378,6 +388,27 @@ angular.module('FieldDoc')
                     'self.switchMapStyle:currentStyle',
                     self.map.getStyle()
                 );
+
+                var styleString = style.name.toLowerCase();
+
+                //
+                // Update URL data.
+                //
+
+                if (self.primaryNode) {
+
+                    var urlData = AtlasDataManager.createURLData(
+                        self.primaryNode,
+                        false,
+                        {
+                            style: styleString,
+                            zoom: self.map.getZoom()
+                        }
+                    );
+
+                    $location.search(urlData);
+
+                }
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
@@ -400,6 +431,28 @@ angular.module('FieldDoc')
 
                 self.activeStyle = 0;
 
+                var styleString = self.urlData.style;
+
+                console.log(
+                    'self.getMapOptions:styleString:',
+                    styleString
+                );
+
+                self.mapStyles.forEach(function (style, index) {
+
+                    if (style.name.toLowerCase() === styleString) {
+
+                        self.activeStyle = index;
+
+                        // self.switchMapStyle(
+                        //     style,
+                        //     index
+                        // );
+
+                    }
+
+                });
+
                 mapboxgl.accessToken = mapbox.accessToken;
 
                 console.log(
@@ -410,7 +463,7 @@ angular.module('FieldDoc')
 
                 self.mapOptions.container = 'map';
 
-                self.mapOptions.style = self.mapStyles[0].url;
+                self.mapOptions.style = self.mapStyles[self.activeStyle].url;
 
                 self.mapOptions.transformRequest = function(url, resourceType) {
 
@@ -649,13 +702,47 @@ angular.module('FieldDoc')
 
                 self.map.on('styledata', function() {
 
+                    console.log(
+                        'styledata:style:',
+                        self.map.getStyle()
+                    );
+
+                    var styleString = 'streets';
+
+                    var style = self.map.getStyle();
+
+                    var mapBoxOrigin = style.metadata['mapbox:origin'];
+
+                    if (mapBoxOrigin.indexOf('satellite') >= 0) {
+
+                        styleString = 'satellite';
+
+                    }
+
+                    // //
+                    // // Update URL data.
+                    // //
+                    //
+                    // if (self.primaryNode) {
+                    //
+                    //     var urlData = AtlasDataManager.createURLData(
+                    //         self.primaryNode,
+                    //         false,
+                    //         {
+                    //             style: styleString,
+                    //             zoom: self.map.getZoom()
+                    //         }
+                    //     );
+                    //
+                    //     $location.search(urlData);
+                    //
+                    // }
+
                     // if (!self.map.loaded()) return;
 
                     if (self.map.getLayer('fd.project-label') !== undefined) {
 
-                        if (self.mapOptions.style.indexOf('satellite') >= 0) {
-
-                            self.styleString = 'satellite';
+                        if (styleString.indexOf('satellite') >= 0) {
 
                             try {
 
@@ -678,8 +765,6 @@ angular.module('FieldDoc')
                             }
 
                         } else {
-
-                            self.styleString = 'street';
 
                             try {
 
@@ -727,24 +812,24 @@ angular.module('FieldDoc')
 
                     // SourceUtil.trackSources(self.map);
 
+                    // //
+                    // // Update URL data.
+                    // //
                     //
-                    // Update URL data.
+                    // if (self.primaryNode) {
                     //
-
-                    if (self.primaryNode) {
-
-                        // var urlData = AtlasDataManager.createURLData(
-                        //     self.primaryNode,
-                        //     false,
-                        //     {
-                        //         style: self.styleString,
-                        //         zoom: self.map.getZoom()
-                        //     }
-                        // );
-                        //
-                        // $location.search(urlData);
-
-                    }
+                    //     var urlData = AtlasDataManager.createURLData(
+                    //         self.primaryNode,
+                    //         false,
+                    //         {
+                    //             style: self.styleString,
+                    //             zoom: self.map.getZoom()
+                    //         }
+                    //     );
+                    //
+                    //     $location.search(urlData);
+                    //
+                    // }
 
                 });
 
@@ -923,10 +1008,23 @@ angular.module('FieldDoc')
 
                     self.addGeoJSONSources();
 
-                    self.extractUrlParams(
-                        $location.search(),
-                        true
+                    var nodeString = self.urlData.node;
+
+                    var nodeTokens = nodeString.split('.');
+
+                    // if (reload) {
+
+                    self.fetchPrimaryNode(
+                        nodeTokens[0],
+                        +nodeTokens[1]
                     );
+
+                    // }
+
+                    // self.extractUrlParams(
+                    //     $location.search(),
+                    //     true
+                    // );
 
                 });
 
@@ -1060,30 +1158,51 @@ angular.module('FieldDoc')
                     dataObj
                 );
 
-                self.styleString = dataObj.style;
+                self.urlData = dataObj;
 
-                var nodeString = dataObj.node;
+                if (!angular.isDefined(self.map)) {
 
-                var nodeTokens = nodeString.split('.');
-
-                if (reload) {
-
-                    self.fetchPrimaryNode(
-                        nodeTokens[0],
-                        +nodeTokens[1]
-                    );
+                    self.stageMap(true);
 
                 }
 
+                // var styleString = dataObj.style;
+                //
+                // self.mapStyles.forEach(function (style, index) {
+                //
+                //     if (style.name.toLowerCase() === styleString) {
+                //
+                //         self.switchMapStyle(
+                //             style,
+                //             index
+                //         );
+                //
+                //     }
+                //
+                // });
+
+                // var nodeString = dataObj.node;
+                //
+                // var nodeTokens = nodeString.split('.');
+                //
+                // if (reload) {
+                //
+                //     self.fetchPrimaryNode(
+                //         nodeTokens[0],
+                //         +nodeTokens[1]
+                //     );
+                //
+                // }
+
             };
 
-            $scope.$on('$routeUpdate', function () {
-
-                var params = $location.search();
-
-                self.extractUrlParams(params, false);
-
-            });
+            // $scope.$on('$routeUpdate', function () {
+            //
+            //     var params = $location.search();
+            //
+            //     self.extractUrlParams(params, false);
+            //
+            // });
 
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
@@ -1113,7 +1232,11 @@ angular.module('FieldDoc')
                     // Assign map to a scoped variable
                     //
 
-                    self.stageMap(true);
+                    // self.stageMap(true);
+
+                    var params = $location.search();
+
+                    self.extractUrlParams(params, true);
 
                 });
 
