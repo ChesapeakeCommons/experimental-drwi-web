@@ -15,6 +15,9 @@ angular.module('FieldDoc')
         var self = this;
 
         var fetchedFeatures = {
+            'drainage': {
+                'polygon': {}
+            },
             'practice': {
                 'line': {},
                 'point': {},

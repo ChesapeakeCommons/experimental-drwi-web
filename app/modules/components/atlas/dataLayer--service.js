@@ -17,6 +17,21 @@ angular.module('FieldDoc')
 
         var DATA_LAYERS = [{
             config: {
+                'id': 'fd.drainage.polygon',
+                'source': 'fd.drainage.polygon',
+                'type': 'fill',
+                'layout': {
+                    'visibility': 'none'
+                },
+                paint: {
+                    'fill-color': '#00C8FF',
+                    'fill-opacity': 0.4,
+                    'fill-outline-color': '#424242'
+                }
+            },
+            beforeId: 'site-index'
+        }, {
+            config: {
                 'id': 'fd.project.point',
                 'source': 'fd.project.point',
                 'type': 'circle',

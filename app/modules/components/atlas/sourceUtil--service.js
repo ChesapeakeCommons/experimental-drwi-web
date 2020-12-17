@@ -69,6 +69,14 @@ angular.module('FieldDoc')
                     features: []
                 },
                 generateId: true
+            },
+            'fd.drainage.polygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
             }
         };
 

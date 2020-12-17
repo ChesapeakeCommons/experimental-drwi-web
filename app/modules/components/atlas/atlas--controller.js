@@ -18,7 +18,7 @@ angular.module('FieldDoc')
 
             self.urlComponents = LayerUtil.getUrlComponents();
 
-            var DRAINAGE_ID = 'fd.delineation';
+            var DRAINAGE_ID = 'fd.drainage.polygon';
 
             $rootScope.viewState = {
                 'map': true
@@ -342,6 +342,12 @@ angular.module('FieldDoc')
                         }
                     };
 
+                    AtlasDataManager.trackFeature(
+                        'drainage',
+                        'polygon',
+                        drainageFeature
+                    );
+
                     // set drainage source data
 
                     var source = self.map.getSource(DRAINAGE_ID);
@@ -395,6 +401,8 @@ angular.module('FieldDoc')
                     'self.switchMapStyle:currentStyle',
                     self.map.getStyle()
                 );
+
+                self.visibilityIndex = LayerUtil.visibilityIndex(self.map);
 
                 var styleString = style.name.toLowerCase();
 
@@ -492,100 +500,6 @@ angular.module('FieldDoc')
                 };
 
                 return self.mapOptions;
-
-            };
-
-            self.addReferenceLayers = function () {
-
-                //
-                // Add source and layer for site and practice
-                // watershed delineations (drainages).
-                //
-
-                var drainageSourceConfig = {
-                    type: 'geojson',
-                    data: {
-                        type: 'FeatureCollection',
-                        features: []
-                    }
-                };
-
-                SourceUtil.trackSource(DRAINAGE_ID, drainageSourceConfig);
-
-                MapUtil.addSource(self.map, DRAINAGE_ID, drainageSourceConfig);
-
-                var paintSpec = LayerUtil.getPaint('delineation', 'fill');
-
-                var drainageLayerSpec = {
-                    id: DRAINAGE_ID,
-                    source: DRAINAGE_ID,
-                    type: 'fill',
-                    paint: paintSpec
-                };
-
-                drainageLayerSpec.layout = {
-                    visibility: 'none'
-                };
-
-                LayerUtil.trackLayer(drainageLayerSpec);
-
-                //
-                // Add index layers to facilitate order control.
-                //
-
-                var emptySourceConfig = {
-                    type: 'geojson',
-                    data: {
-                        type: 'FeatureCollection',
-                        features: []
-                    }
-                };
-
-                self.map.addSource('empty', emptySourceConfig);
-
-                SourceUtil.trackSource('empty', emptySourceConfig);
-
-                //
-                // The project and label layers have the highest z-index priority.
-                //
-
-                self.map.addLayer({
-                    id: 'project-index',
-                    type: 'symbol',
-                    source: 'empty'
-                });
-
-                self.map.addLayer({
-                    id: 'label-index',
-                    type: 'symbol',
-                    source: 'empty'
-                });
-
-                //
-                // The practice layer has the second-highest z-index priority.
-                //
-
-                self.map.addLayer({
-                    id: 'practice-index',
-                    type: 'symbol',
-                    source: 'empty'
-                }, 'project-index'); // Place this layer below projects.
-
-                //
-                // The site layer has the second-lowest z-index priority.
-                //
-
-                self.map.addLayer({
-                    id: 'site-index',
-                    type: 'symbol',
-                    source: 'empty'
-                }, 'practice-index'); // Place this layer below projects and practices.
-
-                //
-                // The drainage layer has the lowest z-index priority.
-                //
-
-                self.map.addLayer(drainageLayerSpec, 'site-index');
 
             };
 
@@ -1025,7 +939,7 @@ angular.module('FieldDoc')
 
                     self.populateMap();
 
-                    self.addGeoJSONSources();
+                    // self.addGeoJSONSources();
 
                     var nodeString = self.urlData.node;
 
@@ -1107,6 +1021,8 @@ angular.module('FieldDoc')
                 LabelLayer.addLabelLayers(self.map);
 
                 DataLayer.addDataLayers(self.map);
+
+                LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
             };
 

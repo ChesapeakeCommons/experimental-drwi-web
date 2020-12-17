@@ -13,8 +13,6 @@ angular.module('FieldDoc')
         // Let's set an internal reference to this service
         var self = this;
 
-        var DRAINAGE_ID = 'fd.delineation';
-
         var EMPTY_SOURCE = {
             type: 'geojson',
             data: {
@@ -26,7 +24,7 @@ angular.module('FieldDoc')
 
         var REFERENCE_SOURCES = {
             'empty': EMPTY_SOURCE,
-            'fd.delineation': EMPTY_SOURCE,
+            'fd.drainage.polygon': EMPTY_SOURCE,
             'fd.practice.point': EMPTY_SOURCE,
             'fd.practice.line': EMPTY_SOURCE,
             'fd.practice.polygon': EMPTY_SOURCE,
@@ -82,23 +80,23 @@ angular.module('FieldDoc')
                 },
                 beforeId: 'practice-index'
             },
-            {
-                sourceConfig: EMPTY_SOURCE,
-                layerConfig: {
-                    id: DRAINAGE_ID,
-                    source: DRAINAGE_ID,
-                    type: 'fill',
-                    paint: {
-                        'fill-color': '#00C8FF',
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#424242'
-                    },
-                    layout: {
-                        visibility: 'none'
-                    }
-                },
-                beforeId: 'site-index'
-            }
+            // {
+            //     sourceConfig: EMPTY_SOURCE,
+            //     layerConfig: {
+            //         id: DRAINAGE_ID,
+            //         source: DRAINAGE_ID,
+            //         type: 'fill',
+            //         paint: {
+            //             'fill-color': '#00C8FF',
+            //             'fill-opacity': 0.4,
+            //             'fill-outline-color': '#424242'
+            //         },
+            //         layout: {
+            //             visibility: 'none'
+            //         }
+            //     },
+            //     beforeId: 'site-index'
+            // }
         ];
 
         var zoomConfig = {
@@ -113,180 +111,6 @@ angular.module('FieldDoc')
             project: {
                 min: 9,
                 max: 14
-            }
-        };
-
-        var paintConfig = {
-            'delineation': {
-                'prefix': 'si',
-                'paintSpec': {
-                    'fill': {
-                        'fill-color': '#00C8FF',
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#424242'
-                    }
-                }
-            },
-            'geography': {
-                'prefix': 'si',
-                'paintSpec': {
-                    'circle': {
-                        'circle-color': '#fbb03b',
-                        'circle-radius': 8,
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FF0033'
-                    },
-                    'fill': {
-                        'fill-color': '#fbb03b',
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#FF0033'
-                    },
-                    'line': {
-                        'line-color': '#fbb03b',
-                        'line-width': 2
-                    }
-                }
-            },
-            'practice': {
-                'prefix': 'si',
-                'paintSpec': {
-                    'circle': {
-                        // 'circle-color': '#df063e',
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#3fd48a'
-                        ],
-                        'circle-radius': {
-                            'base': 2,
-                            'stops': [
-                                [12, 4],
-                                [22, 24]
-                            ]
-                        },
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FFFFFF'
-                    },
-                    'fill': {
-                        // 'fill-color': '#df063e',
-                        'fill-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#3fd48a'
-                        ],
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#005e7d'
-                    },
-                    'line': {
-                        // 'line-color': '#df063e',
-                        'line-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#3fd48a'
-                        ],
-                        'line-width': 2
-                    }
-                }
-            },
-            'site': {
-                'prefix': 'si',
-                'paintSpec': {
-                    'circle': {
-                        // 'circle-color': '#a94efe',
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#a94efe'
-                        ],
-                        'circle-radius': {
-                            'base': 2,
-                            'stops': [
-                                [12, 4],
-                                [22, 24]
-                            ]
-                        },
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FFFFFF'
-                    },
-                    'fill': {
-                        // 'fill-color': '#a94efe',
-                        'fill-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#a94efe'
-                        ],
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#005e7d'
-                    },
-                    'line': {
-                        // 'line-color': '#a94efe',
-                        'line-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#a94efe'
-                        ],
-                        'line-width': 2
-                    }
-                }
-            },
-            'project': {
-                'prefix': 'si',
-                'paintSpec': {
-                    'circle': {
-                        // 'circle-color': '#2196F3',
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#ff0000',
-                            '#2196F3'
-                        ],
-                        // 'circle-radius': {
-                        //     'base': 2,
-                        //     'stops': [
-                        //         [12, 8],
-                        //         [22, 24]
-                        //     ]
-                        // },
-                        'circle-radius': [
-                            'interpolate',
-                            ['exponential', 0.5],
-                            ['zoom'],
-                            9,
-                            2,
-                            14,
-                            6
-                        ],
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FFFFFF'
-                    },
-                    'fill': {
-                        // 'fill-color': '#fbb03b',
-                        'fill-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#ff0000',
-                            '#2196F3'
-                        ],
-                        'fill-opacity': 0.4,
-                        'fill-outline-color': '#FF0033'
-                    },
-                    'line': {
-                        // 'line-color': '#fbb03b',
-                        'line-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#ff0000',
-                            '#2196F3'
-                        ],
-                        'line-width': 2
-                    }
-                }
             }
         };
 
@@ -479,6 +303,28 @@ angular.module('FieldDoc')
                 return '';
 
             },
+            visibilityIndex: function (map) {
+
+                var layers = map.getStyle().layers;
+
+                var idx = {};
+
+                layers.forEach(function (layer) {
+
+                    if (layer.id.startsWith('fd.')) {
+
+                        idx[layer.id] = map.getLayoutProperty(
+                            layer.id,
+                            'visibility'
+                        );
+
+                    }
+
+                });
+
+                return idx;
+
+            },
             getPaint: function (featureType, layerType) {
 
                 console.log(
@@ -573,6 +419,29 @@ angular.module('FieldDoc')
                     }
 
                 });
+
+            },
+            setVisibility: function(map, idx) {
+
+                if (!angular.isDefined(idx)) return;
+
+                for (var key in idx) {
+
+                    if (idx.hasOwnProperty(key)) {
+
+                        if (map.getLayer(key) !== undefined) {
+
+                            map.setLayoutProperty(
+                                key,
+                                'visibility',
+                                idx[key]
+                            );
+
+                        }
+
+                    }
+
+                }
 
             },
             toggleLayer: function(layerId, map) {
