@@ -691,6 +691,18 @@ angular.module('FieldDoc')
 
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
+                self.layers.forEach(function (layer) {
+
+                    var visibility = layer.selected ? 'visible' : 'none';
+
+                    self.map.setLayoutProperty(
+                        layer.id,
+                        'visibility',
+                        visibility
+                    );
+
+                });
+
             };
 
             self.stageMap = function(createMap) {
