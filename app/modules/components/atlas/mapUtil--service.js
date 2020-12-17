@@ -72,6 +72,23 @@ angular.module('FieldDoc')
 
                 }
 
+            },
+            getStyleString: function (map) {
+
+                var styleString = 'streets';
+
+                var style = map.getStyle();
+
+                var mapBoxOrigin = style.metadata['mapbox:origin'];
+
+                if (mapBoxOrigin.indexOf('satellite') >= 0) {
+
+                    styleString = 'satellite';
+
+                }
+
+                return styleString;
+
             }
 
         };

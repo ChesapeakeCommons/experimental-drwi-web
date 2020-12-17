@@ -369,7 +369,15 @@ angular.module('FieldDoc')
 
                 self.visibilityIndex = LayerUtil.visibilityIndex(self.map);
 
-                var styleString = style.name.toLowerCase();
+                console.log(
+                    'switchMapStyle:visibilityIndex:',
+                    self.visibilityIndex);
+
+                self.currentStyleString = MapUtil.getStyleString(self.map);
+
+                console.log(
+                    'switchMapStyle:currentStyleString:',
+                    self.currentStyleString);
 
                 //
                 // Update URL data.
@@ -381,7 +389,7 @@ angular.module('FieldDoc')
                         self.primaryNode,
                         false,
                         {
-                            style: styleString,
+                            style: style.name.toLowerCase(),
                             zoom: self.map.getZoom()
                         }
                     );
@@ -502,17 +510,19 @@ angular.module('FieldDoc')
                         self.map.getStyle()
                     );
 
-                    var styleString = 'streets';
+                    console.log(
+                        'styledata:currentStyleString:',
+                        self.currentStyleString
+                    );
 
-                    var style = self.map.getStyle();
+                    var styleString = MapUtil.getStyleString(self.map);
 
-                    var mapBoxOrigin = style.metadata['mapbox:origin'];
+                    console.log(
+                        'styledata:styleString:',
+                        styleString
+                    );
 
-                    if (mapBoxOrigin.indexOf('satellite') >= 0) {
-
-                        styleString = 'satellite';
-
-                    }
+                    if (styleString === self.currentStyleString) return;
 
                     //
                     // Restore reference sources and layers.

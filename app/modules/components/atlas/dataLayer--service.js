@@ -10,9 +10,6 @@
 angular.module('FieldDoc')
     .service('DataLayer', function(ZoomUtil) {
 
-        // Let's set an internal reference to this service
-        var self = this;
-
         var zoomConfig = ZoomUtil.getZoom();
 
         var DATA_LAYERS = [{
@@ -20,9 +17,9 @@ angular.module('FieldDoc')
                 'id': 'fd.drainage.polygon',
                 'source': 'fd.drainage.polygon',
                 'type': 'fill',
-                'layout': {
-                    'visibility': 'none'
-                },
+                // 'layout': {
+                //     'visibility': 'none'
+                // },
                 paint: {
                     'fill-color': '#00C8FF',
                     'fill-opacity': 0.4,

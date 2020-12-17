@@ -36,7 +36,6 @@ angular.module('FieldDoc')
             // The project and label layers have the highest z-index priority.
             //
             {
-                sourceConfig: EMPTY_SOURCE,
                 layerConfig: {
                     id: 'project-index',
                     type: 'symbol',
@@ -45,7 +44,6 @@ angular.module('FieldDoc')
                 beforeId: ''
             },
             {
-                sourceConfig: EMPTY_SOURCE,
                 layerConfig: {
                     id: 'label-index',
                     type: 'symbol',
@@ -57,7 +55,6 @@ angular.module('FieldDoc')
             // The practice layer has the second-highest z-index priority.
             //
             {
-                sourceConfig: EMPTY_SOURCE,
                 layerConfig: {
                     id: 'practice-index',
                     type: 'symbol',
@@ -69,7 +66,6 @@ angular.module('FieldDoc')
             // The site layer has the second-lowest z-index priority.
             //
             {
-                sourceConfig: EMPTY_SOURCE,
                 layerConfig: {
                     id: 'site-index',
                     type: 'symbol',
@@ -132,35 +128,6 @@ angular.module('FieldDoc')
 
             },
             _index: {},
-            getBeforeId: function (featureType) {
-
-                if (featureType.indexOf('label') >= 0) {
-
-                    return 'label-index';
-
-                }
-
-                if (featureType === 'practice') {
-
-                    return 'project-index';
-
-                }
-
-                if (featureType === 'site') {
-
-                    return 'practice-index';
-
-                }
-
-                if (featureType === 'drainage') {
-
-                    return 'site-index';
-
-                }
-
-                return '';
-
-            },
             getUrlComponents: function () {
 
                 return URL_COMPONENTS;
