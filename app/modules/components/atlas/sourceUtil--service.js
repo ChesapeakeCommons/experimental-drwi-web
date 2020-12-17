@@ -8,7 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('SourceUtil', function(environment, Dashboard, Site, Practice, mapbox) {
+    .service('SourceUtil', function(environment, Dashboard, Site, Practice, mapbox, AtlasDataManager) {
 
         // Let's set an internal reference to this service
         var self = this;
@@ -238,6 +238,35 @@ angular.module('FieldDoc')
                     map.removeFeatureState({
                         source: layerId
                     });
+
+                });
+
+            },
+            restoreSources: function (map) {
+
+                var sourceIds = Object.keys(FEATURE_SOURCES);
+
+                sourceIds.forEach(function (sourceId) {
+
+                    var tokens = sourceId.split('.');
+
+                    var nodeType = tokens[1];
+
+                    var geometryType = tokens[2];
+
+                    var source = map.getSource(sourceId);
+
+                    var fetchedFeatures = AtlasDataManager.getFetched(
+                        nodeType, geometryType);
+
+                    if (source !== undefined) {
+
+                        source.setData({
+                            'type': 'FeatureCollection',
+                            'features': fetchedFeatures
+                        });
+
+                    }
 
                 });
 

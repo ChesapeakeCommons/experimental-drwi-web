@@ -192,9 +192,28 @@ angular.module('FieldDoc')
                 return undefined;
 
             },
+            list: function (idx) {
+
+                var vals = [];
+
+                for (var key in idx) {
+
+                    if (idx.hasOwnProperty(key)) {
+
+                        vals.push(idx[key]);
+
+                    }
+
+                }
+
+                return vals;
+
+            },
             getFetched: function (featureType, geometryType) {
 
-                return fetchedFeatures[featureType][geometryType];
+                var index = fetchedFeatures[featureType][geometryType];
+
+                return this.list(index);
 
             },
             getFetchedKeys: function (featureType, geometryType) {

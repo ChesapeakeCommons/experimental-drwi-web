@@ -12,7 +12,7 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie,
-                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil, LayerLabel) {
+                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer) {
 
             var self = this;
 
@@ -133,17 +133,6 @@ angular.module('FieldDoc')
 
                     self.nodeLayer = successResponse;
 
-                    var sourceId = 'fd.' + nodeType + '.' + geometryType;
-
-                    var source = self.map.getSource(sourceId);
-
-                    var fetchedFeatures = AtlasDataManager.getFetched(
-                        nodeType, geometryType);
-
-                    var updatedFeatures = successResponse.features.concat(
-                        fetchedFeatures
-                    );
-
                     successResponse.features.forEach(function (feature) {
 
                         AtlasDataManager.trackFeature(
@@ -151,19 +140,37 @@ angular.module('FieldDoc')
 
                     });
 
-                    LayerUtil.updateSource(
-                        sourceId,
-                        {
-                            'type': successResponse.type,
-                            'features': successResponse.features
-                        }
-                    );
+                    var sourceId = 'fd.' + nodeType + '.' + geometryType;
+
+                    var source = self.map.getSource(sourceId);
+
+                    var fetchedFeatures = AtlasDataManager.getFetched(
+                        nodeType, geometryType);
+
+                    // var updatedFeatures = successResponse.features.concat(
+                    //     fetchedFeatures
+                    // );
+
+                    // successResponse.features.forEach(function (feature) {
+                    //
+                    //     AtlasDataManager.trackFeature(
+                    //         nodeType, geometryType, feature);
+                    //
+                    // });
+
+                    // LayerUtil.updateSource(
+                    //     sourceId,
+                    //     {
+                    //         'type': successResponse.type,
+                    //         'features': fetchedFeatures
+                    //     }
+                    // );
 
                     if (source !== undefined) {
 
                         source.setData({
                             'type': successResponse.type,
-                            'features': updatedFeatures
+                            'features': fetchedFeatures
                         });
 
                     }
@@ -702,6 +709,8 @@ angular.module('FieldDoc')
 
                 self.map.on('styledata', function() {
 
+                    // if (!self.map.isStyleLoaded()) return;
+
                     console.log(
                         'styledata:style:',
                         self.map.getStyle()
@@ -798,7 +807,17 @@ angular.module('FieldDoc')
 
                     }
 
+                    //
+                    // Restore reference sources and layers.
+                    //
+
                     self.populateMap();
+
+                    //
+                    // Restore feature source data.
+                    //
+
+                    SourceUtil.restoreSources(self.map);
 
                     //
                     // Update stored layers.
@@ -843,7 +862,7 @@ angular.module('FieldDoc')
 
                             self.updateNodeLayer(component[0], component[1]);
 
-                        }, 1000);
+                        }, 500);
 
                     });
 
@@ -1000,7 +1019,7 @@ angular.module('FieldDoc')
                     //
                     // LayerUtil.addReferenceLayers(self.map);
                     //
-                    // LayerLabel.addLabelLayers(self.map);
+                    // LabelLayer.addLabelLayers(self.map);
 
                     // self.addReferenceLayers();
 
@@ -1085,7 +1104,9 @@ angular.module('FieldDoc')
 
                 LayerUtil.addReferenceLayers(self.map);
 
-                LayerLabel.addLabelLayers(self.map);
+                LabelLayer.addLabelLayers(self.map);
+
+                DataLayer.addDataLayers(self.map);
 
             };
 

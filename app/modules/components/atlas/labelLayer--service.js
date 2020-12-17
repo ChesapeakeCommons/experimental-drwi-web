@@ -8,7 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerLabel', function(LayerUtil) {
+    .service('LabelLayer', function(LayerUtil) {
 
         // Let's set an internal reference to this service
         var self = this;
