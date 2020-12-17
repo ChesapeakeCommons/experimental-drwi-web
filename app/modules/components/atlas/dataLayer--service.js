@@ -8,12 +8,12 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('DataLayer', function(LayerUtil) {
+    .service('DataLayer', function(ZoomUtil) {
 
         // Let's set an internal reference to this service
         var self = this;
 
-        var zoomConfig = LayerUtil.getZoom();
+        var zoomConfig = ZoomUtil.getZoom();
 
         var DATA_LAYERS = [{
             config: {
@@ -52,11 +52,11 @@ angular.module('FieldDoc')
                         ['exponential', 0.5],
                         ['zoom'],
                         9,
-                        2,
+                        4,
                         14,
                         6
                     ],
-                    'circle-stroke-width': 1,
+                    'circle-stroke-width': 2,
                     'circle-stroke-color': '#FFFFFF'
                 }
             },

@@ -8,7 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerUtil', function(environment, Dashboard, Site, Practice, mapbox) {
+    .service('LayerUtil', function(environment, Dashboard, Site, Practice, mapbox, LabelLayer) {
 
         // Let's set an internal reference to this service
         var self = this;
@@ -415,6 +415,98 @@ angular.module('FieldDoc')
                         map.getLayer(layer.id)) {
 
                         map.removeLayer(layer.id);
+
+                    }
+
+                });
+
+            },
+            setTextColor: function (map, styleString) {
+
+                var mod = this;
+
+                var layerIds = Object.keys(LabelLayer.index());
+
+                layerIds.forEach(function (layerId) {
+
+                    if (layerId.startsWith('fd.') &&
+                        layerId.indexOf('drainage') < 0) {
+
+                        var tokens = layerId.split('.');
+
+                        console.log(
+                            'setTextColor:tokens:',
+                            tokens
+                        );
+
+                        var nodeType = tokens[1];
+
+                        var zoomConfig = mod.getZoom(nodeType);
+
+                        console.log(
+                            'setTextColor:zoomConfig:',
+                            zoomConfig
+                        );
+
+                        var layer = map.getLayer(layerId);
+
+                        if (layer !== undefined) {
+
+                            if (styleString.indexOf('satellite') >= 0) {
+
+                                try {
+
+                                    map.setPaintProperty(
+                                        layerId,
+                                        'text-color',
+                                        '#FFFFFF'
+                                    );
+
+                                    map.setPaintProperty(
+                                        layerId,
+                                        'text-halo-color',
+                                        '#212121'
+                                    );
+
+                                } catch (e) {
+
+                                    console.warn(e);
+
+                                }
+
+                            } else {
+
+                                try {
+
+                                    map.setPaintProperty(
+                                        layerId,
+                                        'text-color',
+                                        [
+                                            'interpolate',
+                                            ['exponential', 0.5],
+                                            ['zoom'],
+                                            zoomConfig.min,
+                                            '#616161',
+                                            zoomConfig.max,
+                                            '#212121'
+                                        ]
+                                    );
+
+                                    map.setPaintProperty(
+                                        layerId,
+                                        'text-halo-color',
+                                        'rgba(255,255,255,0.75)'
+                                    );
+
+                                } catch (e) {
+
+                                    console.warn(e);
+
+                                }
+
+                            }
+
+                        }
 
                     }
 

@@ -11,7 +11,7 @@ angular.module('FieldDoc')
     .controller('AtlasController',
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie,
+                 Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer) {
 
             var self = this;
@@ -537,7 +537,7 @@ angular.module('FieldDoc')
                         paint: LayerUtil.getPaint(component[0], type)
                     };
 
-                    var zoomSpec = LayerUtil.getZoom(component[0]);
+                    var zoomSpec = ZoomUtil.getZoom(component[0]);
 
                     layerSpec.minzoom = zoomSpec.min;
 
@@ -623,8 +623,6 @@ angular.module('FieldDoc')
 
                 self.map.on('styledata', function() {
 
-                    // if (!self.map.isStyleLoaded()) return;
-
                     console.log(
                         'styledata:style:',
                         self.map.getStyle()
@@ -642,85 +640,6 @@ angular.module('FieldDoc')
 
                     }
 
-                    // //
-                    // // Update URL data.
-                    // //
-                    //
-                    // if (self.primaryNode) {
-                    //
-                    //     var urlData = AtlasDataManager.createURLData(
-                    //         self.primaryNode,
-                    //         false,
-                    //         {
-                    //             style: styleString,
-                    //             zoom: self.map.getZoom()
-                    //         }
-                    //     );
-                    //
-                    //     $location.search(urlData);
-                    //
-                    // }
-
-                    // if (!self.map.loaded()) return;
-
-                    if (self.map.getLayer('fd.project-label') !== undefined) {
-
-                        if (styleString.indexOf('satellite') >= 0) {
-
-                            try {
-
-                                self.map.setPaintProperty(
-                                    'fd.project-label',
-                                    'text-color',
-                                    '#FFFFFF'
-                                );
-
-                                self.map.setPaintProperty(
-                                    'fd.project-label',
-                                    'text-halo-color',
-                                    '#212121'
-                                );
-
-                            } catch (e) {
-
-                                console.warn(e);
-
-                            }
-
-                        } else {
-
-                            try {
-
-                                self.map.setPaintProperty(
-                                    'fd.project-label',
-                                    'text-color',
-                                    [
-                                        'interpolate',
-                                        ['exponential', 0.5],
-                                        ['zoom'],
-                                        9,
-                                        '#616161',
-                                        14,
-                                        '#212121'
-                                    ]
-                                );
-
-                                self.map.setPaintProperty(
-                                    'fd.project-label',
-                                    'text-halo-color',
-                                    'rgba(255,255,255,0.75)'
-                                );
-
-                            } catch (e) {
-
-                                console.warn(e);
-
-                            }
-
-                        }
-
-                    }
-
                     //
                     // Restore reference sources and layers.
                     //
@@ -734,35 +653,10 @@ angular.module('FieldDoc')
                     SourceUtil.restoreSources(self.map);
 
                     //
-                    // Update stored layers.
+                    // Set text color for label layers.
                     //
 
-                    // LayerUtil.trackLayers(self.map);
-
-                    //
-                    // Update stored sources.
-                    //
-
-                    // SourceUtil.trackSources(self.map);
-
-                    // //
-                    // // Update URL data.
-                    // //
-                    //
-                    // if (self.primaryNode) {
-                    //
-                    //     var urlData = AtlasDataManager.createURLData(
-                    //         self.primaryNode,
-                    //         false,
-                    //         {
-                    //             style: self.styleString,
-                    //             zoom: self.map.getZoom()
-                    //         }
-                    //     );
-                    //
-                    //     $location.search(urlData);
-                    //
-                    // }
+                    LayerUtil.setTextColor(self.map, styleString);
 
                 });
 

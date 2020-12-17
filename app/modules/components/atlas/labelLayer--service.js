@@ -8,15 +8,15 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LabelLayer', function(LayerUtil) {
+    .service('LabelLayer', function(ZoomUtil) {
 
         // Let's set an internal reference to this service
         var self = this;
 
-        var zoomConfig = LayerUtil.getZoom();
+        var zoomConfig = ZoomUtil.getZoom();
 
         var LABEL_LAYERS = [{
-            'id': 'fd.practice-polygon-label',
+            'id': 'fd.practice.polygon-label',
             'source': 'fd.practice.polygon',
             'type': 'symbol',
             'minzoom': zoomConfig.practice.min,
@@ -81,7 +81,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.practice-line-label',
+            'id': 'fd.practice.line-label',
             'source': 'fd.practice.line',
             'type': 'symbol',
             'minzoom': zoomConfig.practice.min,
@@ -146,7 +146,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.practice-point-label',
+            'id': 'fd.practice.point-label',
             'source': 'fd.practice.point',
             'type': 'symbol',
             'minzoom': zoomConfig.practice.min,
@@ -211,7 +211,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.site-polygon-label',
+            'id': 'fd.site.polygon-label',
             'source': 'fd.site.polygon',
             'type': 'symbol',
             'minzoom': zoomConfig.site.min + 1,
@@ -276,7 +276,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.site-line-label',
+            'id': 'fd.site.line-label',
             'source': 'fd.site.line',
             'type': 'symbol',
             'minzoom': zoomConfig.site.min + 1,
@@ -341,7 +341,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.site-point-label',
+            'id': 'fd.site.point-label',
             'source': 'fd.site.point',
             'type': 'symbol',
             'minzoom': zoomConfig.site.min + 1,
@@ -406,7 +406,7 @@ angular.module('FieldDoc')
                 ]
             }
         }, {
-            'id': 'fd.project-point-label',
+            'id': 'fd.project.point-label',
             'source': 'fd.project.point',
             'type': 'symbol',
             'minzoom': zoomConfig.project.min,
@@ -452,7 +452,7 @@ angular.module('FieldDoc')
                     zoomConfig.project.max,
                     16
                 ],
-                'text-radial-offset': 0.5,
+                'text-radial-offset': 0.75,
                 'text-justify': 'auto',
                 'visibility': 'visible'
             },
@@ -484,6 +484,19 @@ angular.module('FieldDoc')
                     }
 
                 });
+
+            },
+            index: function () {
+
+                var idx = {};
+
+                LABEL_LAYERS.forEach(function (layer) {
+
+                    idx[layer.id] = layer;
+
+                });
+
+                return idx;
 
             },
             list: function () {
