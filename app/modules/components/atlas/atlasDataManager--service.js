@@ -8,11 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('AtlasDataManager', function(
-        Utility, Dashboard, Project, Site,
-        Practice, GeographyService) {
-
-        var self = this;
+    .service('AtlasDataManager', function() {
 
         var fetchedFeatures = {
             'drainage': {
@@ -224,22 +220,6 @@ angular.module('FieldDoc')
                 var index = fetchedFeatures[featureType][geometryType];
 
                 return Object.keys(index);
-
-                // if (Array.isArray(index)) {
-                //
-                //     var vals = [];
-                //
-                //     index.forEach(function (feature) {
-                //
-                //         vals.push(feature.properties.id);
-                //
-                //     })
-                //
-                //     return vals;
-                //
-                // }
-                //
-                // return [];
 
             },
             getOrigin: function (params) {

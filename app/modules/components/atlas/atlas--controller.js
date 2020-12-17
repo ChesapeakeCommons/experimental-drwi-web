@@ -104,16 +104,6 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
-                // var fetchedFeatures = AtlasDataManager.getFetchedKeys(
-                //     nodeType, geometryType);
-                //
-                // var exclude = fetchedFeatures.join(',');
-                //
-                // console.log(
-                //     'exclude:',
-                //     exclude
-                // );
-
                 var params = {
                     bbox: boundsArray,
                     // exclude: exclude,
@@ -146,25 +136,6 @@ angular.module('FieldDoc')
 
                     var fetchedFeatures = AtlasDataManager.getFetched(
                         nodeType, geometryType);
-
-                    // var updatedFeatures = successResponse.features.concat(
-                    //     fetchedFeatures
-                    // );
-
-                    // successResponse.features.forEach(function (feature) {
-                    //
-                    //     AtlasDataManager.trackFeature(
-                    //         nodeType, geometryType, feature);
-                    //
-                    // });
-
-                    // LayerUtil.updateSource(
-                    //     sourceId,
-                    //     {
-                    //         'type': successResponse.type,
-                    //         'features': fetchedFeatures
-                    //     }
-                    // );
 
                     if (source !== undefined) {
 
@@ -268,7 +239,7 @@ angular.module('FieldDoc')
 
                 }, function(errorResponse) {
 
-                    console.log('Unable to load map data.');
+                    console.log('Unable to load feature data.');
 
                     self.showElements();
 
@@ -374,12 +345,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.toggleDrainage = function() {
-
-                self.toggleLayer(DRAINAGE_ID);
-
-            };
-
             self.toggleLayer = function(layerId) {
 
                 console.log(
@@ -459,11 +424,6 @@ angular.module('FieldDoc')
 
                         self.activeStyle = index;
 
-                        // self.switchMapStyle(
-                        //     style,
-                        //     index
-                        // );
-
                     }
 
                 });
@@ -500,92 +460,6 @@ angular.module('FieldDoc')
                 };
 
                 return self.mapOptions;
-
-            };
-
-            self.addGeoJSONSources = function () {
-
-                self.urlComponents.forEach(function (component) {
-
-                    console.log(
-                        'self.addGeoJSONSources:component:',
-                        component);
-
-                    var source = SourceUtil.createURLSource(
-                        component[0], component[1]);
-
-                    console.log(
-                        'self.addGeoJSONSources:source:',
-                        source);
-
-                    // try {
-                    //
-                    //     MapUtil.addSource(self.map, source.id, source.config);
-                    //
-                    // } catch (e) {
-                    //
-                    //     console.warn(e);
-                    //
-                    // }
-
-                    var type = LayerUtil.getType(component[1]);
-
-                    var layerSpec = {
-                        id: source.id,
-                        source: source.id,
-                        type: type,
-                        paint: LayerUtil.getPaint(component[0], type)
-                    };
-
-                    var zoomSpec = ZoomUtil.getZoom(component[0]);
-
-                    layerSpec.minzoom = zoomSpec.min;
-
-                    layerSpec.maxzoom = zoomSpec.max;
-
-                    // var labelLayer = LayerUtil.createLabelLayer(
-                    //     source,
-                    //     component[0],
-                    //     component[1]
-                    // );
-
-                    // labelLayer.minzoom = zoomSpec.min;
-                    //
-                    // labelLayer.maxzoom = zoomSpec.max;
-                    //
-                    // LayerUtil.trackLayer(labelLayer);
-
-                    // try {
-                    //
-                    //     MapUtil.addLayer(
-                    //         self.map,
-                    //         labelLayer,
-                    //         component[0] + '-label'
-                    //     );
-                    //
-                    // } catch (e) {
-                    //
-                    //     console.warn(e);
-                    //
-                    // }
-
-                    try {
-
-                        LayerUtil.trackLayer(layerSpec);
-
-                        MapUtil.addLayer(
-                            self.map,
-                            layerSpec,
-                            component[0]
-                        );
-
-                    } catch (e) {
-
-                        console.warn(e);
-
-                    }
-
-                });
 
             };
 
@@ -662,8 +536,6 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    // if (!self.map.loaded()) return;
-
                     self.urlComponents.forEach(function (component) {
 
                         $timeout(function () {
@@ -679,88 +551,6 @@ angular.module('FieldDoc')
                 self.map.on('idle', function() {
 
                     //
-                    // Retrieve stored layers.
-                    //
-
-                    // var preservedLayers = LayerUtil.list();
-                    //
-                    // //
-                    // // Retrieve stored sources.
-                    // //
-                    //
-                    // var preservedSources = SourceUtil.list();
-                    //
-                    // if (preservedSources) {
-                    //
-                    //     //
-                    //     // Remove stored sources. They will be restored in
-                    //     // the following loop calls.
-                    //     //
-                    //
-                    //     SourceUtil.removeAll();
-                    //
-                    //     preservedSources.forEach(function (source) {
-                    //
-                    //         console.log(
-                    //             'Adding preserved source:',
-                    //             source
-                    //         );
-                    //
-                    //         //
-                    //         // If source not present on map object, add it.
-                    //         //
-                    //
-                    //         if (self.map.getSource(source.id) === undefined) {
-                    //
-                    //             self.map.addSource(source.id, source.config);
-                    //
-                    //         }
-                    //
-                    //         //
-                    //         // Track source in stored sources.
-                    //         //
-                    //
-                    //         SourceUtil.trackSource(source.id, source.config);
-                    //
-                    //     });
-                    //
-                    // }
-                    //
-                    // if (preservedLayers) {
-                    //
-                    //     //
-                    //     // Remove stored layers. They will be restored in
-                    //     // the following loop calls.
-                    //     //
-                    //
-                    //     LayerUtil.removeAll();
-                    //
-                    //     preservedLayers.forEach(function (layer) {
-                    //
-                    //         console.log(
-                    //             'Adding preserved layer:',
-                    //             layer
-                    //         );
-                    //
-                    //         //
-                    //         // If layer not present on map object, add it.
-                    //         //
-                    //
-                    //         if (self.map.getLayer(layer.id) === undefined) {
-                    //
-                    //             self.map.addLayer(layer);
-                    //
-                    //         }
-                    //
-                    //         //
-                    //         // Track layer in stored layers.
-                    //         //
-                    //
-                    //         LayerUtil.trackLayer(layer);
-                    //
-                    //     });
-                    //
-                    // }
 
                 });
 
@@ -791,13 +581,6 @@ angular.module('FieldDoc')
 
                     document.querySelector('.geocoder').appendChild(geocoder.onAdd(self.map));
 
-                    // self.map.addControl(new mapboxgl.GeolocateControl({
-                    //     positionOptions: {
-                    //         enableHighAccuracy: true
-                    //     },
-                    //     trackUserLocation: true
-                    // }));
-
                     if (self.layers && self.layers.length) {
 
                         // self.addLayers(self.layers);
@@ -818,40 +601,20 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    // self.extractUrlParams(
-                    //     $location.search(),
-                    //     true
-                    // );
-
-                    // LayerUtil.addReferenceSources(self.map);
                     //
-                    // LayerUtil.addReferenceLayers(self.map);
+                    // Add reference sources and layers.
                     //
-                    // LabelLayer.addLabelLayers(self.map);
-
-                    // self.addReferenceLayers();
 
                     self.populateMap();
-
-                    // self.addGeoJSONSources();
 
                     var nodeString = self.urlData.node;
 
                     var nodeTokens = nodeString.split('.');
 
-                    // if (reload) {
-
                     self.fetchPrimaryNode(
                         nodeTokens[0],
                         +nodeTokens[1]
                     );
-
-                    // }
-
-                    // self.extractUrlParams(
-                    //     $location.search(),
-                    //     true
-                    // );
 
                 });
 
@@ -944,8 +707,6 @@ angular.module('FieldDoc')
                     id: self.primaryNode.properties.id
                 }).$promise.then(function(successResponse) {
 
-                    // console.log('Project metrics', successResponse);
-
                     Utility.processMetrics(successResponse.features);
 
                     self.metrics = Utility.groupByModel(successResponse.features);
@@ -966,7 +727,7 @@ angular.module('FieldDoc')
 
             };
 
-            self.extractUrlParams = function (params, reload) {
+            self.extractUrlParams = function (params) {
 
                 // var params = $location.search();
 
@@ -997,50 +758,23 @@ angular.module('FieldDoc')
 
                 }
 
-                // var styleString = dataObj.style;
-                //
-                // self.mapStyles.forEach(function (style, index) {
-                //
-                //     if (style.name.toLowerCase() === styleString) {
-                //
-                //         self.switchMapStyle(
-                //             style,
-                //             index
-                //         );
-                //
-                //     }
-                //
-                // });
-
-                // var nodeString = dataObj.node;
-                //
-                // var nodeTokens = nodeString.split('.');
-                //
-                // if (reload) {
-                //
-                //     self.fetchPrimaryNode(
-                //         nodeTokens[0],
-                //         +nodeTokens[1]
-                //     );
-                //
-                // }
-
             };
-
-            // $scope.$on('$routeUpdate', function () {
-            //
-            //     var params = $location.search();
-            //
-            //     self.extractUrlParams(params, false);
-            //
-            // });
 
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
 
                 var params = $location.search();
 
-                self.extractUrlParams(params, true);
+                self.extractUrlParams(params);
+
+                var nodeString = self.urlData.node;
+
+                var nodeTokens = nodeString.split('.');
+
+                self.fetchPrimaryNode(
+                    nodeTokens[0],
+                    +nodeTokens[1]
+                );
 
             }, false);
 
@@ -1062,8 +796,6 @@ angular.module('FieldDoc')
                     //
                     // Assign map to a scoped variable
                     //
-
-                    // self.stageMap(true);
 
                     var params = $location.search();
 

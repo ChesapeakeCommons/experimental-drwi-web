@@ -10,9 +10,6 @@
 angular.module('FieldDoc')
     .service('LabelLayer', function(ZoomUtil) {
 
-        // Let's set an internal reference to this service
-        var self = this;
-
         var zoomConfig = ZoomUtil.getZoom();
 
         var LABEL_LAYERS = [{

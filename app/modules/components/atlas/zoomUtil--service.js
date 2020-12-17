@@ -10,9 +10,6 @@
 angular.module('FieldDoc')
     .service('ZoomUtil', function() {
 
-        // Let's set an internal reference to this service
-        var self = this;
-
         var zoomConfig = {
             practice: {
                 min: 14,

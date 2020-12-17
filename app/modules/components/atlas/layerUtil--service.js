@@ -8,10 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerUtil', function(environment, Dashboard, Site, Practice, mapbox, LabelLayer) {
-
-        // Let's set an internal reference to this service
-        var self = this;
+    .service('LayerUtil', function(LabelLayer) {
 
         var EMPTY_SOURCE = {
             type: 'geojson',
@@ -79,24 +76,7 @@ angular.module('FieldDoc')
                     source: 'empty'
                 },
                 beforeId: 'practice-index'
-            },
-            // {
-            //     sourceConfig: EMPTY_SOURCE,
-            //     layerConfig: {
-            //         id: DRAINAGE_ID,
-            //         source: DRAINAGE_ID,
-            //         type: 'fill',
-            //         paint: {
-            //             'fill-color': '#00C8FF',
-            //             'fill-opacity': 0.4,
-            //             'fill-outline-color': '#424242'
-            //         },
-            //         layout: {
-            //             visibility: 'none'
-            //         }
-            //     },
-            //     beforeId: 'site-index'
-            // }
+            }
         ];
 
         var zoomConfig = {
@@ -150,130 +130,8 @@ angular.module('FieldDoc')
 
                 }
 
-                // REFERENCE_SOURCES.forEach(function (source) {
-                //
-                //     map.addSource(source.sourceId, source.sourceConfig);
-                //
-                // });
-
-            },
-            createLayer: function(sourceSpec, featureType) {
-
-                console.log(
-                    'LayerUtil:createLayer:sourceSpec',
-                    sourceSpec);
-
-                console.log(
-                    'LayerUtil:createLayer:featureType',
-                    featureType);
-
-                var geometry;
-
-                try {
-
-                    geometry = sourceSpec.config.data.features[0].geometry;
-
-                } catch (e) {
-
-                    return;
-
-                }
-
-                var geometryType;
-
-                try {
-
-                    geometryType = geometry.type;
-
-                } catch (e) {
-
-                    return;
-
-                }
-
-                var layerId = sourceSpec.id;
-
-                var layerType = this.getType(geometryType);
-
-                console.log(
-                    'LayerUtil:createLayer:layerType',
-                    layerType);
-
-                var paintSpec = this.getPaint(featureType, layerType);
-
-                console.log(
-                    'LayerUtil:createLayer:paintSpec',
-                    paintSpec);
-
-                return {
-                    id: layerId,
-                    source: sourceSpec.id,
-                    type: layerType,
-                    paint: paintSpec
-                };
-
-            },
-            createLabelLayer: function (source, nodeType, layerType) {
-
-                try {
-
-                    var layerConfig = labelConfig[nodeType][layerType];
-
-                    layerConfig.source = source.id;
-
-                    return layerConfig;
-
-                } catch (e) {
-
-                    return undefined;
-
-                }
-
             },
             _index: {},
-            dropLayer: function (layer) {
-
-                delete this._index[layer.id];
-
-            },
-            getIds: function (map, nodeType) {
-
-                var nodeTypes = [
-                    'practice',
-                    'site',
-                    'project'
-                ];
-
-                var layers = map.getStyle().layers;
-
-                var fdArray = [];
-
-                layers.forEach(function (layer) {
-
-                    if (layer.id.startsWith('fd.') &&
-                        map.getLayer(layer.id)) {
-
-                        if (nodeTypes.indexOf(nodeType) >= 0) {
-
-                            if (layer.id.indexOf(nodeType) >= 0) {
-
-                                fdArray.push(layer.id);
-
-                            }
-
-                        } else {
-
-                            fdArray.push(layer.id);
-
-                        }
-
-                    }
-
-                });
-
-                return fdArray;
-
-            },
             getBeforeId: function (featureType) {
 
                 if (featureType.indexOf('label') >= 0) {
@@ -301,66 +159,6 @@ angular.module('FieldDoc')
                 }
 
                 return '';
-
-            },
-            visibilityIndex: function (map) {
-
-                var layers = map.getStyle().layers;
-
-                var idx = {};
-
-                layers.forEach(function (layer) {
-
-                    if (layer.id.startsWith('fd.')) {
-
-                        idx[layer.id] = map.getLayoutProperty(
-                            layer.id,
-                            'visibility'
-                        );
-
-                    }
-
-                });
-
-                return idx;
-
-            },
-            getPaint: function (featureType, layerType) {
-
-                console.log(
-                    'LayerUtil:getPaint:featureType',
-                    featureType);
-
-                console.log(
-                    'LayerUtil:getPaint:layerType',
-                    layerType);
-
-                return paintConfig[featureType].paintSpec[layerType];
-
-            },
-            getType: function (geometryType) {
-
-                geometryType = geometryType.toLowerCase();
-
-                var layerType;
-
-                if (geometryType === 'polygon' ||
-                    geometryType === 'multipolygon') {
-
-                    layerType = 'fill';
-
-                } else if (geometryType === 'line' ||
-                    geometryType === 'linestring') {
-
-                    layerType = 'line';
-
-                } else if (geometryType === 'point') {
-
-                    layerType = 'circle';
-
-                }
-
-                return layerType;
 
             },
             getUrlComponents: function () {
@@ -567,32 +365,26 @@ angular.module('FieldDoc')
                 }
 
             },
-            trackLayer: function (layer) {
-
-                this._index[layer.id] = layer;
-
-            },
-            trackLayers: function (map) {
-
-                var mod = this;
+            visibilityIndex: function (map) {
 
                 var layers = map.getStyle().layers;
 
+                var idx = {};
+
                 layers.forEach(function (layer) {
 
-                    if (layer.id.startsWith('fd.') &&
-                        map.getLayer(layer.id)) {
+                    if (layer.id.startsWith('fd.')) {
 
-                        mod.trackLayer(layer);
+                        idx[layer.id] = map.getLayoutProperty(
+                            layer.id,
+                            'visibility'
+                        );
 
                     }
 
                 });
 
-            },
-            updateSource: function (sourceId, data) {
-
-                REFERENCE_SOURCES[sourceId].data = data;
+                return idx;
 
             }
 
