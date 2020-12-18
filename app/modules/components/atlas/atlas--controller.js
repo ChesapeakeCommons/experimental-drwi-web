@@ -35,6 +35,34 @@ angular.module('FieldDoc')
             };
 
             self.layers = [{
+                id: 'fd.project.point',
+                name: 'Projects',
+                selected: true
+            }, {
+                id: 'fd.site.polygon',
+                name: 'Site polygons',
+                selected: true
+            }, {
+                id: 'fd.site.line',
+                name: 'Site lines',
+                selected: true
+            }, {
+                id: 'fd.site.point',
+                name: 'Site points',
+                selected: true
+            }, {
+                id: 'fd.practice.polygon',
+                name: 'Practice polygons',
+                selected: true
+            }, {
+                id: 'fd.practice.line',
+                name: 'Practice lines',
+                selected: true
+            }, {
+                id: 'fd.practice.point',
+                name: 'Practice points',
+                selected: true
+            }, {
                 id: DRAINAGE_ID,
                 name: 'Drainage',
                 selected: false
@@ -178,21 +206,21 @@ angular.module('FieldDoc')
 
                     self.primaryNode = successResponse;
 
-                    if (!self.primaryNode.hasOwnProperty('type')) {
-
-                        self.primaryNode.type = 'Feature';
-
-                    }
-
                     if (!self.primaryNode.hasOwnProperty('properties')) {
 
                         self.primaryNode.properties = self.primaryNode;
 
                     }
 
-                    self.featureType = self.primaryNode.type;
+                    self.featureType = self.primaryNode.properties.type;
 
                     self.featureClass = self.clsMap[self.featureType];
+
+                    if (!self.primaryNode.hasOwnProperty('type')) {
+
+                        self.primaryNode.type = 'Feature';
+
+                    }
 
                     if ((featureType === 'practice' ||
                         featureType === 'site')) {
@@ -708,6 +736,20 @@ angular.module('FieldDoc')
                 self.layers.forEach(function (layer) {
 
                     var visibility = layer.selected ? 'visible' : 'none';
+
+                    var labelLayerId = layer.id + '-label';
+
+                    var labelLayer = self.map.getLayer(labelLayerId);
+
+                    if (labelLayer !== undefined) {
+
+                        self.map.setLayoutProperty(
+                            labelLayerId,
+                            'visibility',
+                            visibility
+                        );
+
+                    }
 
                     self.map.setLayoutProperty(
                         layer.id,

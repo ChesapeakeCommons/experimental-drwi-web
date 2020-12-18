@@ -321,13 +321,29 @@ angular.module('FieldDoc')
 
                 visibility = typeof visibility === 'string' ? visibility : 'visible';
 
+                var labelLayerId = layerId + '-label';
+
+                var labelLayer = map.getLayer(labelLayerId);
+
                 if (visibility === 'visible') {
 
                     map.setLayoutProperty(layerId, 'visibility', 'none');
 
+                    if (labelLayer !== undefined) {
+
+                        map.setLayoutProperty(labelLayerId, 'visibility', 'none');
+
+                    }
+
                 } else {
 
                     map.setLayoutProperty(layerId, 'visibility', 'visible');
+
+                    if (labelLayer !== undefined) {
+
+                        map.setLayoutProperty(labelLayerId, 'visibility', 'visible');
+
+                    }
 
                 }
 

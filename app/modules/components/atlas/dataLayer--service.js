@@ -43,7 +43,14 @@ angular.module('FieldDoc')
                         'case',
                         ['boolean', ['feature-state', 'focus'], false],
                         '#ff0000',
-                        '#2196F3'
+                        // '#2196F3'
+                        [
+                            'match',
+                            ['get', 'status'],
+                            'draft',
+                            '#f37e21',
+                            /* other */ '#2196F3'
+                        ]
                     ],
                     'circle-radius': [
                         'interpolate',
