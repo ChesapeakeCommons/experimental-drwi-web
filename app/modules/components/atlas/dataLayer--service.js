@@ -17,6 +17,7 @@ angular.module('FieldDoc')
                 'id': 'fd.drainage.polygon',
                 'source': 'fd.drainage.polygon',
                 'type': 'fill',
+                'minzoom': 8,
                 // 'layout': {
                 //     'visibility': 'none'
                 // },

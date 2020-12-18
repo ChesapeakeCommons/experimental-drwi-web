@@ -352,6 +352,8 @@ angular.module('FieldDoc')
                     layerId
                 );
 
+                self.preventFullCycle = true;
+
                 LayerUtil.toggleLayer(layerId, self.map);
 
             };
@@ -515,6 +517,18 @@ angular.module('FieldDoc')
                         self.currentStyleString
                     );
 
+                    //
+                    // Reset flag set ahead of single layer visibility change.
+                    //
+
+                    if (self.preventFullCycle) {
+
+                        self.preventFullCycle = false;
+
+                        return
+
+                    }
+
                     var styleString = MapUtil.getStyleString(self.map);
 
                     console.log(
@@ -522,7 +536,7 @@ angular.module('FieldDoc')
                         styleString
                     );
 
-                    if (styleString === self.currentStyleString) return;
+                    // if (styleString === self.currentStyleString) return;
 
                     //
                     // Restore reference sources and layers.
