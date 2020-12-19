@@ -12,7 +12,7 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
-                 Practice, Project, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer) {
+                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer) {
 
             var self = this;
 
@@ -31,6 +31,7 @@ angular.module('FieldDoc')
             self.clsMap = {
                 practice: Practice,
                 site: Site,
+                program: Program,
                 project: Project
             };
 

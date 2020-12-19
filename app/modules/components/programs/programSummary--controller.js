@@ -23,9 +23,10 @@
             'Project',
             'program',
             'LayerService',
+            'AtlasDataManager',
             function(Account, $location, $timeout, $log, $rootScope,
                 $route, Utility, user, $window, mapbox, Program,
-                Project, program, LayerService) {
+                Project, program, LayerService, AtlasDataManager) {
 
                 var self = this;
 
@@ -257,6 +258,8 @@
                         console.log('self.program', successResponse);
 
                         self.program = successResponse;
+
+                        self.atlasParams = AtlasDataManager.createURLData(self.program);
 
                         self.permissions = successResponse.permissions;
 

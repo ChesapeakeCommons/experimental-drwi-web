@@ -21,7 +21,7 @@
                 <i class="material-icons">
                     layers
                 </i>
-                <div class="layer-group" style="font-weight: normal;"
+                <div class="layer-group" style="font-weight: normal; font-size: 14px;"
                      data-ng-show="page.showLayerOptions">
                     <form>
                         <label data-ng-repeat="style in page.mapStyles"
@@ -33,10 +33,29 @@
                                    data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
                         </label>
                     </form>
+                    <div style="font-size: .75rem; font-weight: bold; text-transform: uppercase; padding: .5rem
+                    .75rem; border-top: 1px solid #e0e0e0;">
+                        Layers
+                    </div>
                     <form class="layers" data-ng-show="page.layers && page.layers.length">
                         <label for="layer-{{ $index }}" style="font-weight: normal;"
                                data-ng-repeat="layer in page.layers"
+                               data-ng-if="layer.id !== 'fd.drainage.polygon'"
                                data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
+                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                                   data-ng-change="page.toggleLayer(layer.id)">
+                            <span> {{ layer.name }}</span>
+                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                     style="background: {{ color }};"></div>
+                            </div>
+                        </label>
+                        <label for="layer-{{ $index }}" style="font-weight: normal;"
+                               data-ng-repeat="layer in page.layers"
+                               data-ng-class="{'active': layer.selected}"
+                               data-ng-if="layer.id === 'fd.drainage.polygon' && (page.primaryNode.properties.type === 'site' || page.primaryNode.properties.type === 'practice')"
+                               title="{{ layer.name }}">
                             <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
                                    data-ng-model="layer.selected" data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">

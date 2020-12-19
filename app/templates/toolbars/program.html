@@ -28,6 +28,14 @@
                 </i>
             </a>
         </li>
+        <!-- Map -->
+        <li title="Launch map">
+            <a href="/atlas?{{ page.atlasParams }}" target="_blank">
+                <span class="material-icons">
+                    map
+                </span>
+            </a>
+        </li>
         <li style="border-top: 1px solid #e0e0e0;"
             data-ng-if="page.permissions.write">
             <a href="/programs/{{ page.program.id }}/edit" title="Edit">

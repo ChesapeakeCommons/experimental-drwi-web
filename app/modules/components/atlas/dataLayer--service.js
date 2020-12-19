@@ -56,9 +56,9 @@ angular.module('FieldDoc')
                         'interpolate',
                         ['exponential', 0.5],
                         ['zoom'],
-                        9,
+                        zoomConfig.project.min,
                         4,
-                        14,
+                        zoomConfig.project.max,
                         6
                     ],
                     'circle-stroke-width': 2,

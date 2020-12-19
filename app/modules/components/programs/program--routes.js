@@ -64,7 +64,7 @@ angular.module('FieldDoc')
                     //     });
                     // },
                     program: function(Program, $route) {
-                        return Program.get({
+                        return Program.getSingle({
                             id: $route.current.params.programId
                         });
                     }
