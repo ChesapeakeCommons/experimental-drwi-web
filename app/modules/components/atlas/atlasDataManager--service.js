@@ -14,6 +14,12 @@ angular.module('FieldDoc')
             'drainage': {
                 'polygon': {}
             },
+            'post': {
+                'point': {}
+            },
+            'station': {
+                'point': {}
+            },
             'practice': {
                 'line': {},
                 'point': {},

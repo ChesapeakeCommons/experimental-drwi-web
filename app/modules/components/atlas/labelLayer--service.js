@@ -342,7 +342,7 @@ angular.module('FieldDoc')
             'source': 'fd.site.point',
             'type': 'symbol',
             'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max,
+            'maxzoom': zoomConfig.site.max + 1,
             'layout': {
                 'symbol-placement': 'point',
                 'text-anchor': 'bottom',

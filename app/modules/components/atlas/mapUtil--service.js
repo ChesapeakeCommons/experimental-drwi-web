@@ -46,9 +46,23 @@ angular.module('FieldDoc')
 
                         console.warn(e);
 
-                        bounds = turf.bbox(
-                            feature.geometry
-                        );
+                        if (feature.geometry.type === 'Point') {
+
+                            var bufferedPoint = turf.buffer(
+                                feature.geometry, 0.2, {units: 'kilometers'}
+                            );
+
+                            bounds = turf.bbox(
+                                bufferedPoint.geometry
+                            );
+
+                        } else {
+
+                            bounds = turf.bbox(
+                                feature.geometry
+                            );
+
+                        }
 
                     }
 

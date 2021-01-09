@@ -18,7 +18,8 @@
 
             <h2 data-ng-if="page.programs && page.programs.length">Programs</h2>
 
-            <p class="reveal fade-in t0">You have <strong>{{ (page.programs.length | number) || 0 }}</strong> <ng-pluralize count="page.programs.length" when="{'one': 'program','other': 'programs'}"></ng-pluralize>.</p>
+            <p class="reveal fade-in t0">You manage <strong>{{ (page.programs.length | number) || 0 }}</strong>
+                <ng-pluralize count="page.programs.length" when="{'one': 'program','other': 'programs'}"></ng-pluralize>.</p>
 
             <div class="features--container" data-ng-if="!page.status.loading && page.programs && page.programs.length">
 

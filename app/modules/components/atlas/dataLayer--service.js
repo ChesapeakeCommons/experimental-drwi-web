@@ -57,8 +57,70 @@ angular.module('FieldDoc')
                         ['exponential', 0.5],
                         ['zoom'],
                         zoomConfig.project.min,
-                        4,
+                        0.5,
                         zoomConfig.project.max,
+                        6
+                    ],
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#FFFFFF'
+                }
+            },
+            beforeId: ''
+        }, {
+            config: {
+                'id': 'wr.post.point',
+                'source': 'wr.post.point',
+                'type': 'circle',
+                'minzoom': zoomConfig.post.min,
+                'maxzoom': zoomConfig.post.max,
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'focus'], false],
+                        '#ff0000',
+                        '#00ff00'
+                    ],
+                    'circle-radius': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.post.min,
+                        0.5,
+                        zoomConfig.post.max,
+                        6
+                    ],
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#FFFFFF'
+                }
+            },
+            beforeId: ''
+        }, {
+            config: {
+                'id': 'wr.station.point',
+                'source': 'wr.station.point',
+                'type': 'circle',
+                'minzoom': zoomConfig.station.min,
+                'maxzoom': zoomConfig.station.max,
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'focus'], false],
+                        '#ff0000',
+                        '#0000ff'
+                    ],
+                    'circle-radius': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.station.min,
+                        0.5,
+                        zoomConfig.station.max,
                         6
                     ],
                     'circle-stroke-width': 2,
@@ -77,14 +139,15 @@ angular.module('FieldDoc')
                     'visibility': 'visible'
                 },
                 'paint': {
-                    'fill-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#3fd48a'
-                    ],
-                    'fill-opacity': 0.4,
-                    'fill-outline-color': '#005e7d'
+                    'fill-pattern': 'diagonal-pattern'
+                    // 'fill-color': [
+                    //     'case',
+                    //     ['boolean', ['feature-state', 'focus'], false],
+                    //     '#C81E1E',
+                    //     '#3fd48a'
+                    // ],
+                    // 'fill-opacity': 0.4,
+                    // 'fill-outline-color': '#005e7d'
                 }
             },
             beforeId: 'project-index'
@@ -187,7 +250,7 @@ angular.module('FieldDoc')
                 'source': 'fd.site.point',
                 'type': 'circle',
                 'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max,
+                'maxzoom': zoomConfig.site.max + 1,
                 'layout': {
                     'visibility': 'visible'
                 },

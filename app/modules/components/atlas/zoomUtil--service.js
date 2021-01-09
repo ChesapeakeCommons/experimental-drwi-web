@@ -11,6 +11,10 @@ angular.module('FieldDoc')
     .service('ZoomUtil', function() {
 
         var zoomConfig = {
+            post: {
+                min: 8,
+                max: 22
+            },
             practice: {
                 min: 14,
                 max: 22
@@ -19,8 +23,12 @@ angular.module('FieldDoc')
                 min: 10,
                 max: 16
             },
+            station: {
+                min: 8,
+                max: 22
+            },
             project: {
-                min: 9,
+                min: 2,
                 max: 14
             }
         };

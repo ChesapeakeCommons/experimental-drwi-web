@@ -12,7 +12,8 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
-                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer) {
+                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer,
+                 WaterReporterInterface) {
 
             var self = this;
 
@@ -141,47 +142,98 @@ angular.module('FieldDoc')
                     zoom: zoom
                 };
 
-                MapInterface.featureLayer(
-                    params
-                ).$promise.then(function(successResponse) {
+                if (nodeType === 'post' ||
+                    nodeType === 'station') {
 
-                    console.log(
-                        'updateNodeLayer:successResponse:',
-                        successResponse
-                    );
+                    params.access_token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibWNpbnR5cmUrYWRtaW4xQG91cmNvbW1vbmNvZGUub3JnIn0.TPAFhL1QyHCQ4kX3LQWiuV5KRW3yAZA5gV_UhyqXfSMQc7CDf6wItZYmuzfhkH09tOkO504_C2EMUXiizmPubMQtDgSQ3HWLdq2O087oEjAscnFr_yD204AyjTOIe01CSVnwdePqXiinnfWaw_8iuSRJB6HKqyTUo__gvVN9o32A4TwkNJOtJbsBBEieWQhpC4WilWaySUhFJLtlPP56ICd7euQAORYAn19pGqX25wGTvfVFAAmUjnlIJO_1hVia7kphv3Ujk7h1KWs5h_UuBx-95wg02Bh-A9NZ_p37SvUc2y2SWxupBEuz2b-baEYtfc8YTyWSsZyZZO1s9qDFqy9yz-hG6gmizpQ905dn743DTDss6Pbl7y72xcIpqMO5TmMffeARCY6l3n8Bo1feN5smX-keLrK7qN06MAfxAdtUzHwLrtpcnIFN8g_Zs6klI5Bk1G08AAIRyrL7zV8FaV0acFcmCsRyoB4HGHd3SlX5vSDngLQUChWfv-hJlZYyzfqBNIa6B_IYpKbzWRd8PAWG0q4sQAEjzOH2e5ZeR3W5TiTZEe_katF-Z5jitKgkP6RLo4NqcOeFJiQ1_kwlCa6iQ6vxeJQgSG0KTAdHHZ43SCzeukxK7vtP54yyfm_RaN3IcSYRapeM2KZqJIewrwu81ZfHcP17Lzq0cfBmcyo';
 
-                    self.nodeLayer = successResponse;
+                    WaterReporterInterface.featureLayer(
+                        params
+                    ).$promise.then(function (successResponse) {
 
-                    successResponse.features.forEach(function (feature) {
+                        console.log(
+                            'updateNodeLayer:successResponse:',
+                            successResponse
+                        );
 
-                        AtlasDataManager.trackFeature(
-                            nodeType, geometryType, feature);
+                        // self.nodeLayer = successResponse;
+
+                        successResponse.features.forEach(function (feature) {
+
+                            AtlasDataManager.trackFeature(
+                                nodeType, geometryType, feature);
+
+                        });
+
+                        var sourceId = 'wr.' + nodeType + '.' + geometryType;
+
+                        var source = self.map.getSource(sourceId);
+
+                        var fetchedFeatures = AtlasDataManager.getFetched(
+                            nodeType, geometryType);
+
+                        if (source !== undefined) {
+
+                            source.setData({
+                                'type': 'FeatureCollection',
+                                'features': fetchedFeatures
+                            });
+
+                        }
+
+                    }, function (errorResponse) {
+
+                        console.log('Unable to load node layer data.');
+
+                        self.showElements();
 
                     });
 
-                    var sourceId = 'fd.' + nodeType + '.' + geometryType;
+                } else {
 
-                    var source = self.map.getSource(sourceId);
+                    MapInterface.featureLayer(
+                        params
+                    ).$promise.then(function (successResponse) {
 
-                    var fetchedFeatures = AtlasDataManager.getFetched(
-                        nodeType, geometryType);
+                        console.log(
+                            'updateNodeLayer:successResponse:',
+                            successResponse
+                        );
 
-                    if (source !== undefined) {
+                        self.nodeLayer = successResponse;
 
-                        source.setData({
-                            'type': successResponse.type,
-                            'features': fetchedFeatures
+                        successResponse.features.forEach(function (feature) {
+
+                            AtlasDataManager.trackFeature(
+                                nodeType, geometryType, feature);
+
                         });
 
-                    }
+                        var sourceId = 'fd.' + nodeType + '.' + geometryType;
 
-                }, function(errorResponse) {
+                        var source = self.map.getSource(sourceId);
 
-                    console.log('Unable to load node layer data.');
+                        var fetchedFeatures = AtlasDataManager.getFetched(
+                            nodeType, geometryType);
 
-                    self.showElements();
+                        if (source !== undefined) {
 
-                });
+                            source.setData({
+                                'type': successResponse.type,
+                                'features': fetchedFeatures
+                            });
+
+                        }
+
+                    }, function (errorResponse) {
+
+                        console.log('Unable to load node layer data.');
+
+                        self.showElements();
+
+                    });
+
+                }
 
             };
 
@@ -512,25 +564,36 @@ angular.module('FieldDoc')
 
                     var features = self.map.queryRenderedFeatures(e.point);
 
-                    if (features.length) {
-
-                        var target = features[0];
-
-                        if (target.properties.id !== self.primaryNode.properties.id) {
-
-                            self.fetchPrimaryNode(
-                                target.properties.type,
-                                target.properties.id
-                            );
-
-                        }
-
-                    }
-
                     console.log(
                         'map.click:features:',
                         features
                     );
+
+                    if (features.length) {
+
+                        var target = features[0];
+
+                        if (target.layer.id.indexOf('station')) {
+
+                            console.log(
+                                'map.click:station:',
+                                target
+                            );
+
+                        } else {
+
+                            if (target.properties.id !== self.primaryNode.properties.id) {
+
+                                self.fetchPrimaryNode(
+                                    target.properties.type,
+                                    target.properties.id
+                                );
+
+                            }
+
+                        }
+
+                    }
 
                 });
 
@@ -654,20 +717,47 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
+                    self.map.loadImage(
+                        'https://dev.fielddoc.org/images/diagonal-lines.png',
+                        function (err, image) {
+
+                            if (err) throw err;
+
+                            self.map.addImage('diagonal-pattern', image);
+
+                            //
+                            // Add reference sources and layers.
+                            //
+
+                            self.populateMap();
+
+                            var nodeString = self.urlData.node;
+
+                            var nodeTokens = nodeString.split('.');
+
+                            self.fetchPrimaryNode(
+                                nodeTokens[0],
+                                +nodeTokens[1]
+                            );
+
+                        }
+
+                    );
+
                     //
                     // Add reference sources and layers.
                     //
 
-                    self.populateMap();
-
-                    var nodeString = self.urlData.node;
-
-                    var nodeTokens = nodeString.split('.');
-
-                    self.fetchPrimaryNode(
-                        nodeTokens[0],
-                        +nodeTokens[1]
-                    );
+                    // self.populateMap();
+                    //
+                    // var nodeString = self.urlData.node;
+                    //
+                    // var nodeTokens = nodeString.split('.');
+                    //
+                    // self.fetchPrimaryNode(
+                    //     nodeTokens[0],
+                    //     +nodeTokens[1]
+                    // );
 
                 });
 

@@ -28,7 +28,9 @@ angular.module('FieldDoc')
             'fd.site.point': EMPTY_SOURCE,
             'fd.site.line': EMPTY_SOURCE,
             'fd.site.polygon': EMPTY_SOURCE,
-            'fd.project.point': EMPTY_SOURCE
+            'fd.project.point': EMPTY_SOURCE,
+            'wr.post.point': EMPTY_SOURCE,
+            'wr.station.point': EMPTY_SOURCE
         };
 
         var REFERENCE_LAYERS = [
@@ -46,6 +48,22 @@ angular.module('FieldDoc')
             {
                 layerConfig: {
                     id: 'label-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: ''
+            },
+            {
+                layerConfig: {
+                    id: 'station-index',
+                    type: 'symbol',
+                    source: 'empty'
+                },
+                beforeId: ''
+            },
+            {
+                layerConfig: {
+                    id: 'post-index',
                     type: 'symbol',
                     source: 'empty'
                 },
@@ -91,12 +109,14 @@ angular.module('FieldDoc')
         };
 
         var URL_COMPONENTS = [
+            ['post', 'point'],
             ['practice', 'line'],
             ['practice', 'point'],
             ['practice', 'polygon'],
             ['site', 'line'],
             ['site', 'point'],
             ['site', 'polygon'],
+            ['station', 'point'],
             ['project', 'point'],
         ];
 
@@ -176,7 +196,8 @@ angular.module('FieldDoc')
 
                 layers.forEach(function (layer) {
 
-                    if (layer.id.startsWith('fd.') &&
+                    if ((layer.id.startsWith('fd.') ||
+                        layer.id.startsWith('wr.')) &&
                         map.getLayer(layer.id)) {
 
                         map.removeLayer(layer.id);
@@ -194,7 +215,8 @@ angular.module('FieldDoc')
 
                 layerIds.forEach(function (layerId) {
 
-                    if (layerId.startsWith('fd.') &&
+                    if ((layerId.startsWith('fd.') ||
+                        layerId.startsWith('wr.')) &&
                         layerId.indexOf('drainage') < 0) {
 
                         var tokens = layerId.split('.');
@@ -356,7 +378,8 @@ angular.module('FieldDoc')
 
                 layers.forEach(function (layer) {
 
-                    if (layer.id.startsWith('fd.')) {
+                    if (layer.id.startsWith('fd.') ||
+                        layer.id.startsWith('wr.')) {
 
                         idx[layer.id] = map.getLayoutProperty(
                             layer.id,

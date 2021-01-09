@@ -34,8 +34,20 @@
             </h1>
 
             <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1">
-                <div class="stat--block">
+                <div class="stat--block"
+                     data-ng-if="page.featureType && page.featureType !== 'practice'">
                     <span class="label" style="font-weight: 600; color: #757575; font-size: .8rem;">
+                        {{ page.featureType }}
+                    </span>
+                </div>
+                <div class="stat--block"
+                     data-ng-if="page.featureType && page.featureType === 'practice'">
+                    <span class="label" style="font-weight: 600; color: #757575; font-size: .8rem;"
+                          data-ng-if="page.primaryNode.properties.practice_type.name">
+                        {{ page.primaryNode.properties.practice_type.name }}
+                    </span>
+                    <span class="label" style="font-weight: 600; color: #757575; font-size: .8rem;"
+                          data-ng-if="!page.primaryNode.properties.practice_type.name">
                         {{ page.featureType }}
                     </span>
                 </div>
@@ -44,6 +56,13 @@
             <p data-ng-if="!page.status.loading">
                 {{ page.feature.description || page.primaryNode.properties.description || 'No description provided'
                 }}
+            </p>
+
+            <p data-ng-if="!page.status.loading">
+                <a href="/{{ page.featureType }}s/{{ page.primaryNode.properties.id }}"
+                   title="View {{ page.featureType }} profile">
+                    View complete profile &rarr;
+                </a>
             </p>
 
             <div data-ng-if="page.tags && page.tags.length && !page.status.loading">
