@@ -265,9 +265,22 @@ angular.module('FieldDoc')
 
                     console.log('SearchService.program response', response);
 
+                    let i = 0;
+
                     response.results.forEach(function(result) {
 
+                        self.feature.programs.forEach(function(program){
+
+                            if(program.id == result.id){
+                                response.results.splice(i,1);
+                                i = i-1;
+                            }
+
+                        });
+
                         result.category = null;
+
+                        i = i+1;
 
                     });
 
@@ -276,6 +289,156 @@ angular.module('FieldDoc')
                 });
 
             };
+
+
+
+            self.addRelation = function(item, model, label, collection, queryAttr) {
+
+                var _datum = {
+                    id: item.id,
+                    properties: item
+                };
+
+
+
+
+                collection.push(_datum);
+
+                queryAttr = null;
+
+                console.log('Updated ' + collection + ' (addition)', collection);
+
+            };
+
+            self.removeRelation = function(id, collection) {
+
+                var _index;
+
+                collection.forEach(function(item, idx) {
+
+                    if (item.id === id) {
+
+                        _index = idx;
+
+                    }
+
+                });
+
+                console.log('Remove item at index', _index);
+
+                if (typeof _index === 'number') {
+
+                    collection.splice(_index, 1);
+
+                }
+
+                console.log('Updated ' + collection + ' (removal)', collection);
+
+            };
+
+            self.processRelations = function(list) {
+
+                var _list = [];
+
+                angular.forEach(list, function(item) {
+
+                    var _datum = {};
+
+                    if (item && item.id) {
+                        _datum.id = item.id;
+                    }
+
+                    _list.push(_datum);
+
+                });
+
+                return _list;
+
+            };
+
+            self.processFeature = function(data) {
+
+                self.project = data;
+
+                if (self.project.programs) {
+
+                    self.programs = self.project.programs;
+
+                }
+
+                self.project.program_id = [];
+                self.project.programs.forEach(function(program){
+                    self.project.program_id.push(program.id);
+
+                });
+
+                self.tempPartners = self.project.partners;
+
+                console.log("self.tempPartners",self.tempPartners)
+
+                self.status.processing = false;
+
+            };
+
+            /*self.setProgram: This need to handle an array*/
+            self.setProgram = function(item, model, label) {
+
+                console.log("NEW PROGRAM");
+                console.log("ITEM",item);
+                console.log("MODEL",model);
+                console.log("LABEL",label);
+
+              //  self.organization.programs.push(item);
+                // self.project.program_id = item.id;
+
+                console.log("setProgram -->", item);
+
+
+
+            //    delete item.category;
+            //    delete item.subcategory;
+
+                let tempItem = {};
+                tempItem.program = item;
+
+                self.feature.programs.push(tempItem);
+
+            };
+
+            self.unsetProgram = function(index) {
+
+                self.project.programs.splice(index,1);
+                self.project.program_id.splice(index,1);
+
+//                i = 0;
+//                self.project.programs.forEach(function(program){
+//                    if(program.id = id){
+//                        self.project.programs.splice(i,1);
+//                        self.project.program_id.splice(i,1);
+//
+//      //                  delete self.project.programs[i];
+//      //                  delete self.project.program_id[i];
+//
+//                    }
+//                    i = i+1;
+//                });
+
+                self.programs = self.project.programs;
+
+                //   self.project.program_id = null;
+
+                // q   self.program = null;
+
+            };
+
+
+
+
+
+
+
+            /*END program relations*/
+
 
 
             //
