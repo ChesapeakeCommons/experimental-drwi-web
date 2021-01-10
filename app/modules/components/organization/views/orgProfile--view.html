@@ -99,13 +99,85 @@
 
         </div>
 
+        <!-- START Program Selection -->
+
+        <h2 class="flow2 reveal fade-in t0" >Programs</h2>
+
+        <div class="main--ui reveal fade-in t0">
+
+            <div class="classification--search" style="position: relative;">
+                <p style="font-style: normal; color: #616161; font-size: 1em; margin-bottom: 2em; position: relative; z-index: 900">
+
+                    Select from programs supported by FieldDoc. Program is required to load metrics and models.
+                </p>
+                <input type="search" class="search" value="" placeholder="Search programs" data-ng-model="page.programQuery" uib-typeahead="suggestion as suggestion.name for suggestion in page.searchPrograms($viewValue)" typeahead-on-select="page.setProgram($item, $model, $label)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html">
+            </div>
+
+
+
+            <div class="classification--list" style="margin-top: 2em;" data-ng-if="page.programs">
+                <ul>
+                    <li>
+                        <i class="material-icons">
+                            account_balance
+                        </i>
+                        <span style="flex-shrink: 0; flex-grow: 1;">{{ page.programs.name }}</span>
+                        <div class="button--container">
+                            <button type="button" class="remove-item" data-ng-click="page.unsetProgram()">
+                                <i class="material-icons">
+                                    remove_circle
+                                </i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <ul class="selectable-group-items list-unstyled margin-t-2"
+            data-ng-if="page.practiceType && page.practiceType.id">
+
+            <li class="card reveal fade-in">
+
+                <div class="card--content margin-0">
+
+                    <div class="name" style="flex-flow: column; align-items: flex-start;">
+
+                                        <span>
+                                            {{ page.practiceType.name }}
+                                        </span>
+
+                        <span style="font-size: 0.7em; font-weight: normal; color: #757575; text-transform: uppercase;"
+                              data-ng-if="page.practiceType.group">
+                                            {{ page.practiceType.group }}
+                                        </span>
+
+                    </div>
+
+                    <div class="body">
+                        <p style="font-style: normal; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0;">
+                            {{ page.practiceType.description || 'No description provided.' }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </li>
+
+        </ul>
+
+
+        <!-- END Program Selection-->
+
+
         <h2 class="flow2" data-ng-if="page.members.length">Members</h2>
 
         <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && page.members.length">
 
             <p data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">{{page.feature.name}} has <strong>{{ (page.members.length | number) || 0 }}</strong> <data-ng-pluralize count="page.members.length" when="{'one': 'member','other': 'members'}"></data-ng-pluralize>.</p>
 
-            <div class="features--container" data-ng-if="!page.status.loading" style="padding-bottom: 20px;">
+            <div class="features--container" data-ng-if="!page.status.loading" style="padding-bottom: 20px; position:relative; z-index: 1;">
 
                 <ul class="snapshot--cards list-unstyled" style="margin-top: 2em;">
 

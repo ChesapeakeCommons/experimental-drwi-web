@@ -249,6 +249,35 @@ angular.module('FieldDoc')
 
             };
 
+
+            /*
+            * Program Search
+            * Return value of searchService
+            * using q query value from bound html input
+            *
+            * */
+
+            self.searchPrograms = function(value) {
+
+                return SearchService.program({
+                    q: value
+                }).$promise.then(function(response) {
+
+                    console.log('SearchService.program response', response);
+
+                    response.results.forEach(function(result) {
+
+                        result.category = null;
+
+                    });
+
+                    return response.results.slice(0, 5);
+
+                });
+
+            };
+
+
             //
             // Verify Account information for proper UI element display
             //
