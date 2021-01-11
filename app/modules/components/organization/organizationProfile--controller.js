@@ -492,8 +492,11 @@ angular.module('FieldDoc')
             };
 
 
+            self.setDefaultProgram = function(program_id){
 
+                
 
+            };
 
 
 
