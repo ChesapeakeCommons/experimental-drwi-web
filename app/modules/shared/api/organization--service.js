@@ -33,6 +33,16 @@
                     isArray: false,
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/organization/:id/members')
+                },
+                addProgram: {
+                    isArray: false,
+                    method: 'POST',
+                    url: environment.apiUrl.concat('/v1/organization-program')
+                },
+                updateProgram: {
+                    isArray: false,
+                    method: 'PATCH',
+                    url: environment.apiUrl.concat('/v1/organization-program/:id')
                 }
             });
         });
