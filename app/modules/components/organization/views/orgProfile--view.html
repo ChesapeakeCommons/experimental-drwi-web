@@ -101,9 +101,9 @@
 
         <!-- START Program Selection -->
 
-        <h2 class="flow2 reveal fade-in t0" >Programs</h2>
+        <h2 class="flow2 reveal fade-in" >Programs</h2>
 
-        <div class="main--ui reveal fade-in t0">
+        <div class="main--ui reveal fade-in">
 
             <div class="classification--search" style="position: relative;">
                 <p style="font-style: normal; color: #616161; font-size: 1em; margin-bottom: 2em; position: relative; z-index: 900">
@@ -118,44 +118,55 @@
             <ul class="selectable-group-items list-unstyled margin-t-2"
                 data-ng-if="page.feature.programs">
 
-                <li class="card reveal fade-in" data-ng-repeat="program in page.feature.programs">
+                <li class="card reveal fade-in" data-ng-repeat="program in page.feature.programs track by $index" >
 
                     <div class="card--content margin-0">
 
-                        <div class="name" style="flex-flow: column; align-items: flex-start;">
+                        <div class="name" style="flex-flow: column; align-items: flex-start; display:block; float:left;">
 
-                            <span>
+                            <div type="button" class="remove-item" data-ng-click="page.unsetProgram(program_id)" style="float:right; display:block; border: 0px; background-color: unset;">
+                                <i class="material-icons" style="color:red; font-size: 24px; ">
+                                    remove_circle
+                                </i>
+                            </div>
+
+                            <span style="width:70%; display:inline-block;">
                                 {{ program.program.name }}
                             </span>
 
-                            <div class="button--container">
-                                <button type="button" class="remove-item" data-ng-click="page.unsetProgram(program_id)">
-                                    <i class="material-icons">
-                                        remove_circle
-                                    </i>
-                                </button>
-                            </div>
 
-                            <span style="font-size: 0.7em; font-weight: normal; color: #757575; text-transform: uppercase;"
+
+                            <span style="font-size: 0.7em; font-weight: normal; color: #757575; text-transform: uppercase; display:inline-block;"
                                   data-ng-if="program.program.subcategory">
                                                 {{ program.program.subcategory }}
-                                            </span>
+                            </span>
 
 
 
                         </div>
 
-                        <div class="body">
-                            <p style="font-style: normal; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0;">
-                                {{ program.program.description || 'No description provided.' }}
-                            </p>
+                        <div class="button--container" style="flex-flow: column;">
 
-                            <button type="button" class="add-item" data-ng-click="page.savePractice()"
-                                    data-ng-disabled="page.status.processing">
-                                <i class="material-icons">
-                                    done
-                                </i>
-                            </button>
+                        </div>
+
+                        <div class="body" style="overflow: auto; display:block; float:left; border:0px solid red;">
+                            <div style="width:70%;display:block; float:left; border:0px solid red;" >
+                                <p style="font-style: normal; text-align: justify; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0; ">
+                                    {{ program.program.description || 'No description provided.' }}
+                                </p>
+                            </div>
+                            <div style="width:30%; display:inline-block; float:right; border:0px solid red; text-align:right;" >
+                                <div style="margin-top:0; margin-bottom: 0; vertical-align: middle;">
+                                    <i >Default Program {{program.program.id}}</i>
+
+                                    <button type="button" class="add-item" style="display:inline-block;" data-ng-click="page.unsetProgram(program.program.id)"
+                                            data-ng-disabled="page.status.processing">
+                                       <i class="material-icons">
+                                            done
+                                        </i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
