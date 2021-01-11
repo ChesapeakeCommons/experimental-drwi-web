@@ -7,7 +7,7 @@
  */
 angular.module('FieldDoc')
     .controller('OrganizationProfileViewController',
-        function(Project, Account, $location, $log, Notifications, $rootScope,
+        function(Project, Account, $location, $log, Notifications, $rootScope, $scope,
                  $route, $routeParams, user, User, Organization, SearchService, $timeout, Utility) {
 
             var self = this;
@@ -23,7 +23,7 @@ angular.module('FieldDoc')
 
             self.alerts = [];
 
-            function closeAlerts() {
+            self.closeAlerts = function(){
 
                 self.alerts = [];
 
@@ -300,13 +300,14 @@ angular.module('FieldDoc')
                 };
 
 
-
-
                 collection.push(_datum);
 
                 queryAttr = null;
 
                 console.log('Updated ' + collection + ' (addition)', collection);
+
+
+
 
             };
 
@@ -398,17 +399,76 @@ angular.module('FieldDoc')
             //    delete item.category;
             //    delete item.subcategory;
 
+                console.log('+self.feature.id', +self.feature.id);
+                console.log('+item.id', +item.id);
+
+
+                Organization.addProgram({
+                    organization_id : +self.feature.id,
+                    program_id      : +item.id
+                },{}).$promise.then(function(successResponse) {
+
+                    //   self.processFeature(successResponse);
+
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Organization changes saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("OrganizationService -> addProgram", successResponse);
+
+                }).catch(function(error) {
+
+                    // Do something with the error
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong and the changes could not be saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("ERROR: OrganizationService -> addProgram", error);
+
+                });
+
+
                 let tempItem = {};
                 tempItem.program = item;
 
                 self.feature.programs.push(tempItem);
 
+                console.log("Updated programs -->", self.feature.programs);
+
             };
 
-            self.unsetProgram = function(index) {
+            self.unsetProgram = function(program_id) {
 
-                self.project.programs.splice(index,1);
-                self.project.program_id.splice(index,1);
+                console.log(program_id);
+
+                let i = 0;
+                self.feature.programs.forEach(function(program){
+                    if(program.id == program_id){
+
+                        self.feature.programs.splice(i,1);
+                    }
+
+                     i=i+1;
+
+                });
+
+             //   self.feature.programs.splice(index,1);
+              //  self.feature.program_id.splice(index,1);
 
 //                i = 0;
 //                self.project.programs.forEach(function(program){
@@ -423,7 +483,7 @@ angular.module('FieldDoc')
 //                    i = i+1;
 //                });
 
-                self.programs = self.project.programs;
+               // self.programs = self.project.programs;
 
                 //   self.project.program_id = null;
 
