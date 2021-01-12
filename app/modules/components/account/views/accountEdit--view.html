@@ -15,7 +15,7 @@
 
 <!--                <div class="form-element">-->
 
-<!--                    <span class="meta-label"><b>Profile Image</b></span>-->
+<!--                    <span class="meta-label"><strong>Profile Image</strong></span>-->
 
 <!--                    <input type="file" class="form-control"-->
 <!--                           id="profile-image" name="profile-image" file-model="page.image" />-->
@@ -48,21 +48,21 @@
 <!--                </div>-->
 
                 <div class="form-element">
-                    <span class="meta-label"><b>First name</b></span>
+                    <span class="meta-label"><strong>First name</strong></span>
                     <input type="text" class="form-control form-control-half"
                            id="first_name" name="first_name" placeholder="First Name"
                            data-ng-model="page.user.first_name" required="required" tabindex="2" />
                 </div>
 
                 <div class="form-element">
-                    <span class="meta-label"><b>Last name</b></span>
+                    <span class="meta-label"><strong>Last name</strong></span>
                     <input type="text" class="form-control form-control-half"
                            id="last_name" name="last_name" placeholder="Last Name"
                            data-ng-model="page.user.last_name" required="required" tabindex="3" />
                 </div>
 
                 <div class="form-element">
-                    <span class="meta-label"><b>Email</b></span>
+                    <span class="meta-label"><strong>Email</strong></span>
                     <input type="text" class="form-control" id="email" name="email"
                            disabled="disabled" data-ng-model="page.user.email" required="required" />
                     <p style="color: #9e9e9e; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
@@ -73,14 +73,14 @@
                 </div>
 
                 <div class="form-element">
-                    <span class="meta-label"><b>Title</b></span>
+                    <span class="meta-label"><strong>Title</strong></span>
                     <input type="text" class="form-control form-control-half"
                            id="title" name="title" placeholder="Title"
                            data-ng-model="page.user.title" tabindex="3" />
                 </div>
 
                 <div class="form-element">
-                    <span class="meta-label"><b>About me</b></span>
+                    <span class="meta-label"><strong>About me</strong></span>
                     <textarea rows="10" data-ng-model="page.user.bio"
                               class="form-control animate" msd-elastic id="bio"
                               name="bio" placeholder="Say something about yourself.."
@@ -89,6 +89,23 @@
                         Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{
                         (page.user.bio.length || 0) | number }} used)</strong>
                     </p>
+                </div>
+
+                <div class="form-element">
+                    
+                    <p style="margin: 1rem 0; padding: 0;">
+                        <strong>Connect to Water Reporter</strong>
+                    </p>
+
+                    <p style="font-size: 0.9rem; font-style: normal; margin: 1rem 0; padding: 0;">
+                        Do you have a Water Reporter account? If so, copy and paste your default public access token
+                        here to connect posts and monitoring stations to your FieldDoc maps.
+                    </p>
+                    
+                    <input style="padding-top: 1rem;" type="text" class="form-control form-control-half"
+                           id="wr-token" name="title" placeholder="Paste Water Reporter token here."
+                           data-ng-model="page.user.wr_token" />
+
                 </div>
 
                 <div class="save--action--wrapper save--action--bottom">

@@ -145,7 +145,7 @@ angular.module('FieldDoc')
                 if (nodeType === 'post' ||
                     nodeType === 'station') {
 
-                    params.access_token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibWNpbnR5cmUrYWRtaW4xQG91cmNvbW1vbmNvZGUub3JnIn0.TPAFhL1QyHCQ4kX3LQWiuV5KRW3yAZA5gV_UhyqXfSMQc7CDf6wItZYmuzfhkH09tOkO504_C2EMUXiizmPubMQtDgSQ3HWLdq2O087oEjAscnFr_yD204AyjTOIe01CSVnwdePqXiinnfWaw_8iuSRJB6HKqyTUo__gvVN9o32A4TwkNJOtJbsBBEieWQhpC4WilWaySUhFJLtlPP56ICd7euQAORYAn19pGqX25wGTvfVFAAmUjnlIJO_1hVia7kphv3Ujk7h1KWs5h_UuBx-95wg02Bh-A9NZ_p37SvUc2y2SWxupBEuz2b-baEYtfc8YTyWSsZyZZO1s9qDFqy9yz-hG6gmizpQ905dn743DTDss6Pbl7y72xcIpqMO5TmMffeARCY6l3n8Bo1feN5smX-keLrK7qN06MAfxAdtUzHwLrtpcnIFN8g_Zs6klI5Bk1G08AAIRyrL7zV8FaV0acFcmCsRyoB4HGHd3SlX5vSDngLQUChWfv-hJlZYyzfqBNIa6B_IYpKbzWRd8PAWG0q4sQAEjzOH2e5ZeR3W5TiTZEe_katF-Z5jitKgkP6RLo4NqcOeFJiQ1_kwlCa6iQ6vxeJQgSG0KTAdHHZ43SCzeukxK7vtP54yyfm_RaN3IcSYRapeM2KZqJIewrwu81ZfHcP17Lzq0cfBmcyo';
+                    params.access_token = self.user.wr_token;
 
                     WaterReporterInterface.featureLayer(
                         params
@@ -559,6 +559,43 @@ angular.module('FieldDoc')
                 if (!options) return;
 
                 self.map = new mapboxgl.Map(options);
+
+                self.map.on('click', function (e) {
+
+                    var features = self.map.queryRenderedFeatures(e.point);
+
+                    console.log(
+                        'map.click:features:',
+                        features
+                    );
+
+                    if (features.length) {
+
+                        var target = features[0];
+
+                        if (target.layer.id.indexOf('station')) {
+
+                            console.log(
+                                'map.click:station:',
+                                target
+                            );
+
+                        } else {
+
+                            if (target.properties.id !== self.primaryNode.properties.id) {
+
+                                self.fetchPrimaryNode(
+                                    target.properties.type,
+                                    target.properties.id
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                });
 
                 self.map.on('click', function (e) {
 

@@ -70,7 +70,7 @@ angular.module('FieldDoc')
 
                 console.log('$filter.elapsedTime --> hours', hours);
 
-                period = hours + ' hours ago';
+                period = hours > 1 ? hours + ' hours ago' : '1 hour ago';
 
             } else {
 
