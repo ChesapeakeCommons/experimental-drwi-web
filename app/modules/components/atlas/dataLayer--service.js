@@ -74,7 +74,7 @@ angular.module('FieldDoc')
                 'minzoom': zoomConfig.post.min,
                 'maxzoom': zoomConfig.post.max,
                 'layout': {
-                    'visibility': 'visible'
+                    'visibility': 'none'
                 },
                 'paint': {
                     'circle-color': [

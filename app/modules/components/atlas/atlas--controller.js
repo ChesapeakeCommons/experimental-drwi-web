@@ -36,39 +36,58 @@ angular.module('FieldDoc')
                 project: Project
             };
 
-            self.layers = [{
-                id: 'fd.project.point',
-                name: 'Projects',
-                selected: true
-            }, {
-                id: 'fd.site.polygon',
-                name: 'Site polygons',
-                selected: true
-            }, {
-                id: 'fd.site.line',
-                name: 'Site lines',
-                selected: true
-            }, {
-                id: 'fd.site.point',
-                name: 'Site points',
-                selected: true
-            }, {
-                id: 'fd.practice.polygon',
-                name: 'Practice polygons',
-                selected: true
-            }, {
-                id: 'fd.practice.line',
-                name: 'Practice lines',
-                selected: true
-            }, {
-                id: 'fd.practice.point',
-                name: 'Practice points',
-                selected: true
-            }, {
-                id: DRAINAGE_ID,
-                name: 'Drainage',
-                selected: false
-            }];
+            self.layers = [
+                {
+                    id: 'fd.project.point',
+                    name: 'Projects',
+                    selected: true
+                },
+                {
+                    id: 'fd.site.polygon',
+                    name: 'Site polygons',
+                    selected: true
+                },
+                {
+                    id: 'fd.site.line',
+                    name: 'Site lines',
+                    selected: true
+                },
+                {
+                    id: 'fd.site.point',
+                    name: 'Site points',
+                    selected: true
+                },
+                {
+                    id: 'fd.practice.polygon',
+                    name: 'Practice polygons',
+                    selected: true
+                },
+                {
+                    id: 'fd.practice.line',
+                    name: 'Practice lines',
+                    selected: true
+                },
+                {
+                    id: 'fd.practice.point',
+                    name: 'Practice points',
+                    selected: true
+                },
+                {
+                    id: 'wr.station.point',
+                    name: 'Water Reporter stations',
+                    selected: true
+                },
+                // {
+                //     id: 'wr.post.point',
+                //     name: 'Water Reporter posts',
+                //     selected: true
+                // },
+                {
+                    id: DRAINAGE_ID,
+                    name: 'Drainage',
+                    selected: false
+                }
+            ];
 
             $rootScope.page = {};
 
@@ -573,7 +592,7 @@ angular.module('FieldDoc')
 
                         var target = features[0];
 
-                        if (target.layer.id.indexOf('station')) {
+                        if (target.layer.id.indexOf('station') >= 0) {
 
                             console.log(
                                 'map.click:station:',
@@ -800,8 +819,17 @@ angular.module('FieldDoc')
 
                 self.urlComponents.forEach(function (combination) {
 
+                    var prefix = 'fd';
+
+                    if (combination[0] === 'station' ||
+                        combination[0] === 'post') {
+
+                        prefix = 'wr';
+
+                    }
+
                     var layerId = [
-                        'fd',
+                        prefix,
                         combination[0],
                         combination[1]
                     ].join('.');

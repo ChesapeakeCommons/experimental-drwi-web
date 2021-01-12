@@ -103,8 +103,17 @@ angular.module('FieldDoc')
 
                 urlComponents.forEach(function (combination) {
 
+                    var prefix = 'fd';
+
+                    if (combination[0] === 'station' ||
+                        combination[0] === 'post') {
+
+                        prefix = 'wr';
+
+                    }
+
                     var layerId = [
-                        'fd',
+                        prefix,
                         combination[0],
                         combination[1]
                     ].join('.');
