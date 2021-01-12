@@ -1,0 +1,141 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container">
+
+        <!--        <h1 class="inset">Edit Profile</h1>-->
+
+        <div class="main--ui">
+
+            <form role="form" class="form reveal fade-in t0"
+                  method="POST" id="form" name="form" data-ng-submit="page.actions.save()">
+
+<!--                <div class="form-element">-->
+
+<!--                    <span class="meta-label"><strong>Profile Image</strong></span>-->
+
+<!--                    <input type="file" class="form-control"-->
+<!--                           id="profile-image" name="profile-image" file-model="page.image" />-->
+
+<!--                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="!page.user.picture">-->
+<!--                        Choose a photo.-->
+<!--                    </p>-->
+
+<!--                    <p style="color: #616161; font-size: 0.9em;" data-ng-if="page.user.picture">-->
+<!--                        Choose a new photo to replace the one below.-->
+<!--                    </p>-->
+
+<!--                </div>-->
+
+<!--                <div class="user-avatar-wrapper" data-ng-if="page.user.picture">-->
+
+<!--                    <div class="user-avatar user-avatar-lg" style="background-image: url({{ page.user.picture }});"></div>-->
+
+<!--                </div>-->
+
+<!--                <div class="actions" data-ng-if="page.user.picture">-->
+
+<!--                    <a class="snapshot&#45;&#45;title" href="#" title="Delete image"-->
+<!--                       data-ng-click="page.actions.removeImage()">-->
+<!--                        <i class="material-icons" style="color:#777777;">-->
+<!--                            delete-->
+<!--                        </i>-->
+<!--                    </a>-->
+
+<!--                </div>-->
+
+                <div class="form-element">
+                    <span class="meta-label"><strong>First name</strong></span>
+                    <input type="text" class="form-control form-control-half"
+                           id="first_name" name="first_name" placeholder="First Name"
+                           data-ng-model="page.user.first_name" required="required" tabindex="2" />
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><strong>Last name</strong></span>
+                    <input type="text" class="form-control form-control-half"
+                           id="last_name" name="last_name" placeholder="Last Name"
+                           data-ng-model="page.user.last_name" required="required" tabindex="3" />
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><strong>Email</strong></span>
+                    <input type="text" class="form-control" id="email" name="email"
+                           disabled="disabled" data-ng-model="page.user.email" required="required" />
+                    <p style="color: #9e9e9e; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+                        Email address is not editable. Please <a href="mailto:support@fielddoc.org"
+                                                                 target="_blank">contact our support team</a> if you
+                        need to change the email address associated with your account.
+                    </p>
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><strong>Title</strong></span>
+                    <input type="text" class="form-control form-control-half"
+                           id="title" name="title" placeholder="Title"
+                           data-ng-model="page.user.title" tabindex="3" />
+                </div>
+
+                <div class="form-element">
+                    <span class="meta-label"><strong>About me</strong></span>
+                    <textarea rows="10" data-ng-model="page.user.bio"
+                              class="form-control animate" msd-elastic id="bio"
+                              name="bio" placeholder="Say something about yourself.."
+                              maxlength="500">{{ page.user.bio }}</textarea>
+                    <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+                        Biographies may contain up to 500 characters, including spaces and punctuation. <strong>({{
+                        (page.user.bio.length || 0) | number }} used)</strong>
+                    </p>
+                </div>
+
+                <div class="form-element">
+                    
+                    <p style="margin: 1rem 0; padding: 0;">
+                        <strong>Connect to Water Reporter</strong>
+                    </p>
+
+                    <p style="font-size: 0.9rem; font-style: normal; margin: 1rem 0; padding: 0;">
+                        Do you have a Water Reporter account? If so, copy and paste your default public access token
+                        here to connect posts and monitoring stations to your FieldDoc maps.
+                    </p>
+                    
+                    <input style="padding-top: 1rem;" type="text" class="form-control form-control-half"
+                           id="wr-token" name="title" placeholder="Paste Water Reporter token here."
+                           data-ng-model="page.user.wr_token" />
+
+                </div>
+
+                <div class="save--action--wrapper save--action--bottom">
+
+                    <button type="submit" data-ng-disabled="page.status.processing">
+                        <i class="material-icons" data-ng-if="page.status.processing">
+                            more_horiz
+                        </i>
+                        <i class="material-icons" data-ng-if="!page.status.processing">
+                            done
+                        </i>
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

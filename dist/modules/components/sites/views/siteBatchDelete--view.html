@@ -1,0 +1,310 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container" style="border-right: 1px solid #e0e0e0;">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading practices&hellip;</p>
+            </div>
+        </div>
+
+        <section class="privacy-message reveal fade-in t0" data-ng-if="!page.status.loading && page.makePrivate">
+
+            <p>
+                <i class="material-icons">
+                    lock
+                </i>
+            </p>
+
+            <p>This site is private.</p>
+
+        </section>
+
+        <div breadcrumb class="full-width"
+             pad="true"
+             site="page.site.properties"
+             project="page.site.properties.project.properties"
+             tail="Delete practices"></div>
+
+        <h1 class="inset" data-ng-if="!page.status.loading && !page.makePrivate">
+            Delete practices
+        </h1>
+
+        <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && !page.makePrivate">
+
+            <section class="reveal fade-in t0 pad-0">
+
+                <p data-ng-if="page.site.id && page.site.last_modified_by.first_name && page.site.last_modified_by.last_name" class="label modtime">
+                    Last modified by {{ page.site.last_modified_by.first_name }} {{
+                    page.site.last_modified_by.last_name }} on {{ page.site.modified_on | date:'fullDate' }} at {{ page.site.modified_on | localTime | date:'h:mm' }} {{ page.site.modified_on | localTime | date:'a' }}
+                </p>
+
+                <p style="max-width:800px; text-align:justify">
+                    Select the practices you wish to delete
+                    by clicking the <sub><i class="material-icons" style="color:#666666; font-size:20px;"> delete</i></sub> on each practice.
+                    After selecting,
+                    click the <sub><i class="material-icons" style="color:#666666; font-size:20px;">delete_sweep</i></sub>
+                    at the bottom right. <strong>Important:</strong> Note that deleting practices will also remove
+                    associated reports and metric targets.
+                </p>
+
+            </section>
+
+            <!-- Unselected Practices -->
+            <section class="reveal fade-in t0 pad-0"
+                     data-ng-if="page.permissions.can_edit">
+
+                <p>
+                    Showing <b>{{ practiceList.length }}</b> of <b>{{ page.availableFeatures.length }}</b> total practices in site <b>{{page.site.properties.name}}</b>.
+                </p>
+
+                <div class="collection-search reveal fade-in t0 flex-justify-start flex-dir-row flex-wrap">
+
+                    <input type="text"
+                           class="list-filter margin-r-1 margin-b-0"
+                           data-ng-if="!page.status.loading"
+                           data-ng-model="page.queryToken"
+                           placeholder="Search practices">
+
+                    <div class="collection-filter-group margin-0">
+
+                        <button data-ng-click="page.removeAllFromDeleteQueue()"
+                                title="Remove all from batch delete"
+                                class="margin-r-1">
+                            Deselect All
+                        </button>
+                        <button data-ng-click="page.addAllToDeleteQueue()"
+                                title="Add all to batch delete">
+                            Select All
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div data-ng-if="!page.status.loading"
+                     class="margin-t-1 margin-b-2"
+                     pagination
+                     params="page.queryParams"
+                     summary="page.summary"
+                     rotate="page.loadPractices(params)"
+                     update-params="true"></div>
+
+                <ul class="snapshot--cards list-unstyled">
+
+                    <li class="card" data-ng-repeat="practice in practiceList = (page.availableFeatures | orderBy:'-modified_on' | filter: page.queryToken)">
+
+                        <div class="card--content">
+
+                            <div style="position:relative;">
+
+                                <img data-ng-if="practice.staticURL" data-ng-src="{{ practice.staticURL }}" width="auto" height="auto" />
+
+                                <img data-ng-if="!practice.staticURL" data-ng-src="https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/-98.5795,39.828175,5/400x200@2x?access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw" width="auto" height="auto" />
+
+                            </div>
+
+                            <div class="name" style="background: #fff;">
+                                <span>{{ practice.properties.name || practice.properties.category || 'Un-named' }}</span>
+                            </div>
+
+                            <div class="body">
+
+
+                                <p>{{ (practice.properties.description || practice.properties.annotation || 'No description') | truncate:80 }}</p>
+                                <div class="actions">
+
+                                    <a class="snapshot--title" href="/practices/{{ practice.properties.id }}" title="Practice summary">
+                                        <i class="material-icons">
+                                            dashboard
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="/practices/{{ practice.properties.id }}/images" title="Practice images">
+                                        <i class="material-icons">
+                                            insert_photo
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="/practices/{{ practice.properties.id }}/edit" title="Edit practice" data-ng-if="page.permissions.can_edit">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="/practices/{{ practice.properties.id }}/location" title="Edit location" data-ng-if="page.permissions.can_edit">
+                                        <i class="material-icons">
+                                            location_on
+                                        </i>
+                                    </a>
+
+                                    <a class="snapshot--title"
+                                       data-ng-click="page.addToDeleteQueue(practice.properties.id)"
+                                       title="Add to batch delete"
+                                       data-ng-if="!practice.marked_for_deletion">
+                                        <i class="material-icons" style=" padding: 3px; 3px; 0 3px;">
+                                            delete
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title"
+                                       data-ng-click="page.removeFromDeleteQueue(practice.properties.id)"
+                                       title="Remove from batch delete"
+                                       data-ng-if="practice.marked_for_deletion">
+                                        <i class="material-icons" style="width: 30px;
+                                                                        height: 30px;
+                                                                        background-color:red;
+                                                                        border-radius:50%;
+                                                                        color:white;
+                                                                        padding: 3px; 3px; 0 3px;
+                                                                        " >
+                                            delete_forever
+                                        </i>
+                                    </a>
+
+                                </div>
+                                <span><time datetime="{{ practice.properties.created_on }}" title="{{ practice.properties.created_on }}">
+                                        Created on {{ practice.properties.created_on | date }}</time></span>
+                            </div>
+
+                        </div>
+
+                    </li>
+
+                </ul>
+
+                <div data-ng-if="!page.status.loading"
+                     pagination
+                     params="page.queryParams"
+                     summary="page.summary"
+                     rotate="page.loadPractices(params)"
+                     update-params="true"></div>
+
+                <div class="save--action--wrapper save--action--bottom" style="position: relative; z-index: 9999; height:200px;">
+
+                    <div style="border:0px solid green;">
+                        <button type="submit" data-ng-if="page.selectedFeatures.length == 0" style="background-color:#cccccc;">
+
+                            <i class="material-icons" style="color:white;">
+                                delete_sweep
+                            </i>
+
+                        </button>
+
+                        <button type="submit"
+                                data-ng-if="page.selectedFeatures.length > 0"
+                                data-ng-click="page.toggleConfirmDeleteDialog()">
+
+                            <i class="material-icons" style="color:white;">
+                                delete_sweep
+                            </i>
+
+                        </button>
+
+                        <div class="delete--confirm--delete--popup"
+                             style="border: 0px solid purple"
+                             data-ng-if="page.toggleConfirmDelete">
+
+                            <p>Do you want to delete
+                                <ng-pluralize count="page.selectedFeatures.length" when="{'one': 'this','other': 'these'}" ></ng-pluralize>
+                                <strong>{{ (page.selectedFeatures.length | number) || 0 }}</strong>
+                                <ng-pluralize count="page.selectedFeatures.length" when="{'one': 'practice','other': 'practices'}"></ng-pluralize>
+                                ?
+                                <br>
+                                <small>*This action cannot be undone.
+                                    <br>
+                                    Any reports associated with
+                                    <ng-pluralize count="page.selectedFeatures.length" when="{'one': 'this','other': 'these'}" ></ng-pluralize>
+                                    <ng-pluralize count="page.selectedFeatures.length" when="{'one': 'practice','other': 'practices'}"></ng-pluralize>
+                                    <br>will also be deleted.
+                                </small>
+                            </p>
+                            <div class="actions">
+                                <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.batchDelete()">
+                                    Yes
+                                </a>
+                                <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                                    Cancel
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
+        <ul>
+            <li data-ng-class="{active: $root.toolbarState.dashboard}">
+                <a href="/sites/{{ page.site.id }}" title="Summary">
+                    <i class="material-icons">
+                        dashboard
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.edit}">
+                <a href="/sites/{{ page.site.id }}/edit" title="Edit">
+                    <i class="material-icons">
+                        edit
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editLocation}">
+                <a href="/sites/{{ page.site.id }}/location" title="Location">
+                    <i class="material-icons">
+                        location_on
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.viewGeographies}">
+                <a href="/sites/{{ page.site.id }}/geographies" title="Geography">
+                    <i class="material-icons">
+                        public
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
+                <a href="/sites/{{ page.site.id }}/tags" title="Tags">
+                    <i class="material-icons">
+                        local_offer
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit">
+                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget">
+                    <p>Do you want to delete this site?</p>
+                    <div class="actions">
+                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature()">
+                            Yes
+                        </a>
+                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-ng-click="page.confirmDelete(page.site)" title="Delete">
+                    <i class="material-icons">
+                        delete
+                    </i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts" data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

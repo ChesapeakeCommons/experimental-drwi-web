@@ -8,7 +8,7 @@
 
         <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
             <div class="progress--container">
-                <p style="font-weight: bold;" class="color-pulse">Loading project data&hellip;</p>
+                <p style="font-weight: bold;" class="color-pulse">Loading tag data&hellip;</p>
             </div>
         </div>
 
@@ -28,41 +28,95 @@
              pad="true"
              program="page.project.program"
              project="page.project"
-             tail="Members"></div>
-        
+             tail="Edit tags"></div>
+
+        <div class="breadcrumb-header-wrapper">
+            <h1 class="inset" data-ng-if="!page.status.loading && !page.makePrivate">
+                Edit tags
+            </h1>
+        </div>
+
         <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading && !page.makePrivate">
 
-            <div class="create-heading" data-ng-if="!page.status.loading">
-                <h1 class="margin-0">
-                    Project members
-                </h1>
-            </div>
-
-            <article class="feature-detail margin-0 margin-y-1" style="width: 100%;">
+            <article class="feature-detail" style="width: 100%; max-width: 48rem; margin: 1em auto;">
 
                 <div class="form--row">
 
-                    <form role="form" class="form" id="form--ProjectOwners"
-                          name="form--ProjectOwners"
-                          data-ng-submit="page.saveProject()" autocomplete="off">
+                    <div class="features--container" style="padding: 0;" data-ng-if="!page.status.loading && !page.editMode">
 
-                        <div class="classification--search margin-0 margin-t-2" style="position: relative;">
+                        <div data-ng-repeat="group in page.groups" style="width: 100%;">
 
-                            <p style="font-style: normal; font-size: 1em; margin-bottom: 2em;">Add or
-                                remove project members here. Please remember that everyone on the team will have
-                                full access to all editing capabilities, so make sure you grant these permissions
-                                only to people you trust. If you have trouble managing project memberships, feel free
-                                to drop us a line at <a href="mailto:support@fielddoc.org">support@fielddoc.org</a>.</p>
+                            <form role="form" class="form" style="overflow: visible;" id="form--{{ group.id }}" name="form--dashboard-filter" data-ng-submit="page.saveFeature()" autocomplete="off">
 
-                            <input type="search" class="search" value=""
-                                   placeholder="Search users"
-                                   data-ng-model="page.ownerQuery"
-                                   uib-typeahead="suggestion as suggestion.name for suggestion in page.searchUsers($viewValue)"
-                                   typeahead-on-select="page.addOwner($item, $model, $label)"
-                                   typeahead-wait-ms="100"
-                                   typeahead-template-url="templates/search--tpl.html">
+                                <div data-ng-if="group.internal && ($root.user.organization_id === group.organization.id)">
+
+                                    <h2>
+                                        {{ group.name }}
+                                    </h2>
+
+                                    <ul class="selectable-group-items list-unstyled" style="margin-top: 2em;">
+
+                                        <li class="card reveal fade-in" style="animation-delay: {{ $index * 100 }}ms; min-height: 0;" data-ng-repeat="tag in group.tags | orderBy:'-modified_on' | filter: page.q">
+
+                                            <div class="card--content">
+
+                                                <label class="name" for="group-{{ tag.id }}">
+                                                    {{ tag.name }}
+                                                    <input type="radio" id="group-{{ tag.id }}" name="group-{{ group.id }}" data-ng-model="page.groupTags[group.id]" data-ng-value="tag" data-ng-checked="page.groupTags[group.id].id === tag.id" data-ng-change="page.manageGroup(group, tag)" />
+                                                </label>
+
+                                                <div class="body">
+                                                    <p style="font-style: normal; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0;">{{ (tag.description || 'No description') }}</p>
+                                                </div>
+
+                                            </div>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                                <div data-ng-if="!group.internal">
+
+                                    <h2>
+                                        {{ group.name }}
+                                    </h2>
+
+                                    <ul class="selectable-group-items list-unstyled" style="margin-top: 2em;">
+
+                                        <li class="card reveal fade-in" style="animation-delay: {{ $index * 100 }}ms; min-height: 0;" data-ng-repeat="tag in group.tags | orderBy:'-modified_on' | filter: page.q">
+
+                                            <div class="card--content">
+
+                                                <label class="name" for="group-{{ tag.id }}">
+                                                    {{ tag.name }}
+                                                    <input type="radio" id="group-{{ tag.id }}" name="group-{{ group.id }}" data-ng-model="page.groupTags[group.id]" data-ng-value="tag" data-ng-checked="page.groupTags[group.id].id === tag.id" data-ng-change="page.manageGroup(group, tag)" />
+                                                </label>
+
+                                                <div class="body">
+                                                    <p style="font-style: normal; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0;">{{ (tag.description || 'No description') }}</p>
+                                                </div>
+
+                                            </div>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            </form>
 
                         </div>
+
+                    </div>
+
+                </div>
+
+                <div class="form--row">
+
+                    <form role="form" class="form" id="form--ProjectTags" name="form--ProjectTags" data-ng-submit="page.saveFeature()">
 
                         <div class="save--action--wrapper save--action--bottom">
                             <button type="submit" data-ng-disabled="page.status.processing" title="Save">
@@ -76,17 +130,6 @@
                         </div>
 
                     </form>
-
-                    <div style="width: 100%;"
-                         member-table
-                         alerts="page.alerts"
-                         callback="page.loadMembers()"
-                         feature-type="member"
-                         index="page.members"
-                         parent-type="project"
-                         permissions="page.permissions"
-                         visible="true"
-                         data-ng-if="page.members.length"></div>
 
                 </div>
 
@@ -113,7 +156,7 @@
                 </a>
             </li>
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.grant}">
-                <a href="/projects/{{ page.project.id }}/grant" title="Programs">
+                <a href="/projects/{{ page.project.id }}/grant" title="Program">
                     <i class="material-icons">
                         account_balance
                     </i>
@@ -133,13 +176,6 @@
                     </i>
                 </a>
             </li>
-            <!-- <li data-ng-if="page.permissions.can_edit">
-                <a href="/projects/{{ page.project.id }}/edit">
-                    <i class="material-icons">
-                        edit
-                    </i>
-                </a>
-            </li> -->
         <!--    <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTargets}">
                 <a href="/projects/{{ page.project.id }}/targets" title="Metrics">
                     <i class="material-icons">
@@ -149,7 +185,7 @@
             </li>
             -->
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
-                <a href="/projects/{{ page.project.id }}/tags" title="Tags">
+                <a href="/projects/{{ page.project.id }}/tags">
                     <i class="material-icons">
                         local_offer
                     </i>

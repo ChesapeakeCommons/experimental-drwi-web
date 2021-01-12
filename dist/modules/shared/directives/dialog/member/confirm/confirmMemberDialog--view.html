@@ -1,0 +1,51 @@
+<div class="creation-dialog-container import-dialog-container"
+     data-ng-if="visible">
+    <div class="dialog">
+        <div class="title">
+            <span class="title-text">Confirm membership</span>
+            <div class="dismiss-container">
+                <div class="dismiss" data-ng-click="closeChildModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs">
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'organization'">
+                <strong>{{ feature.user.name }}</strong> requested access to this organization. Their current role is
+                set to <strong>{{ feature.role | capitalAttribute }}</strong>. Confirming their membership will
+                allow this user to view and modify this organization’s data and settings, including projects. Do you
+                want to proceed?
+            </p>
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'project'">
+                <strong>{{ feature.user.name }}</strong> requested access to this project. Their current role is
+                set to <strong>{{ feature.role | capitalAttribute }}</strong>. Confirming their membership will
+                allow this user to view and modify this project’s data and settings, including sites, practices, and
+                reports. Do you want to proceed?
+            </p>
+        </div>
+        <div class="dyad">
+            <div class="download-wrapper">
+                <button type="button" class="download-tpl"
+                        data-ng-click="closeChildModal()">
+                    No, deny access
+                </button>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="confirm" data-ng-class="{complete: uploadComplete}"
+                        data-ng-click="confirmMembership()">
+                    <span data-ng-if="!processing">
+                        Yes, grant access
+                    </span>
+                    <span data-ng-if="processing">
+                        {{ progressMessage }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

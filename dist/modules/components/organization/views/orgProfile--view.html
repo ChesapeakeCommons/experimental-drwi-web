@@ -1,0 +1,191 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container"
+         style="border-right: 1px solid #e0e0e0;">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading organization data&hellip;</p>
+            </div>
+        </div>
+
+        <div class="main--ui reveal fade-in t0" data-ng-if="!page.status.loading">
+
+            <div breadcrumb class="full-width"
+                 root-path="organizations"
+                 tail="{{ page.feature.name }}"></div>
+
+            <div class="org-meta">
+
+                <div class="flex-dir-col pad-r-2">
+
+                    <div class="create-heading" data-ng-if="!page.status.loading">
+                        <h1 class="margin-0">
+                            {{ page.feature.name }}
+                            <span class="material-icons margin-l-50p"
+                                  style="color: #1C81E5;"
+                                  title="Verified"
+                                  data-ng-if="page.feature.has_owner">
+                                verified
+                            </span>
+                        </h1>
+                    </div>
+
+                    <div class="alignment-warning margin-t-1 margin-b-1 rad-50"
+                         data-ng-if="!page.status.loading && !page.feature.has_owner">
+                        <div class="pad-1">
+                            <p class="margin-0 margin-b-1">
+                                <strong>Action required</strong>
+                            </p>
+                            <p class="margin-0 margin-b-1">
+                                This organization is un-verified and doesn’t have any owners. Owners are users with full
+                                administrative access to an organization’s data and settings, including members and projects.
+                            </p>
+                            <p class="margin-0">
+                                Please <a href="mailto:support@fielddoc.org" target="_blank">contact our support team</a> as
+                                soon as possible and let us know who the owners should be for this organization.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="last-modified-summary margin-y-1">
+
+                        <div data-ng-if="page.feature.modified_on"
+                             class="modtime">
+                            Last modified by {{ page.feature.last_modified_by.name }} on {{ page.feature.modified_on |
+                            date:'fullDate' }} at {{ page.feature.modified_on | localTime | date:'h:mm' }} {{ page.feature.modified_on | localTime | date:'a' }}
+                        </div>
+
+                        <div class="history-link-wrapper">
+                            <span class="material-icons">
+                                history
+                            </span>
+                            <a href="/organizations/{{ page.feature.id }}/history">
+                                View change log
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <p>
+                            {{ page.feature.description || 'No description'}}
+                        </p>
+                    </div>
+
+                    <div class="margin-t-1 flex flex-dir-row flex-wrap flex-align-center flex-justify-start">
+
+                        <div class="margin-r-2"
+                             data-ng-if="page.feature.website">
+
+                            <p>
+                                <strong>Website</strong>
+                            </p>
+
+                            <p>
+                                <a href="{{ page.feature.website }}" target="_blank">
+                                    {{ page.feature.website }}
+                                </a>
+                            </p>
+
+                        </div>
+
+                        <div data-ng-if="page.feature.email">
+                            <p>
+                                <strong>Email</strong>
+                            </p>
+                            <p>
+                                <a href="mailto:{{ page.feature.email }}" target="_blank">
+                                    {{ page.feature.email }}
+                                </a>
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="avatar pad-0">
+
+                    <img data-ng-if="page.feature.picture"
+                         src="{{ page.feature.picture }}">
+
+                    <div class="placeholder"
+                         data-ng-if="!page.feature.picture">
+
+                        <span class="material-icons md-48">
+                            image
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="create-heading margin-t-2">
+                <h2 class="margin-0 pad-0"
+                    data-ng-if="page.members.length">
+                    Members
+                    <span class="tally">
+                        {{ page.members.length | number }}
+                    </span>
+                </h2>
+            </div>
+
+            <div style="width: 100%;"
+                 member-table
+                 alerts="page.alerts"
+                 callback="page.loadOrganizationMembers(page.feature.id)"
+                 feature-type="member"
+                 index="page.members"
+                 parent-type="organization"
+                 permissions="page.permissions"
+                 visible="true"
+                 data-ng-if="page.members.length"></div>
+
+            <div class="empty-block-alert pad-y-2"
+                 style="border: 1px solid #e0e0e0; border-radius: .5rem;"
+                 data-ng-if="page.feature.membership_pending && !page.permissions.read && !page.permissions.write">
+                <p class="pad-0 margin-0 margin-t-2">
+                    <span class="material-icons">
+                        pending
+                    </span>
+                </p>
+                <p class="pad-0 margin-0 margin-y-2">
+                    Your membership is pending approval by an owner of this organization. Until then, you will not be
+                    able to view additional organization data or edit its projects.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div data-ng-include="'/templates/toolbars/organization.html'"></div>
+
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.feature"
+         file-input="image-file-input"
+         callback="page.loadOrganization(page.feature.id)"
+         feature-type="organization"
+         visible="page.showUploadModal"></div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

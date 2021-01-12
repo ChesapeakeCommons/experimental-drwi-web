@@ -1,0 +1,343 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar"
+         data-ng-class="{'no-grow': $root.collapseSidebar}"
+         data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading your projects&hellip;</p>
+            </div>
+        </div>
+
+        <div class="main--ui">
+
+            <div class="create-heading" data-ng-if="!page.status.loading">
+                <h1 class="margin-0">
+                    Projects
+                    <span class="tally">
+                        {{ page.summary.feature_count | number }}
+                    </span>
+                </h1>
+                <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
+                        data-ng-click="page.showChildModal = !page.showChildModal">
+                    <span class="material-icons margin-r-50p">
+                        add
+                    </span>
+                    Create
+                </button>
+            </div>
+
+            <div class="collection-filter-group"
+                 data-ng-if="!page.status.loading">
+
+                <div data-ng-if="page.programs.length"
+                     collection-filter
+                     collection="program"
+                     features="page.programs"
+                     display-states="page.showModal"
+                     params="page.queryParams"
+                     track-name="true"
+                     update="page.loadProjects(page.queryParams)"></div>
+
+                <div collection-filter collection="organization"
+                     features="page.summary.organizations"
+                     display-states="page.showModal"
+                     params="page.queryParams"
+                     track-name="true"
+                     update="page.loadProjects(page.queryParams)"></div>
+
+                <div collection-filter collection="tag"
+                     features="page.tags"
+                     display-states="page.showModal"
+                     params="page.queryParams"
+                     track-name="true"
+                     update="page.loadProjects(page.queryParams)"></div>
+
+                <div collection-filter collection="status"
+                     features="page.projectStatuses"
+                     display-states="page.showModal"
+                     params="page.queryParams"
+                     track-name="false"
+                     update="page.loadProjects(page.queryParams)"></div>
+
+                <div class="scope--control">
+                    <span></span>
+                    <label class="switch">
+                        <input class="inputdemo"
+                               type="checkbox"
+                               data-ng-model="page.queryParams.archived"
+                               data-ng-change="page.loadProjects(page.queryParams)">
+                        <div class="slider round"></div>
+                    </label>
+                    <span data-ng-class="{on: page.archived}" style="color:#616161;">Archived</span>
+                </div>
+
+            </div>
+
+            <div class="dyad" data-ng-if="!page.status.loading">
+
+                <div class="table-view-ctrl"
+                     data-ng-if="!page.status.loading">
+                    <button type="button"
+                            title="Card mode"
+                            class="margin-r-50p"
+                            data-ng-class="{active: !page.viewTable}"
+                            data-ng-click="page.toggleTable()">
+                        <span class="material-icons margin-r-50p">
+                            view_module
+                        </span>
+                        <span>
+                            Card
+                        </span>
+                    </button>
+                    <button type="button"
+                            title="Table mode"
+                            data-ng-class="{active: page.viewTable}"
+                            data-ng-click="page.toggleTable()">
+                        <span class="material-icons margin-r-50p">
+                            table_view
+                        </span>
+                        <span>
+                            Table
+                        </span>
+                    </button>
+                </div>
+
+                <div style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-end;
+                flex-grow: 1;"
+                     data-ng-if="!page.status.loading">
+
+                    <div data-ng-if="!page.status.loading"
+                         pagination
+                         summary="page.summary"
+                         rotate="page.loadProjects(page.queryParams)"
+                         params="page.queryParams"
+                         update-params="true"></div>
+
+                </div>
+
+<!--                <div style="display: flex; flex-flow: row nowrap; align-items: center;"-->
+<!--                     data-ng-if="!page.status.loading">-->
+<!--                    <div data-ng-click="page.toggleTable()">-->
+<!--                    <span class="material-icons margin-r-1" style="display: inline-block;">-->
+<!--                        view_module-->
+<!--                    </span>-->
+<!--                    </div>-->
+<!--                    <div data-ng-click="page.toggleTable()">-->
+<!--                    <span class="material-icons" style="display: inline-block;">-->
+<!--                        table_view-->
+<!--                    </span>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+            </div>
+
+<!--            <div data-ng-if="!page.status.loading"-->
+<!--                 pagination-->
+<!--                 summary="page.summary"-->
+<!--                 rotate="page.loadProjects(page.queryParams)"-->
+<!--                 params="page.queryParams"-->
+<!--                 update-params="true"></div>-->
+
+<!--            <div style="display: flex; flex-flow: row nowrap; align-items: center;"-->
+<!--                 data-ng-if="!page.status.loading">-->
+<!--                <div data-ng-click="page.toggleTable()">-->
+<!--                    <span class="material-icons margin-r-1" style="display: inline-block;">-->
+<!--                        view_module-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div data-ng-click="page.toggleTable()">-->
+<!--                    <span class="material-icons" style="display: inline-block;">-->
+<!--                        table_view-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="features--container" data-ng-if="!page.status.loading">
+
+                <div data-ng-if="!page.projects.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
+                0;">
+
+                    <ul class="selectable-group-items list-unstyled margin-t-2"
+                        style="grid-template-columns: repeat(1, 1fr);">
+
+                        <li class="card reveal fade-in">
+
+                            <div class="card--content"
+                                 style="display: flex; flex-flow: row nowrap; box-shadow: none; border: none;
+                                 border-radius: 4px; overflow: hidden;">
+
+                                <div class="description" style="width: 100%; border-right: none;">
+
+                                    <div class="body" style="padding: 4rem 0;">
+                                        <p style="font-style: normal; font-size: 1.2em; padding: 0; margin: 0;
+                                        text-align: center;">
+                                            <em>No projects found.</em>
+                                        </p>
+                                        <p style="font-style: normal; font-size: 1rem; padding: 0; margin: 1rem 0 0;
+                                        text-align: center; display: flex; flex-flow: row nowrap; align-items:
+                                        center; width: 100%; justify-content: center; cursor: pointer; color: #0366d6;"
+                                           data-ng-click="page.loadProjects()">
+                                            <span class="material-icons" style="display: inline-block; margin-right:
+                                            0.25rem;">
+                                                clear_all
+                                            </span>
+                                            <a href="#">
+                                                Clear filters
+                                            </a>
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div style="width: 100%;"
+                     table-view
+                     alerts="page.alerts"
+                     callback="page.loadProjects(page.queryParams)"
+                     feature-type="project"
+                     index="page.projects"
+                     visible="page.viewTable"
+                     data-ng-if="page.projects.length"></div>
+
+                <ul class="snapshot--cards list-unstyled"
+                    data-ng-if="page.projects.length && !page.viewTable" style="margin-top: 2em;">
+
+                    <li class="card reveal fade-in"
+                        style="animation-delay: {{ $index * 50 }}ms;"
+                        data-ng-repeat="project in page.projects | filter: page.q">
+
+                        <div class="card--content">
+
+                            <img data-ng-if="project.staticURL"
+                                 data-ng-src="{{ project.staticURL }}" width="auto" height="auto" />
+
+                            <img data-ng-if="!project.extent"
+                                 data-ng-src="https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/-98.5795,39.828175,6/400x200@2x?access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw" width="auto" height="auto" />
+
+                            <div class="name"
+                                 style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
+                                <span>{{ project.name }}</span>
+                            </div>
+
+                            <div class="status-wrapper" title="Status: {{ project.status | capitalAttribute }}">
+                                <div class="status status-{{ project.status }}">
+                                    <span class="dot"></span>
+                                    <span>{{ project.status | capitalAttribute }}</span>
+                                </div>
+                            </div>
+
+                            <div class="body">
+
+                                <div class="confirm--delete" data-ng-if="page.deletionTarget.id === project.id">
+                                    <p>Do you want to delete this project?</p>
+                                    <div class="actions" style="flex: 0;">
+                                        <a class="snapshot--title" href="#" title="Delete forever"
+                                           data-ng-click="page.deleteFeature(project, $index)">
+                                            Yes
+                                        </a>
+                                        <a class="snapshot--title" href="#" title="Cancel"
+                                           data-ng-click="page.cancelDelete()">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <p class="pad-0 margin-0">
+                                    {{ (project.description || 'No description') | truncate:80 }}
+                                </p>
+
+                                <div class="actions">
+
+                                    <a class="snapshot--title" href="/projects/{{ project.id }}" title="Project summary">
+                                        <i class="material-icons">
+                                            dashboard
+                                        </i>
+                                    </a>
+
+                                    <a class="snapshot--title" href="/projects/{{ project.id }}/edit"
+                                       title="Edit project"
+                                       data-ng-if="$root.user.is_admin || project.organization_id == page.user.organization.id || $root.user.is_manager">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
+
+                                    <a class="snapshot--title" href="#" title="Delete project"
+                                       data-ng-click="page.confirmDelete(project)"
+                                       data-ng-if="$root.user.is_admin || project.organization_id == page.user.organization.id || $root.user.is_manager">
+                                        <i class="material-icons">
+                                            delete
+                                        </i>
+                                    </a>
+
+                                </div>
+
+                                <span>
+                                    <time datetime="{{ project.modified_on }}" title="{{ project.modified_on }}">
+                                        Last updated {{ project.modified_on | date : 'mediumDate' }}
+                                    </time>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </li>
+
+                    <li class="card" data-ng-if="!page.projects.length && page.permissions.can_edit">
+                        <div class="card--content">
+                            <div class="body">
+                                <a title="Create practice"
+                                   data-ng-click="page.showChildModal = !page.showChildModal">
+                                    <i class="material-icons">
+                                        add
+                                    </i>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <div data-ng-if="!page.status.loading"
+                 pagination
+                 summary="page.summary"
+                 rotate="page.loadProjects(page.queryParams)"
+                 params="page.queryParams"
+                 update-params="true"></div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div creation-dialog alerts="page.alerts"
+         organization="$root.user.organization_id"
+         type="'project'" visible="page.showChildModal"></div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

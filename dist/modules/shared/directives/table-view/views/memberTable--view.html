@@ -1,0 +1,214 @@
+<div class="table-view margin-t-2"
+     data-ng-if="index.length && visible">
+
+    <table>
+
+        <thead>
+            <tr>
+                <th class="pad-1">
+                    <strong>Name</strong>
+                </th>
+                <th class="pad-1">
+                    <strong>Joined</strong>
+                </th>
+                <th class="pad-1" colspan="2">
+                    <strong>Confirmed</strong>
+                </th>
+                <th class="pad-1">
+                    <strong>Role</strong>
+                </th>
+                <th class="pad-1">
+                    <strong>Access</strong>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr data-ng-repeat="member in index | filter: q | orderBy: ['-role', 'user.last_name']">
+                <td class="pad-1" style="width: 1%; max-width: 20rem;">
+                    <div style="display: flex; flex-flow: row nowrap; align-items: center;">
+                        <div class="margin-r-1" data-ng-if="member.user.picture">
+                            <div class="user-avatar user-avatar-sm"
+                                 style="background-image: url('{{ member.user.picture }}');"></div>
+                        </div>
+                        <div class="margin-r-1" data-ng-if="!member.user.picture">
+                            <div style="color: #424242; background: #EEEEEE; border-radius: 50%;"
+                                 class="user-avatar user-avatar-sm flex flex-dir-col flex-justify-center flex-align-center">
+                                <span class="material-icons md-24">
+                                    account_circle
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="/profile/{{ member.user.id }}"
+                               class="ellipsize"
+                               data-ng-if="member.user.id !== $root.user.id">
+                                <span style="display: block; width: auto;">
+                                    {{ member.user.name | truncate:100 }}
+                                </span>
+                            </a>
+                            <a href="/account"
+                               class="ellipsize"
+                               data-ng-if="member.user.id === $root.user.id">
+                                <span style="display: block; width: auto;">
+                                    {{ member.user.name | truncate:100 }}
+                                </span>
+                            </a>
+                            <span class="margin-t-25p"
+                                  style="display: block; width: auto; font-size: .9rem; color: #757575;">
+                                {{ member.user.alias | truncate:10:false }}
+                            </span>
+                        </div>
+                    </div>
+                </td>
+                <td class="info-enabled pad-1" style="width: 1%;">
+                    <div>
+                        <span>
+                            <time datetime="{{ member.created_on }}"
+                                  title="{{ member.created_on }}">
+                                {{ member.created_on | date : 'mediumDate' }} &middot; {{ member.created_on |
+                                localTime | date:'h:mm' }} {{ member.created_on | localTime | date:'a' }}
+                            </time>
+                        </span>
+                    </div>
+                </td>
+                <td class="info-enabled pad-1" style="width: .1%;">
+                    <div class="flex flex-dir-row flex-nwrap flex-align-center">
+                        <span class="material-icons margin-r-50p"
+                              style="color: #1C81E5;"
+                              title="Confirmed"
+                              data-ng-if="member.confirmed">
+                            verified_user
+                        </span>
+                        <span class="material-icons margin-r-50p"
+                              style="color: #D44040;"
+                              title="Not confirmed"
+                              data-ng-if="!member.confirmed">
+                            block
+                        </span>
+                        <span>
+                            {{ member.confirmed | boolToString | capitalAttribute }}
+                        </span>
+                    </div>
+                </td>
+                <td class="info-enabled pad-1" style="width: 1%;">
+                    <div class="flex flex-dir-row flex-nwrap flex-align-center">
+                        <div class="info-tip"
+                             data-ng-if="tipManager.confirmed === member.id && member.confirmed">
+                            Confirmed by {{ member.confirmed_by.name }} on {{ member.confirmed_at | date : 'fullDate'
+                            }}.
+                        </div>
+                        <div class="info-tip"
+                             data-ng-if="tipManager.confirmed === member.id && !member.confirmed">
+                            Confirmation pending. This user does not have editing privileges.
+                        </div>
+                        <span data-ng-if="member.confirmed">
+                            <time datetime="{{ member.confirmed_at }}"
+                                  title="{{ member.confirmed_at }}">
+                                {{ member.confirmed_at | date : 'mediumDate' }} &middot; {{ member.confirmed_at |
+                                localTime | date:'h:mm' }} {{ member.confirmed_at | localTime | date:'a' }}
+                            </time>
+                        </span>
+                        <span data-ng-if="!member.confirmed">
+                            Confirmation pending.
+                        </span>
+                        <button type="button" class="margin-l-50p"
+                                data-ng-click="resetTip('confirmed', member.id)">
+                            <span class="material-icons md-18">
+                                info
+                            </span>
+                        </button>
+                    </div>
+                </td>
+                <td class="pad-1" style="width: 1%;">
+                    <div class="flex flex-dir-row flex-nwrap flex-align-center">
+                        <span>
+                            {{ member.role | capitalAttribute }}
+                        </span>
+                    </div>
+                </td>
+                <td class="pad-1" style="width: 1%;">
+                    <div class="flex flex-dir-row flex-nwrap flex-align-center">
+                        <span data-ng-if="member.role === 'owner'">
+                            Full
+                        </span>
+                        <span data-ng-if="member.role !== 'owner'">
+                            Limited
+                        </span>
+                    </div>
+                </td>
+                <td class="pad-1 more-actions" style="width: .01%; overflow: visible;">
+                    <div class="action-modal-container">
+                        <div class="action-modal" data-ng-if="modalManager.action === member.id">
+                            <ul>
+                                <li class="delete-trigger"
+                                    data-ng-if="!member.confirmed"
+                                    data-ng-click="presentDialog(member, 'confirm')">
+                                    <span class="material-icons margin-r-1"
+                                          title="Confirm">
+                                        verified_user
+                                    </span>
+                                    <span style="pointer-events: none;">
+                                        Confirm
+                                    </span>
+                                </li>
+                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'role')">
+                                    <span class="material-icons margin-r-1"
+                                          style="pointer-events: none;">
+                                        admin_panel_settings
+                                    </span>
+                                    <span style="pointer-events: none;">
+                                        Change role
+                                    </span>
+                                </li>
+                                <li class="delete-trigger" data-ng-click="presentDialog(member, 'revoke')">
+                                    <span class="material-icons margin-r-1"
+                                          style="pointer-events: none;">
+                                        block
+                                    </span>
+                                    <span style="pointer-events: none;">
+                                        Revoke
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="action-modal-icon"
+                             data-ng-if="permissions && permissions.write"
+                             data-ng-click="toggleActionModal(member.id)">
+                            <div class="halo"></div>
+                            <span class="material-icons">
+                                more_horiz
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div confirm-member-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     parent-type="{{ parentType }}"
+     visible="dialogManager['confirm']"></div>
+
+<div revoke-member-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     parent-type="{{ parentType }}"
+     visible="dialogManager['revoke']"></div>
+
+<div member-role-dialog
+     alerts="alerts"
+     callback="callback()"
+     feature="membership"
+     parent-type="{{ parentType }}"
+     visible="dialogManager['role']"></div>

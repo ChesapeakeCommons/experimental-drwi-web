@@ -1,0 +1,118 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container" style="position: relative; overflow: hidden;">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading awards&hellip;</p>
+            </div>
+        </div>
+
+        <h1 class="inset">Awards</h1>
+
+        <div class="main--ui">
+
+            <div class="add--new--wrapper">
+                <span>Create award</span>
+                <a class="add--new--btn" href="#" data-ng-click="page.createAward()">
+                    <i class="material-icons">
+                    add
+                    </i>
+                </a>
+            </div>
+
+            <input type="text" class="search-bar list-filter reveal fade-in t0" data-ng-if="!page.status.loading && page.awards.length > 10" data-ng-model="page.q" placeholder="Search your awards">
+
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !$root.user.is_admin && !$root.user.is_manager">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
+
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && !page.selectedProgram.id && ($root.user.is_admin || $root.user.is_manager)">You have <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p>
+
+            <p class="reveal fade-in t0" data-ng-if="!page.status.loading && page.selectedProgram.id > 0 && ($root.user.is_admin || $root.user.is_manager)">There are <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize> in this program.</p>
+
+            <div class="collection-filter" data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
+                <form name="myForm">
+                    <label for="programFilter"><strong>Filter by program:</strong></label>
+                    <select name="programFilter" id="programFilter"
+                        data-ng-options="program.properties.name for program in $root.user.programs track by program.id"
+                        data-ng-model="page.selectedProgram"
+                        data-ng-change="page.loadFeatures()">
+                        <option value="">All programs</option>
+                    </select>
+                </form>
+            </div>
+
+            <!-- <p class="reveal fade-in t0">This program has <strong>{{ (page.awards.length | number) || 0 }}</strong> <ng-pluralize count="page.awards.length" when="{'one': 'award','other': 'awards'}"></ng-pluralize>.</p> -->
+
+            <div class="features--container">
+
+                <ul class="snapshot--cards list-unstyled" style="margin-top: 2em;" data-ng-if="!page.status.loading">
+
+                    <li class="card reveal fade-in" style="animation-delay: {{ $index * 100 }}ms;" data-ng-repeat="award in page.awards | orderBy:'-modified_on' | filter: page.q">
+
+                        <div class="card--content">
+
+                            <div class="name">
+                                <span>{{ award.name || 'Un-named' }}</span>
+                                <span style="font-size: 0.7em; font-weight: normal; color: #757575; text-transform: uppercase;" data-ng-if="award.origin">{{ award.origin.name }}</span>
+                                <span style="font-size: 0.7em; font-weight: normal; color: #757575; text-transform: uppercase;" data-ng-if="!award.origin">Unknown Provider</span>
+                            </div>
+
+                            <div class="body">
+
+                                <div class="confirm--delete" data-ng-if="page.deletionTarget.id === award.id">
+                                    <p>Do you want to delete this award?</p>
+                                    <div class="actions" style="flex: 0;">
+                                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature(award, $index)">
+                                            Yes
+                                        </a>
+                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </div>
+                                <p>{{ (award.description || 'No description') | truncate:80 }}</p>
+                                <div class="actions">
+                                    <a class="snapshot--title" href="/awards/{{ award.id }}" title="View award">
+                                        <i class="material-icons">
+                                        dashboard
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="/awards/{{ award.id }}/edit" title="Edit award">
+                                        <i class="material-icons">
+                                        edit
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="#" title="Delete award" data-ng-click="page.confirmDelete(award)">
+                                        <i class="material-icons">
+                                        delete
+                                        </i>
+                                    </a>
+                                </div>
+                                <span><time datetime="{{ award.modified_on }}" title="{{ award.modified_on }}">Last updated {{ award.modified_on | date : 'mediumDate' }}</time></span>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts" data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

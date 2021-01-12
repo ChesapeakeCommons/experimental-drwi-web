@@ -1,0 +1,306 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container" style="border-right: 1px solid #e0e0e0;">
+
+        <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
+            <div class="progress--container">
+                <p style="font-weight: bold;" class="color-pulse">Loading practices&hellip;</p>
+            </div>
+        </div>
+
+        <section class="privacy-message reveal fade-in t0" data-ng-if="!page.status.loading && page.makePrivate">
+
+            <p>
+                <span class="material-icons">
+                    lock
+                </span>
+            </p>
+
+            <p>This project is private.</p>
+
+        </section>
+
+        <div class="main--ui" data-ng-if="!page.status.loading && !page.makePrivate">
+
+            <div class="module--grid">
+
+                <div breadcrumb class="full-width"
+                     program="page.project.program"
+                     project="page.project"
+                     tail="Practices"></div>
+
+                <div class="create-heading">
+                    <h2 class="margin-0">
+                        Practices
+                        <span class="tally">
+                            {{ page.summary.feature_count | number }}
+                        </span>
+                    </h2>
+                    <button type="button" class="margin-r-1" style="padding: .5rem 1rem .5rem .7rem;"
+                            data-ng-click="page.presentChildModal('practice')">
+                        <span class="material-icons margin-r-50p">
+                            add
+                        </span>
+                        Create
+                    </button>
+                </div>
+
+                <!-- START LIST COMPONENT -->
+
+                <section class="reveal fade-in t3 pad-0 margin-b-3" style="width: 100%;">
+
+                    <div data-ng-if="!page.status.loading"
+                         class="margin-t-2 margin-b-1"
+                         pagination
+                         params="page.queryParams"
+                         summary="page.summary"
+                         rotate="page.loadPractices(params)"
+                         update-params="true"></div>
+
+                    <div class="view-all margin-b-1"
+                         data-ng-if="page.summary && page.summary.feature_count > 4 && page.permissions.write">
+                        <a title="Batch delete"
+                           class="block-link"
+                           href="/projects/{{ page.project.id }}/batch-practice-delete">
+                            <span class="material-icons margin-r-50p">
+                                delete_sweep
+                            </span>
+                            Batch delete
+                        </a>
+                    </div>
+
+                    <ul class="snapshot--cards list-unstyled">
+
+                        <li class="card"
+                            data-ng-repeat="practice in page.practices track by $index">
+
+                            <div class="card--content">
+
+                                <div style="position:relative;">
+
+                                    <img data-ng-if="practice.staticURL" data-ng-src="{{ practice.staticURL }}"
+                                         width="auto" height="auto"/>
+
+                                    <img data-ng-if="!practice.staticURL"
+                                         data-ng-src="https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/-98.5795,39.828175,5/400x200@2x?access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw"
+                                         width="auto" height="auto"/>
+
+                                </div>
+
+                                <div class="name pad-0 pad-t-50p pad-l-1 pad-r-1" style="background: #fff;
+                                    border-bottom: none;">
+                                        <span>
+                                            {{ practice.properties.name || 'Un-named' }}
+                                        </span>
+                                    <span class="sub-label"
+                                          data-ng-class="{'no-type': !practice.properties.practice_type}"
+                                          style="text-transform: uppercase; font-size: .75rem;">
+                                            {{ practice.properties.practice_type.name || 'No practice type assigned' }}
+                                        </span>
+                                </div>
+
+                                <div class="body">
+
+                                    <div class="confirm--delete"
+                                         data-ng-if="page.deletionTarget && page.deletionTarget.feature.properties.id === practice.properties.id && page.deletionTarget.collection === 'practice'">
+                                        <p>Do you want to delete this practice?</p>
+                                        <div class="actions" style="flex: 0;">
+                                            <a class="snapshot--title" href="#" title="Delete forever"
+                                               data-ng-click="page.deleteFeature('practice', $index)">
+                                                Yes
+                                            </a>
+                                            <a class="snapshot--title" href="#" title="Cancel"
+                                               data-ng-click="page.cancelDelete()">
+                                                Cancel
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="confirm--delete"
+                                         data-ng-if="page.copyTarget && page.copyTarget.feature.properties.id === practice.properties.id && page.copyTarget.collection === 'practice'">
+                                        <p>Make a copy of this practice?</p>
+                                        <div class="actions" style="flex: 0;">
+                                            <a class="snapshot--title" href="#" style="background-color:#29cc82"
+                                               title="Copy" data-ng-click="page.copyFeature('practice', $index)">
+                                                Yes
+                                            </a>
+                                            <a class="snapshot--title" href="#" title="Cancel"
+                                               data-ng-click="page.cancelCopy()">
+                                                Cancel
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p>{{ (practice.properties.description || practice.properties.annotation || 'No description') | truncate:80 }}</p>
+                                    <div class="actions">
+                                        <a class="snapshot--title" href="/practices/{{ practice.properties.id }}"
+                                           title="Practice summary">
+                                            <i class="material-icons">
+                                                dashboard
+                                            </i>
+                                        </a>
+                                        <a class="snapshot--title"
+                                           href="/practices/{{ practice.properties.id }}/edit" title="Edit practice"
+                                           data-ng-if="page.permissions.write">
+                                            <i class="material-icons">
+                                                edit
+                                            </i>
+                                        </a>
+                                        <a class="snapshot--title"
+                                           href="/practices/{{ practice.properties.id }}/location"
+                                           title="Edit location" data-ng-if="page.permissions.write">
+                                            <i class="material-icons">
+                                                location_on
+                                            </i>
+                                        </a>
+                                        <a class="snapshot--title" href="#"
+                                           data-ng-click="page.confirmCopy(practice, 'practice')"
+                                           title="Copy practice" data-ng-if="page.permissions.write">
+                                            <i class="material-icons">
+                                                file_copy
+                                            </i>
+                                        </a>
+
+                                        <a class="snapshot--title" href="#" title="Delete practice"
+                                           data-ng-click="page.confirmDelete(practice, 'practice')"
+                                           data-ng-if="page.permissions.write">
+                                            <i class="material-icons">
+                                                delete
+                                            </i>
+                                        </a>
+                                    </div>
+                                    <span><time datetime="{{ practice.properties.created_on }}"
+                                                title="{{ practice.properties.created_on }}">
+                                Created on {{ practice.properties.created_on | date }}</time></span>
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                        <li data-ng-if="!page.practices.length && page.permissions.write" class="card">
+                            <div class="card--content">
+                                <div class="body">
+                                    <button type="button" class="snapshot--title"
+                                            data-ng-click="page.presentChildModal('practice')"
+                                            title="Create practice">
+                                        <i class="material-icons">
+                                            add
+                                        </i>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                    <div data-ng-if="!page.status.loading"
+                         class="margin-y-1"
+                         pagination
+                         params="page.queryParams"
+                         summary="page.summary"
+                         rotate="page.loadPractices(params)"
+                         update-params="true"></div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
+        <ul>
+            <li data-ng-class="{active: $root.toolbarState.dashboard}">
+                <a href="/projects/{{ page.project.id }}" title="Summary">
+                    <i class="material-icons">
+                        dashboard
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write">
+                <a href="/projects/{{ page.project.id }}/edit" title="Edit">
+                    <i class="material-icons">
+                        edit
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write"
+                data-ng-class="{active: $root.toolbarState.grant}">
+                <a href="/projects/{{ page.project.id }}/grant" title="Program">
+                    <i class="material-icons">
+                        account_balance
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write">
+                <a href="/projects/{{ page.project.id }}/users" title="Collaborators">
+                    <i class="material-icons">
+                        group
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write"
+                data-ng-class="{active: $root.toolbarState.partnerships}">
+                <a href="/projects/{{ page.project.id }}/partnerships" title="Partnerships">
+                    <i class="material-icons">
+                        group_work
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write"
+                data-ng-class="{active: $root.toolbarState.editTags}">
+                <a href="/projects/{{ page.project.id }}/tags" title="Tags">
+                    <i class="material-icons">
+                        local_offer
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write">
+                <a href="#" data-ng-click="page.print()" title="Print">
+                    <i class="material-icons">
+                        print
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.write">
+                <div class="confirm--delete--popup"
+                     data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.project.id && page.deletionTarget.collection === 'project'">
+                    <p>Do you want to delete this project?</p>
+                    <div class="actions">
+                        <a class="snapshot--title" href="#" title="Delete forever"
+                           data-ng-click="page.deleteFeature('project')">
+                            Yes
+                        </a>
+                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-ng-click="page.confirmDelete(page.project, 'project')" title="Delete">
+                    <i class="material-icons">
+                        delete
+                    </i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div creation-dialog alerts="page.alerts" parent="page.project.id" organization="page.project.organization_id"
+         type="'practice'" visible="page.showChildModal"></div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>
