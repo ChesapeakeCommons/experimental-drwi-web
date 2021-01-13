@@ -129,27 +129,30 @@
 
                         <div class="name" style="flex-flow: column; align-items: flex-start; display:block; float:left;">
 
-                            <div type="button" class="remove-item" data-ng-click="page.confirmDelete(program.id)" style="z-index:999; position:relative; float:right; display:block; border: 0px; background-color: unset;">
+                            <div class="remove-item" data-ng-click="page.confirmProgramDelete($event,program.id)" style="z-index:999; position:relative; float:right; display:block; border: 0px; background-color: unset;">
                                 <!--
                             page.unsetProgram(program.id)"-->
                                 <i class="material-icons" style="color:red; font-size: 24px; ">
                                     remove_circle
                                 </i>
+
                                 <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:0%; top:0%;"
-                                     data-ng-if="page.showDeletionDialog && page.deletionId == program.id">
+                                     data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == program.id)">
                                     <p>Do you want to remove this program?</p>
                                     <div class="actions">
-                                        <a class="snapshot--title" href="#" title="Remove Program"
-                                           data-ng-click="page.unsetProgram(program.id)">
+                                        <a class="snapshot--title" title="Remove Program"
+                                           data-ng-click="page.unsetProgram($event,program.id)">
                                             Yes
                                         </a>
-                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="cancelDelete()">
+                                        <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelProgramDelete($event)">
                                             Cancel
                                         </a>
                                     </div>
                                 </div>
 
                             </div>
+
+
 
 
                             <span style="width:70%; display:inline-block;">

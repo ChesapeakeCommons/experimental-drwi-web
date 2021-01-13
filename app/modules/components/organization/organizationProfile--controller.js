@@ -465,25 +465,54 @@ angular.module('FieldDoc')
 
             };
 
+            /*
+            * In the below remove program logic
+            * we reference the click $event
+            * this is because in the html we have nested data-ng-click
+            *  $event.stopPropagation() and $event.preventDefault()
+            * prevent the click event from bubbling up to the parents data-ng-click
+            * As doing so destroys the event, we check to see if exists first
 
-            self.confirmDelete = function (id) {
+            * */
+
+            self.confirmProgramDelete = function ($event,id) {
+
+                console.log("Confirm dialog");
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
 
                 self.showDeletionDialog = !self.showDeletionDialog;
 
                 self.deletionId = id;
             };
 
-            self.cancelDelete = function() {
+            self.cancelProgramDelete = function($event) {
+
+                console.log("Cancel Removal");
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
 
                 self.showDeletionDialog = false;
 
                 self.deletionId = undefined;
+
+
             };
 
-            self.unsetProgram = function(id) {
+            self.unsetProgram = function($event,id) {
 
                 console.log(id);
 
+                $event.stopPropagation();
+                $event.preventDefault();
+
+                self.cancelProgramDelete();
 
                 self.showDeletionDialog = false;
                 self.deletionId = undefined;
@@ -516,9 +545,31 @@ angular.module('FieldDoc')
                         'prompt': 'OK'
                     }];
 
-                    $timeout(self.closeAlerts, 2000);
+                    let defaultExists = false;
 
-                    self.status.processing = false;
+                    if(self.feature.programs.length > 0){
+                        self.feature.programs.forEach(function (program){
+                            if(program.main == true){
+                                defaultExists = true;
+                            }
+                        });
+
+                        if(defaultExists == false){
+                            self.setDefaultProgram(self.feature.programs[0].id);
+
+                        }else{
+                            $timeout(self.closeAlerts, 2000);
+
+                            self.status.processing = false;
+                        }
+
+                    }else{
+                        $timeout(self.closeAlerts, 2000);
+
+                        self.status.processing = false;
+                    }
+
+
 
                     console.log("OrganizationService -> updateProgram", successResponse);
 
