@@ -28,6 +28,13 @@ angular.module('FieldDoc')
                 self.alerts = [];
 
             }
+            self.showDeletionDialog = false;
+
+            self.deletionId = undefined
+
+            self.summary = {
+                program_count : 0
+            };
 
             var featureId = $routeParams.id;
 
@@ -42,6 +49,9 @@ angular.module('FieldDoc')
                     self.feature = successResponse;
 
                     self.permissions = successResponse.permissions;
+
+
+                    self.summary.program_count = self.feature.programs.length;
 
                     if (postAssigment) {
 
@@ -271,7 +281,7 @@ angular.module('FieldDoc')
 
                         self.feature.programs.forEach(function(program){
 
-                            if(program.id == result.id){
+                            if(program.program.id == result.id){
                                 response.results.splice(i,1);
                                 i = i-1;
                             }
@@ -384,29 +394,17 @@ angular.module('FieldDoc')
             /*self.setProgram: This need to handle an array*/
             self.setProgram = function(item, model, label) {
 
-                console.log("NEW PROGRAM");
-                console.log("ITEM",item);
-                console.log("MODEL",model);
-                console.log("LABEL",label);
-
-              //  self.organization.programs.push(item);
-                // self.project.program_id = item.id;
-
                 console.log("setProgram -->", item);
 
+                let data = {
 
-
-            //    delete item.category;
-            //    delete item.subcategory;
-
-                console.log('+self.feature.id', +self.feature.id);
-                console.log('+item.id', +item.id);
-
-
-                Organization.addProgram({
                     organization_id : +self.feature.id,
                     program_id      : +item.id
-                },{}).$promise.then(function(successResponse) {
+                };
+
+                Organization.addProgram({
+
+                },data).$promise.then(function(successResponse) {
 
                     //   self.processFeature(successResponse);
 
@@ -416,6 +414,21 @@ angular.module('FieldDoc')
                         'msg': 'Organization changes saved.',
                         'prompt': 'OK'
                     }];
+
+                    console.log("self.feature.programs-->",self.feature.programs)
+
+                    if (featureId) {
+
+                        self.loadOrganization(featureId);
+                    }
+
+                    /*if(self.feature.programs == null){
+
+                        self.feature.programs[0].program.main = true;
+
+                    }
+
+                     */
 
                     $timeout(self.closeAlerts, 2000);
 
@@ -452,13 +465,32 @@ angular.module('FieldDoc')
 
             };
 
-            self.unsetProgram = function(program_id) {
 
-                console.log(program_id);
+            self.confirmDelete = function (id) {
+
+                self.showDeletionDialog = !self.showDeletionDialog;
+
+                self.deletionId = id;
+            };
+
+            self.cancelDelete = function() {
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+            };
+
+            self.unsetProgram = function(id) {
+
+                console.log(id);
+
+
+                self.showDeletionDialog = false;
+                self.deletionId = undefined;
 
                 let i = 0;
                 self.feature.programs.forEach(function(program){
-                    if(program.id == program_id){
+                    if(program.id == id){
 
                         self.feature.programs.splice(i,1);
                     }
@@ -467,34 +499,105 @@ angular.module('FieldDoc')
 
                 });
 
-             //   self.feature.programs.splice(index,1);
-              //  self.feature.program_id.splice(index,1);
+                let data = {
+                    id : id
+                };
 
-//                i = 0;
-//                self.project.programs.forEach(function(program){
-//                    if(program.id = id){
-//                        self.project.programs.splice(i,1);
-//                        self.project.program_id.splice(i,1);
-//
-//      //                  delete self.project.programs[i];
-//      //                  delete self.project.program_id[i];
-//
-//                    }
-//                    i = i+1;
-//                });
+                Organization.deleteProgram({
+                    id : id,
+                },data).$promise.then(function(successResponse) {
 
-               // self.programs = self.project.programs;
+                    //   self.processFeature(successResponse);
 
-                //   self.project.program_id = null;
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Organization changes saved.',
+                        'prompt': 'OK'
+                    }];
 
-                // q   self.program = null;
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("OrganizationService -> updateProgram", successResponse);
+
+                }).catch(function(error) {
+
+                    // Do something with the error
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong and the changes could not be saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("ERROR: OrganizationService -> updateProgram", error);
+
+                });
 
             };
 
 
-            self.setDefaultProgram = function(program_id){
+            self.setDefaultProgram = function(id){
 
-                
+
+                let data = {
+                  id : id,
+                  main : true
+                };
+
+                Organization.updateProgram({
+                    id : id,
+                },data).$promise.then(function(successResponse) {
+
+                    //   self.processFeature(successResponse);
+
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Organization changes saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    self.feature.programs.forEach(function (program){
+                        if(program.id == id){
+                            program.main = true;
+                        }else{
+                            program.main = false;
+                        }
+
+                    });
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("OrganizationService -> updateProgram", successResponse);
+
+                }).catch(function(error) {
+
+                    // Do something with the error
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong and the changes could not be saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                    console.log("ERROR: OrganizationService -> updateProgram", error);
+
+                });
 
             };
 

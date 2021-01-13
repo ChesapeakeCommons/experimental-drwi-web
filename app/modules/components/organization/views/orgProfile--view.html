@@ -101,9 +101,14 @@
 
         <!-- START Program Selection -->
 
-        <h2 class="flow2 reveal fade-in" >Programs</h2>
+        <h2 class="flow2 reveal fade-in t3" >
+            Programs
+            <span class="tally">
+                {{ page.summary.program_count | number }}
+            </span>
+        </h2>
 
-        <div class="main--ui reveal fade-in">
+        <div class="main--ui reveal fade-in t3">
 
             <div class="classification--search" style="position: relative;">
                 <p style="font-style: normal; color: #616161; font-size: 1em; margin-bottom: 2em; position: relative; z-index: 900">
@@ -124,14 +129,31 @@
 
                         <div class="name" style="flex-flow: column; align-items: flex-start; display:block; float:left;">
 
-                            <div type="button" class="remove-item" data-ng-click="page.unsetProgram(program_id)" style="float:right; display:block; border: 0px; background-color: unset;">
+                            <div type="button" class="remove-item" data-ng-click="page.confirmDelete(program.id)" style="z-index:999; position:relative; float:right; display:block; border: 0px; background-color: unset;">
+                                <!--
+                            page.unsetProgram(program.id)"-->
                                 <i class="material-icons" style="color:red; font-size: 24px; ">
                                     remove_circle
                                 </i>
+                                <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:0%; top:0%;"
+                                     data-ng-if="page.showDeletionDialog && page.deletionId == program.id">
+                                    <p>Do you want to remove this program?</p>
+                                    <div class="actions">
+                                        <a class="snapshot--title" href="#" title="Remove Program"
+                                           data-ng-click="page.unsetProgram(program.id)">
+                                            Yes
+                                        </a>
+                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="cancelDelete()">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </div>
+
                             </div>
 
+
                             <span style="width:70%; display:inline-block;">
-                                {{ program.program.name }}
+                                <a href="/programs/{{program.program.id}}">{{ program.program.name }}</a>
                             </span>
 
 
@@ -151,20 +173,32 @@
 
                         <div class="body" style="overflow: auto; display:block; float:left; border:0px solid red;">
                             <div style="width:70%;display:block; float:left; border:0px solid red;" >
-                                <p style="font-style: normal; text-align: justify; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0; ">
+                                <p style="font-style: normal; font-size: 1em; color: #616161; padding: 0 0 1em; margin: 0; ">
                                     {{ program.program.description || 'No description provided.' }}
                                 </p>
                             </div>
                             <div style="width:30%; display:inline-block; float:right; border:0px solid red; text-align:right;" >
-                                <div style="margin-top:0; margin-bottom: 0; vertical-align: middle;">
-                                    <i >Default Program {{program.program.id}}</i>
+                                <div style="margin:0 auto; height:100%; display:inline-block; border:0px solid blue;  vertical-align: middle;">
 
-                                    <button type="button" class="add-item" style="display:inline-block;" data-ng-click="page.unsetProgram(program.program.id)"
-                                            data-ng-disabled="page.status.processing">
-                                       <i class="material-icons">
-                                            done
-                                        </i>
-                                    </button>
+
+
+                                    <div class="selection-input" data-ng-click="page.setDefaultProgram(program.id)" style=" vertical-align: middle; margin-bottom: 10%; padding:0px;display:block;border:0px solid green;">
+
+                                        <div data-ng-if="program.main === false" style="float:right; display:inline-block;border:0px solid red;">
+                                            <span class="material-icons">
+                                                radio_button_unchecked
+                                            </span>
+                                        </div>
+                                        <div data-ng-if="program.main === true" style="color:#0366d6;  float:right; display:inline-block; border:0px solid red;">
+                                            <span class="material-icons">
+                                                radio_button_checked
+                                            </span>
+                                        </div>
+                                        <div style=" height: 20px; float:right;display:inline-block; margin-right:10px;"><i >Default Program</i></div>
+                                    </div>
+
+
+
                                 </div>
                             </div>
                         </div>
