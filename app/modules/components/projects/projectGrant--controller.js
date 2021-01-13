@@ -7,7 +7,7 @@
  */
 angular.module('FieldDoc')
     .controller('ProjectGrantController',
-        function(Account, $location, $log, Project, project,
+        function(Account, $location, $log, Project, project, Organization,
             $rootScope, $route, user, SearchService, $timeout,
             Utility, $interval) {
 
@@ -80,6 +80,10 @@ angular.module('FieldDoc')
                         can_delete: false
                     };
 
+                    console.log("user -->",  $rootScope.user);
+
+                    self.loadOrganization(Account.userObject.organization_id);
+
                     //
                     // Assign project to a scoped variable
                     //
@@ -119,7 +123,65 @@ angular.module('FieldDoc')
 
             }
 
-            self.searchPrograms = function(value) {
+
+            /*Load Organization*/
+
+            self.loadOrganization = function(organizationId, postAssigment) {
+
+                console.log("Load Organization");
+
+                Organization.profile({
+                    id: organizationId
+                }).$promise.then(function(successResponse) {
+
+                    console.log('self.organization', successResponse);
+
+                    self.feature = successResponse;
+
+                    self.permissions = successResponse.permissions;
+
+
+                 //   self.summary.program_count = self.feature.programs.length;
+
+                    if (postAssigment) {
+
+                        self.alerts = [{
+                            'type': 'success',
+                            'flag': 'Success!',
+                            'msg': 'Successfully added you to ' + self.feature.name + '.',
+                            'prompt': 'OK'
+                        }];
+
+                        $timeout(closeAlerts, 2000);
+
+                    }
+
+                    self.status.loading = false;
+
+                }, function(errorResponse) {
+
+                    console.error('Unable to load organization.');
+
+                    self.status.loading = false;
+
+                });
+
+            };
+
+
+            /*add program to project*/
+
+            self.addProgram = function(id){
+
+
+            }
+
+            self.removeProgram = function(id){
+
+
+            }
+
+         /*   self.searchPrograms = function(value) {
 
                 return SearchService.program({
                     q: value
@@ -219,7 +281,7 @@ angular.module('FieldDoc')
                 return _list;
 
             };
-
+*/
             self.processFeature = function(data) {
 
                 self.project = data;
@@ -357,6 +419,7 @@ angular.module('FieldDoc')
 
             };
 
+            /*
             self.deleteFeature = function() {
 
                 var targetId;
@@ -422,5 +485,6 @@ angular.module('FieldDoc')
                 });
 
             };
+            */
 
         });
