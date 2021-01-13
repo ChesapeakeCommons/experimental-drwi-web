@@ -43,6 +43,11 @@
                     isArray: false,
                     method: 'PATCH',
                     url: environment.apiUrl.concat('/v1/organization-program/:id')
+                },
+                deleteProgram: {
+                    isArray: false,
+                    method: 'DELETE',
+                    url: environment.apiUrl.concat('/v1/organization-program/:id')
                 }
             });
         });
