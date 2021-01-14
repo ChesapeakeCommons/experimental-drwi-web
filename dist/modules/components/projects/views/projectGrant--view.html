@@ -76,24 +76,39 @@
                         <div class="classification--search" style="position: relative;">
                             <p style="font-style: normal; color: #616161; font-size: 1em; margin-bottom: 2em;">
 
-                                Select from programs supported by FieldDoc. Program is required to load metrics and models.
+                                Add or remove grant programs from your project.
+                                More information on the available grant programs can be found on your
+                                <a href="/organizations/{{user.organization_id}}">organization profile</a>
                             </p>
-                            <input type="search" class="search" value="" placeholder="Search programs" data-ng-model="page.programQuery" uib-typeahead="suggestion as suggestion.name for suggestion in page.searchPrograms($viewValue)" typeahead-on-select="page.setProgram($item, $model, $label)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html">
+                        <!--    <input type="search" class="search" value="" placeholder="Search programs" data-ng-model="page.programQuery" uib-typeahead="suggestion as suggestion.name for suggestion in page.searchPrograms($viewValue)" typeahead-on-select="page.setProgram($item, $model, $label)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html">
+                        -->
                         </div>
 
-                        <div class="classification--list" style="margin-top: 2em;" data-ng-if="page.program">
+
+                        <div class="classification--list" style="margin-top: 2em;" data-ng-if="page.feature.programs">
                             <ul>
-                                <li>
+                                <li data-ng-repeat="program in page.feature.programs track by $index">
                                     <!-- <i class="material-icons">
                                         account_balance
                                     </i> -->
-                                    <span style="flex-shrink: 0; flex-grow: 1;">{{ page.program.name }}</span>
+                                    <span style="width:70%; display:inline-block;">
+                                        <a href="/programs/{{program.program.id}}">{{ program.program.name }}</a>
+                                    </span>
                                     <div class="button--container">
-                                        <button type="button" class="remove-item" data-ng-click="page.unsetProgram()">
-                                            <i class="material-icons">
-                                                remove_circle
-                                            </i>
-                                        </button>
+                                        <div class="selection-input" data-ng-click="page.addProgram(program.id)" style=" vertical-align: middle; padding:0px;display:block;border:0px solid green;">
+
+                                            <div data-ng-if="program.main === false" style="float:right; display:inline-block;border:0px solid red;">
+                                                <span class="material-icons">
+                                                    radio_button_unchecked
+                                                </span>
+                                            </div>
+                                            <div data-ng-if="program.main === true" style="color:#0366d6;  float:right; display:inline-block; border:0px solid red;">
+                                                <span class="material-icons">
+                                                    radio_button_checked
+                                                </span>
+                                            </div>
+                                            <div data-ng-if="program.main === true" style="float:right;display:inline-block; margin-right:10px;"><i >Default Program</i></div>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
@@ -114,7 +129,7 @@
 
                         <p data-ng-if="!page.project.private" style="font-style: normal; font-size: 1em; color: #616161;">This project is <strong>public</strong>. It can only be viewed and edited by project collaborators and program managers. Geographic data related to this project <strong>will</strong> appear on dashboard maps.</p> -->
 
-                        <div class="save--action--wrapper save--action--bottom" style="position: relative; z-index: 1;">
+                      <!--  <div class="save--action--wrapper save--action--bottom" style="position: relative; z-index: 1;">
                             <button type="submit" data-ng-disabled="page.status.processing" title="Save">
                                 <i class="material-icons" data-ng-if="page.status.processing">
                                     more_horiz
@@ -124,6 +139,7 @@
                                 </i>
                             </button>
                         </div>
+                        -->
 
                     </form>
 
