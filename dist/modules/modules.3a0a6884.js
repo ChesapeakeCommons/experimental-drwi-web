@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1610495197259})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1610744851565})
 
 ;
 /**
@@ -37133,33 +37133,33 @@ angular.module('FieldDoc')
                     selected: true
                 },
                 {
-                    id: 'fd.site.polygon',
-                    name: 'Site polygons',
+                    id: 'fd.site.*',
+                    name: 'Sites',
                     selected: true
                 },
+                // {
+                //     id: 'fd.site.line',
+                //     name: 'Site lines',
+                //     selected: true
+                // },
+                // {
+                //     id: 'fd.site.point',
+                //     name: 'Site points',
+                //     selected: true
+                // },
+                // {
+                //     id: 'fd.practice.polygon',
+                //     name: 'Practice polygons',
+                //     selected: true
+                // },
+                // {
+                //     id: 'fd.practice.line',
+                //     name: 'Practice lines',
+                //     selected: true
+                // },
                 {
-                    id: 'fd.site.line',
-                    name: 'Site lines',
-                    selected: true
-                },
-                {
-                    id: 'fd.site.point',
-                    name: 'Site points',
-                    selected: true
-                },
-                {
-                    id: 'fd.practice.polygon',
-                    name: 'Practice polygons',
-                    selected: true
-                },
-                {
-                    id: 'fd.practice.line',
-                    name: 'Practice lines',
-                    selected: true
-                },
-                {
-                    id: 'fd.practice.point',
-                    name: 'Practice points',
+                    id: 'fd.practice.*',
+                    name: 'Practices',
                     selected: true
                 },
                 {
@@ -37544,7 +37544,35 @@ angular.module('FieldDoc')
 
                 self.preventFullCycle = true;
 
-                LayerUtil.toggleLayer(layerId, self.map);
+                if (layerId.endsWith('*')) {
+
+                    var components = layerId.split('.');
+
+                    var featureType = components[1];
+
+                    var layerTypes = [
+                        'line',
+                        'point',
+                        'polygon'
+                    ];
+
+                    layerTypes.forEach(function (layerType) {
+
+                        var layerRef = [
+                            'fd',
+                            featureType,
+                            layerType
+                        ].join('.');
+
+                        LayerUtil.toggleLayer(layerRef, self.map);
+
+                    });
+
+                } else {
+
+                    LayerUtil.toggleLayer(layerId, self.map);
+
+                }
 
             };
 
@@ -37671,6 +37699,14 @@ angular.module('FieldDoc')
 
                 self.map.on('click', function (e) {
 
+                    if (self.station) {
+
+                        self.station = undefined;
+
+                        self.toggleSidebar();
+
+                    }
+
                     var features = self.map.queryRenderedFeatures(e.point);
 
                     console.log(
@@ -37689,42 +37725,29 @@ angular.module('FieldDoc')
                                 target
                             );
 
-                        } else {
+                            self.station = target;
 
-                            if (target.properties.id !== self.primaryNode.properties.id) {
+                            self.toggleSidebar();
 
-                                self.fetchPrimaryNode(
-                                    target.properties.type,
-                                    target.properties.id
+                            $timeout(function () {
+
+                                var frame = document.getElementsByTagName('iframe')[0];
+
+                                console.log(
+                                    'map.click:frame:',
+                                    frame
                                 );
 
-                            }
+                                frame.style.backgroundColor = 'transparent';
+                                frame.frameBorder = '0';
+                                frame.allowTransparency= 'true';
 
-                        }
+                                frame.src = [
+                                    'https://dev.api.waterreporter.org/v2/embed/station/',
+                                    self.station.properties.id
+                                ].join('');
 
-                    }
-
-                });
-
-                self.map.on('click', function (e) {
-
-                    var features = self.map.queryRenderedFeatures(e.point);
-
-                    console.log(
-                        'map.click:features:',
-                        features
-                    );
-
-                    if (features.length) {
-
-                        var target = features[0];
-
-                        if (target.layer.id.indexOf('station')) {
-
-                            console.log(
-                                'map.click:station:',
-                                target
-                            );
+                            }, 10);
 
                         } else {
 
@@ -37967,6 +37990,78 @@ angular.module('FieldDoc')
 
             };
 
+            self.setLayerVisibility = function () {
+
+                var layerRefs = [];
+
+                self.layers.forEach(function (layer) {
+
+                    var visibility = layer.selected ? 'visible' : 'none';
+
+                    if (layer.id.endsWith('*')) {
+
+                        var components = layer.id.split('.');
+
+                        var featureType = components[1];
+
+                        var layerTypes = [
+                            'line',
+                            'point',
+                            'polygon'
+                        ];
+
+                        layerTypes.forEach(function (layerType) {
+
+                            var layerRef = [
+                                'fd',
+                                featureType,
+                                layerType
+                            ].join('.');
+
+                            layerRefs.push({
+                                id: layerRef,
+                                visibility: visibility
+                            });
+
+                        });
+
+                    } else {
+
+                        layerRefs.push({
+                            id: layer.id,
+                            visibility: visibility
+                        });
+
+                    }
+
+                });
+
+                layerRefs.forEach(function (layerRef) {
+
+                    var labelLayerId = layerRef.id + '-label';
+
+                    var labelLayer = self.map.getLayer(labelLayerId);
+
+                    if (labelLayer !== undefined) {
+
+                        self.map.setLayoutProperty(
+                            labelLayerId,
+                            'visibility',
+                            layerRef.visibility
+                        );
+
+                    }
+
+                    self.map.setLayoutProperty(
+                        layerRef.id,
+                        'visibility',
+                        layerRef.visibility
+                    );
+
+                });
+
+            };
+
             self.populateMap = function () {
 
                 LayerUtil.addReferenceSources(self.map);
@@ -37979,31 +38074,33 @@ angular.module('FieldDoc')
 
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
-                self.layers.forEach(function (layer) {
+                self.setLayerVisibility();
 
-                    var visibility = layer.selected ? 'visible' : 'none';
-
-                    var labelLayerId = layer.id + '-label';
-
-                    var labelLayer = self.map.getLayer(labelLayerId);
-
-                    if (labelLayer !== undefined) {
-
-                        self.map.setLayoutProperty(
-                            labelLayerId,
-                            'visibility',
-                            visibility
-                        );
-
-                    }
-
-                    self.map.setLayoutProperty(
-                        layer.id,
-                        'visibility',
-                        visibility
-                    );
-
-                });
+                // self.layers.forEach(function (layer) {
+                //
+                //     var visibility = layer.selected ? 'visible' : 'none';
+                //
+                //     var labelLayerId = layer.id + '-label';
+                //
+                //     var labelLayer = self.map.getLayer(labelLayerId);
+                //
+                //     if (labelLayer !== undefined) {
+                //
+                //         self.map.setLayoutProperty(
+                //             labelLayerId,
+                //             'visibility',
+                //             visibility
+                //         );
+                //
+                //     }
+                //
+                //     self.map.setLayoutProperty(
+                //         layer.id,
+                //         'visibility',
+                //         visibility
+                //     );
+                //
+                // });
 
             };
 
@@ -44200,6 +44297,22 @@ angular.module('FieldDoc')
                 }
 
             });
+
+        }
+
+        if (!String.prototype.endsWith) {
+
+            String.prototype.endsWith = function(search, this_len) {
+
+                if (this_len === undefined || this_len > this.length) {
+
+                    this_len = this.length;
+
+                }
+
+                return this.substring(this_len - search.length, this_len) === search;
+
+            };
 
         }
 
