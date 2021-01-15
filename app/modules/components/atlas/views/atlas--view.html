@@ -105,6 +105,18 @@
 
     </section>
 
+    <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; display: flex; flex-flow: column nowrap;
+    justify-content: center; align-items: center;" data-ng-show="page.station"
+         data-ng-click="page.station = undefined; page.toggleSidebar()">
+        <iframe style="border: 1px solid #e0e0e0; border-radius: 0.5rem; overflow: hidden; min-height: 400px; width:
+        100%; max-width: 640px;"
+                height="480"
+                width="640"
+                src=""
+                frameBorder="0"
+                scrolling="no"></iframe>
+    </div>
+
 </main>
 
 <!--<div data-ng-include="'/templates/footer&#45;&#45;view.html'"></div>-->
