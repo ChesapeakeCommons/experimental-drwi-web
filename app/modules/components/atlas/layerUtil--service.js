@@ -29,7 +29,7 @@ angular.module('FieldDoc')
             'fd.site.line': EMPTY_SOURCE,
             'fd.site.polygon': EMPTY_SOURCE,
             'fd.project.point': EMPTY_SOURCE,
-            'wr.post.point': EMPTY_SOURCE,
+            // 'wr.post.point': EMPTY_SOURCE,
             'wr.station.point': EMPTY_SOURCE
         };
 
@@ -61,14 +61,14 @@ angular.module('FieldDoc')
                 },
                 beforeId: ''
             },
-            {
-                layerConfig: {
-                    id: 'post-index',
-                    type: 'symbol',
-                    source: 'empty'
-                },
-                beforeId: ''
-            },
+            // {
+            //     layerConfig: {
+            //         id: 'post-index',
+            //         type: 'symbol',
+            //         source: 'empty'
+            //     },
+            //     beforeId: ''
+            // },
             //
             // The practice layer has the second-highest z-index priority.
             //

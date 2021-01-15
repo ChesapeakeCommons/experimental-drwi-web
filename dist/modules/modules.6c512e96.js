@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1610744851565})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1610746374669})
 
 ;
 /**
@@ -37165,7 +37165,7 @@ angular.module('FieldDoc')
                 {
                     id: 'wr.station.point',
                     name: 'Water Reporter stations',
-                    selected: true
+                    selected: false
                 },
                 // {
                 //     id: 'wr.post.point',
@@ -37786,7 +37786,7 @@ angular.module('FieldDoc')
 
                         self.preventFullCycle = false;
 
-                        return
+                        return;
 
                     }
 
@@ -38891,7 +38891,7 @@ angular.module('FieldDoc')
             'fd.site.line': EMPTY_SOURCE,
             'fd.site.polygon': EMPTY_SOURCE,
             'fd.project.point': EMPTY_SOURCE,
-            'wr.post.point': EMPTY_SOURCE,
+            // 'wr.post.point': EMPTY_SOURCE,
             'wr.station.point': EMPTY_SOURCE
         };
 
@@ -38923,14 +38923,14 @@ angular.module('FieldDoc')
                 },
                 beforeId: ''
             },
-            {
-                layerConfig: {
-                    id: 'post-index',
-                    type: 'symbol',
-                    source: 'empty'
-                },
-                beforeId: ''
-            },
+            // {
+            //     layerConfig: {
+            //         id: 'post-index',
+            //         type: 'symbol',
+            //         source: 'empty'
+            //     },
+            //     beforeId: ''
+            // },
             //
             // The practice layer has the second-highest z-index priority.
             //
@@ -39321,6 +39321,14 @@ angular.module('FieldDoc')
                 generateId: true
             },
             'fd.project.point': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'wr.station.point': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -40308,268 +40316,279 @@ angular.module('FieldDoc')
 
         var zoomConfig = ZoomUtil.getZoom();
 
-        var DATA_LAYERS = [{
-            config: {
-                'id': 'fd.drainage.polygon',
-                'source': 'fd.drainage.polygon',
-                'type': 'fill',
-                'minzoom': 8,
-                // 'layout': {
-                //     'visibility': 'none'
-                // },
-                paint: {
-                    'fill-color': '#00C8FF',
-                    'fill-opacity': 0.4,
-                    'fill-outline-color': '#424242'
-                }
-            },
-            beforeId: 'site-index'
-        }, {
-            config: {
-                'id': 'fd.project.point',
-                'source': 'fd.project.point',
-                'type': 'circle',
-                'minzoom': zoomConfig.project.min,
-                'maxzoom': zoomConfig.project.max,
-                'layout': {
-                    'visibility': 'visible'
+        var DATA_LAYERS = [
+            {
+                config: {
+                    'id': 'fd.drainage.polygon',
+                    'source': 'fd.drainage.polygon',
+                    'type': 'fill',
+                    'minzoom': 8,
+                    // 'layout': {
+                    //     'visibility': 'none'
+                    // },
+                    paint: {
+                        'fill-color': '#00C8FF',
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#424242'
+                    }
                 },
-                'paint': {
-                    'circle-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#ff0000',
-                        // '#2196F3'
-                        [
-                            'match',
-                            ['get', 'status'],
-                            'draft',
-                            '#f37e21',
-                            /* other */ '#2196F3'
-                        ]
-                    ],
-                    'circle-radius': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.project.min,
-                        0.5,
-                        zoomConfig.project.max,
-                        6
-                    ],
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#FFFFFF'
-                }
+                beforeId: 'site-index'
             },
-            beforeId: ''
-        }, {
-            config: {
-                'id': 'wr.post.point',
-                'source': 'wr.post.point',
-                'type': 'circle',
-                'minzoom': zoomConfig.post.min,
-                'maxzoom': zoomConfig.post.max,
-                'layout': {
-                    'visibility': 'none'
-                },
-                'paint': {
-                    'circle-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#ff0000',
-                        '#00ff00'
-                    ],
-                    'circle-radius': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.post.min,
-                        0.5,
-                        zoomConfig.post.max,
-                        6
-                    ],
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#FFFFFF'
-                }
-            },
-            beforeId: ''
-        }, {
-            config: {
-                'id': 'wr.station.point',
-                'source': 'wr.station.point',
-                'type': 'circle',
-                'minzoom': zoomConfig.station.min,
-                'maxzoom': zoomConfig.station.max,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'circle-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#ff0000',
-                        '#0000ff'
-                    ],
-                    'circle-radius': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.station.min,
-                        0.5,
-                        zoomConfig.station.max,
-                        6
-                    ],
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#FFFFFF'
-                }
-            },
-            beforeId: ''
-        }, {
-            config: {
-                'id': 'fd.practice.polygon',
-                'source': 'fd.practice.polygon',
-                'type': 'fill',
-                'minzoom': zoomConfig.practice.min,
-                'maxzoom': zoomConfig.practice.max,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'fill-pattern': 'diagonal-pattern'
-                    // 'fill-color': [
-                    //     'case',
-                    //     ['boolean', ['feature-state', 'focus'], false],
-                    //     '#C81E1E',
-                    //     '#3fd48a'
-                    // ],
-                    // 'fill-opacity': 0.4,
-                    // 'fill-outline-color': '#005e7d'
-                }
-            },
-            beforeId: 'project-index'
-        }, {
-            config: {
-                'id': 'fd.practice.line',
-                'source': 'fd.practice.line',
-                'type': 'line',
-                'minzoom': zoomConfig.practice.min,
-                'maxzoom': zoomConfig.practice.max,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'line-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#3fd48a'
-                    ],
-                    'line-width': 2
-                }
-            },
-            beforeId: 'project-index'
-        }, {
-            config: {
-                'id': 'fd.practice.point',
-                'source': 'fd.practice.point',
-                'type': 'circle',
-                'minzoom': zoomConfig.practice.min,
-                'maxzoom': zoomConfig.practice.max,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'circle-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#3fd48a'
-                    ],
-                    'circle-radius': {
-                        'base': 2,
-                        'stops': [
-                            [12, 4],
-                            [22, 24]
-                        ]
+            {
+                config: {
+                    'id': 'fd.project.point',
+                    'source': 'fd.project.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.project.min,
+                    'maxzoom': zoomConfig.project.max,
+                    'layout': {
+                        'visibility': 'visible'
                     },
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': '#FFFFFF'
-                }
-            },
-            beforeId: 'project-index'
-        }, {
-            config: {
-                'id': 'fd.site.polygon',
-                'source': 'fd.site.polygon',
-                'type': 'fill',
-                'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max,
-                'layout': {
-                    'visibility': 'visible'
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#ff0000',
+                            // '#2196F3'
+                            [
+                                'match',
+                                ['get', 'status'],
+                                'draft',
+                                '#f37e21',
+                                /* other */ '#2196F3'
+                            ]
+                        ],
+                        'circle-radius': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.project.min,
+                            0.5,
+                            zoomConfig.project.max,
+                            6
+                        ],
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
                 },
-                'paint': {
-                    'fill-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#a94efe'
-                    ],
-                    'fill-opacity': 0.4,
-                    'fill-outline-color': '#005e7d'
-                }
+                beforeId: ''
             },
-            beforeId: 'practice-index'
-        }, {
-            config: {
-                'id': 'fd.site.line',
-                'source': 'fd.site.line',
-                'type': 'line',
-                'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'line-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#a94efe'
-                    ],
-                    'line-width': 2
-                }
-            },
-            beforeId: 'practice-index'
-        }, {
-            config: {
-                'id': 'fd.site.point',
-                'source': 'fd.site.point',
-                'type': 'circle',
-                'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max + 1,
-                'layout': {
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'circle-color': [
-                        'case',
-                        ['boolean', ['feature-state', 'focus'], false],
-                        '#C81E1E',
-                        '#a94efe'
-                    ],
-                    'circle-radius': {
-                        'base': 2,
-                        'stops': [
-                            [12, 4],
-                            [22, 24]
-                        ]
+            // {
+            //     config: {
+            //         'id': 'wr.post.point',
+            //         'source': 'wr.post.point',
+            //         'type': 'circle',
+            //         'minzoom': zoomConfig.post.min,
+            //         'maxzoom': zoomConfig.post.max,
+            //         'layout': {
+            //             'visibility': 'none'
+            //         },
+            //         'paint': {
+            //             'circle-color': [
+            //                 'case',
+            //                 ['boolean', ['feature-state', 'focus'], false],
+            //                 '#ff0000',
+            //                 '#00ff00'
+            //             ],
+            //             'circle-radius': [
+            //                 'interpolate',
+            //                 ['exponential', 0.5],
+            //                 ['zoom'],
+            //                 zoomConfig.post.min,
+            //                 0.5,
+            //                 zoomConfig.post.max,
+            //                 6
+            //             ],
+            //             'circle-stroke-width': 2,
+            //             'circle-stroke-color': '#FFFFFF'
+            //         }
+            //     },
+            //     beforeId: ''
+            // },
+            {
+                config: {
+                    'id': 'wr.station.point',
+                    'source': 'wr.station.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.station.min,
+                    'maxzoom': zoomConfig.station.max,
+                    'layout': {
+                        'visibility': 'none'
                     },
-                    'circle-stroke-width': 1,
-                    'circle-stroke-color': '#FFFFFF'
-                }
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#ff0000',
+                            '#0000ff'
+                        ],
+                        'circle-radius': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.station.min,
+                            0.5,
+                            zoomConfig.station.max,
+                            6
+                        ],
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                },
+                beforeId: ''
             },
-            beforeId: 'practice-index'
-        }];
+            {
+                config: {
+                    'id': 'fd.practice.polygon',
+                    'source': 'fd.practice.polygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-pattern': 'diagonal-pattern'
+                        // 'fill-color': [
+                        //     'case',
+                        //     ['boolean', ['feature-state', 'focus'], false],
+                        //     '#C81E1E',
+                        //     '#3fd48a'
+                        // ],
+                        // 'fill-opacity': 0.4,
+                        // 'fill-outline-color': '#005e7d'
+                    }
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.line',
+                    'source': 'fd.practice.line',
+                    'type': 'line',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'line-width': 2
+                    }
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.point',
+                    'source': 'fd.practice.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.polygon',
+                    'source': 'fd.site.polygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
+                    }
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.line',
+                    'source': 'fd.site.line',
+                    'type': 'line',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'line-width': 2
+                    }
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.point',
+                    'source': 'fd.site.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                },
+                beforeId: 'practice-index'
+            }
+        ];
 
         return {
             addDataLayers: function (map) {

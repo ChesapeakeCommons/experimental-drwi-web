@@ -75,7 +75,7 @@ angular.module('FieldDoc')
                 {
                     id: 'wr.station.point',
                     name: 'Water Reporter stations',
-                    selected: true
+                    selected: false
                 },
                 // {
                 //     id: 'wr.post.point',
@@ -696,7 +696,7 @@ angular.module('FieldDoc')
 
                         self.preventFullCycle = false;
 
-                        return
+                        return;
 
                     }
 

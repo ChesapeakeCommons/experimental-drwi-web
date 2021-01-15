@@ -67,6 +67,14 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
+            'wr.station.point': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
             'fd.drainage.polygon': {
                 type: 'geojson',
                 data: {
