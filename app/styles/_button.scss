@@ -14,6 +14,14 @@
 
 button {
     font-family: $font-sans;
+    appearance: none;
+}
+
+button {
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    background: transparent;
 }
 
 a.button,

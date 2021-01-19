@@ -71,6 +71,25 @@
             </a>
         </li>
 
+        <!-- Images -->
+
+        <li data-ng-if="practice.permissions.write && practice.picture"
+            title="Images">
+            <a href="/practices/{{ practice.id }}/images">
+                <span class="material-icons">
+                    photo_library
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="practice.permissions.write && !practice.picture"
+            title="Add image">
+            <a data-ng-click="toggleImageModal()">
+                <span class="material-icons">
+                    add_photo_alternate
+                </span>
+            </a>
+        </li>
+
         <!-- Reports -->
 
         <li data-ng-if="practice.permissions.write && nextAction === 'edit_targets'">
@@ -89,23 +108,6 @@
                     <a href="#" data-ng-click="presentChildModal()">
                         Click here to create one.
                     </a>
-              <!--      <div style="border:0px solid red;
-                                position: absolute;
-                                float:right;
-                                height:20px;
-                                width: 20px;
-                                display: block;
-                                right: 4px;
-                                top: 0px;
-                            "
-                         data-ng-click="closePrompt()">
-
-                        <i class="material-icons">
-                            close
-                        </i>
-
-                    </div>
-                    -->
                 </div>
             </div>
             <a href="#" title="Reports" data-ng-click="presentChildModal()">
@@ -126,6 +128,25 @@
                 </i>
             </a>
         </li>
+
+        <!-- Map -->
+
+        <li data-ng-if="practice.permissions.write"
+            title="Launch map">
+            <a href="/atlas?{{ atlasParams }}">
+                <span class="material-icons">
+                    map
+                </span>
+            </a>
+        </li>
+
+<!--        <li data-ng-if="practice.permissions.write" data-ng-class="{active: toolbarState === 'map'}">-->
+<!--            <a href="/maps?target=practice:{{ practice.id }}" title="Map">-->
+<!--                <i class="material-icons">-->
+<!--                    map-->
+<!--                </i>-->
+<!--            </a>-->
+<!--        </li>-->
 
         <!-- Edit -->
 
@@ -247,3 +268,11 @@
      reset-type="false"
      type="'practice'"
      visible="showExportDialog"></div>
+
+<div image-upload-dialog
+     alerts="page.alerts"
+     parent="practice"
+     file-input="image-file-input"
+     callback="page.loadPractice()"
+     feature-type="practice"
+     visible="showImageModal"></div>

@@ -25,10 +25,7 @@
                 },
                 update: {
                     method: 'PATCH',
-                    transformRequest: function(data) {
-                        var feature = Preprocessors.geojson(data);
-                        return angular.toJson(feature);
-                    }
+                    url: environment.apiUrl.concat('/v1/image/:id')
                 },
                 'delete': {
                     method: 'DELETE',

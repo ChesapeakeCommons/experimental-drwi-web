@@ -10,11 +10,15 @@
     angular.module('FieldDoc')
         .filter('truncate', function() {
 
-            return function(string, length) {
+            return function(string, length, ellipsize) {
 
-                if (string.length > length) {
+                ellipsize = (typeof ellipsize === 'boolean') ? ellipsize : true;
 
-                    return string.substr(0, length) + '…';
+                if (string && string.length > length) {
+
+                    string = string.substr(0, length)
+
+                    return ellipsize ? string + '…' : string;
 
                 } else {
 

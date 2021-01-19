@@ -79,7 +79,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load dashboard');
+                    console.log('Unable to load dashboard');
 
                     self.status.processing = false;
 
@@ -116,7 +116,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load dashboard projects.');
+                    console.log('Unable to load dashboard projects.');
 
                 });
 
@@ -143,7 +143,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load dashboard filters.');
+                    console.log('Unable to load dashboard filters.');
 
                 });
 

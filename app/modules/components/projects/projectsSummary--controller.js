@@ -12,7 +12,7 @@ angular.module('FieldDoc')
         function(Account, Notifications, $rootScope, Project, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Practice, project, Utility, $interval, LayerService,
-                 MapManager, Shapefile, Task, QueryParamManager) {
+                 MapManager, Shapefile, Task, QueryParamManager, AtlasDataManager) {
 
             var self = this;
 
@@ -209,6 +209,8 @@ angular.module('FieldDoc')
                         }
 
                         self.project = project_;
+
+                        self.atlasParams = AtlasDataManager.createURLData(self.project);
 
                         $rootScope.page.title = 'Project Summary';
 

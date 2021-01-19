@@ -51,7 +51,7 @@ angular.module('FieldDoc')
 
             }).then(function(error) {
 
-                $log.error('Unable to create dashboard.');
+                console.log('Unable to create dashboard.');
 
             });
 

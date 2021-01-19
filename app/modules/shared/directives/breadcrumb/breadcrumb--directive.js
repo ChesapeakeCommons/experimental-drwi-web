@@ -11,6 +11,7 @@
                     restrict: 'EA',
                     scope: {
                         'metric': '=?',
+                        'organization': '=?',
                         'pad': '=?',
                         'practice': '=?',
                         'practiceType': '=?',

@@ -203,7 +203,6 @@ angular.module('FieldDoc')
                                 'properties',
                                 'targets',
                                 'tasks',
-                                'type',
                                 'sites'
                             ].join(',');
 

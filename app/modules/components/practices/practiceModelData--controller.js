@@ -64,7 +64,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load practice target matrix.');
+                    console.log('Unable to load practice target matrix.');
 
                 });
 
@@ -208,7 +208,6 @@ angular.module('FieldDoc')
                     'tags',
                     'targets',
                     'tasks',
-                    'type',
                     'practices'
                 ].join(',');
 
@@ -231,7 +230,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load practice');
+                    console.log('Unable to load practice');
 
                     self.status.processing = false;
 

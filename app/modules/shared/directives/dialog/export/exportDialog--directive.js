@@ -113,7 +113,7 @@
 
                             scope.fileFormat = format;
 
-                            scope.activeRadio = {}
+                            scope.activeRadio = {};
 
                             scope.activeRadio[format] = true;
 

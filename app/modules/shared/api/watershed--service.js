@@ -20,6 +20,11 @@
                     method: 'GET',
                     isArray: false,
                     url: environment.apiUrl.concat('/v1/watersheds')
+                },
+                delineate: {
+                    method: 'POST',
+                    isArray: false,
+                    url: 'http://watersheds-staging.cci.drexel.edu/api/bmp\\/'
                 }
             });
         });

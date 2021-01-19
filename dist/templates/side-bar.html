@@ -23,7 +23,7 @@
             <!--START Working link for Organization Profile-->
              <li>
                 <a href="/organizations"
-                   data-ng-class="{viewing: $root.viewState.organizationProfile || $root.viewState.organization}">
+                   data-ng-class="{viewing: $root.viewState.organization || $root.viewState.organization}">
                     <span class="material-icons"
                           data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
                         group
@@ -38,7 +38,7 @@
             <li class="margin-b-50p">
                <!-- <a href="/profile/{{page.user.id}}" data-ng-class="{viewing: $root.viewState.profile}">
                -->
-                <a href="/profile/" data-ng-class="{viewing: $root.viewState.profile}">
+                <a href="/account" data-ng-class="{viewing: $root.viewState.account}">
                     <span class="material-icons"
                           data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
                         account_circle
@@ -46,6 +46,11 @@
                     <span data-ng-if="!$root.collapseSidebar">
                         Profile
                     </span>
+<!--                    <span class="material-icons margin-l-1"-->
+<!--                          style="color: #D44040;"-->
+<!--                          data-ng-if="$root.user.orphan">-->
+<!--                        warning-->
+<!--                    </span>-->
                 </a>
             </li>
 

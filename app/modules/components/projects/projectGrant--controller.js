@@ -109,7 +109,7 @@ angular.module('FieldDoc')
 
                     }, function(errorResponse) {
 
-                        $log.error('Unable to load request project');
+                        console.log('Unable to load request project');
 
                         self.showElements();
 
@@ -380,7 +380,6 @@ angular.module('FieldDoc')
                     'tags',
                     'targets',
                     'tasks',
-                    'type',
                     'sites'
                 ].join(',');
 

@@ -1,0 +1,200 @@
+<div data-ng-include="'/templates/header--view.html'"></div>
+
+<main class="site--content--flow fluid-content clearfix distinguish">
+
+    <div id="sidebar" data-ng-include="'/templates/side-bar.html'"></div>
+
+    <div class="content--container pad-0"
+         data-ng-if="!page.status.loading">
+
+        <div class="main--ui reveal fade-in pad-2">
+
+            <div class="create-heading" data-ng-if="!page.status.loading">
+                <h1 class="margin-0"></h1>
+                <a class="btn margin-r-1" style="padding: .5rem 1rem .5rem .7rem;"
+                   href="/account/settings">
+                    <span class="material-icons margin-r-50p">
+                        edit
+                    </span>
+                    Edit
+                </a>
+                <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
+                        data-ng-click="page.showUploadModal = !page.showUploadModal">
+                    <span class="material-icons margin-r-50p">
+                        add
+                    </span>
+                    Add image
+                </button>
+            </div>
+
+            <div class="flex flex-dir-row flex-wrap flex-align-start">
+
+                <div class="">
+
+                    <div class="user-avatar-wrapper pad-0 pad-r-2"
+                         data-ng-if="page.feature.picture">
+
+                        <div class="user-avatar user-avatar-lg"
+                             style="background-image: url('{{ page.feature.picture }}');"></div>
+
+                    </div>
+
+                    <div class="user-avatar-wrapper pad-0 pad-r-2"
+                         data-ng-if="!page.feature.picture">
+
+                        <div style="color: #424242; background: #EEEEEE; border-radius: 50%;"
+                             class="user-avatar user-avatar-lg flex flex-dir-col flex-justify-center flex-align-center">
+                            <span class="material-icons md-48">
+                                account_circle
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="flow2--right-field-profile">
+
+                    <div class="">
+
+                        <h2 class="margin-0 margin-b-50p">
+                            {{ page.feature.name || 'Anonymous' }}
+                        </h2>
+
+                    </div>
+
+                    <div class=""
+                         data-ng-if="page.feature.title">
+
+                        <p class="">
+
+                            <span>
+                                {{ page.feature.title }}
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                    <div class=""
+                         data-ng-if="page.feature.email">
+
+                        <p class="">
+                            <a href="mailto:{page.feature.email">{{ page.feature.email }}</a>
+                        </p>
+
+                    </div>
+
+                    <div class="">
+
+                        <p class="">
+                            {{ page.feature.bio || 'No bio provided.' }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="create-heading margin-t-5">
+                <h2 class="margin-0 pad-0"
+                    data-ng-if="page.logs && page.logs.length">
+                    Security log
+                </h2>
+            </div>
+
+            <p class="pad-0 margin-0 margin-t-1"
+               style="font-size: .9rem; max-width: 50%;">
+                FieldDoc keeps track of your logins to protect your account from unauthorized use. If you
+                notice any suspicious activity, please <a href="mailto:support@fielddoc.org">contact our
+                support team</a> right away.
+            </p>
+
+            <div class="table-view margin-t-2"
+                 data-ng-if="page.logs && page.logs.length">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th class="pad-1">
+                                <strong>Browser</strong>
+                            </th>
+                            <th class="pad-1">
+                                <strong>IP Address</strong>
+                            </th>
+                            <th class="pad-1" colspan="2">
+                                <strong>Access time</strong>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr data-ng-repeat="log in page.logs track by $index | orderBy: '-timestamp'">
+                            <td class="pad-1" style="width: 1%; max-width: 20rem;">
+                                <span style="display: inline;">
+                                    {{ log.browser | browserName }}
+                                </span>
+                                <span style="display: inline;"
+                                      data-ng-if="log.version.length">
+                                    {{ log.version }}
+                                </span>
+                                <span style="display: inline;"
+                                      data-ng-if="log.version.length">
+                                    on
+                                </span>
+                                <span style="display: inline;">
+                                    {{ log.platform | platformName }}
+                                </span>
+                            </td>
+                            <td class="pad-1" style="width: 1%;">
+                                <span>
+                                    {{ log.remote_addr }}
+                                </span>
+                            </td>
+                            <td class="info-enabled pad-1" style="width: 1%;">
+                                <div>
+                                    <span>
+                                        <time datetime="{{ log.timestamp }}"
+                                              title="{{ log.timestamp | date : 'mediumDate' }} &middot; {{ log.timestamp |
+                                            localTime | date:'h:mm' }} {{ log.timestamp | localTime | date:'a' }}">
+                                            {{ log.timestamp | elapsedTime:true }}
+                                        </time>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div image-upload-dialog
+         alerts="page.alerts"
+         parent="page.feature"
+         file-input="image-file-input"
+         callback="page.getUser()"
+         feature-type="user"
+         visible="page.showUploadModal"></div>
+
+</main>
+
+<div data-ng-include="'/templates/footer--view.html'"></div>

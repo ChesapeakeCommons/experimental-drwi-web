@@ -100,12 +100,36 @@
 
                         <div class="card--content">
 
-                            <img data-ng-if="membership.organization.picture"
-                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="auto" />
+                            <div style="height: 240px; width: 100%; background: #EEEEEE;"
+                                 data-ng-if="!membership.organization.picture"></div>
+
+                            <div style="min-height: 240px; width: 100%; background-color: #EEEEEE; background-image:
+                            url('{{ membership.organization.picture }}'); background-size: cover;
+                            background-position: center center;"
+                                 data-ng-if="membership.organization.picture"></div>
+
+<!--                            <img data-ng-if="membership.organization.picture"-->
+<!--                                 data-ng-src="{{ membership.organization.picture }}" width="auto" height="240" />-->
 
                             <div class="name"
-                                 style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
+                                 style="background: #fff; border-bottom: none;">
                                 <span>{{ membership.organization.name }}</span>
+                            </div>
+
+                            <div class="status-wrapper"
+                                 title="Role: {{ membership.role | capitalAttribute }}"
+                                 data-ng-if="!membership.confirmed">
+                                <div class="status status-pending">
+                                    <span>Pending</span>
+                                </div>
+                            </div>
+
+                            <div class="status-wrapper"
+                                 title="Role: {{ membership.role | capitalAttribute }}"
+                                 data-ng-if="membership.confirmed">
+                                <div class="status status-{{ membership.role }}">
+                                    <span>{{ membership.role | capitalAttribute }}</span>
+                                </div>
                             </div>
 
                             <div class="body">
@@ -116,15 +140,17 @@
 
                                 <div class="actions">
 
-                                    <a class="snapshot--title" href="/organizations/{{ membership.organization.id }}" title="Project summary">
+                                    <a class="snapshot--title"
+                                       href="/organizations/{{ membership.organization.id }}"
+                                       title="Organization summary">
                                         <i class="material-icons">
                                             dashboard
                                         </i>
                                     </a>
 
                                     <a class="snapshot--title" href="/organizations/{{ membership.organization.id }}/edit"
-                                       title="Edit project"
-                                       data-ng-if="page.permissions.write">
+                                       title="Edit organization"
+                                       data-ng-if="membership.confirmed && membership.role === 'owner'">
                                         <i class="material-icons">
                                             edit
                                         </i>
@@ -135,8 +161,9 @@
                                 <span>
                                     <time datetime="{{ membership.organization.modified_on }}"
                                           title="{{ membership.organization.modified_on }}">
-                                        Last updated {{ membership.organization.modified_on | date : 'mediumDate' }}
-                                    </time>
+                                        Last updated {{ membership.organization.modified_on | localTime | date:'mediumDate' }} &middot; {{
+                                    membership.organization.modified_on | localTime | date:'h:mm' }} {{ membership.organization.modified_on | localTime | date:'a'
+                                    }}</time>
                                 </span>
 
                             </div>

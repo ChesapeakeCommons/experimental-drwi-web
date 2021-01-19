@@ -25,6 +25,11 @@
                     isArray: false,
                     url: environment.apiUrl.concat('/v1/program/:id/geographies')
                 },
+                getSingle: {
+                    method: 'GET',
+                    isArray: false,
+                    url: environment.apiUrl.concat('/v1/program/:id')
+                },
                 metrics: {
                     method: 'GET',
                     isArray: false,

@@ -415,24 +415,20 @@ select.form-control {
 //
 textarea.form-control {
     background-color: transparent;
-
     -webkit-box-shadow: inset 0 0 6px rgba($color-white-dark, 0.5);
     -moz-box-shadow: inset 0 0 6px rgba($color-white-dark, 0.5);
     box-shadow: inset 0 0 6px rgba($color-white-dark, 0.5);
-
     border: 1px solid $color-white-dark;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-
+    border-radius: .25rem;
+    -moz-border-radius: .25rem;
+    -webkit-border-radius: .25rem;
     box-sizing: border-box;
     color: $color-gray-dark;
     font-family: $font-sans;
-    font-size: 1em;
-    font-weight: 300;
+    font-size: 1.125rem;
+    line-height: 1.5rem;
     margin: 0;
-    padding: 0.5em 0.75em;
-
+    padding: 1rem;
     width: 100%;
 
     &:focus {

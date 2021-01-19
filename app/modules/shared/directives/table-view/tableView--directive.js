@@ -19,6 +19,7 @@
                         'featureType': '@',
                         'includeMod': '=?',
                         'index': '=?',
+                        'permissions': '=?',
                         'visible': '=?'
                     },
                     templateUrl: function (elem, attrs) {

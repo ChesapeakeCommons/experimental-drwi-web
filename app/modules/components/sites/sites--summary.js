@@ -12,7 +12,7 @@
             function(Account, $location, $window, $timeout, Practice, $rootScope, $scope,
                 $route, user, Utility, site, mapbox, Site, Project, practices,
                 $interval, LayerService, MapManager,
-                Shapefile, Task) {
+                Shapefile, Task, AtlasDataManager) {
 
                 var self = this;
 
@@ -380,6 +380,8 @@
                         console.log('self.site', successResponse);
 
                         self.site = successResponse;
+
+                        self.atlasParams = AtlasDataManager.createURLData(self.site);
 
                         if (successResponse.permissions.read &&
                             successResponse.permissions.write) {

@@ -3,7 +3,9 @@
 angular.module('FieldDoc')
     .filter('elapsedTime', ['$filter', function($filter) {
 
-        return function(timer) {
+        return function(timer, fullStamp) {
+
+            fullStamp = (typeof fullStamp === 'boolean') ? fullStamp : false;
 
             var period,
                 minutes,
@@ -32,17 +34,30 @@ angular.module('FieldDoc')
 
             if (delta >= 86400000) {
 
-                period = $filter('date')(timer, 'longDate');
+                if (fullStamp) {
 
-                if (currentDate.year() !== originDate.year()) {
+                    period = [
+                        $filter('date')(timer, 'mediumDate'),
+                        '·',
+                        $filter('date')(timer, 'h:mm'),
+                        $filter('date')(timer, 'a')
+                    ].join(' ');
 
-                    period += (', ' + originDate.year());
+                } else {
+
+                    period = $filter('date')(timer, 'longDate');
+
+                    if (currentDate.year() !== originDate.year()) {
+
+                        period += (', ' + originDate.year());
+
+                    }
+
+                    period += ' at ';
+
+                    period += $filter('date')(timer, 'shortTime');
 
                 }
-
-                period += ' at ';
-
-                period += $filter('date')(timer, 'shortTime');
 
             } else if (3600000 <= delta && delta < 86400000) {
 
@@ -55,7 +70,7 @@ angular.module('FieldDoc')
 
                 console.log('$filter.elapsedTime --> hours', hours);
 
-                period = hours + ' hours ago';
+                period = hours > 1 ? hours + ' hours ago' : '1 hour ago';
 
             } else {
 

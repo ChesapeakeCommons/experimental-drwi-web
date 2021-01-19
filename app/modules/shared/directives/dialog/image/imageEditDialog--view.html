@@ -1,0 +1,104 @@
+<div class="creation-dialog-container import-dialog-container" data-ng-if="visible">
+    <div class="dialog">
+        <div class="title">
+            <span class="title-text">Edit image</span>
+            <div class="dismiss-container">
+                <div class="dismiss" data-ng-click="closeChildModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs">
+
+            <div>
+
+                <div class="form-element margin-0 margin-b-1 pad-0">
+                    <span class="meta-label" style="top: 1rem; left: 1rem;">
+                        <strong>Title</strong>
+                    </span>
+                    <input type="text"
+                           data-ng-model="feature.title"
+                           class="form-control animate margin-0 pad-0 pad-t-3 pad-r-1 pad-b-1 pad-l-1"
+                           style="font-size: 1.125rem;"
+                           id="name"
+                           name="name"
+                           placeholder="&hellip;" />
+                </div>
+
+                <div class="form-element margin-0">
+                    <span class="meta-label" style="top: 1rem; left: 1rem;">
+                        <strong>Caption</strong>
+                    </span>
+                    <textarea class="form-control animate pad-0 pad-t-3 pad-r-1 pad-b-1 pad-l-1"
+                              style="font-size: 1.125rem; line-height: 1.5rem;"
+                              data-ng-model="feature.caption"
+                              msd-elastic
+                              id="caption"
+                              name="caption"
+                              rows="5"
+                              placeholder="&hellip;"
+                              maxlength="250">{{ feature.caption }}</textarea>
+                    <p class="margin-0 margin-t-50p margin-b-50p"
+                       style="color: #616161; font-size: 0.9em; font-style: normal;">
+                        Captions may contain up to 250 characters, including spaces and
+                        punctuation. <strong>({{ (feature.caption.length || 0) | number }} used)</strong>
+                    </p>
+                </div>
+
+                <div class="pad-1" style="border-radius: .25rem; border: 1px solid #E0E0E0;">
+
+                    <div class="scope--control margin-0">
+                        <span data-ng-class="{on: feature.featured}"
+                              style="font-size: .9rem; color: #212121; font-weight: bold;">
+                            Featured
+                        </span>
+                        <span></span>
+                        <label class="switch">
+                            <input class="inputdemo"
+                                   type="checkbox"
+                                   data-ng-model="feature.featured">
+                            <div class="slider round"></div>
+                        </label>
+                        <span></span>
+                    </div>
+
+                    <p class="margin-0 margin-t-1" style="font-size: .9rem;">
+                        By default, FieldDoc uses the <strong>newest</strong> image in a collection when making an
+                        avatar, thumbnail, or preview. You can override this behavior by setting a featured image.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class="dyad">
+            <div class="dialog-actions">
+                <button type="button" class="cancel"
+                        style="height: 2.5rem;"
+                        data-ng-click="closeChildModal()">
+                    <span>
+                        Cancel
+                    </span>
+                </button>
+                <button type="button" class="confirm"
+                        style="height: 2.5rem;"
+                        data-ng-class="{complete: uploadComplete}"
+                        data-ng-click="saveImage()">
+                    <span class="material-icons margin-r-50p" data-ng-if="uploadComplete">
+                        done
+                    </span>
+                    <span data-ng-if="!processing">
+                        OK
+                    </span>
+                    <span data-ng-if="processing && progressMessage">
+                        {{ progressMessage }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

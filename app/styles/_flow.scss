@@ -157,14 +157,14 @@
     input,
     textarea {
         border: 1px solid #e0e0e0;
-        border-radius: 3px;
+        border-radius: .25rem;
         box-shadow: none;
     }
 
     textarea {
         width: 100%;
         min-height: 10em;
-        //border: 0 none;
+        line-height: 1.5rem;
         outline: 0 none;
         resize: vertical;
         overflow: hidden;
@@ -3433,8 +3433,8 @@
 
     textarea.site-description {
         display: block;
-        padding: 1em;
-        //margin-top: 1em;
+        padding: 1rem;
+        line-height: 1.5rem;
         width: 100%;
         max-width: 100%;
         min-height: 240px;
@@ -3457,9 +3457,8 @@
         outline: 0 none;
         box-shadow: none;
         border: 1px solid rgb(224,224,224);
-        padding: 1em 0 1em 1em;
-        //margin-bottom: 1em;
-        font-size: 1.2em;
+        padding: 1rem;
+        font-size: 1.125rem;
         background: #f9f9f9;
         box-sizing: border-box;
         transition: all 300ms ease 0s;
@@ -3578,16 +3577,8 @@
         padding-bottom: 1em;
     }
 
-    .form-element input {
-        //margin-top: 1em;
-    }
-
-    .form-element:first-of-type {
-        //margin-top: 0;
-    }
-
     textarea {
-        font-size: 1.2em;
+        font-size: 1.125rem;
         transition: all 300ms ease 0s;
     }
 
@@ -3622,7 +3613,7 @@
     .search-bar input {
         border: 0 none;
         background: transparent;
-        padding: 1em 0;
+        padding: 1rem 0;
         border-bottom: 1px solid rgb(224,224,224);
     }
 
@@ -3640,8 +3631,8 @@
     .meta-label {
         display: block;
         position: absolute;
-        left: 1.2em;
-        top: 1.2em;
+        left: 1rem;
+        top: 1rem;
         //font-weight: 700;
         opacity: 1;
         transition: opacity 400ms ease 0s;
@@ -3649,7 +3640,8 @@
 
     .form-element input,
     .form-element textarea {
-        padding-top: 2.8em;
+        padding-top: 3rem;
+        line-height: 1.5rem;
     }
 
     .dirty .meta-label {
@@ -4149,7 +4141,7 @@
 
         textarea {
             //font-family: sans-serif;
-            font-size: 1em;
+            font-size: 1.125rem;
             padding: 1em 4em 1em 1em;
         }
     }
@@ -4398,6 +4390,7 @@
                             padding: 0.5em 1em;
                             border-radius: 3px;
                             color: #fff;
+                            text-decoration: none !important;
                         }
 
                     }
@@ -4638,6 +4631,7 @@
                                 padding: 0.5em 1em;
                                 border-radius: 3px;
                                 color: #fff;
+                                text-decoration: none !important;
                             }
 
                         }
@@ -4930,6 +4924,7 @@
                             padding: 0.5em 1em;
                             border-radius: 3px;
                             color: #fff;
+                            text-decoration: none !important;
                         }
 
                     }
@@ -5221,6 +5216,7 @@
                                 padding: 0.5em 1em;
                                 border-radius: 3px;
                                 color: #fff;
+                                text-decoration: none !important;
                             }
 
                         }

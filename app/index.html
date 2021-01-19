@@ -47,11 +47,11 @@
         <base href="/" />
 
         <!-- Google Tag Manager -->
-            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-PG8N4PR');</script>
+<!--            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':-->
+<!--            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],-->
+<!--            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=-->
+<!--            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);-->
+<!--            })(window,document,'script','dataLayer','GTM-PG8N4PR');</script>-->
 
         <!-- End Google Tag Manager -->
 
@@ -60,7 +60,6 @@
     <body class="{{ $root.page.class }}">
 
         <div data-ng-view=""></div>
-
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
         <script>
@@ -176,6 +175,7 @@
         <script src="modules/components/organization/organizationEdit--controller.js"></script>
         <script src="modules/components/organization/organizationProfile--controller.js"></script>
         <script src="modules/components/organization/orgList--controller.js"></script>
+        <script src="modules/components/organization/orgImage--controller.js"></script>
 
         <!-- Projects Module -->
         <script src="modules/components/projects/projects--routes.js"></script>
@@ -207,12 +207,13 @@
 
         <!-- Account Module -->
         <script src="modules/components/account/account--routes.js"></script>
-        <script src="modules/components/account/accountEdit--controller.js"></script>
+        <script src="modules/components/account/account--controller.js"></script>
+        <script src="modules/components/account/accountSettings--controller.js"></script>
         <!--     <script src="modules/components/account/accountProfileView--controller.js"></script> -->
 
         <!-- Profile Module -->
         <script src="modules/components/profile/profile--routes.js"></script>
-        <script src="modules/components/profile/profileView--controller.js"></script>
+        <script src="modules/components/profile/userProfile--controller.js"></script>
 
         <!-- Sites Module -->
         <script src="modules/components/sites/sites--routes.js"></script>
@@ -316,6 +317,26 @@
         <script src="modules/components/exports/export--routes.js"></script>
         <script src="modules/components/exports/exportList--controller.js"></script>
 
+        <!-- Atlas Module -->
+        <script src="modules/components/atlas/atlas--routes.js"></script>
+        <script src="modules/components/atlas/atlas--controller.js"></script>
+        <script src="modules/components/atlas/atlasMapManager--service.js"></script>
+        <script src="modules/components/atlas/atlasDataManager--service.js"></script>
+        <script src="modules/components/atlas/layerUtil--service.js"></script>
+        <script src="modules/components/atlas/sourceUtil--service.js"></script>
+        <script src="modules/components/atlas/popupUtil--service.js"></script>
+        <script src="modules/components/atlas/mapUtil--service.js"></script>
+        <script src="modules/components/atlas/atlasLayoutUtil--service.js"></script>
+        <script src="modules/components/atlas/labelLayer--service.js"></script>
+        <script src="modules/components/atlas/dataLayer--service.js"></script>
+        <script src="modules/components/atlas/zoomUtil--service.js"></script>
+
+        <!-- Map Module -->
+        <script src="modules/components/map/map--routes.js"></script>
+        <script src="modules/components/map/mapEdit--controller.js"></script>
+        <script src="modules/components/map/mapImage--controller.js"></script>
+        <script src="modules/components/map/mapSummary--controller.js"></script>
+
         <!-- Mapbox Module -->
         <script src="modules/shared/mapbox/mapbox--module.js"></script>
         <script src="modules/shared/mapbox/mapbox--constant.js"></script>
@@ -393,6 +414,10 @@
         <script src="modules/shared/api/batch--service.js"></script>
         <script src="modules/shared/api/importTpl--service.js"></script>
         <script src="modules/shared/api/export--service.js"></script>
+        <script src="modules/shared/api/membership--service.js"></script>
+        <script src="modules/shared/api/map--service.js"></script>
+        <script src="modules/shared/api/drexel--service.js"></script>
+        <script src="modules/shared/api/waterReporter--service.js"></script>
 
         <!-- Factories -->
 
@@ -436,11 +461,20 @@
 
         <script src="modules/shared/directives/table-view/tableView--directive.js"></script>
 
+        <script src="modules/shared/directives/table-view/memberTable--directive.js"></script>
+
         <script src="modules/shared/directives/dialog/deletion/deletionDialog--directive.js"></script>
 
         <script src="modules/shared/directives/dialog/export/exportDialog--directive.js"></script>
 
         <script src="modules/shared/directives/dialog/image/imageUploadDialog--directive.js"></script>
+
+        <script src="modules/shared/directives/dialog/image/imageEditDialog--directive.js"></script>
+
+        <!-- Member management -->
+        <script src="modules/shared/directives/dialog/member/confirm/confirmMemberDialog--directive.js"></script>
+        <script src="modules/shared/directives/dialog/member/revoke/revokeMemberDialog--directive.js"></script>
+        <script src="modules/shared/directives/dialog/member/role/memberRoleDialog--directive.js"></script>
 
         <!-- Filters -->
         <script src="modules/shared/filters/toAcres--filter.js"></script>
@@ -454,6 +488,9 @@
         <script src="modules/shared/filters/localTime--filter.js"></script>
         <script src="modules/shared/filters/elapsedTime--filter.js"></script>
         <script src="modules/shared/filters/fileSize--filter.js"></script>
+        <script src="modules/shared/filters/boolToString--filter.js"></script>
+        <script src="modules/shared/filters/browserName--filter.js"></script>
+        <script src="modules/shared/filters/platformName--filter.js"></script>
         <!-- endbuild -->
 
     </body>

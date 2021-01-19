@@ -107,7 +107,8 @@
                 white-space: nowrap;
                 overflow: hidden;
 
-                span {
+                span,
+                .ellipsize {
                     display: block;
                     //width: 100%;
                     text-overflow: ellipsis;

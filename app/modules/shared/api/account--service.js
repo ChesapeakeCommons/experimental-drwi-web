@@ -22,11 +22,10 @@
                     return false;
                 }
 
-                var $promise = User.single({
-                    id: userId
-                });
+                var $promise = User.me();
 
                 return $promise;
+
             };
 
             Account.setUserId = function() {
@@ -41,6 +40,7 @@
                 });
 
                 return $promise;
+
             };
 
             Account.hasToken = function() {

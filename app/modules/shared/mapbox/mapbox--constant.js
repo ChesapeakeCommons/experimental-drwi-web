@@ -20,13 +20,14 @@ angular.module('Mapbox')
                 'name': 'Satellite',
                 'url': 'mapbox://styles/mapbox/satellite-streets-v11'
             },
-            {
-                'name': 'Outdoors',
-                'url': 'mapbox://styles/mapbox/outdoors-v11'
-            }
+            // {
+            //     'name': 'Outdoors',
+            //     'url': 'mapbox://styles/mapbox/outdoors-v11'
+            // }
         ],
         defaultOptions: {
             center: [0, 0], // starting position [lng, lat]
-            zoom: 2 // starting zoom
+            zoom: 2, // starting zoom,
+            maxZoom: 20
         }
     });

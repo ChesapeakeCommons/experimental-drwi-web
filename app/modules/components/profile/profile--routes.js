@@ -10,26 +10,10 @@
     angular.module('FieldDoc')
         .config(function($routeProvider, environment) {
 
-
-              $routeProvider
+            $routeProvider
                 .when('/profile/:id', {
-                    templateUrl: '/modules/components/profile/views/profileView--view.html?t=' + environment.version,
-                    controller: 'ProfileViewController',
-                    controllerAs: 'page',
-                    resolve: {
-                        user: function(Account, $rootScope, $document) {
-
-                            $rootScope.targetPath = document.location.pathname;
-
-                            return Account.getUser();
-
-                        }
-                    }
-                }),
-                $routeProvider
-                .when('/profile/', {
-                    templateUrl: '/modules/components/profile/views/profileView--view.html?t=' + environment.version,
-                    controller: 'ProfileViewController',
+                    templateUrl: '/modules/components/profile/views/userProfile--view.html?t=' + environment.version,
+                    controller: 'UserProfileController',
                     controllerAs: 'page',
                     resolve: {
                         user: function(Account, $rootScope, $document) {

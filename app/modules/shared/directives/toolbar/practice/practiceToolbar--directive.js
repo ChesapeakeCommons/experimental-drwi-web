@@ -13,8 +13,9 @@
             '$location',
             'Practice',
             '$timeout',
+            'AtlasDataManager',
             function (environment, $window, $rootScope, $routeParams, $filter,
-                      $parse, $location, Practice, $timeout) {
+                      $parse, $location, Practice, $timeout, AtlasDataManager) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -88,6 +89,16 @@
                         scope.toggleExportModal = function() {
 
                             scope.showExportDialog = !scope.showExportDialog;
+
+                        };
+
+                        //
+                        // Handling for image modal.
+                        //
+
+                        scope.toggleImageModal = function() {
+
+                            scope.showImageModal = !scope.showImageModal;
 
                         };
 
@@ -254,6 +265,16 @@
                             });
 
                         };
+
+                        scope.$watch('practice', function (newVal) {
+
+                            if (newVal) {
+
+                                scope.atlasParams = AtlasDataManager.createURLData(newVal);
+
+                            }
+
+                        });
 
                     }
 

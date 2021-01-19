@@ -33,9 +33,11 @@
             </div>
 
             <div class="collection-filter-group"
-                 data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">
+                 data-ng-if="!page.status.loading">
 
-                <div collection-filter collection="program"
+                <div data-ng-if="page.programs.length"
+                     collection-filter
+                     collection="program"
                      features="page.programs"
                      display-states="page.showModal"
                      params="page.queryParams"

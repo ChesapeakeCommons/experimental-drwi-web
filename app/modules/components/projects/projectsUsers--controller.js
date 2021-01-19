@@ -223,7 +223,6 @@
                         'tags',
                         'targets',
                         'tasks',
-                        'type',
                         'sites'
                     ].join(',');
 
@@ -338,6 +337,39 @@
 
                 };
 
+                self.loadMembers = function () {
+
+                    Project.members({
+                        id: $route.current.params.projectId
+                    }).$promise.then(function(successResponse) {
+
+                        console.log('self.project', successResponse);
+
+                        self.project = successResponse;
+
+                        self.permissions = successResponse.permissions;
+
+                        self.permissions.can_edit = successResponse.permissions.write;
+                        self.permissions.can_delete = successResponse.permissions.write;
+
+                        $rootScope.page.title = self.project.name;
+
+                        self.members = self.project.members;
+
+                        console.log('tempOwners', self.tempOwners);
+
+                        self.showElements();
+
+                    }, function(errorResponse) {
+
+                        console.error('Unable to load request project');
+
+                        self.showElements();
+
+                    });
+
+                };
+
                 //
                 // Verify Account information for proper UI element display
                 //
@@ -347,49 +379,10 @@
 
                         $rootScope.user = Account.userObject = userResponse;
 
-                        self.permissions = {
-                            can_edit: false
-                        };
+                        self.permissions = {};
 
-                        //
-                        // Assign project to a scoped variable
-                        //
-                        Project.members({
-                            id: $route.current.params.projectId
-                            // exclude: exclude
-                        }).$promise.then(function(successResponse) {
+                        self.loadMembers();
 
-                            console.log('self.project', successResponse);
-
-                            self.project = successResponse;
-
-                            if (!successResponse.permissions.read &&
-                                !successResponse.permissions.write) {
-
-                                self.makePrivate = true;
-
-                            } else {
-
-                                self.permissions.can_edit = successResponse.permissions.write;
-                                self.permissions.can_delete = successResponse.permissions.write;
-
-                                $rootScope.page.title = self.project.name;
-
-                                self.tempOwners = self.project.members;
-
-                                console.log('tempOwners', self.tempOwners);
-
-                            }
-
-                            self.showElements();
-
-                        }, function(errorResponse) {
-
-                            console.error('Unable to load request project');
-
-                            self.showElements();
-
-                        });
 
                     });
 

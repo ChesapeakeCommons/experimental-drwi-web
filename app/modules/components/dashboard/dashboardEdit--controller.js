@@ -65,7 +65,7 @@ angular.module('FieldDoc')
 
                 }).catch(function(errorResponse) {
 
-                    $log.error('Unable to load dashboard');
+                    console.log('Unable to load dashboard');
 
                     self.status.processing = false;
 

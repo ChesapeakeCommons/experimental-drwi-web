@@ -307,10 +307,14 @@ angular.module('FieldDoc')
 
                     var programs = Utility.extractUserPrograms($rootScope.user);
 
-                    programs.unshift({
-                        id: 0,
-                        name: 'All'
-                    });
+                    if (programs.length) {
+
+                        programs.unshift({
+                            id: 0,
+                            name: 'All'
+                        });
+
+                    }
 
                     self.programs = programs;
 

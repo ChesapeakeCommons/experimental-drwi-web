@@ -9,6 +9,20 @@
         <span>/</span>
     </div>
     <div class="no-shrink anchor"
+         data-ng-if="organization && organization.id">
+        <a href="/organizations">
+            Organizations
+        </a>
+        <span>/</span>
+    </div>
+    <div class="no-shrink anchor"
+         data-ng-if="organization && organization.id">
+        <a href="/organizations/{{ organization.id }}">
+            {{ organization.name }}
+        </a>
+        <span>/</span>
+    </div>
+    <div class="no-shrink anchor"
          data-ng-if="tail && tail.length">
         {{ tail }}
     </div>

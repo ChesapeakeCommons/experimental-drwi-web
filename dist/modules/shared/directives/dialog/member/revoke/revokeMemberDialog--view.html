@@ -1,0 +1,49 @@
+<div class="creation-dialog-container import-dialog-container"
+     data-ng-if="visible">
+    <div class="dialog">
+        <div class="title">
+            <span class="title-text">Revoke membership</span>
+            <div class="dismiss-container">
+                <div class="dismiss" data-ng-click="closeChildModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs">
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'organization'">
+                You’re about to remove <strong>{{ feature.user.name }}</strong> from this organization. They will be
+                unable to view or modify this organization’s data and settings, including projects. (The user
+                can still be given direct collaborator access on individual projects). Do you want to proceed?
+            </p>
+            <p class="prompt" style="word-break: break-word;"
+               data-ng-if="parentType === 'project'">
+                You’re about to remove <strong>{{ feature.user.name }}</strong> from this project. They will be
+                unable to view or modify its data and settings, including sites, practices, and reports. Do you
+                want to proceed?
+            </p>
+        </div>
+        <div class="dyad">
+            <div class="download-wrapper">
+                <button type="button" class="download-tpl"
+                     data-ng-click="closeChildModal()">
+                    No, maintain access
+                </button>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="confirm-delete" data-ng-class="{complete: uploadComplete}"
+                        data-ng-click="deleteFeature()">
+                    <span data-ng-if="!processing">
+                        Yes, remove access
+                    </span>
+                    <span data-ng-if="processing">
+                        {{ progressMessage }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
