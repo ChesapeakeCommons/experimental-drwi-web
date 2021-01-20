@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1610746374669})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1611154424132})
 
 ;
 /**
@@ -37909,6 +37909,13 @@ angular.module('FieldDoc')
                                 +nodeTokens[1]
                             );
 
+                            LayerUtil.fetchCustomLayers(
+                                nodeTokens[0],
+                                nodeTokens[1],
+                                self.layers,
+                                self.map
+                            );
+
                         }
 
                     );
@@ -38870,7 +38877,8 @@ angular.module('FieldDoc')
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerUtil', function(LabelLayer) {
+    .service('LayerUtil',
+        function(LabelLayer, LayerService) {
 
         var EMPTY_SOURCE = {
             type: 'geojson',
@@ -39045,6 +39053,100 @@ angular.module('FieldDoc')
                 }
 
                 return vals;
+
+            },
+            addCustomLayers: function(features, layers, map) {
+
+                features.forEach(function(feature) {
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> feature',
+                        feature);
+
+                    var spec = feature.layer_spec || {};
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> spec',
+                        spec);
+
+                    feature.spec = spec;
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> feature.spec',
+                        feature.spec);
+
+                    if (!feature.selected ||
+                        typeof feature.selected === 'undefined') {
+
+                        feature.selected = false;
+
+                    } else {
+
+                        feature.spec.layout.visibility = 'visible';
+
+                    }
+
+                    if (feature.spec.id) {
+
+                        //
+                        // Append config item to layer control array.
+                        //
+
+                        var data = {
+                            id: feature.spec.id,
+                            name: feature.name,
+                            selected: feature.selected,
+                            symbol: feature.symbol
+                        };
+
+                        layers.push(data);
+
+                        try {
+
+                            //
+                            // Add custom layers below practice features.
+                            //
+
+                            map.addLayer(feature.spec, 'practice-index');
+
+                        } catch (error) {
+
+                            console.log(
+                                'LayerUtil.addCustomLayers --> error',
+                                error);
+
+                        }
+
+                    }
+
+                });
+
+            },
+            fetchCustomLayers: function (featureType, featureId,
+                                         layers, map) {
+
+                var mod = this;
+
+                var origin = featureType + ':' + featureId;
+
+                LayerService.collection({
+                    origin: origin,
+                    sort: 'index'
+                }).$promise.then(function(successResponse) {
+
+                    console.log(
+                        'LayerUtil.fetchCustomLayers --> successResponse',
+                        successResponse);
+
+                    mod.addCustomLayers(successResponse.features, layers, map);
+
+                }, function(errorResponse) {
+
+                    console.log(
+                        'LayerUtil.fetchCustomLayers --> errorResponse',
+                        errorResponse);
+
+                });
 
             },
             removeAll: function() {
@@ -40412,9 +40514,9 @@ angular.module('FieldDoc')
                     'type': 'circle',
                     'minzoom': zoomConfig.station.min,
                     'maxzoom': zoomConfig.station.max,
-                    'layout': {
-                        'visibility': 'none'
-                    },
+                    // 'layout': {
+                    //     'visibility': 'none'
+                    // },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -40448,15 +40550,15 @@ angular.module('FieldDoc')
                         'visibility': 'visible'
                     },
                     'paint': {
-                        'fill-pattern': 'diagonal-pattern'
-                        // 'fill-color': [
-                        //     'case',
-                        //     ['boolean', ['feature-state', 'focus'], false],
-                        //     '#C81E1E',
-                        //     '#3fd48a'
-                        // ],
-                        // 'fill-opacity': 0.4,
-                        // 'fill-outline-color': '#005e7d'
+                        // 'fill-pattern': 'diagonal-pattern'
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
                     }
                 },
                 beforeId: 'project-index'

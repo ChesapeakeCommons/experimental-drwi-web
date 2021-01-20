@@ -819,6 +819,13 @@ angular.module('FieldDoc')
                                 +nodeTokens[1]
                             );
 
+                            LayerUtil.fetchCustomLayers(
+                                nodeTokens[0],
+                                nodeTokens[1],
+                                self.layers,
+                                self.map
+                            );
+
                         }
 
                     );

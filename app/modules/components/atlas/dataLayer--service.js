@@ -108,9 +108,9 @@ angular.module('FieldDoc')
                     'type': 'circle',
                     'minzoom': zoomConfig.station.min,
                     'maxzoom': zoomConfig.station.max,
-                    'layout': {
-                        'visibility': 'none'
-                    },
+                    // 'layout': {
+                    //     'visibility': 'none'
+                    // },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -144,15 +144,15 @@ angular.module('FieldDoc')
                         'visibility': 'visible'
                     },
                     'paint': {
-                        'fill-pattern': 'diagonal-pattern'
-                        // 'fill-color': [
-                        //     'case',
-                        //     ['boolean', ['feature-state', 'focus'], false],
-                        //     '#C81E1E',
-                        //     '#3fd48a'
-                        // ],
-                        // 'fill-opacity': 0.4,
-                        // 'fill-outline-color': '#005e7d'
+                        // 'fill-pattern': 'diagonal-pattern'
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
                     }
                 },
                 beforeId: 'project-index'

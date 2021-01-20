@@ -8,7 +8,8 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerUtil', function(LabelLayer) {
+    .service('LayerUtil',
+        function(LabelLayer, LayerService) {
 
         var EMPTY_SOURCE = {
             type: 'geojson',
@@ -183,6 +184,100 @@ angular.module('FieldDoc')
                 }
 
                 return vals;
+
+            },
+            addCustomLayers: function(features, layers, map) {
+
+                features.forEach(function(feature) {
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> feature',
+                        feature);
+
+                    var spec = feature.layer_spec || {};
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> spec',
+                        spec);
+
+                    feature.spec = spec;
+
+                    console.log(
+                        'LayerUtil.addCustomLayers --> feature.spec',
+                        feature.spec);
+
+                    if (!feature.selected ||
+                        typeof feature.selected === 'undefined') {
+
+                        feature.selected = false;
+
+                    } else {
+
+                        feature.spec.layout.visibility = 'visible';
+
+                    }
+
+                    if (feature.spec.id) {
+
+                        //
+                        // Append config item to layer control array.
+                        //
+
+                        var data = {
+                            id: feature.spec.id,
+                            name: feature.name,
+                            selected: feature.selected,
+                            symbol: feature.symbol
+                        };
+
+                        layers.push(data);
+
+                        try {
+
+                            //
+                            // Add custom layers below practice features.
+                            //
+
+                            map.addLayer(feature.spec, 'practice-index');
+
+                        } catch (error) {
+
+                            console.log(
+                                'LayerUtil.addCustomLayers --> error',
+                                error);
+
+                        }
+
+                    }
+
+                });
+
+            },
+            fetchCustomLayers: function (featureType, featureId,
+                                         layers, map) {
+
+                var mod = this;
+
+                var origin = featureType + ':' + featureId;
+
+                LayerService.collection({
+                    origin: origin,
+                    sort: 'index'
+                }).$promise.then(function(successResponse) {
+
+                    console.log(
+                        'LayerUtil.fetchCustomLayers --> successResponse',
+                        successResponse);
+
+                    mod.addCustomLayers(successResponse.features, layers, map);
+
+                }, function(errorResponse) {
+
+                    console.log(
+                        'LayerUtil.fetchCustomLayers --> errorResponse',
+                        errorResponse);
+
+                });
 
             },
             removeAll: function() {
