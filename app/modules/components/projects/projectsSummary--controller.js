@@ -46,6 +46,10 @@ angular.module('FieldDoc')
                 loading: true
             };
 
+            self.programSummary = {
+                program_count : 0
+            };
+
             self.print = function() {
 
                 $window.print();
@@ -212,9 +216,21 @@ angular.module('FieldDoc')
 
                         self.atlasParams = AtlasDataManager.createURLData(self.project);
 
+                        /*programs will need to be redefined using project.programs*/
+
+                        self.programs = successResponse.organization.programs;
+
+                        console.log("self.programs-->",self.programs);
+
+                        self.programSummary.program_count = self.programs.length;
+
+                        if(self.programs.length > 0 && self.currentProgram == undefined){
+                            self.currentProgram = self.programs[0];
+                        }
+
                         $rootScope.page.title = 'Project Summary';
 
-                        self.loadMetrics();
+                        self.loadMetrics(self.project.id,self.currentProgram.program_id);
 
                         self.loadSites();
 
@@ -916,7 +932,7 @@ angular.module('FieldDoc')
 
                 var progressPoll = $interval(function() {
 
-                    self.loadMetrics();
+                    self.loadMetrics(self.project.id,self.currentProgram.program_id);
 
                 }, 4000);
 
@@ -928,10 +944,24 @@ angular.module('FieldDoc')
 
             };
 
-            self.loadMetrics = function() {
+            $scope.loadMetrics = self.loadMetrics = function(project_id,program_id) {
+
+                console.log("project_id-->",project_id);
+                console.log("program_id-->",program_id);
+
+                for(let program of self.programs){
+
+                    if (program.program_id === program_id) {
+
+                        self.currentProgram = program;
+
+                        break;
+                    }
+
+                }
 
                 Project.progress({
-                    id: self.project.id
+                    id: project_id
                 }).$promise.then(function(successResponse) {
 
                     console.log('Project metrics', successResponse);
