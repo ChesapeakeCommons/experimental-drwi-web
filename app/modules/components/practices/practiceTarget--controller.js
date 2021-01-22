@@ -8,10 +8,13 @@
 angular.module('FieldDoc')
     .controller('PracticeTargetController',
         function($scope, Account, $location, $log, Practice,
+                 Organization, QueryParamManager,
                  $rootScope, $route, user, FilterStore, $timeout, SearchService,
                  MetricType, Model, $filter, $interval, Program) {
 
             var self = this;
+
+            console.log("RELOAD RELOAD RELOAD ????");
 
             $rootScope.viewState = {
                 'practice': true
@@ -26,6 +29,9 @@ angular.module('FieldDoc')
             self.searchScope = {
                 target: 'metric'
             };
+
+
+            self.showModal = {}
 
             self.status = {
                 processing: true
@@ -42,6 +48,10 @@ angular.module('FieldDoc')
             self.metricMatrix = [];
 
             self.activeDomain = [];
+
+            self.summary = {
+                program_count : 0
+            };
 
             function closeRoute() {
 
@@ -77,9 +87,9 @@ angular.module('FieldDoc')
 
                     self.loadModels(activeDomain);
 
-                    console.log("LoadMatrix", successResponse);
+               //     console.log("LoadMatrix", successResponse);
 
-                    console.log("self.practice.calculating",self.practice.calculating);
+               //     console.log("self.practice.calculating",self.practice.calculating);
 
 
 
@@ -160,6 +170,8 @@ angular.module('FieldDoc')
 
                     self.processPractice(successResponse);
 
+                    self.organization = successResponse.organization;
+
                     console.log("practice response",successResponse)
 
                     if (!successResponse.permissions.read &&
@@ -174,7 +186,12 @@ angular.module('FieldDoc')
 
                     self.calculating = true;
 
-                    self.loadMetrics();
+                    /*organization programs will need to be redefined using project.programs*/
+
+                    self.loadOrganization(self.organization.id);
+
+
+
 
                 }).catch(function(errorResponse) {
 
@@ -321,6 +338,49 @@ angular.module('FieldDoc')
             };
 
             /*
+            START Program context switch logic
+            Note: we are currently loading in Organization Programs
+            This is to be replaced with
+             */
+
+
+            self.loadOrganization = function(organizationId) {
+
+                Organization.profile({
+                    id: organizationId
+                }).$promise.then(function(successResponse) {
+
+                    console.log('self.organization', successResponse);
+
+                    self.feature = successResponse;
+
+                    self.programs = successResponse.programs;
+
+                    self.summary.program_count = self.programs.length;
+
+                    if(self.programs.length > 0 && self.currentProgram == undefined){
+                        self.currentProgram = self.programs[0];
+                    }
+
+                    self.loadMetrics(self.practice.id,self.currentProgram.program_id);
+
+                    self.status.loading = false;
+
+                }, function(errorResponse) {
+
+                    console.error('Unable to load organization.');
+
+                    self.status.loading = false;
+
+                });
+
+            };
+
+            /*
+            END Program context switch logic
+             */
+
+            /*
             START Custom Extent Logic
             */
 
@@ -375,12 +435,24 @@ angular.module('FieldDoc')
 
             };
 
-            self.loadMetrics = function(){
 
-                console.log("LoadMetrics A");
+            $scope.loadMetrics = self.loadMetrics = function(practice_id,program_id){
+
+                // loop over programs to see if currentProgram is currently set.
+
+                for(let program of self.programs){
+
+                    if (program.program_id === program_id) {
+
+                        self.currentProgram = program;
+
+                        break;
+                    }
+
+                }
 
                 Practice.metrics({
-                    id: self.practice.id
+                    id: practice_id
                 }).$promise.then(function(successResponse){
 
                     console.log("loadMetrics",successResponse);
@@ -398,10 +470,7 @@ angular.module('FieldDoc')
 
                     self.programMetrics.forEach(function(metric) {
 
-                        console.log("1");
-
                         if(metric.automated === true && metric.capture_extent === true){
-                            console.log("2");
 
                             self.programMetrics.splice(i,1);
 
@@ -424,7 +493,9 @@ angular.module('FieldDoc')
                         self.assignedMetrics.forEach(function(aMetric){
 
                             if(pMetric.id === aMetric.id){
+
                                 metricAssigned = true;
+
                             }
 
                         });
@@ -447,8 +518,6 @@ angular.module('FieldDoc')
 
                     });
 
-                 //   console.log("self.assignedMetrics",self.assignedMetrics);
-                 //   console.log("self.programMetrics",self.programMetrics);
                     self.assignedMetrics.forEach(function(am){
 
                         self.activeDomain.push(am.id);
@@ -465,35 +534,34 @@ angular.module('FieldDoc')
                             i = i+1;
                         });
 
-                        //
-
                     });
 
                     self.loadModels(self.activeDomain);
 
                     self.calculating = false;
 
-                    //    console.log("self.info",self.info);
-                    //     console.log("self.programMetrics",self.programMetrics);
-
                 },function(errorResponse){
+
                     console.log("loadMetrics error",errorResponse);
                 });
+
             };
 
             self.bgLoadMetrics = function(){
-                console.log("BG LOAD MATRIX", self.calculating);
 
-                //self.practice.calculating
                 if(self.calculating == true){
-                    console.log("Checking Practice");
+
                     var timer = setTimeout(function(){
+
                         self.checkStatus();
 
                     }, 2000);
+
                 }else{
+
                     clearTimeout(timer);
-                    self.loadMetrics();
+
+                    self.loadMetrics(self.practice.id);
                 }
 
             };
@@ -730,6 +798,8 @@ angular.module('FieldDoc')
                 $location.path('/logout');
 
             }
+
+
 
             $scope.$on('$destroy', function () { $interval.cancel(matrixLoadInterval); });
 
