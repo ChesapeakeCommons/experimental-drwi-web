@@ -9,7 +9,7 @@
      */
     angular.module('FieldDoc')
         .controller('ReportEditController',
-            function(Account, $location, MetricType,
+            function(Account, $location, MetricType, Organization,
                 Practice, Report, ReportMetric, ReportMonitoring, report,
                 $rootScope, $route, $scope, user, Utility,
                 $timeout, report_metrics, $filter, $interval, Program) {
@@ -38,6 +38,10 @@
                 };
 
                 self.alerts = [];
+
+                self.programSummary = {
+                    program_count : 0
+                };
 
                 self.closeAlerts = function() {
 
@@ -82,7 +86,7 @@
 
                 };
 
-                self.loadMetrics = function() {
+                $scope.loadMetrics = self.loadMetrics = function() {
 
                     Report.metrics({
                         id: $route.current.params.reportId
@@ -272,13 +276,26 @@
 
                 };
 
-                self.loadMatrix = function() {
+                $scope.loadMatrix = self.loadMatrix = function(report_id, program_id) {
+
+                    // loop over programs to see if currentProgram is currently set.
+
+                    for(let program of self.programs){
+
+                        if (program.program_id === program_id) {
+
+                            self.currentProgram = program;
+
+                            break;
+                        }
+
+                    }
 
                     //
                     // Assign practice to a scoped variable
                     //
                     Report.targetMatrix({
-                        id: self.report.id,
+                        id: report_id,
                         simple_bool: 'true'
                     }).$promise.then(function(successResponse) {
 
@@ -295,6 +312,8 @@
                         successResponse.active = activeTargets;
 
                         self.targets = successResponse;
+
+                        console.log("self.targets",self.targets);
 
                         self.showElements();
 
@@ -337,7 +356,8 @@
 
                         }
 
-                        self.loadMatrix();
+                        self.loadOrganization(self.practice.organization.id);
+
 
                         // self.loadMetricTypes(self.practice.project);
 
@@ -348,6 +368,51 @@
                     });
 
                 };
+
+                /*
+                START Program context switch logic
+                Note: we are currently loading in Organization Programs
+                This is to be replaced with
+                */
+
+                self.loadOrganization = function(organizationId) {
+
+                    Organization.profile({
+                        id: organizationId
+                    }).$promise.then(function(successResponse) {
+
+                        console.log('self.organization', successResponse);
+
+                        self.feature = successResponse;
+
+                        self.programs = successResponse.programs;
+
+                        self.programSummary.program_count = self.programs.length;
+
+                        if(self.programs.length > 0 && self.currentProgram == undefined){
+                            self.currentProgram = self.programs[0];
+                        }
+
+                        self.loadMetrics(self.practice.id,self.currentProgram.program_id);
+
+                        self.loadMatrix(self.report.id, self.currentProgram.program_id);
+
+                        self.status.loading = false;
+
+                    }, function(errorResponse) {
+
+                        console.error('Unable to load organization.');
+
+                        self.status.loading = false;
+
+                    });
+
+                };
+
+                /*
+                END Program context switch logic
+                 */
+
 
                 $scope.$watch(angular.bind(this, function() {
 

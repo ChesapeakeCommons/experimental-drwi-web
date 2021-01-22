@@ -112,6 +112,33 @@
 
                             <br/>
 
+                            <!-- START Program Context Switch Menu-->
+                            <div class="collection-filter-group"
+                                 data-ng-if="!page.status.loading"
+                                 style="margin-top:0px;">
+
+                                <div data-ng-if="page.programs.length"
+                                     style="margin-top:0px;"
+                                     program-context
+                                     collection="program"
+                                     features="page.programs"
+                                     antecedent="page.report"
+                                     display-states="page.showModal"
+                                     controller-method="loadMatrix" ></div>
+
+                                <h2 class="reveal fade-in t3" style="margin-left:-15px; margin-top:12px">
+
+                               <span class="tally" style="margin-left:-4px;margin-right:4px">
+                                    {{ page.programSummary.program_count | number }}
+                                </span>
+
+                                    {{page.currentProgram.program.name}}
+
+                                </h2>
+
+                            </div>
+                            <!-- END Program Context Switch Menu-->
+
                             <ul class="target-lst" data-ng-if="page.targets && page.targets.active.length">
                                 <li data-ng-repeat="target in page.targets.active" style="margin-bottom: 2rem;
                                 flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px;">
