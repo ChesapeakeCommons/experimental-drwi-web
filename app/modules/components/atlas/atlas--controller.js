@@ -17,6 +17,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.loadAllFeatures = false;
+
             self.urlComponents = LayerUtil.getUrlComponents();
 
             var DRAINAGE_ID = 'fd.drainage.polygon';
@@ -130,6 +132,37 @@ angular.module('FieldDoc')
                     self.status.processing = false;
 
                 }, 0);
+
+            };
+
+            self.toggleLayerConstraint = function () {
+
+                console.log(
+                    'toggleLayerConstraint:loadAllFeatures',
+                    self.loadAllFeatures
+                );
+
+                if (self.loadAllFeatures) {
+
+                    self.refreshFeatureLayers();
+
+                }
+
+            };
+
+            self.refreshFeatureLayers = function () {
+
+                if (!self.loadAllFeatures) return;
+
+                self.urlComponents.forEach(function (component) {
+
+                    $timeout(function () {
+
+                        self.updateNodeLayer(component[0], component[1]);
+
+                    }, 500);
+
+                });
 
             };
 
@@ -731,15 +764,7 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.urlComponents.forEach(function (component) {
-
-                        $timeout(function () {
-
-                            self.updateNodeLayer(component[0], component[1]);
-
-                        }, 500);
-
-                    });
+                    self.refreshFeatureLayers();
 
                 });
 

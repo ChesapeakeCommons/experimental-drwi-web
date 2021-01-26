@@ -23,12 +23,15 @@ angular.module('FieldDoc')
         var REFERENCE_SOURCES = {
             'empty': EMPTY_SOURCE,
             'fd.drainage.polygon': EMPTY_SOURCE,
+            'fd.practice.centroid': EMPTY_SOURCE,
             'fd.practice.point': EMPTY_SOURCE,
             'fd.practice.line': EMPTY_SOURCE,
             'fd.practice.polygon': EMPTY_SOURCE,
+            'fd.site.centroid': EMPTY_SOURCE,
             'fd.site.point': EMPTY_SOURCE,
             'fd.site.line': EMPTY_SOURCE,
             'fd.site.polygon': EMPTY_SOURCE,
+            // 'fd.project.centroid': EMPTY_SOURCE,
             'fd.project.point': EMPTY_SOURCE,
             // 'wr.post.point': EMPTY_SOURCE,
             'wr.station.point': EMPTY_SOURCE
@@ -111,9 +114,11 @@ angular.module('FieldDoc')
 
         var URL_COMPONENTS = [
             ['post', 'point'],
+            ['practice', 'centroid'],
             ['practice', 'line'],
             ['practice', 'point'],
             ['practice', 'polygon'],
+            ['site', 'centroid'],
             ['site', 'line'],
             ['site', 'point'],
             ['site', 'polygon'],

@@ -135,6 +135,36 @@ angular.module('FieldDoc')
             },
             {
                 config: {
+                    'id': 'fd.practice.centroid',
+                    'source': 'fd.practice.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
                     'id': 'fd.practice.polygon',
                     'source': 'fd.practice.polygon',
                     'type': 'fill',
@@ -258,6 +288,36 @@ angular.module('FieldDoc')
                 config: {
                     'id': 'fd.site.point',
                     'source': 'fd.site.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.centroid',
+                    'source': 'fd.site.centroid',
                     'type': 'circle',
                     'minzoom': zoomConfig.site.min + 1,
                     'maxzoom': zoomConfig.site.max + 1,

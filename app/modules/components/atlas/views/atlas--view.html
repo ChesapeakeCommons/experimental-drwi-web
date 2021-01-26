@@ -23,6 +23,20 @@
                 </i>
                 <div class="layer-group" style="font-weight: normal; font-size: 14px;"
                      data-ng-show="page.showLayerOptions">
+                    <div id="feature-scope" class="scope--control margin-0" style="padding: 0.5rem 0.75rem;
+                    border-bottom: 1px solid #e0e0e0;">
+                        <div style="display: inline-flex; flex-grow: 1;" class="pad-r-1">
+                            <strong>Show all my data</strong>
+                        </div>
+                        <label class="switch" style="flex-grow: 0; background: #FFFFFF; position: relative; display:
+                        inline-block;">
+                            <input type="checkbox"
+                                   data-ng-model="page.loadAllFeatures"
+                                   data-ng-checked="page.loadAllFeatures"
+                                   data-ng-change="page.toggleLayerConstraint()">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
                     <form>
                         <label data-ng-repeat="style in page.mapStyles"
                                data-ng-class="{'active': page.activeStyle === $index}"
