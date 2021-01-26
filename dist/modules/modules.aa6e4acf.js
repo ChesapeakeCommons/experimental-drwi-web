@@ -144,7 +144,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1605803029673})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1611695410072})
 
 ;
 /**
@@ -6130,6 +6130,10 @@ angular.module('FieldDoc')
                     Shapefile.upload({}, fileData, function(successResponse) {
 
                         console.log('successResponse', successResponse);
+
+                        self.showUploadModal = false;
+
+                        self.showChildModal = false;
 
                         self.uploadError = null;
 
@@ -13041,6 +13045,16 @@ angular.module('FieldDoc')
 
                 };
 
+                self.presentUploadModal = function(featureType) {
+
+                    if (featureType !== 'practice') return;
+
+                    self.showUploadModal = true;
+
+                    self.childType = featureType;
+
+                };
+
                 self.presentChildModal = function(featureType) {
 
                     if (featureType !== 'practice') return;
@@ -13949,6 +13963,10 @@ angular.module('FieldDoc')
                         Shapefile.upload({}, fileData, function(successResponse) {
 
                             console.log('successResponse', successResponse);
+
+                            self.showUploadModal = false;
+
+                            self.showChildModal = false;
 
                             self.uploadError = null;
 
@@ -37994,9 +38012,14 @@ angular
 
                     var modelSetter = model.assign;
 
-                    var handler = $parse(attrs.fileOnChange)
+                    var handler = $parse(attrs.fileOnChange);
 
                     element.bind('change', function() {
+
+                        console.log(
+                            'dir:fileUpload:model',
+                            model
+                        );
 
                         scope.$apply(function() {
 
@@ -41596,15 +41619,33 @@ angular.module('FieldDoc')
     .directive('fileModel', function($parse) {
         return {
             restrict: 'A',
+            scope: {
+                handler: '&'
+            },
             link: function(scope, element, attrs) {
+
                 var model = $parse(attrs.fileModel);
+
                 var modelSetter = model.assign;
 
                 element.bind('change', function() {
 
+                    console.log(
+                        'dir:fileModel:model',
+                        model
+                    );
+
                     scope.$apply(function() {
 
                         modelSetter(scope, element[0].files[0]);
+
+                        if (scope.handler) {
+
+                            scope.handler({
+                                files: element[0].files
+                            });
+
+                        }
 
                         var fileObject = element[0].files[0];
 
@@ -42998,7 +43039,7 @@ angular.module('FieldDoc')
                 return {
                     restrict: 'EA',
                     scope: {
-                        'featureType': '@',
+                        'featureType': '=?',
                         'model': '=?',
                         'formAction': '&',
                         'uploadError': '=?',
@@ -43040,13 +43081,28 @@ angular.module('FieldDoc')
 
                         };
 
+                        scope.setFiles = function(files) {
+
+                            scope.model = files[0];
+
+                        };
+
                         scope.uploadFile = function() {
 
                             scope.formAction({
-                                _page: scope.page
+                                _featureType: scope.featureType
                             });
 
                         };
+
+                        scope.$watch('model', function (newVal) {
+
+                            console.log(
+                                'batchUpload:model:',
+                                newVal
+                            );
+
+                        });
 
                     }
 

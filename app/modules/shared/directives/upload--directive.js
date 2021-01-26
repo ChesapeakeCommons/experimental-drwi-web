@@ -4,15 +4,33 @@ angular.module('FieldDoc')
     .directive('fileModel', function($parse) {
         return {
             restrict: 'A',
+            scope: {
+                handler: '&'
+            },
             link: function(scope, element, attrs) {
+
                 var model = $parse(attrs.fileModel);
+
                 var modelSetter = model.assign;
 
                 element.bind('change', function() {
 
+                    console.log(
+                        'dir:fileModel:model',
+                        model
+                    );
+
                     scope.$apply(function() {
 
                         modelSetter(scope, element[0].files[0]);
+
+                        if (scope.handler) {
+
+                            scope.handler({
+                                files: element[0].files
+                            });
+
+                        }
 
                         var fileObject = element[0].files[0];
 

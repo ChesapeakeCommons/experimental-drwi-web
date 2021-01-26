@@ -395,6 +395,14 @@
                         </span>
                         Create
                     </button>
+                    <button type="button"
+                            data-ng-click="page.presentUploadModal('practice')"
+                            data-ng-if="page.permissions.can_edit">
+                        <span class="material-icons margin-r-50p">
+                            cloud_upload
+                        </span>
+                        Upload file
+                    </button>
                 </div>
 
                 <div>
@@ -582,9 +590,9 @@
 
             <!-- Begin practice batch import -->
 
-            <div batch-upload feature-type="practice" form-action="page.uploadShapefile()"
-                 model="page.fileImport" upload-error="page.uploadError"
-                 data-ng-if="page.permissions.can_edit"></div>
+<!--            <div batch-upload feature-type="practice" form-action="page.uploadShapefile()"-->
+<!--                 model="page.fileImport" upload-error="page.uploadError"-->
+<!--                 data-ng-if="page.permissions.can_edit"></div>-->
 
             <!-- End practice batch import -->
 
@@ -676,6 +684,10 @@
             </div>
         </div>
     </div>
+
+    <div batch-upload feature-type="page.childType" form-action="page.uploadShapefile(page.childType)"
+         model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
+         data-ng-if="page.permissions.can_edit"></div>
 
     <div creation-dialog alerts="page.alerts" site="page.site.id" parent="page.site.project.id"
          organization="page.site.project.organization_id" type="page.childType" visible="page.showChildModal"></div>

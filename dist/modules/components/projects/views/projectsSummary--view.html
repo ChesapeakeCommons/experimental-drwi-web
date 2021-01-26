@@ -560,9 +560,9 @@
 
             <!-- Begin practice batch import -->
 
-            <div batch-upload feature-type="{{ page.childType }}" form-action="page.uploadShapefile('practice')"
-                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
-                 data-ng-if="page.permissions.can_edit"></div>
+<!--            <div batch-upload feature-type="practice" form-action="page.uploadShapefile('practice')"-->
+<!--                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"-->
+<!--                 data-ng-if="page.permissions.can_edit"></div>-->
 
             <!-- End practice batch import -->
 
@@ -775,9 +775,9 @@
 <!--                 model="page.fileImport" upload-error="page.uploadError"-->
 <!--                 data-ng-if="page.permissions.can_edit"></div>-->
 
-            <div batch-upload feature-type="{{ page.childType }}" form-action="page.uploadShapefile('site')"
-                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
-                 data-ng-if="page.permissions.can_edit"></div>
+<!--            <div batch-upload feature-type="site" form-action="page.uploadShapefile('site')"-->
+<!--                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"-->
+<!--                 data-ng-if="page.permissions.can_edit"></div>-->
 
             <!-- End site batch import -->
 
@@ -935,6 +935,10 @@
             </div>
         </div>
     </div>
+
+    <div batch-upload feature-type="page.childType" form-action="page.uploadShapefile(page.childType)"
+         model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
+         data-ng-if="page.permissions.can_edit"></div>
 
     <div creation-dialog alerts="page.alerts" parent="page.project.id" organization="page.project.organization_id"
          type="page.childType" visible="page.showChildModal"></div>

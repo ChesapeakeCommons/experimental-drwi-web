@@ -19,9 +19,14 @@
 
                     var modelSetter = model.assign;
 
-                    var handler = $parse(attrs.fileOnChange)
+                    var handler = $parse(attrs.fileOnChange);
 
                     element.bind('change', function() {
+
+                        console.log(
+                            'dir:fileUpload:model',
+                            model
+                        );
 
                         scope.$apply(function() {
 
