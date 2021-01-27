@@ -218,7 +218,9 @@
                     }
                 ];
 
+                self.autoSaving = false;
 
+                self.autoSaveStarted = false;
 
                 function parseISOLike(s) {
                     var b = s.split(/\D/);
@@ -273,6 +275,7 @@
                         'self.updateReportedTotal:target[2]',
                         target
                     );
+
 
                 };
 
@@ -334,6 +337,40 @@
 
                 };
 
+                self.processTargets = function(rawTargets){
+
+                    self.targets.compiled = [];
+
+                    let i = 0;
+
+                    rawTargets.active.forEach(function(target){
+
+                        self.targets.compiled[i] = target;
+
+                        i = i+1;
+
+                    });
+
+
+                    rawTargets.inactive.forEach(function(target){
+
+                        self.targets.compiled[i] = {
+                            "annotation" : null,
+                            "id" : null,
+                            "metric" : target,
+
+
+
+
+
+                        }
+
+                    });
+
+
+
+                }
+
                 self.loadPractice = function(practiceId) {
 
                     Practice.get({
@@ -393,7 +430,14 @@
                             self.currentProgram = self.programs[0];
                         }
 
-                        self.loadMetrics(self.practice.id,self.currentProgram.program_id);
+                        /* 01.26.2021 : this is a check to see if a program list exists,
+                                              once the db has been updated so all projects have a program list,
+                                              this check will be defunct.
+                                              It has been added here to enable debugging of other areas.
+                                           */
+                        if(self.programs[0] !== undefined) {
+                            self.loadMetrics(self.practice.id, self.currentProgram.program_id);
+                        }
 
                         self.loadMatrix(self.report.id, self.currentProgram.program_id);
 
@@ -591,6 +635,66 @@
 
                 };
 
+                /*
+                START AutoSave
+                */
+                self.autoSave = function(target){
+
+                   // self.updateReportedTotal(target);
+
+                    console.log("changed target-->",target);
+
+                    if(self.autoSaving == false){
+                        self.autoSaving = true;
+                       // $timeout(self.autoSaveLogic, 2000);
+                    }
+
+                    if(self.autoSaving == true && self.autoSaveStarted == false){
+
+                        self.autoSaveStarted = true;
+
+                        $timeout(self.autoSaveDelay, 1000);
+                    }
+
+                };
+
+                self.autoSaveDelay = function(){
+
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Saving target changes...',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.saveTargets, 1000);
+
+                };
+
+                /*
+                END AutoSave
+                */
+
+                self.removeTarget = function(item, idx) {
+
+                    if (typeof idx === 'number') {
+
+                        self.targets.active.splice(idx, 1);
+
+                        item.action = 'remove';
+
+                        item.value = null;
+
+                        self.targets.inactive.unshift(item);
+
+                    }
+
+                    console.log('Updated targets (removal)');
+
+                    self.saveTargets();
+
+                };
+
                 self.removeAll = function() {
 
                     self.targets.active.forEach(function(item) {
@@ -604,6 +708,8 @@
                 };
 
                 self.addTarget = function(item, idx) {
+
+                    console.log("$index -->",idx);
 
                     if (!item.value ||
                         typeof item.value !== 'number') {
@@ -632,26 +738,50 @@
                     }
 
                     console.log('Updated targets (addition)');
+                    console.log("self.targets-->",self.targets);
+
+                    self.saveTargets();
 
                 };
 
-                self.removeTarget = function(item, idx) {
+                self.autoFill = function(){
 
-                    if (typeof idx === 'number') {
+                    console.log("Auto Fill");
 
-                        self.targets.active.splice(idx, 1);
+                    self.targets.inactive.forEach(function(ia_target){
 
-                        item.action = 'remove';
+                        let item = ia_target;
 
-                        item.value = null;
+                        if (!item.value ||
+                            typeof item.value !== 'number') {
 
-                        self.targets.inactive.unshift(item);
+                            item.value = 0;
 
-                    }
+                        };
 
-                    console.log('Updated targets (removal)');
+                        item.action = 'add';
+
+                        if (!item.metric ||
+                            typeof item.metric === 'undefined') {
+
+                            item.metric_id = item.id;
+
+                            delete item.id;
+
+                        }
+
+                        self.targets.active.push(item);
+
+                    });
+
+                    self.targets.inactive = [];
+
+                    console.log("self.targets-->",self.targets);
+
+                    self.saveTargets();
 
                 };
+
 
                 self.processTargets = function(list) {
 
@@ -705,11 +835,14 @@
                             'prompt': 'OK'
                         }];
 
+                        self.loadMatrix(self.report.id, self.currentProgram.program_id);
+
                         $timeout(self.closeAlerts, 2000);
 
                         self.status.processing = false;
+                        self.autoSaving = false;
+                        self.autoSaveStarted = false;
 
-                        self.loadMatrix();
 
                     }).catch(function(error) {
 
@@ -727,6 +860,8 @@
                         $timeout(self.closeAlerts, 2000);
 
                         self.status.processing = false;
+                        self.autoSaving = false;
+                        self.autoSaveStarted = false;
 
                     });
 

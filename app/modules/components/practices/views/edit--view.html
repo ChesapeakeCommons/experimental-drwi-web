@@ -44,7 +44,7 @@
 
                 <div class="feature-detail-content">
 
-                    <form data-ng-submit="page.saveReport()" class="form" role="form" autocomplete="off">
+                    <form data-ng-submit="page.saveReport(); page.saveTargets();" class="form" role="form" autocomplete="off">
 
                         <div class="last-modified-summary">
 
@@ -80,27 +80,43 @@
                         <h2>
                             Report date and measurement period
                         </h2>
+                        <div style="min-width:300px;">
+                            <div class="form-element" style="width:30%; min-width:90px; float:left; margin-left:0%;margin-bottom: 0;">
+                                <span class="meta-label"><b>Month</b></span>
+                                <input id="report_date_month" name="report_date_month" type="text" value="page.date.month"
 
-                        <div class="form-element">
-                            <span class="meta-label"><b>Month</b></span>
-                            <input id="report_date_month" name="report_date_month" type="text" value="page.date.month"
-                                   data-ng-model="page.date.month"
-                                   uib-typeahead="month.name for month in page.months | filter:$viewValue | limitTo:5"
-                                   typeahead-min-length="0" typeahead-template-url="templates/search--tpl.html"
-                                   required="required">
+                                       data-ng-model="page.date.month"
+                                       uib-typeahead="month.name for month in page.months | filter:$viewValue | limitTo:5"
+                                       typeahead-min-length="0" typeahead-template-url="templates/search--tpl.html"
+                                       required="required">
+                            </div>
+
+                            <div class="form-element" style="width:30%; min-width:90px; float:left; margin-left:5%; margin-right:5%; margin-bottom: 0">
+                                <span class="meta-label"><b>Date</b></span>
+                                <input type="number" min="1" max="31" step="1" id="report_date_date" name="report_date_date"
+
+                                       data-ng-model="page.date.date"/>
+                            </div>
+
+                            <div class="form-element" style="width:30%; min-width:90px; float:left; margin-bottom: 0;">
+                                <span class="meta-label"><b>Year</b></span>
+                                <input number type="number" min="1900" step="1" id="report_date_year"
+
+                                       name="report_date_year" data-ng-model="page.date.year"/>
+                            </div>
+
+                            <div class="form-element" style="float:left; clear: left;">
+                                <span class="meta-label"><b>Notes</b></span>
+                                <textarea class="form-control" msd-elastic data-ng-model="page.report.notes"
+                                          maxlength="1000" rows="10" style="max-height:175px; min-height:175px;">{{ page.report.notes }}</textarea>
+                                <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+                                    Notes may contain up to 1,000 characters, including spaces and punctuation. <strong>({{
+                                    (page.report.notes.length || 0) | number }} used)</strong>
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="form-element">
-                            <span class="meta-label"><b>Date</b></span>
-                            <input type="number" min="1" max="31" step="1" id="report_date_date" name="report_date_date"
-                                   data-ng-model="page.date.date"/>
-                        </div>
 
-                        <div class="form-element">
-                            <span class="meta-label"><b>Year</b></span>
-                            <input number type="number" min="1900" step="1" id="report_date_year"
-                                   name="report_date_year" data-ng-model="page.date.year"/>
-                        </div>
 
                         <h2>Implementation progress</h2>
 
@@ -139,103 +155,279 @@
                             </div>
                             <!-- END Program Context Switch Menu-->
 
-                            <ul class="target-lst" data-ng-if="page.targets && page.targets.active.length">
-                                <li data-ng-repeat="target in page.targets.active" style="margin-bottom: 2rem;
-                                flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px;">
-                                    <div class="measurement">
-                                        <div>{{ target.metric.name || target.name }}</div>
-                                        <input type="number" class="form-control" style="padding: 1rem;"
-                                               data-ng-model="target.value"
-                                               id="name-active-{{ $index }}" name="name-active-{{ $index }}"
-                                               placeholder="0"
-                                               step="0.0001" min="0" autocomplete="off"
-                                               data-ng-change="page.updateReportedTotal(target)"/>
+                            <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 4px; padding-left: 16px; padding-right:16px; ">
+                                <!-- START Targets Header-->
+                                <div class="target-lst" >
+                                    <li style="justify-content: flex-end; border: 0px solid #e0e0e0; padding-top: 1em;">
                                         <button type="button" class="add-item"
-                                                data-ng-click="page.removeTarget(target, $index)"
+                                                data-ng-click="page.autoFill()"
+                                                data-ng-disabled="page.status.processing"
+                                                style="margin-left: 1em; width: 100px; border: 1px solid red; white-space: nowrap;"
+                                        >
+                                            <span>
+                                                Auto fill
+                                                <sub>
+                                                    <i class="material-icons" style="">
+                                                        done_all
+                                                    </i>
+                                                </sub>
+                                            </span>
+                                        </button>
+
+                                        <button type="button" class="add-item" data-ng-click="page.removeAll()"
+                                                data-ng-disabled="page.status.processing"
+                                                style="margin-left: 1em; width: 100px; border: 1px solid red;white-space: nowrap; "
+                                        >
+                                            <span>
+                                                Clear all
+                                                 <sub>
+                                                    <i class="material-icons">
+                                                        delete_sweep
+                                                    </i>
+                                                 </sub>
+                                            </span>
+                                        </button>
+                                    </li>
+                                </div>
+
+
+                                <!-- END Targets Header-->
+
+
+                                <!-- START Targets Input-->
+                                <ul class="target-lst" data-ng-if="page.targets && (page.targets.active.length || page.targets.inactive.length)">
+                                    <!-- Active -->
+                                    <li data-ng-repeat="target in page.targets.active" style="margin-bottom: 2rem; background-color: #ffffff;
+                                    flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom:16px;">
+                                        <div class="measurement">
+                                            <div>{{ target.metric.name || target.name }}</div>
+                                            <input type="number" class="form-control" style="padding: 1rem;"
+                                                   data-ng-model="target.value"
+                                                   id="name-active-{{ $index }}" name="name-active-{{ $index }}"
+                                                   placeholder="0"
+                                                   step="0.0001" min="0" autocomplete="off"
+                                                   data-ng-change="page.updateReportedTotal(target); page.autoSave(target);"/>
+                                            <button type="button" class="add-item"
+                                                    data-ng-click="page.removeTarget(target, $index)"
+                                                    data-ng-disabled="page.status.processing">
+                                                <i class="material-icons" style="color:#0e8bb6;">
+                                                    radio_button_checked
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div class="report-tgt-meter">
+                                            <!--data-ng-if="target.practice_target-->
+                                            <div class="labels">
+                                                <div>
+                                                    <strong>Total reported</strong>
+                                                </div>
+                                                <div>
+                                                    <strong>Practice target</strong>
+                                                </div>
+                                            </div>
+                                            <div class="meter-bar">
+                                                <div style="width: {{ target.width }}%;"></div>
+                                            </div>
+                                            <div class="labels">
+                                                <div data-ng-if="target.width < 1">
+                                                    {{ (target.total_reported | number:2) || ("0.00") }} (<1% of goal)
+                                                </div>
+                                                <div data-ng-if="target.width >= 1">
+                                                    {{ target.total_reported | number:2 || ("0.00") }} ({{ target.width | number:0
+                                                    }}% of goal)
+                                                </div>
+                                                <div data-ng-if="target.width == undefined">
+                                                    0.00 (<1% of goal)
+                                                </div>
+
+                                                <div data-ng-if="target.practice_target">
+                                                    {{ target.practice_target | number:2 }}
+                                                </div>
+                                                <div data-ng-if="!target.practice_target" style="margin-top:-5px;">
+                                                    <a href="/practices/{{page.practice.id}}/targets"
+                                                       style="background:#fff4b7; border:1px solid #ffd806; border-radius:4px; padding:3px 8px 5px 12px;">
+                                                    Target not set
+                                                        <sub>
+                                                            <i class="material-icons" style="position:relative; top: 3px;">
+                                                                multiline_chart
+                                                            </i>
+                                                        </sub>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- Inactive -->
+                                    <li data-ng-repeat="target in page.targets.inactive" style="margin-bottom: 2rem; background-color: #ffffff;
+                                    flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom:16px;">
+                                        <div class="measurement">
+                                            <div>{{ target.name || target.metric.name }}</div>
+                                            <input type="number" class="form-control" style="padding: 1rem;"
+                                                   data-ng-model="target.value"
+                                                   id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}"
+                                                   placeholder="0" step="0.0001" min="0" autocomplete="off"/>
+                                            <button type="button" class="add-item"
+                                                    data-ng-click="page.addTarget(target, $index)"
+                                                    data-ng-disabled="page.status.processing">
+                                                <i class="material-icons">
+                                                    radio_button_unchecked
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div class="report-tgt-meter">
+                                            <!--data-ng-if="target.practice_target-->
+                                            <div class="labels">
+                                                <div>
+                                                    <strong>Total reported</strong>
+                                                </div>
+                                                <div>
+                                                    <strong>Practice target</strong>
+                                                </div>
+                                            </div>
+                                            <div class="meter-bar" style="background: #e0e0e0;">
+                                                <div style="width: {{ target.width }}%;"></div>
+                                            </div>
+                                            <div class="labels">
+                                                <div style="color:#aaaaaa;">
+                                                    Click button on left to include in report
+                                                </div>
+                                                <!--
+                                                <div data-ng-if="target.width < 1">
+
+                                                    {{ (target.total_reported | number:2) || ("0.00") }} (<1% of goal)
+                                                </div>
+
+                                                <div data-ng-if="target.width >= 1">
+
+                                                    {{ (target.total_reported | number:2) || ("0.00") }} ({{ target.width | number:0
+                                                    }}% of goal)
+                                                </div>
+                                                -->
+                                                <div data-ng-if="target.practice_target" style="color:#aaaaaa;">
+                                                    {{ target.practice_target | number:2 }}
+                                                </div>
+                                                <div data-ng-if="!target.practice_target" style="margin-top:-5px;">
+                                                    <a href="/practices/{{page.practice.id}}/targets" style="color:#999999";>
+                                                        Target not set
+                                                        <sub>
+                                                            <i class="material-icons" style="position:relative; top: 3px;">
+                                                                multiline_chart
+                                                            </i>
+                                                        </sub>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+
+                                </ul>
+
+
+                                <!-- END Targets Input-->
+
+
+                            <!-- START Legacy UI -->
+                                <!-- START Targets Active Input-->
+                                <!---
+                                <ul class="target-lst" data-ng-if="page.targets && page.targets.active.length">
+                                    <li data-ng-repeat="target in page.targets.active" style="margin-bottom: 2rem;
+                                    flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px;">
+                                        <div class="measurement">
+                                            <div>{{ target.metric.name || target.name }}</div>
+                                            <input type="number" class="form-control" style="padding: 1rem;"
+                                                   data-ng-model="target.value"
+                                                   id="name-active-{{ $index }}" name="name-active-{{ $index }}"
+                                                   placeholder="0"
+                                                   step="0.0001" min="0" autocomplete="off"
+                                                   data-ng-change="page.updateReportedTotal(target)"/>
+                                            <button type="button" class="add-item"
+                                                    data-ng-click="page.removeTarget(target, $index)"
+                                                    data-ng-disabled="page.status.processing">
+                                                <i class="material-icons">
+                                                    remove_circle
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div class="report-tgt-meter" data-ng-if="target.practice_target">
+                                            <div class="labels">
+                                                <div>
+                                                    <strong>Total reported</strong>
+                                                </div>
+                                                <div>
+                                                    <strong>Practice target</strong>
+                                                </div>
+                                            </div>
+                                            <div class="meter-bar">
+                                                <div style="width: {{ target.width }}%;"></div>
+                                            </div>
+                                            <div class="labels">
+                                                <div data-ng-if="target.width < 1">
+                                                    {{ target.total_reported | number:2 }} (<1% of goal)
+                                                </div>
+                                                <div data-ng-if="target.width >= 1">
+                                                    {{ target.total_reported | number:2 }} ({{ target.width | number:0
+                                                    }}% of goal)
+                                                </div>
+                                                <div>
+                                                    {{ target.practice_target | number:2 }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+
+
+                                </ul>
+
+                                <ul class="target-lst">
+                                    <li style="justify-content: flex-end; margin-top: 2em; border-top: 1px solid #e0e0e0; padding-top: 1em;">
+                                        <button type="button" class="add-item" data-ng-click="page.removeAll()"
                                                 data-ng-disabled="page.status.processing">
                                             <i class="material-icons">
-                                                remove_circle
+                                                delete_sweep
                                             </i>
                                         </button>
-                                    </div>
-                                    <div class="report-tgt-meter" data-ng-if="target.practice_target">
-                                        <div class="labels">
-                                            <div>
-                                                <strong>Total reported</strong>
-                                            </div>
-                                            <div>
-                                                <strong>Practice target</strong>
-                                            </div>
-                                        </div>
-                                        <div class="meter-bar">
-                                            <div style="width: {{ target.width }}%;"></div>
-                                        </div>
-                                        <div class="labels">
-                                            <div data-ng-if="target.width < 1">
-                                                {{ target.total_reported | number:2 }} (<1% of goal)
-                                            </div>
-                                            <div data-ng-if="target.width >= 1">
-                                                {{ target.total_reported | number:2 }} ({{ target.width | number:0
-                                                }}% of goal)
-                                            </div>
-                                            <div>
-                                                {{ target.practice_target | number:2 }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-
-                            <ul class="target-lst">
-                                <li style="justify-content: flex-end; margin-top: 2em; border-top: 1px solid #e0e0e0; padding-top: 1em;">
-                                    <button type="button" class="add-item" data-ng-click="page.removeAll()"
-                                            data-ng-disabled="page.status.processing">
-                                        <i class="material-icons">
-                                            delete_sweep
-                                        </i>
-                                    </button>
-                                    <button type="button" class="add-item" style="margin-left: 1em;"
-                                            data-ng-click="page.saveTargets()"
-                                            data-ng-disabled="page.status.processing">
-                                        <i class="material-icons">
-                                            done
-                                        </i>
-                                    </button>
-                                </li>
-                            </ul>
-
-                            <ul class="target-lst" style="margin-top: 2rem;"
-                                data-ng-if="page.targets">
-                                <li data-ng-repeat="target in page.targets.inactive">
-                                    <div class="measurement">
-                                        <div>{{ target.name || target.metric.name }}</div>
-                                        <input type="number" class="form-control" style="padding: 1rem;"
-                                               data-ng-model="target.value"
-                                               id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}"
-                                               placeholder="0" step="0.0001" min="0" autocomplete="off"/>
-                                        <button type="button" class="add-item"
-                                                data-ng-click="page.addTarget(target, $index)"
+                                        <button type="button" class="add-item" style="margin-left: 1em;"
+                                                data-ng-click="page.saveTargets()"
                                                 data-ng-disabled="page.status.processing">
                                             <i class="material-icons">
-                                                add_circle
+                                                done
                                             </i>
                                         </button>
-                                    </div>
-                                </li>
-                            </ul>
+                                    </li>
+                                </ul>
+                                -->
+                                <!-- END Targets Active Input-->
+
+                                <!-- START Targets Inactive-->
+                                <!--
+                                <ul class="target-lst" style="margin-top: 2rem;"
+                                    data-ng-if="page.targets">
+                                    <li data-ng-repeat="target in page.targets.inactive">
+                                        <div class="measurement">
+                                            <div>{{ target.name || target.metric.name }}</div>
+                                            <input type="number" class="form-control" style="padding: 1rem;"
+                                                   data-ng-model="target.value"
+                                                   id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}"
+                                                   placeholder="0" step="0.0001" min="0" autocomplete="off"/>
+                                            <button type="button" class="add-item"
+                                                    data-ng-click="page.addTarget(target, $index)"
+                                                    data-ng-disabled="page.status.processing">
+                                                <i class="material-icons">
+                                                    add_circle
+                                                </i>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                                -->
+                                <!-- END Targets Inactive-->
+                                <!-- END Legacy UI -->
+
+                            </div>
 
                         </div>
-
-                        <div class="form-element">
-                            <span class="meta-label"><b>Notes</b></span>
-                            <textarea class="form-control" msd-elastic data-ng-model="page.report.notes"
-                                      maxlength="1000" rows="10">{{ page.report.notes }}</textarea>
-                            <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                                Notes may contain up to 1,000 characters, including spaces and punctuation. <strong>({{
-                                (page.report.notes.length || 0) | number }} used)</strong>
-                            </p>
-                        </div>
-
                         <div class="save--action--wrapper save--action--bottom">
                             <button type="submit" data-ng-disabled="page.status.processing">
                                 <i class="material-icons" data-ng-if="page.status.processing">
@@ -246,6 +438,8 @@
                                 </i>
                             </button>
                         </div>
+
+
 
                     </form>
 
