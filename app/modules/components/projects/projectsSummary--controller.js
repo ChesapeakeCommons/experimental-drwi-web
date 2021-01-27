@@ -230,7 +230,14 @@ angular.module('FieldDoc')
 
                         $rootScope.page.title = 'Project Summary';
 
-                        self.loadMetrics(self.project.id,self.currentProgram.program_id);
+                        /* 01.26.2021 : this is a check to see if a program list exists,
+                            once the db has been updated so all projects have a program list,
+                            this check will be defunct.
+                            It has been added here to enable debugging of other areas.
+                         */
+                        if(self.programs[0] !== undefined) {
+                            self.loadMetrics(self.project.id, self.currentProgram.program_id);
+                        }
 
                         self.loadSites();
 
