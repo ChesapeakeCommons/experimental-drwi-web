@@ -453,6 +453,7 @@
 
                         self.status.loading = false;
 
+
                     });
 
                 };
@@ -550,11 +551,11 @@
                         self.processReport(successResponse);
 
                         self.alerts = [{
-                            'type': 'success',
-                            'flag': 'Success!',
-                            'msg': 'Report changes saved.',
-                            'prompt': 'OK'
-                        }];
+                                'type': 'success',
+                                'flag': 'Success!',
+                                'msg': 'Report changes saved.',
+                                'prompt': 'OK'
+                            }];
 
                         $timeout(self.closeAlerts, 2000);
 
@@ -563,7 +564,9 @@
                         self.showElements();
 
                     //    if(self.practice.geometry == null || self.practice.geometry == undefined){
+
                         $timeout(railsRedirection,3000);
+
                    //     }
 
                     }).catch(function(errorResponse) {
@@ -652,36 +655,20 @@
                 */
                 self.autoSave = function(target){
 
-                   // self.updateReportedTotal(target);
-
                     console.log("changed target-->",target);
-
-                    if(self.autoSaving == false){
-                        self.autoSaving = true;
-                       // $timeout(self.autoSaveLogic, 2000);
-                    }
-
-                    if(self.autoSaving == true && self.autoSaveStarted == false){
-
-                        self.autoSaveStarted = true;
-
-                        $timeout(self.autoSaveDelay, 1000);
-                    }
-
-                };
-
-                self.autoSaveDelay = function(){
 
                     self.alerts = [{
                         'type': 'success',
                         'flag': 'Success!',
-                        'msg': 'Saving target changes...',
+                        'msg': 'Updating target...',
                         'prompt': 'OK'
                     }];
 
-                    $timeout(self.saveTargets, 1000);
+                    self.saveTargets();
+
 
                 };
+
 
                 /*
                 END AutoSave
@@ -910,8 +897,6 @@
                         $timeout(self.closeAlerts, 2000);
 
                         self.status.processing = false;
-                        self.autoSaving = false;
-                        self.autoSaveStarted = false;
 
 
                     }).catch(function(error) {
@@ -930,8 +915,6 @@
                         $timeout(self.closeAlerts, 2000);
 
                         self.status.processing = false;
-                        self.autoSaving = false;
-                        self.autoSaveStarted = false;
 
                     });
 
