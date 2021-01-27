@@ -218,9 +218,13 @@
                     }
                 ];
 
+                self.editingEnabled = false;
+
                 self.autoSaving = false;
 
                 self.autoSaveStarted = false;
+
+                self.deletionId = undefined;
 
                 function parseISOLike(s) {
                     var b = s.split(/\D/);
@@ -635,6 +639,14 @@
 
                 };
 
+                self.toggleEditing = function(){
+
+                    self.editingEnabled = !self.editingEnabled;
+
+                };
+
+
+
                 /*
                 START AutoSave
                 */
@@ -675,7 +687,44 @@
                 END AutoSave
                 */
 
-                self.removeTarget = function(item, idx) {
+                /*
+                START Target Delete Logic
+                 */
+                self.confirmTargetDelete = function ($event,id) {
+
+                    console.log("Confirm dialog");
+
+                    if($event){
+                        $event.stopPropagation();
+                        $event.preventDefault();
+                    }
+
+                    self.showDeletionDialog = !self.showDeletionDialog;
+
+                    self.deletionId = id;
+
+                };
+
+                self.cancelTargetDelete = function($event) {
+
+                    console.log("Cancel Removal");
+                    if($event){
+                        $event.stopPropagation();
+                        $event.preventDefault();
+                    }
+
+                    self.showDeletionDialog = false;
+
+                    self.deletionId = undefined;
+
+                };
+
+                self.removeTarget = function($event, item, idx) {
+
+                    if($event){
+                        $event.stopPropagation();
+                        $event.preventDefault();
+                    }
 
                     if (typeof idx === 'number') {
 
@@ -691,11 +740,20 @@
 
                     console.log('Updated targets (removal)');
 
+                    self.showDeletionDialog = false;
+
+                    self.deletionId = undefined;
+
                     self.saveTargets();
 
                 };
 
-                self.removeAll = function() {
+                self.removeAll = function($event,id) {
+
+                    if($event){
+                        $event.stopPropagation();
+                        $event.preventDefault();
+                    }
 
                     self.targets.active.forEach(function(item) {
 
@@ -703,9 +761,21 @@
 
                     });
 
+                    console.log('Updated targets (remove all)');
+
                     self.targets.active = [];
 
+                    self.showDeletionDialog = false;
+
+                    self.deletionId = undefined;
+
+                    self.saveTargets();
+
                 };
+
+                /*
+                END Target Delete Logic
+                 */
 
                 self.addTarget = function(item, idx) {
 
