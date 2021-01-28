@@ -21,15 +21,14 @@
                 <i class="material-icons">
                     layers
                 </i>
-                <div class="layer-group" style="font-weight: normal; font-size: 14px;"
+                <div class="layer-group" style="font-weight: normal; font-size: 14px; min-width: 240px;"
                      data-ng-show="page.showLayerOptions">
                     <div id="feature-scope" class="scope--control margin-0" style="padding: 0.5rem 0.75rem;
-                    border-bottom: 1px solid #e0e0e0;">
-                        <div style="display: inline-flex; flex-grow: 1;" class="pad-r-1">
+                    border-bottom: 1px solid #e0e0e0; flex-grow: 1; flex-shrink: 0;">
+                        <div style="flex-grow: 1; flex-shrink: 0;" class="pad-r-1">
                             <strong>Show all my data</strong>
                         </div>
-                        <label class="switch" style="flex-grow: 0; background: #FFFFFF; position: relative; display:
-                        inline-block;">
+                        <label class="switch" style="flex-grow: 0; flex-shrink: 0; background: #FFFFFF;">
                             <input type="checkbox"
                                    data-ng-model="page.loadAllFeatures"
                                    data-ng-checked="page.loadAllFeatures"

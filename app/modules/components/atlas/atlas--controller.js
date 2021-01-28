@@ -142,17 +142,21 @@ angular.module('FieldDoc')
                     self.loadAllFeatures
                 );
 
-                if (self.loadAllFeatures) {
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.loadAllFeatures);
 
-                    self.refreshFeatureLayers();
-
-                }
+                // if (self.loadAllFeatures) {
+                //
+                //     self.refreshFeatureLayers();
+                //
+                // }
 
             };
 
             self.refreshFeatureLayers = function () {
 
-                if (!self.loadAllFeatures) return;
+                // if (!self.loadAllFeatures) return;
 
                 self.urlComponents.forEach(function (component) {
 
@@ -186,10 +190,17 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
+                var nodeString = self.urlData.node;
+
+                var nodeTokens = nodeString.split('.');
+
+                var focus = nodeTokens.join(':');
+
                 var params = {
                     bbox: boundsArray,
                     // exclude: exclude,
                     featureType: nodeType,
+                    focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };

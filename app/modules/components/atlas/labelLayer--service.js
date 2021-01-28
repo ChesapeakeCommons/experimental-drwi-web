@@ -77,7 +77,8 @@ angular.module('FieldDoc')
                         zoomConfig.practice.max,
                         '#212121'
                     ]
-                }
+                },
+                'filter': ['get', 'focus']
             },
             // {
             //     'id': 'fd.practice.line-label',
@@ -275,7 +276,8 @@ angular.module('FieldDoc')
                         zoomConfig.site.max,
                         '#212121'
                     ]
-                }
+                },
+                'filter': ['get', 'focus']
             },
             // {
             //     'id': 'fd.site.line-label',
@@ -473,7 +475,8 @@ angular.module('FieldDoc')
                         zoomConfig.project.max,
                         '#212121'
                     ]
-                }
+                },
+                'filter': ['get', 'focus']
             }
         ];
 

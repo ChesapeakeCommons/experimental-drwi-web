@@ -77,6 +77,12 @@
                     <span data-ng-class="{on: page.archived}" style="color:#616161;">Archived</span>
                 </div>
 
+                <div style="color:#616161; font-weight: 500;"
+                     class="margin-l-25p"
+                     data-ng-if="page.archiveCount && page.archiveCount > 0">
+                    ({{ page.archiveCount }})
+                </div>
+
             </div>
 
             <div class="dyad" data-ng-if="!page.status.loading">

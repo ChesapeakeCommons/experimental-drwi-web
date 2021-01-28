@@ -307,6 +307,24 @@ angular.module('FieldDoc')
                 });
 
             },
+            toggleFocusFilter: function(map, focus) {
+
+                var filterDef = focus ? null : ['get', 'focus'];
+
+                var layers = map.getStyle().layers;
+
+                layers.forEach(function (layer) {
+
+                    if (layer.id.startsWith('fd.') &&
+                        map.getLayer(layer.id)) {
+
+                        map.setFilter(layer.id, filterDef);
+
+                    }
+
+                });
+
+            },
             setTextColor: function (map, styleString) {
 
                 var mod = this;

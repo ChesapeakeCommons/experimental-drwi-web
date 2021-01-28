@@ -65,7 +65,8 @@ angular.module('FieldDoc')
                         ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: ''
             },
@@ -159,7 +160,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -183,7 +185,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -205,7 +208,8 @@ angular.module('FieldDoc')
                             '#3fd48a'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -235,7 +239,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -258,7 +263,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -280,7 +286,8 @@ angular.module('FieldDoc')
                             '#a94efe'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -310,7 +317,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -340,7 +348,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             }

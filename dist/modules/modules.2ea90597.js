@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1611154424132})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1611858019264})
 
 ;
 /**
@@ -4783,6 +4783,27 @@ angular.module('FieldDoc')
 
             };
 
+            self.getArchiveCount = function () {
+
+                Project.collection({
+                    limit: 1,
+                    page: 1,
+                    archived: true,
+                    count_only: true
+                }).$promise.then(function(successResponse) {
+
+                    self.archiveCount = successResponse.count;
+
+                }, function(errorResponse) {
+
+                    console.log('errorResponse', errorResponse);
+
+                    self.showElements();
+
+                });
+
+            };
+
             self.loadTags = function() {
 
                 Tag.collection({}).$promise.then(function(successResponse) {
@@ -4940,6 +4961,12 @@ angular.module('FieldDoc')
                     //
 
                     self.loadTags();
+
+                    //
+                    // Fetch archive count.
+                    //
+
+                    self.getArchiveCount();
 
                 });
 
@@ -37107,6 +37134,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.loadAllFeatures = false;
+
             self.urlComponents = LayerUtil.getUrlComponents();
 
             var DRAINAGE_ID = 'fd.drainage.polygon';
@@ -37223,6 +37252,41 @@ angular.module('FieldDoc')
 
             };
 
+            self.toggleLayerConstraint = function () {
+
+                console.log(
+                    'toggleLayerConstraint:loadAllFeatures',
+                    self.loadAllFeatures
+                );
+
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.loadAllFeatures);
+
+                // if (self.loadAllFeatures) {
+                //
+                //     self.refreshFeatureLayers();
+                //
+                // }
+
+            };
+
+            self.refreshFeatureLayers = function () {
+
+                // if (!self.loadAllFeatures) return;
+
+                self.urlComponents.forEach(function (component) {
+
+                    $timeout(function () {
+
+                        self.updateNodeLayer(component[0], component[1]);
+
+                    }, 500);
+
+                });
+
+            };
+
             self.updateNodeLayer = function (nodeType, geometryType) {
 
                 var zoom = self.map.getZoom();
@@ -37243,10 +37307,17 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
+                var nodeString = self.urlData.node;
+
+                var nodeTokens = nodeString.split('.');
+
+                var focus = nodeTokens.join(':');
+
                 var params = {
                     bbox: boundsArray,
                     // exclude: exclude,
                     featureType: nodeType,
+                    focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };
@@ -37821,15 +37892,7 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.urlComponents.forEach(function (component) {
-
-                        $timeout(function () {
-
-                            self.updateNodeLayer(component[0], component[1]);
-
-                        }, 500);
-
-                    });
+                    self.refreshFeatureLayers();
 
                 });
 
@@ -38594,11 +38657,13 @@ angular.module('FieldDoc')
                 'point': {}
             },
             'practice': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}
             },
             'site': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}
@@ -38892,12 +38957,15 @@ angular.module('FieldDoc')
         var REFERENCE_SOURCES = {
             'empty': EMPTY_SOURCE,
             'fd.drainage.polygon': EMPTY_SOURCE,
+            'fd.practice.centroid': EMPTY_SOURCE,
             'fd.practice.point': EMPTY_SOURCE,
             'fd.practice.line': EMPTY_SOURCE,
             'fd.practice.polygon': EMPTY_SOURCE,
+            'fd.site.centroid': EMPTY_SOURCE,
             'fd.site.point': EMPTY_SOURCE,
             'fd.site.line': EMPTY_SOURCE,
             'fd.site.polygon': EMPTY_SOURCE,
+            // 'fd.project.centroid': EMPTY_SOURCE,
             'fd.project.point': EMPTY_SOURCE,
             // 'wr.post.point': EMPTY_SOURCE,
             'wr.station.point': EMPTY_SOURCE
@@ -38980,9 +39048,11 @@ angular.module('FieldDoc')
 
         var URL_COMPONENTS = [
             ['post', 'point'],
+            ['practice', 'centroid'],
             ['practice', 'line'],
             ['practice', 'point'],
             ['practice', 'polygon'],
+            ['site', 'centroid'],
             ['site', 'line'],
             ['site', 'point'],
             ['site', 'polygon'],
@@ -39165,6 +39235,24 @@ angular.module('FieldDoc')
                         map.getLayer(layer.id)) {
 
                         map.removeLayer(layer.id);
+
+                    }
+
+                });
+
+            },
+            toggleFocusFilter: function(map, focus) {
+
+                var filterDef = focus ? null : ['get', 'focus'];
+
+                var layers = map.getStyle().layers;
+
+                layers.forEach(function (layer) {
+
+                    if (layer.id.startsWith('fd.') &&
+                        map.getLayer(layer.id)) {
+
+                        map.setFilter(layer.id, filterDef);
 
                     }
 
@@ -39912,462 +40000,473 @@ angular.module('FieldDoc')
 
         var zoomConfig = ZoomUtil.getZoom();
 
-        var LABEL_LAYERS = [{
-            'id': 'fd.practice.polygon-label',
-            'source': 'fd.practice.polygon',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
+        var LABEL_LAYERS = [
+            {
+                'id': 'fd.practice.centroid-label',
+                'source': 'fd.practice.centroid',
+                'type': 'symbol',
+                'minzoom': zoomConfig.practice.min,
+                'maxzoom': zoomConfig.practice.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                zoomConfig.practice.min,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
+                                zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.practice.line-label',
-            'source': 'fd.practice.line',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.practice.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.practice.min,
+                        12,
+                        zoomConfig.practice.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.5,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.practice.min,
+                        '#616161',
+                        zoomConfig.practice.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
+                'filter': ['get', 'focus']
             },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.practice.point-label',
-            'source': 'fd.practice.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
+            // {
+            //     'id': 'fd.practice.line-label',
+            //     'source': 'fd.practice.line',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.practice.min,
+            //     'maxzoom': zoomConfig.practice.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.practice.min,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             12,
+            //             zoomConfig.practice.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             '#616161',
+            //             zoomConfig.practice.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            // {
+            //     'id': 'fd.practice.point-label',
+            //     'source': 'fd.practice.point',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.practice.min,
+            //     'maxzoom': zoomConfig.practice.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.practice.min,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             12,
+            //             zoomConfig.practice.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             '#616161',
+            //             zoomConfig.practice.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            {
+                'id': 'fd.site.centroid-label',
+                'source': 'fd.site.centroid',
+                'type': 'symbol',
+                'minzoom': zoomConfig.site.min + 1,
+                'maxzoom': zoomConfig.site.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                zoomConfig.site.min + 1,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
+                                zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.site.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.site.min + 1,
+                        12,
+                        zoomConfig.site.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.5,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.site.min + 1,
+                        '#616161',
+                        zoomConfig.site.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
+                'filter': ['get', 'focus']
             },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.site.polygon-label',
-            'source': 'fd.site.polygon',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
+            // {
+            //     'id': 'fd.site.line-label',
+            //     'source': 'fd.site.line',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            // {
+            //     'id': 'fd.site.point-label',
+            //     'source': 'fd.site.point',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max + 1,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            {
+                'id': 'fd.project.point-label',
+                'source': 'fd.project.point',
+                'type': 'symbol',
+                'minzoom': zoomConfig.project.min,
+                'maxzoom': zoomConfig.project.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                zoomConfig.project.min,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
+                                zoomConfig.project.min + Math.ceil((zoomConfig.project.max - zoomConfig.project.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.project.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.project.min,
+                        12,
+                        zoomConfig.project.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.75,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.project.min,
+                        '#616161',
+                        zoomConfig.project.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
+                'filter': ['get', 'focus']
             }
-        }, {
-            'id': 'fd.site.line-label',
-            'source': 'fd.site.line',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.site.point-label',
-            'source': 'fd.site.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max + 1,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.project.point-label',
-            'source': 'fd.project.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.project.min,
-            'maxzoom': zoomConfig.project.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.project.min,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.project.min + Math.ceil((zoomConfig.project.max - zoomConfig.project.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.project.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.project.min,
-                    12,
-                    zoomConfig.project.max,
-                    16
-                ],
-                'text-radial-offset': 0.75,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.project.min,
-                    '#616161',
-                    zoomConfig.project.max,
-                    '#212121'
-                ]
-            }
-        }];
+        ];
 
         return {
             addLabelLayers: function (map) {
@@ -40471,7 +40570,8 @@ angular.module('FieldDoc')
                         ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: ''
             },
@@ -40541,6 +40641,37 @@ angular.module('FieldDoc')
             },
             {
                 config: {
+                    'id': 'fd.practice.centroid',
+                    'source': 'fd.practice.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
                     'id': 'fd.practice.polygon',
                     'source': 'fd.practice.polygon',
                     'type': 'fill',
@@ -40559,7 +40690,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -40581,7 +40713,8 @@ angular.module('FieldDoc')
                             '#3fd48a'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -40611,7 +40744,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -40634,7 +40768,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -40656,7 +40791,8 @@ angular.module('FieldDoc')
                             '#a94efe'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -40686,7 +40822,39 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.centroid',
+                    'source': 'fd.site.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             }
