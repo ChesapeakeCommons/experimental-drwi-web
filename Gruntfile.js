@@ -77,6 +77,22 @@ module.exports = function(grunt) {
                     }
                 }
             },
+            multiprogram: {
+                options: {
+                    dest: '<%= yeoman.app %>/config/environment.js'
+                },
+                constants: {
+                    environment: {
+                        name: 'multiprogram',
+                        apiUrl: 'https://multi.api.fielddoc.org',
+                        castUrl: 'https://dev.cast.fielddoc.chesapeakecommons.org',
+                        dnrUrl: 'https://dev.dnr.fielddoc.chesapeakecommons.org',
+                        siteUrl: 'https://multiprogram.fielddoc.org',
+                        clientId: 'iwN6fjRffe1RUmSfiJL3FPZA7WVwrA8B',
+                        version: version
+                    }
+                }
+            },
             livedev: {
                 options: {
                     dest: '<%= yeoman.app %>/config/environment.js'
