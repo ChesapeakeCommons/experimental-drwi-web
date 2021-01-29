@@ -125,6 +125,34 @@
 
                         <h2>Metrics</h2>
 
+                        <!-- START Program Context Switch Menu-->
+                        <div class="collection-filter-group"
+                             data-ng-if="!page.status.loading"
+                             style="margin-top:0px;">
+
+                            <div data-ng-if="page.programs.length"
+                                 style="margin-top:0px;"
+                                 program-context
+                                 collection="program"
+                                 features="page.programs"
+                                 antecedent="page.site"
+                                 display-states="page.showModal"
+                                 controller-method="loadMetrics" ></div>
+
+                            <h2 class="reveal fade-in t3" style="margin-left:-15px; margin-top:12px">
+
+                               <span class="tally" style="margin-left:-4px;margin-right:4px">
+                                    {{ page.programSummary.program_count | number }}
+                                </span>
+
+                                {{page.currentProgram.program.name}}
+
+                            </h2>
+
+                        </div>
+                        <!-- END Program Context Switch Menu-->
+
+
                         <div class="empty-block-alert"
                              data-ng-if="page.metrics && !page.metrics.generic.length && !page.metrics.has_models">
                             <p class="pad-0 margin-0 margin-t-2">

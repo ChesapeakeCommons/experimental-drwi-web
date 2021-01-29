@@ -17,7 +17,10 @@
             <h1 class="inset">Metric targets</h1>
         </div>
 
+
         <div class="main--ui target-ui reveal fade-in t0">
+
+
 
             <div data-ng-if="page.practice.practice_type">
 
@@ -344,12 +347,13 @@
 
             <!-- END ADD METRICS-->
 
+
             <!-- START ASSIGN METRICS -->
 
             <div class="target-block-wrapper" id="assignTargetsBlock"
                  data-ng-if="page.assignedMetrics && page.metricMatrix">
 
-                <div class="target-block-header">
+                <div class="target-block-header" style="margin-bottom: 5px;">
 
                     <div class="target-block-title">
                         <strong>Active targets</strong>
@@ -357,7 +361,36 @@
 
                 </div>
 
-                <p>
+                <!-- START Program Context Switch Menu-->
+
+                <div class="collection-filter-group"
+                     data-ng-if="!page.status.loading"
+                     style="margin-top:0px; margin-bottom:10px;">
+
+                    <div data-ng-if="page.programs.length"
+                         style="margin-top:0px;"
+                         program-context
+                         collection="program"
+                         features="page.programs"
+                         antecedent="page.practice"
+                         display-states="page.showModal"
+                         controller-method="loadMetrics"></div>
+
+                    <h2 class="reveal fade-in t3">
+
+                    <span class="tally" style="margin-left:-20px;margin-right:4px">
+                        {{ page.summary.program_count | number }}
+                    </span>
+
+                        {{page.currentProgram.program.name}}
+
+                    </h2>
+                </div>
+
+                <!-- END Program Context Switch Menu-->
+
+
+                <p style="margin-bottom: 32px;">
                     Enter a target value for each metric manually added to this practice. Automated metric targets
                     cannot be edited.
                 </p>

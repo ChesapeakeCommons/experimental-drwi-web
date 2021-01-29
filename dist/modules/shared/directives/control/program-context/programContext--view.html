@@ -1,0 +1,37 @@
+<div class="collection-filter drop-down">
+    <button type="button"
+            data-ng-class="{'open-btn': (displayStates[collection] || params[collection])}"
+            data-ng-click="toggleModal(null, false); func(parent.id);"
+
+            title="{{ collection | capitalAttribute }}">
+        {{ collection | capitalAttribute }}&nbsp;
+        <i class="material-icons" data-ng-if="!displayStates[collection]">
+            expand_more
+        </i>
+        <i class="material-icons" data-ng-if="displayStates[collection]">
+            expand_less
+        </i>
+    </button>
+
+
+    <form name="collection-filter-form"
+          class="collection-filter-modal"
+          style="width: 400px;"
+          data-ng-if="modalVisible"
+          >
+        <label data-ng-repeat="feature in features track by $index| orderBy: 'name' "
+               data-ng-class="{'active': current === feature.program.id}"
+               ng-click="toggleModal(feature.id, true); controllerMethod(antecedent.id,feature.program.id);"
+               data-ng-if="trackName"
+               title="{{ feature.name }}">
+
+            <span>
+
+             {{feature.program.name }}
+
+            </span>
+        </label>
+
+
+    </form>
+</div>
