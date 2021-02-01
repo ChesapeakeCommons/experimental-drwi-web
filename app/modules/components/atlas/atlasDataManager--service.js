@@ -21,11 +21,13 @@ angular.module('FieldDoc')
                 'point': {}
             },
             'practice': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}
             },
             'site': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}

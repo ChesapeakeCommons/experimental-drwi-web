@@ -65,7 +65,8 @@ angular.module('FieldDoc')
                         ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: ''
             },
@@ -108,9 +109,9 @@ angular.module('FieldDoc')
                     'type': 'circle',
                     'minzoom': zoomConfig.station.min,
                     'maxzoom': zoomConfig.station.max,
-                    'layout': {
-                        'visibility': 'none'
-                    },
+                    // 'layout': {
+                    //     'visibility': 'none'
+                    // },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -135,6 +136,37 @@ angular.module('FieldDoc')
             },
             {
                 config: {
+                    'id': 'fd.practice.centroid',
+                    'source': 'fd.practice.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
                     'id': 'fd.practice.polygon',
                     'source': 'fd.practice.polygon',
                     'type': 'fill',
@@ -144,16 +176,17 @@ angular.module('FieldDoc')
                         'visibility': 'visible'
                     },
                     'paint': {
-                        'fill-pattern': 'diagonal-pattern'
-                        // 'fill-color': [
-                        //     'case',
-                        //     ['boolean', ['feature-state', 'focus'], false],
-                        //     '#C81E1E',
-                        //     '#3fd48a'
-                        // ],
-                        // 'fill-opacity': 0.4,
-                        // 'fill-outline-color': '#005e7d'
-                    }
+                        // 'fill-pattern': 'diagonal-pattern'
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -175,7 +208,8 @@ angular.module('FieldDoc')
                             '#3fd48a'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -205,7 +239,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -228,7 +263,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -250,7 +286,8 @@ angular.module('FieldDoc')
                             '#a94efe'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -280,7 +317,39 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.centroid',
+                    'source': 'fd.site.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             }

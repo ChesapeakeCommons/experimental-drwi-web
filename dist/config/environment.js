@@ -2,6 +2,6 @@
 
  angular.module('config', [])
 
-.constant('environment', {name:'multiprogram',apiUrl:'https://multi.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://multiprogram.fielddoc.org',clientId:'iwN6fjRffe1RUmSfiJL3FPZA7WVwrA8B',version:1611934485635})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1611959234368})
 
 ;

@@ -182,6 +182,27 @@ angular.module('FieldDoc')
 
             };
 
+            self.getArchiveCount = function () {
+
+                Project.collection({
+                    limit: 1,
+                    page: 1,
+                    archived: true,
+                    count_only: true
+                }).$promise.then(function(successResponse) {
+
+                    self.archiveCount = successResponse.count;
+
+                }, function(errorResponse) {
+
+                    console.log('errorResponse', errorResponse);
+
+                    self.showElements();
+
+                });
+
+            };
+
             self.loadTags = function() {
 
                 Tag.collection({}).$promise.then(function(successResponse) {
@@ -339,6 +360,12 @@ angular.module('FieldDoc')
                     //
 
                     self.loadTags();
+
+                    //
+                    // Fetch archive count.
+                    //
+
+                    self.getArchiveCount();
 
                 });
 

@@ -17,6 +17,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.loadAllFeatures = false;
+
             self.urlComponents = LayerUtil.getUrlComponents();
 
             var DRAINAGE_ID = 'fd.drainage.polygon';
@@ -133,6 +135,41 @@ angular.module('FieldDoc')
 
             };
 
+            self.toggleLayerConstraint = function () {
+
+                console.log(
+                    'toggleLayerConstraint:loadAllFeatures',
+                    self.loadAllFeatures
+                );
+
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.loadAllFeatures);
+
+                // if (self.loadAllFeatures) {
+                //
+                //     self.refreshFeatureLayers();
+                //
+                // }
+
+            };
+
+            self.refreshFeatureLayers = function () {
+
+                // if (!self.loadAllFeatures) return;
+
+                self.urlComponents.forEach(function (component) {
+
+                    $timeout(function () {
+
+                        self.updateNodeLayer(component[0], component[1]);
+
+                    }, 500);
+
+                });
+
+            };
+
             self.updateNodeLayer = function (nodeType, geometryType) {
 
                 var zoom = self.map.getZoom();
@@ -153,10 +190,17 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
+                var nodeString = self.urlData.node;
+
+                var nodeTokens = nodeString.split('.');
+
+                var focus = nodeTokens.join(':');
+
                 var params = {
                     bbox: boundsArray,
                     // exclude: exclude,
                     featureType: nodeType,
+                    focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };
@@ -624,6 +668,27 @@ angular.module('FieldDoc')
                         features
                     );
 
+                    if (features.length > 1) {
+
+                        var names = [];
+
+                        features.forEach(function (feature) {
+
+                            names.push(feature.properties.name);
+
+                        });
+
+                        var text = names.join(', ');
+
+                        new mapboxgl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(text)
+                            .addTo(self.map);
+
+                        return
+
+                    }
+
                     if (features.length) {
 
                         var target = features[0];
@@ -707,8 +772,6 @@ angular.module('FieldDoc')
                         styleString
                     );
 
-                    // if (styleString === self.currentStyleString) return;
-
                     //
                     // Restore reference sources and layers.
                     //
@@ -731,15 +794,7 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.urlComponents.forEach(function (component) {
-
-                        $timeout(function () {
-
-                            self.updateNodeLayer(component[0], component[1]);
-
-                        }, 500);
-
-                    });
+                    self.refreshFeatureLayers();
 
                 });
 
@@ -796,13 +851,13 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    self.map.loadImage(
-                        'https://dev.fielddoc.org/images/diagonal-lines.png',
-                        function (err, image) {
-
-                            if (err) throw err;
-
-                            self.map.addImage('diagonal-pattern', image);
+                    // self.map.loadImage(
+                    //     'https://dev.fielddoc.org/images/diagonal-lines.png',
+                    //     function (err, image) {
+                    //
+                    //         if (err) throw err;
+                    //
+                    //         self.map.addImage('diagonal-pattern', image);
 
                             //
                             // Add reference sources and layers.
@@ -819,23 +874,15 @@ angular.module('FieldDoc')
                                 +nodeTokens[1]
                             );
 
-                        }
+                            LayerUtil.fetchCustomLayers(
+                                nodeTokens[0],
+                                nodeTokens[1],
+                                self.layers,
+                                self.map
+                            );
 
-                    );
-
+                    //     }
                     //
-                    // Add reference sources and layers.
-                    //
-
-                    // self.populateMap();
-                    //
-                    // var nodeString = self.urlData.node;
-                    //
-                    // var nodeTokens = nodeString.split('.');
-                    //
-                    // self.fetchPrimaryNode(
-                    //     nodeTokens[0],
-                    //     +nodeTokens[1]
                     // );
 
                 });
@@ -982,35 +1029,15 @@ angular.module('FieldDoc')
 
                 DataLayer.addDataLayers(self.map);
 
+                LayerUtil.addCustomLayers(
+                    LayerUtil.customLayerIdx(),
+                    self.layers,
+                    self.map
+                );
+
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
                 self.setLayerVisibility();
-
-                // self.layers.forEach(function (layer) {
-                //
-                //     var visibility = layer.selected ? 'visible' : 'none';
-                //
-                //     var labelLayerId = layer.id + '-label';
-                //
-                //     var labelLayer = self.map.getLayer(labelLayerId);
-                //
-                //     if (labelLayer !== undefined) {
-                //
-                //         self.map.setLayoutProperty(
-                //             labelLayerId,
-                //             'visibility',
-                //             visibility
-                //         );
-                //
-                //     }
-                //
-                //     self.map.setLayoutProperty(
-                //         layer.id,
-                //         'visibility',
-                //         visibility
-                //     );
-                //
-                // });
 
             };
 
