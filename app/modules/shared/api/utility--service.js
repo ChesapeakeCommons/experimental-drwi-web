@@ -545,6 +545,34 @@ angular.module('FieldDoc')
 
                 return dimension;
 
+            },
+            values: function (obj) {
+
+                var vals = [];
+
+                try {
+
+                    for (var key in obj) {
+
+                        if (obj.hasOwnProperty(key)) {
+
+                            vals.push(obj[key]);
+
+                        }
+
+                    }
+
+                } catch (e) {
+
+                    console.warn(
+                        'Utility.values: Unable to retrieve object property values.',
+                        e
+                    )
+
+                }
+
+                return vals;
+
             }
         };
 
