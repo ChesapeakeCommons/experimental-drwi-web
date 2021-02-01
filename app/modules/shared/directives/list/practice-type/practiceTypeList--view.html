@@ -83,10 +83,10 @@
                 data-ng-repeat="practice in group | orderBy:'name'"
                 data-ng-if="!practice.hide">
 
-                <div class="card--content" style="display: flex; flex-flow: row nowrap; margin-bottom: 0;"
+                <div class="card--content" style="display: flex; flex-flow: row nowrap; margin-bottom: 0; min-width:270px;"
                      data-ng-class="{selected: practice.selected, 'confirmation-pending': practice.showConfirmation}">
 
-                    <div class="description"
+                    <div class="description" style="min-width:200px;"
                          data-ng-class="{'description-border-right': enableSelection}">
 
                         <div class="name" style="flex-flow: column; align-items: flex-start;">
@@ -116,7 +116,7 @@
 
                     </div>
 
-                    <div class="selection-input" data-ng-if="enableSelection" data-ng-click="setPracticeType(practice)">
+                    <div class="selection-input" style="min-width:70px;" data-ng-if="enableSelection" data-ng-click="setPracticeType(practice)">
                         <div data-ng-if="!practice.selected">
                             <span class="material-icons">
                                 radio_button_unchecked
