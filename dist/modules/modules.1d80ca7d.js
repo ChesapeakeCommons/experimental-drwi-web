@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1611959234368})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612216799850})
 
 ;
 /**
@@ -37134,7 +37134,7 @@ angular.module('FieldDoc')
 
             var self = this;
 
-            self.loadAllFeatures = false;
+            self.showAllFeatures = false;
 
             self.urlComponents = LayerUtil.getUrlComponents();
 
@@ -37255,25 +37255,17 @@ angular.module('FieldDoc')
             self.toggleLayerConstraint = function () {
 
                 console.log(
-                    'toggleLayerConstraint:loadAllFeatures',
-                    self.loadAllFeatures
+                    'toggleLayerConstraint:showAllFeatures',
+                    self.showAllFeatures
                 );
 
                 LayerUtil.toggleFocusFilter(
                     self.map,
-                    self.loadAllFeatures);
-
-                // if (self.loadAllFeatures) {
-                //
-                //     self.refreshFeatureLayers();
-                //
-                // }
+                    self.showAllFeatures);
 
             };
 
             self.refreshFeatureLayers = function () {
-
-                // if (!self.loadAllFeatures) return;
 
                 self.urlComponents.forEach(function (component) {
 
@@ -37845,6 +37837,12 @@ angular.module('FieldDoc')
 
                             if (target.properties.id !== self.primaryNode.properties.id) {
 
+                                self.urlData.node = [
+                                    target.properties.type,
+                                    '.',
+                                    target.properties.id
+                                ].join('');
+
                                 self.fetchPrimaryNode(
                                     target.properties.type,
                                     target.properties.id
@@ -38155,6 +38153,11 @@ angular.module('FieldDoc')
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
                 self.setLayerVisibility();
+
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.showAllFeatures
+                );
 
             };
 

@@ -17,7 +17,7 @@ angular.module('FieldDoc')
 
             var self = this;
 
-            self.loadAllFeatures = false;
+            self.showAllFeatures = false;
 
             self.urlComponents = LayerUtil.getUrlComponents();
 
@@ -138,25 +138,17 @@ angular.module('FieldDoc')
             self.toggleLayerConstraint = function () {
 
                 console.log(
-                    'toggleLayerConstraint:loadAllFeatures',
-                    self.loadAllFeatures
+                    'toggleLayerConstraint:showAllFeatures',
+                    self.showAllFeatures
                 );
 
                 LayerUtil.toggleFocusFilter(
                     self.map,
-                    self.loadAllFeatures);
-
-                // if (self.loadAllFeatures) {
-                //
-                //     self.refreshFeatureLayers();
-                //
-                // }
+                    self.showAllFeatures);
 
             };
 
             self.refreshFeatureLayers = function () {
-
-                // if (!self.loadAllFeatures) return;
 
                 self.urlComponents.forEach(function (component) {
 
@@ -728,6 +720,12 @@ angular.module('FieldDoc')
 
                             if (target.properties.id !== self.primaryNode.properties.id) {
 
+                                self.urlData.node = [
+                                    target.properties.type,
+                                    '.',
+                                    target.properties.id
+                                ].join('');
+
                                 self.fetchPrimaryNode(
                                     target.properties.type,
                                     target.properties.id
@@ -1038,6 +1036,11 @@ angular.module('FieldDoc')
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
                 self.setLayerVisibility();
+
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.showAllFeatures
+                );
 
             };
 
