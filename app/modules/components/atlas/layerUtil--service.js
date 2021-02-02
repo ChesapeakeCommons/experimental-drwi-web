@@ -260,12 +260,23 @@ angular.module('FieldDoc')
 
                     var mod = this;
 
-                    var origin = featureType + ':' + featureId;
-
-                    LayerService.collection({
-                        origin: origin,
+                    var data = {
                         sort: 'index'
-                    }).$promise.then(function(successResponse) {
+                    };
+
+                    if (featureType === 'program') {
+
+                        data.program = featureId;
+
+                    } else {
+
+                        data.origin = featureType + ':' + featureId;
+
+                    }
+
+                    LayerService.collection(
+                        data
+                    ).$promise.then(function(successResponse) {
 
                         console.log(
                             'LayerUtil.fetchCustomLayers --> successResponse',
