@@ -315,6 +315,31 @@ angular.module('FieldDoc')
                     });
 
                 },
+                resetCustomIdx: function() {
+
+                    CUSTOM_LAYERS = {};
+
+                },
+                resetSources: function (map) {
+
+                    var sourceIds = Object.keys(REFERENCE_SOURCES);
+
+                    sourceIds.forEach(function (sourceId) {
+
+                        var source = map.getSource(sourceId);
+
+                        if (source !== undefined) {
+
+                            source.setData({
+                                'type': 'FeatureCollection',
+                                'features': []
+                            });
+
+                        }
+
+                    });
+
+                },
                 toggleFocusFilter: function(map, focus) {
 
                     var filterDef = focus ? null : ['get', 'focus'];

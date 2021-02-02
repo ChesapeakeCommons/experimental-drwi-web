@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612278754209})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612286196136})
 
 ;
 /**
@@ -37966,39 +37966,30 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    // self.map.loadImage(
-                    //     'https://dev.fielddoc.org/images/diagonal-lines.png',
-                    //     function (err, image) {
                     //
-                    //         if (err) throw err;
+                    // Add reference sources and layers.
                     //
-                    //         self.map.addImage('diagonal-pattern', image);
 
-                            //
-                            // Add reference sources and layers.
-                            //
+                    LayerUtil.resetCustomIdx();
 
-                            self.populateMap();
+                    self.populateMap();
 
-                            var nodeString = self.urlData.node;
+                    LayerUtil.resetSources(self.map);
 
-                            var nodeTokens = nodeString.split('.');
+                    var nodeString = self.urlData.node;
 
-                            self.fetchPrimaryNode(
-                                nodeTokens[0],
-                                +nodeTokens[1]
-                            );
+                    var nodeTokens = nodeString.split('.');
 
-                            LayerUtil.fetchCustomLayers(
-                                nodeTokens[0],
-                                nodeTokens[1],
-                                self.layers,
-                                self.map
-                            );
+                    self.fetchPrimaryNode(
+                        nodeTokens[0],
+                        +nodeTokens[1]
+                    );
 
-                    //     }
-                    //
-                    // );
+                    LayerUtil.fetchCustomLayers(
+                        nodeTokens[0],
+                        nodeTokens[1],
+                        self.layers,
+                        self.map);
 
                 });
 
@@ -39230,6 +39221,31 @@ angular.module('FieldDoc')
                             map.getLayer(layer.id)) {
 
                             map.removeLayer(layer.id);
+
+                        }
+
+                    });
+
+                },
+                resetCustomIdx: function() {
+
+                    CUSTOM_LAYERS = {};
+
+                },
+                resetSources: function (map) {
+
+                    var sourceIds = Object.keys(REFERENCE_SOURCES);
+
+                    sourceIds.forEach(function (sourceId) {
+
+                        var source = map.getSource(sourceId);
+
+                        if (source !== undefined) {
+
+                            source.setData({
+                                'type': 'FeatureCollection',
+                                'features': []
+                            });
 
                         }
 
