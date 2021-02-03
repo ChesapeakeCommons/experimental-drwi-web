@@ -88,27 +88,30 @@ angular.module('FieldDoc')
                 var geometryLineColor           = 'rgba(6, 170, 223, 0.8)';
 
                 if(featureType != null){
-                    //            console.log("C");
+
                     if(featureType == 'site'){
-                        //               console.log("D");
+                        geometryFillColor = '#06aadf';
+                        geometryCircleStrokeColor = 'rgba(6, 170, 223, 0.5)';
+                        geometryLineColor = 'rgba(6, 170, 223, 0.8)';
+
                     }else if(featureType == 'practice'){
-                        //               console.log("E");
-                        //df063e
+
                         geometryFillColor = '#df063e';
                         geometryCircleStrokeColor = 'rgba(223, 6, 62, 0.5)';
                         geometryLineColor = 'rgba(223, 6, 62, 0.8)';
+
                     }else if(featureType == 'secondary_practices') {
-                        //                console.log("F");
 
                         geometryFillColor = 'rgba(223, 6, 62, 0.5)';
                         geometryCircleStrokeColor = 'rgba(223, 6, 62, 0.1)';
                         geometryLineColor = 'rgba(223, 6, 62, 0.25)';
+
                     }else if(featureType == 'secondary_sites') {
-                        //                console.log("F");
 
                         geometryFillColor = 'rgba(6, 170, 223, 0.5)';
                         geometryCircleStrokeColor = 'rgba(6, 170, 223, 0.1)';
                         geometryLineColor = 'rgba(6, 170, 223, 0.25)';
+                        
                     }
 
 
