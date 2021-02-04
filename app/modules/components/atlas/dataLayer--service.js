@@ -139,7 +139,7 @@ angular.module('FieldDoc')
                     'id': 'fd.practice.centroid',
                     'source': 'fd.practice.centroid',
                     'type': 'circle',
-                    'minzoom': zoomConfig.practice.min,
+                    'minzoom': 6,
                     'maxzoom': zoomConfig.practice.max,
                     'layout': {
                         'visibility': 'visible'
@@ -327,7 +327,7 @@ angular.module('FieldDoc')
                     'id': 'fd.site.centroid',
                     'source': 'fd.site.centroid',
                     'type': 'circle',
-                    'minzoom': zoomConfig.site.min + 1,
+                    'minzoom': 4,
                     'maxzoom': zoomConfig.site.max + 1,
                     'layout': {
                         'visibility': 'visible'

@@ -85,13 +85,25 @@
                                 </i>
                                 <div class="layer-group" data-ng-show="page.showLayerOptions">
                                     <form>
-                                        <label data-ng-repeat="style in page.mapStyles" data-ng-class="{'active': page.activeStyle === $index}" title="{{ style.name }}">
-                                            <input type="radio" id="base-style-{{ $index }}" name="active-style" data-ng-model="page.activeStyle" data-ng-value="{{ $index }}" data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
+                                        <label data-ng-repeat="style in page.mapStyles"
+                                               data-ng-class="{'active': page.activeStyle === $index}"
+                                               title="{{ style.name }}">
+                                            <input type="radio" id="base-style-{{ $index }}" name="active-style"
+                                                   data-ng-model="page.activeStyle" data-ng-value="{{ $index }}"
+                                                   data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
                                         </label>
                                     </form>
                                     <form class="layers" data-ng-show="page.layers && page.layers.length">
-                                        <label for="layer-{{ $index }}" data-ng-repeat="layer in page.layers" data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
-                                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}" data-ng-model="layer.selected" data-ng-value="{{ $index }}" data-ng-change="page.toggleLayer(layer)"><span> {{ layer.name }}</span>
+                                        <label for="layer-{{ $index }}" data-ng-repeat="layer in page.layers"
+                                               data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
+                                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                                                   data-ng-change="page.toggleLayer(layer)">
+                                            <span> {{ layer.name }}</span>
+                                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                                     style="background: {{ color }};"></div>
+                                            </div>
                                         </label>
                                     </form>
                                 </div>
@@ -137,98 +149,106 @@
 
                         <h2>Metrics</h2>
 
-                        <div data-ng-if="page.metrics && page.metrics.has_models">
+                        <p class="pad-0 margin-b-1" data-ng-if="page.progressTimestamp">
+                            <span style="font-size: .9rem; color: #757575;">
+                                Last updated on {{ page.progressTimestamp | date : 'mediumDate' }} at {{
+                                page.progressTimestamp | localTime | date:'h:mm' }} {{
+                                page.progressTimestamp | localTime | date:'a' }}
+                            </span>
+                        </p>
 
-                            <table class="table table-practices with-metrics" data-ng-repeat="model in page.metrics.models">
-
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <strong>{{ model.datum.name }}</strong>
-                                            <p style="color: #616161; margin: 0; padding-top: 2em; font-size: 0.9em;">
-                                                The following metric values were generated using data and algorithms supplied by the {{ model.datum.name }} model. You can find more information about this model <a href="/models/{{ model.datum.id }}">here</a>.
-                                            </p>
-                                        </th>
-                                    </tr>
-                                    <tr>
-                                        <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                        <th class="table-metrics-header">Estimated value</th>
-                                        <th class="table-metrics-header" data-ng-if="model.datum.show_progress">Estimated progress</th>
-                                        <th data-ng-if="model.datum.show_progress">&nbsp;</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody class="metrics">
-                                    <tr class="metrics--metric" data-ng-repeat="metric in model.collection track by $index" data-ng-click="page.showMetricModal(metric)">
-                                        <td class="table-column-wide">
-                                            <p class="metric--title">
-                                                {{ metric.name }}
-                                            </p>
-                                        </td>
-                                        <td>
-                                            <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span><br />
-                                                <span class="metrics--metric--rollup--label" data-ng-if="model.datum.show_progress || metric.show_progress">of {{ metric.self_target | number:2 }}</span>
-                                        </td>
-                                        <td data-ng-if="model.datum.show_progress || metric.show_progress">
-                                            <strong class="metrics--metric--percentage">
-                                                {{ metric.selfProgress.value * 100 | number:1 }}%
-                                            </strong>
-                                        </td>
-                                        <td data-ng-if="model.datum.show_progress || metric.show_progress">
-                                            <progress-arc
-                                                size="32"
-                                                stroke="#2196F3"
-                                                stroke-width="4"
-                                                complete="metric.selfProgress.arcValue"
-                                                counter-clockwise="false"
-                                                background="rgba(0,0,0,0.2)">
-                                            </progress-arc>
-                                        </td>
-                                    </tr>
-                                </tbody>
-
-                            </table>
-
+                        <div class="empty-block-alert"
+                             data-ng-if="page.metrics && !page.metrics.generic.length && !page.metrics.has_models">
+                            <p class="pad-0 margin-0 margin-t-2">
+                                <span class="material-icons">
+                                    info
+                                </span>
+                            </p>
+                            <p class="pad-0 margin-0 margin-y-2">
+                                No metric progress available.<br><br>This may mean that no practices have reported
+                                implementation numbers in this geography or that progress calculations are being
+                                updated.
+                            </p>
                         </div>
 
-                        <table class="table table-practices with-metrics" style="border-top: 1px solid #e0e0e0;" data-ng-if="page.metrics && page.metrics.generic.length">
+                        <div data-ng-if="page.metrics && page.metrics.has_models">
 
-                            <thead>
+                            <table class="table table-practices with-metrics"
+                                   data-ng-repeat="model in page.metrics.models">
+
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <strong>{{ model.datum.name }}</strong>
+                                        <p style="color: #616161; margin: 0; padding-top: 2em; font-size: 0.9em;">
+                                            The following metric values were generated using data and algorithms
+                                            supplied by the {{ model.datum.name }} model. You can find more information
+                                            about this model <a href="/models/{{ model.datum.id }}">here</a>.
+                                        </p>
+                                    </th>
+                                </tr>
                                 <tr>
                                     <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                    <th class="table-metrics-header">Installed To-Date</th>
-                                    <th class="table-metrics-header">% Installed</th>
-                                    <th>&nbsp;</th>
+                                    <th class="table-metrics-header">Estimated value</th>
                                 </tr>
-                            </thead>
+                                </thead>
 
-                            <tbody class="metrics">
-                                <tr class="metrics--metric" data-ng-repeat="metric in page.metrics.generic track by $index" data-ng-click="page.showMetricModal(metric)">
+                                <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">
+                                <tr class="metrics--metric" data-ng-click="page.showMetricModal(metric)">
                                     <td class="table-column-wide">
                                         <p class="metric--title">
                                             {{ metric.name }}
                                         </p>
                                     </td>
                                     <td>
-                                        <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}<br />
-                                            of {{ metric.self_target | number:2 }}</span>
+                                        <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span>
                                     </td>
-                                    <td>
-                                        <strong class="metrics--metric--percentage">
-                                            {{ metric.selfProgress.value * 100 | number:1 }}%
-                                        </strong>
-                                    </td>
-                                    <td>
-                                        <progress-arc
+                                </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <table class="table table-practices with-metrics" style="border-top: 1px solid #e0e0e0;"
+                               data-ng-if="page.metrics && page.metrics.generic.length">
+
+                            <thead>
+                            <tr>
+                                <th class="table-column-wide table-metrics-header">&nbsp;</th>
+                                <th class="table-metrics-header">Installed / Planned</th>
+                                <th class="table-metrics-header">% Installed</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                            </thead>
+
+                            <tbody class="metrics" data-ng-repeat="metric in page.metrics.generic track by $index">
+                            <tr class="metrics--metric" data-ng-click="page.showMetricModal(metric)">
+                                <td class="table-column-wide">
+                                    <p class="metric--title">
+                                        {{ metric.name }}
+                                    </p>
+                                </td>
+                                <td>
+                                    <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span><br/>
+                                    <span class="metrics--metric--rollup--label" data-ng-if="metric.show_progress"> / {{ metric.self_target | number:2 }} </span>
+                                </td>
+                                <td data-ng-if="metric.show_progress">
+                                    <strong class="metrics--metric--percentage">
+                                        {{ metric.selfProgress.value * 100 | number:1 }}%
+                                    </strong>
+                                </td>
+                                <td data-ng-if="metric.show_progress">
+                                    <progress-arc
                                             size="32"
                                             stroke="#2196F3"
                                             stroke-width="4"
                                             complete="metric.selfProgress.arcValue"
                                             counter-clockwise="false"
                                             background="rgba(0,0,0,0.2)">
-                                        </progress-arc>
-                                    </td>
-                                </tr>
+                                    </progress-arc>
+                                </td>
+                            </tr>
                             </tbody>
 
                         </table>
@@ -307,17 +327,18 @@
                     </i>
                 </a>
             </li>
+            <!-- Atlas -->
+            <li title="Launch map">
+                <a href="/atlas?{{ page.atlasParams }}">
+                <span class="material-icons">
+                    map
+                </span>
+                </a>
+            </li>
             <li data-ng-if="page.permissions.can_edit">
                 <a href="/geographies/{{ page.geography.id }}/edit">
                     <i class="material-icons">
                         edit
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editLocation}">
-                <a href="/geographies/{{ page.geography.id }}/location">
-                    <i class="material-icons">
-                        map
                     </i>
                 </a>
             </li>
@@ -332,24 +353,6 @@
                 <a href="/geographies/{{ page.geography.id }}/tags">
                     <i class="material-icons">
                         local_offer
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.geography.id && page.deletionTarget.collection === 'geography'">
-                    <p>Do you want to delete this geography?</p>
-                    <div class="actions">
-                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('geography')">
-                            Yes
-                        </a>
-                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-                <a href="#" data-ng-click="page.confirmDelete(page.geography, 'geography')">
-                    <i class="material-icons">
-                        delete
                     </i>
                 </a>
             </li>

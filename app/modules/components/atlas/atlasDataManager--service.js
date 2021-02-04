@@ -291,8 +291,12 @@ angular.module('FieldDoc')
 
                 fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
 
-            }
+            },
+            setPrimaryNode: function (feature) {
 
+                this.primaryNode = feature;
+
+            }
         };
 
     });

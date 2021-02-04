@@ -10,7 +10,8 @@
     angular.module('FieldDoc')
         .controller('GeographySummaryController',
             function(Account, $location, $window, $timeout, $rootScope, $scope, $route,
-                user, Utility, geography, mapbox, LayerService, GeographyService, $interval) {
+                user, Utility, geography, mapbox, LayerService, GeographyService,
+                     $interval, AtlasDataManager) {
 
                 var self = this;
 
@@ -181,6 +182,8 @@
 
                         self.geography = successResponse;
 
+                        self.atlasParams = AtlasDataManager.createURLData(self.geography);
+
                         if (successResponse.permissions.read) {
 
                             self.makePrivate = false;
@@ -241,9 +244,37 @@
                         id: self.geography.id
                     }).$promise.then(function(successResponse) {
 
-                        console.log('Project metrics', successResponse);
+                        console.log(
+                            'Territory.loadMetrics:successResponse',
+                            successResponse
+                        );
 
                         Utility.processMetrics(successResponse.features);
+
+                        if (successResponse.hasOwnProperty('timestamp')) {
+
+                            if (successResponse.timestamp.toString().length === 10) {
+
+                                successResponse.timestamp = successResponse.timestamp * 1000;
+
+                            }
+
+                            self.progressTimestamp = successResponse.timestamp;
+
+                        }
+
+                        console.log(
+                            'Territory.loadMetrics:progressTimestamp',
+                            self.progressTimestamp
+                        );
+
+                        self.metrics = successResponse.features;
+
+                        self.metrics.forEach(function(metric) {
+
+                            Utility.calcProgress(metric, true);
+
+                        });
 
                         self.metrics = Utility.groupByModel(successResponse.features);
 
@@ -289,7 +320,7 @@
                             'self.addLayers --> spec',
                             spec);
 
-                        feature.spec = JSON.parse(spec);
+                        feature.spec = spec;
 
                         console.log(
                             'self.addLayers --> feature.spec',

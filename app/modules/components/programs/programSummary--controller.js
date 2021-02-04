@@ -324,6 +324,12 @@
 
                         if (successResponse.hasOwnProperty('timestamp')) {
 
+                            if (successResponse.timestamp.toString().length === 10) {
+
+                                successResponse.timestamp = successResponse.timestamp * 1000;
+
+                            }
+
                             self.progressTimestamp = successResponse.timestamp;
 
                         }

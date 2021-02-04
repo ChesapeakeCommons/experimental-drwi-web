@@ -72,13 +72,6 @@
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editLocation}">
-                <a href="/geographies/{{ page.geography.id }}/location">
-                    <i class="material-icons">
-                        map
-                    </i>
-                </a>
-            </li>
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTargets}">
                 <a href="/geographies/{{ page.geography.id }}/targets">
                     <i class="material-icons">
@@ -90,24 +83,6 @@
                 <a href="/geographies/{{ page.geography.id }}/tags">
                     <i class="material-icons">
                         local_offer
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget">
-                    <p>Do you want to delete this geography?</p>
-                    <div class="actions">
-                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature()">
-                            Yes
-                        </a>
-                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-                <a href="#" data-ng-click="page.confirmDelete(page.geography)">
-                    <i class="material-icons">
-                        delete
                     </i>
                 </a>
             </li>

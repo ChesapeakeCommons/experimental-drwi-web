@@ -21,6 +21,11 @@
                     isArray: false,
                     url: environment.apiUrl.concat('/v1/geographies')
                 },
+                getSingle: {
+                    method: 'GET',
+                    isArray: false,
+                    url: environment.apiUrl.concat('/v1/geography/:id')
+                },
                 matrix: {
                     method: 'GET',
                     isArray: false,

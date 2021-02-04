@@ -104,8 +104,19 @@ angular.module('FieldDoc')
                     // },
                     geography: function(GeographyService, $route) {
 
-                        return GeographyService.get({
-                            id: $route.current.params.geographyId
+                        var exclude = [
+                            'creator',
+                            'intersections',
+                            'metric_progress',
+                            'practices',
+                            'simple_geometry',
+                            'targets',
+                            'tasks'
+                        ].join(',');
+
+                        return GeographyService.getSingle({
+                            id: $route.current.params.geographyId,
+                            exclude: exclude
                         });
 
                     }

@@ -36,8 +36,15 @@
             <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1">
                 <div class="stat--block"
                      data-ng-if="page.featureType && page.featureType !== 'practice'">
-                    <span class="label" style="font-weight: 600; color: #757575; font-size: .8rem;">
+                    <span data-ng-if="page.featureType !== 'territory'"
+                          class="label"
+                          style="font-weight: 600; color: #757575; font-size: .8rem;">
                         {{ page.featureType }}
+                    </span>
+                    <span data-ng-if="page.featureType === 'territory'"
+                          class="label"
+                          style="font-weight: 600; color: #757575; font-size: .8rem;">
+                        Geography
                     </span>
                 </div>
                 <div class="stat--block"
@@ -60,7 +67,13 @@
 
             <p data-ng-if="!page.status.loading">
                 <a href="/{{ page.featureType }}s/{{ page.primaryNode.properties.id }}"
+                   data-ng-if="page.featureType !== 'territory'"
                    title="View {{ page.featureType }} profile">
+                    View complete profile &rarr;
+                </a>
+                <a href="/geographies/{{ page.primaryNode.properties.id }}"
+                   data-ng-if="page.featureType === 'territory'"
+                   title="View geography profile">
                     View complete profile &rarr;
                 </a>
             </p>
@@ -90,7 +103,7 @@
 
         </div>
 
-        <div class="tab--controls" data-ng-if="!page.status.loading">
+        <div style="margin: 0 1.5rem;" data-ng-if="!page.status.loading">
 
             <h2 data-ng-class="{'active': page.activeTab.collection === 'metric'}"
                 style="font-size: 1.25rem; font-weight: 500; line-height: 1.75rem;"
@@ -98,6 +111,14 @@
                 title="Metrics">
                 Metrics
             </h2>
+
+            <p class="pad-0 margin-b-1" data-ng-if="page.progressTimestamp">
+                <span style="font-size: .9rem; color: #757575;">
+                    Last updated on {{ page.progressTimestamp | date : 'mediumDate' }} at {{
+                    page.progressTimestamp | localTime | date:'h:mm' }} {{
+                    page.progressTimestamp | localTime | date:'a' }}
+                </span>
+            </p>
 
         </div>
 

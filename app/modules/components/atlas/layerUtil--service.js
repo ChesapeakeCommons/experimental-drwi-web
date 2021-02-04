@@ -9,7 +9,7 @@
  */
 angular.module('FieldDoc')
     .service('LayerUtil',
-        function(LabelLayer, LayerService, Utility) {
+        function(LabelLayer, LayerService, MapUtil, AtlasDataManager, Utility) {
 
             var CUSTOM_LAYERS = {};
 
@@ -193,7 +193,10 @@ angular.module('FieldDoc')
                     return vals;
 
                 },
-                addCustomLayers: function(features, layers, map) {
+                addCustomLayers: function(features, layers,
+                                          padding, map, callback) {
+
+                    var mod = this;
 
                     features.forEach(function(feature) {
 
@@ -206,6 +209,30 @@ angular.module('FieldDoc')
                         console.log(
                             'LayerUtil.addCustomLayers --> feature.layer_spec',
                             feature.layer_spec);
+
+                        console.log(
+                            'LayerUtil.addCustomLayers:callback',
+                            callback
+                        );
+
+                        var filter = false;
+
+                        if (AtlasDataManager.primaryNode) {
+
+                            console.log(
+                                'LayerUtil.addCustomLayers:primaryNode',
+                                AtlasDataManager.primaryNode
+                            );
+
+                            var layer = AtlasDataManager.primaryNode.properties.layer.layer_spec;
+
+                            if (layer.hasOwnProperty('id')) {
+
+                                feature.selected = filter = (feature.layer_spec.id === layer.id);
+
+                            }
+
+                        }
 
                         if (!feature.selected ||
                             typeof feature.selected === 'undefined') {
@@ -240,10 +267,56 @@ angular.module('FieldDoc')
                         if (map.getLayer(feature.layer_spec.id) === undefined) {
 
                             //
-                            // Add custom layers below practice features.
+                            // Add custom layers below site features.
                             //
 
-                            map.addLayer(feature.layer_spec, 'practice-index');
+                            map.addLayer(feature.layer_spec, 'site-index');
+
+                            var filterDef = filter ? ['in', 'name', AtlasDataManager.primaryNode.properties.name] : null;
+
+                            console.log(
+                                'LayerUtil.addCustomLayers:filterDef',
+                                filterDef
+                            );
+
+                            map.setFilter(feature.layer_spec.id, filterDef);
+
+                            map.on('click', feature.layer_spec.id, function (e) {
+
+                                console.log(
+                                    'map:customLayer.click:layerId',
+                                    feature.layer_spec.id
+                                );
+
+                                if (e.features.length > 0) {
+
+                                    console.log(
+                                        'map:customLayer.click:focusedFeature',
+                                        e.features[0]
+                                    );
+
+                                    var target = e.features[0];
+
+                                    MapUtil.fitMap(
+                                        map,
+                                        target,
+                                        padding,
+                                        true
+                                    );
+
+                                    //
+                                    // Fetch metadata and metric summary.
+                                    //
+
+                                    callback(
+                                        'territory',
+                                        target.properties.name,
+                                        mod.programId
+                                    );
+
+                                }
+
+                            });
 
                         }
 
@@ -256,7 +329,7 @@ angular.module('FieldDoc')
 
                 },
                 fetchCustomLayers: function (featureType, featureId,
-                                             layers, map) {
+                                             layers, padding, map, callback) {
 
                     var mod = this;
 
@@ -267,6 +340,8 @@ angular.module('FieldDoc')
                     if (featureType === 'program') {
 
                         data.program = featureId;
+
+                        mod.programId = featureId;
 
                     } else {
 
@@ -282,7 +357,14 @@ angular.module('FieldDoc')
                             'LayerUtil.fetchCustomLayers --> successResponse',
                             successResponse);
 
-                        mod.addCustomLayers(successResponse.features, layers, map);
+                        mod.programId = successResponse.program_id;
+
+                        mod.addCustomLayers(
+                            successResponse.features,
+                            layers,
+                            padding,
+                            map,
+                            callback);
 
                     }, function(errorResponse) {
 

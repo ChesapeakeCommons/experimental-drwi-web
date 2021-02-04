@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612286196136})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612475859959})
 
 ;
 /**
@@ -26012,8 +26012,19 @@ angular.module('FieldDoc')
                     // },
                     geography: function(GeographyService, $route) {
 
-                        return GeographyService.get({
-                            id: $route.current.params.geographyId
+                        var exclude = [
+                            'creator',
+                            'intersections',
+                            'metric_progress',
+                            'practices',
+                            'simple_geometry',
+                            'targets',
+                            'tasks'
+                        ].join(',');
+
+                        return GeographyService.getSingle({
+                            id: $route.current.params.geographyId,
+                            exclude: exclude
                         });
 
                     }
@@ -26706,7 +26717,8 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .controller('GeographySummaryController',
             function(Account, $location, $window, $timeout, $rootScope, $scope, $route,
-                user, Utility, geography, mapbox, LayerService, GeographyService, $interval) {
+                user, Utility, geography, mapbox, LayerService, GeographyService,
+                     $interval, AtlasDataManager) {
 
                 var self = this;
 
@@ -26877,6 +26889,8 @@ angular.module('FieldDoc')
 
                         self.geography = successResponse;
 
+                        self.atlasParams = AtlasDataManager.createURLData(self.geography);
+
                         if (successResponse.permissions.read) {
 
                             self.makePrivate = false;
@@ -26937,9 +26951,37 @@ angular.module('FieldDoc')
                         id: self.geography.id
                     }).$promise.then(function(successResponse) {
 
-                        console.log('Project metrics', successResponse);
+                        console.log(
+                            'Territory.loadMetrics:successResponse',
+                            successResponse
+                        );
 
                         Utility.processMetrics(successResponse.features);
+
+                        if (successResponse.hasOwnProperty('timestamp')) {
+
+                            if (successResponse.timestamp.toString().length === 10) {
+
+                                successResponse.timestamp = successResponse.timestamp * 1000;
+
+                            }
+
+                            self.progressTimestamp = successResponse.timestamp;
+
+                        }
+
+                        console.log(
+                            'Territory.loadMetrics:progressTimestamp',
+                            self.progressTimestamp
+                        );
+
+                        self.metrics = successResponse.features;
+
+                        self.metrics.forEach(function(metric) {
+
+                            Utility.calcProgress(metric, true);
+
+                        });
 
                         self.metrics = Utility.groupByModel(successResponse.features);
 
@@ -26985,7 +27027,7 @@ angular.module('FieldDoc')
                             'self.addLayers --> spec',
                             spec);
 
-                        feature.spec = JSON.parse(spec);
+                        feature.spec = spec;
 
                         console.log(
                             'self.addLayers --> feature.spec',
@@ -31541,6 +31583,12 @@ angular.module('FieldDoc')
                         Utility.processMetrics(successResponse.features);
 
                         if (successResponse.hasOwnProperty('timestamp')) {
+
+                            if (successResponse.timestamp.toString().length === 10) {
+
+                                successResponse.timestamp = successResponse.timestamp * 1000;
+
+                            }
 
                             self.progressTimestamp = successResponse.timestamp;
 
@@ -37130,7 +37178,7 @@ angular.module('FieldDoc')
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer,
-                 WaterReporterInterface) {
+                 WaterReporterInterface, GeographyService) {
 
             var self = this;
 
@@ -37150,9 +37198,10 @@ angular.module('FieldDoc')
 
             self.clsMap = {
                 practice: Practice,
-                site: Site,
                 program: Program,
-                project: Project
+                project: Project,
+                site: Site,
+                territory: GeographyService
             };
 
             self.layers = [
@@ -37279,13 +37328,18 @@ angular.module('FieldDoc')
 
             };
 
-            self.updateNodeLayer = function (nodeType, geometryType) {
+            self.updateNodeLayer = function (nodeType, geometryType,
+                                             programId) {
 
                 var zoom = self.map.getZoom();
 
-                if (zoom < 14 && nodeType === 'practice') return;
+                if (zoom < 14 &&
+                    nodeType === 'practice' &&
+                    geometryType !== 'centroid') return;
 
-                if (zoom < 10 && nodeType === 'site') return;
+                if (zoom < 10 &&
+                    nodeType === 'site' &&
+                    geometryType !== 'centroid') return;
 
                 var boundsArray = self.map.getBounds().toArray();
 
@@ -37313,6 +37367,12 @@ angular.module('FieldDoc')
                     geometryType: geometryType,
                     zoom: zoom
                 };
+
+                if (programId) {
+
+                    params.program = programId;
+
+                }
 
                 if (nodeType === 'post' ||
                     nodeType === 'station') {
@@ -37409,15 +37469,61 @@ angular.module('FieldDoc')
 
             };
 
-            self.fetchPrimaryNode = function (featureType, featureId) {
+            self.fetchPrimaryNode = function (featureType, featureId,
+                                              programId, callback) {
+
+                console.log(
+                    'self.fetchPrimaryNode:featureType',
+                    featureType
+                );
+
+                console.log(
+                    'self.fetchPrimaryNode:featureId',
+                    featureId
+                );
+
+                console.log(
+                    'self.fetchPrimaryNode:programId',
+                    programId
+                );
 
                 var cls = self.clsMap[featureType];
 
                 if (cls === undefined) return;
 
                 var params = {
-                    id: featureId
+                    id: featureId,
+                    src: 'atlas'
                 };
+
+                if (featureType === 'territory') {
+
+                    params.exclude = [
+                        'creator',
+                        'geometry',
+                        'intersections',
+                        'practices',
+                        'simple_geometry',
+                        'targets',
+                        'tasks'
+                    ].join(',');
+
+                    if (!Number.isInteger(parseInt(featureId, 10))) {
+
+                        params.id = Utility.machineName(
+                            featureId,
+                            '_'
+                        );
+
+                    }
+
+                }
+
+                if (programId) {
+
+                    params.program = programId;
+
+                }
 
                 cls.getSingle(
                     params
@@ -37454,6 +37560,8 @@ angular.module('FieldDoc')
 
                     }
 
+                    AtlasDataManager.setPrimaryNode(self.primaryNode);
+
                     var urlData = AtlasDataManager.createURLData(
                         self.primaryNode,
                         false,
@@ -37474,7 +37582,17 @@ angular.module('FieldDoc')
                         false
                     );
 
-                    self.loadMetrics();
+                    if (featureType === 'territory') {
+
+                        self.processMetrics(
+                            successResponse.metric_progress
+                        );
+
+                    } else {
+
+                        self.loadMetrics();
+
+                    }
 
                     //
                     // Set banner image in side panel.
@@ -37490,11 +37608,15 @@ angular.module('FieldDoc')
 
                     }
 
+                    if (callback) callback();
+
                 }, function(errorResponse) {
 
                     console.log('Unable to load feature data.');
 
                     self.showElements();
+
+                    if (callback) callback();
 
                 });
 
@@ -37982,14 +38104,28 @@ angular.module('FieldDoc')
 
                     self.fetchPrimaryNode(
                         nodeTokens[0],
-                        +nodeTokens[1]
+                        +nodeTokens[1],
+                        null,
+                        function () {
+
+                            LayerUtil.fetchCustomLayers(
+                                nodeTokens[0],
+                                nodeTokens[1],
+                                self.layers,
+                                self.padding,
+                                self.map,
+                                self.fetchPrimaryNode);
+
+                        }
                     );
 
-                    LayerUtil.fetchCustomLayers(
-                        nodeTokens[0],
-                        nodeTokens[1],
-                        self.layers,
-                        self.map);
+                    // LayerUtil.fetchCustomLayers(
+                    //     nodeTokens[0],
+                    //     nodeTokens[1],
+                    //     self.layers,
+                    //     self.padding,
+                    //     self.map,
+                    //     self.fetchPrimaryNode);
 
                 });
 
@@ -38138,7 +38274,9 @@ angular.module('FieldDoc')
                 LayerUtil.addCustomLayers(
                     LayerUtil.customLayerIdx(),
                     self.layers,
-                    self.map
+                    self.padding,
+                    self.map,
+                    self.fetchPrimaryNode
                 );
 
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
@@ -38170,23 +38308,63 @@ angular.module('FieldDoc')
 
             };
 
+            self.processMetrics = function (data) {
+
+                Utility.processMetrics(data.features);
+
+                if (data.hasOwnProperty('timestamp')) {
+
+                    if (data.timestamp.toString().length === 10) {
+
+                        data.timestamp = data.timestamp * 1000;
+
+                    }
+
+                    self.progressTimestamp = data.timestamp;
+
+                }
+
+                self.metrics = data.features;
+
+                self.metrics.forEach(function(metric) {
+
+                    Utility.calcProgress(metric, true);
+
+                });
+
+                self.metrics = Utility.groupByModel(data.features);
+
+                // self.metrics = Utility.groupByModel(data.features);
+
+                console.log('self.metrics', self.metrics);
+
+                $timeout(function () {
+
+                    AtlasLayoutUtil.resizeMainContent();
+
+                }, 50);
+
+            }
+
             self.loadMetrics = function() {
 
                 self.featureClass.progress({
                     id: self.primaryNode.properties.id
                 }).$promise.then(function(successResponse) {
 
-                    Utility.processMetrics(successResponse.features);
+                    self.processMetrics(successResponse);
 
-                    self.metrics = Utility.groupByModel(successResponse.features);
-
-                    console.log('self.metrics', self.metrics);
-
-                    $timeout(function () {
-
-                        AtlasLayoutUtil.resizeMainContent();
-
-                    }, 50);
+                    // Utility.processMetrics(successResponse.features);
+                    //
+                    // self.metrics = Utility.groupByModel(successResponse.features);
+                    //
+                    // console.log('self.metrics', self.metrics);
+                    //
+                    // $timeout(function () {
+                    //
+                    //     AtlasLayoutUtil.resizeMainContent();
+                    //
+                    // }, 50);
 
                 }, function(errorResponse) {
 
@@ -38905,8 +39083,12 @@ angular.module('FieldDoc')
 
                 fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
 
-            }
+            },
+            setPrimaryNode: function (feature) {
 
+                this.primaryNode = feature;
+
+            }
         };
 
     });
@@ -38921,7 +39103,7 @@ angular.module('FieldDoc')
  */
 angular.module('FieldDoc')
     .service('LayerUtil',
-        function(LabelLayer, LayerService, Utility) {
+        function(LabelLayer, LayerService, MapUtil, AtlasDataManager, Utility) {
 
             var CUSTOM_LAYERS = {};
 
@@ -39105,7 +39287,10 @@ angular.module('FieldDoc')
                     return vals;
 
                 },
-                addCustomLayers: function(features, layers, map) {
+                addCustomLayers: function(features, layers,
+                                          padding, map, callback) {
+
+                    var mod = this;
 
                     features.forEach(function(feature) {
 
@@ -39118,6 +39303,30 @@ angular.module('FieldDoc')
                         console.log(
                             'LayerUtil.addCustomLayers --> feature.layer_spec',
                             feature.layer_spec);
+
+                        console.log(
+                            'LayerUtil.addCustomLayers:callback',
+                            callback
+                        );
+
+                        var filter = false;
+
+                        if (AtlasDataManager.primaryNode) {
+
+                            console.log(
+                                'LayerUtil.addCustomLayers:primaryNode',
+                                AtlasDataManager.primaryNode
+                            );
+
+                            var layer = AtlasDataManager.primaryNode.properties.layer.layer_spec;
+
+                            if (layer.hasOwnProperty('id')) {
+
+                                feature.selected = filter = (feature.layer_spec.id === layer.id);
+
+                            }
+
+                        }
 
                         if (!feature.selected ||
                             typeof feature.selected === 'undefined') {
@@ -39152,10 +39361,56 @@ angular.module('FieldDoc')
                         if (map.getLayer(feature.layer_spec.id) === undefined) {
 
                             //
-                            // Add custom layers below practice features.
+                            // Add custom layers below site features.
                             //
 
-                            map.addLayer(feature.layer_spec, 'practice-index');
+                            map.addLayer(feature.layer_spec, 'site-index');
+
+                            var filterDef = filter ? ['in', 'name', AtlasDataManager.primaryNode.properties.name] : null;
+
+                            console.log(
+                                'LayerUtil.addCustomLayers:filterDef',
+                                filterDef
+                            );
+
+                            map.setFilter(feature.layer_spec.id, filterDef);
+
+                            map.on('click', feature.layer_spec.id, function (e) {
+
+                                console.log(
+                                    'map:customLayer.click:layerId',
+                                    feature.layer_spec.id
+                                );
+
+                                if (e.features.length > 0) {
+
+                                    console.log(
+                                        'map:customLayer.click:focusedFeature',
+                                        e.features[0]
+                                    );
+
+                                    var target = e.features[0];
+
+                                    MapUtil.fitMap(
+                                        map,
+                                        target,
+                                        padding,
+                                        true
+                                    );
+
+                                    //
+                                    // Fetch metadata and metric summary.
+                                    //
+
+                                    callback(
+                                        'territory',
+                                        target.properties.name,
+                                        mod.programId
+                                    );
+
+                                }
+
+                            });
 
                         }
 
@@ -39168,7 +39423,7 @@ angular.module('FieldDoc')
 
                 },
                 fetchCustomLayers: function (featureType, featureId,
-                                             layers, map) {
+                                             layers, padding, map, callback) {
 
                     var mod = this;
 
@@ -39179,6 +39434,8 @@ angular.module('FieldDoc')
                     if (featureType === 'program') {
 
                         data.program = featureId;
+
+                        mod.programId = featureId;
 
                     } else {
 
@@ -39194,7 +39451,14 @@ angular.module('FieldDoc')
                             'LayerUtil.fetchCustomLayers --> successResponse',
                             successResponse);
 
-                        mod.addCustomLayers(successResponse.features, layers, map);
+                        mod.programId = successResponse.program_id;
+
+                        mod.addCustomLayers(
+                            successResponse.features,
+                            layers,
+                            padding,
+                            map,
+                            callback);
 
                     }, function(errorResponse) {
 
@@ -40655,7 +40919,7 @@ angular.module('FieldDoc')
                     'id': 'fd.practice.centroid',
                     'source': 'fd.practice.centroid',
                     'type': 'circle',
-                    'minzoom': zoomConfig.practice.min,
+                    'minzoom': 6,
                     'maxzoom': zoomConfig.practice.max,
                     'layout': {
                         'visibility': 'visible'
@@ -40843,7 +41107,7 @@ angular.module('FieldDoc')
                     'id': 'fd.site.centroid',
                     'source': 'fd.site.centroid',
                     'type': 'circle',
-                    'minzoom': zoomConfig.site.min + 1,
+                    'minzoom': 4,
                     'maxzoom': zoomConfig.site.max + 1,
                     'layout': {
                         'visibility': 'visible'
@@ -43334,6 +43598,11 @@ angular
                     isArray: false,
                     url: environment.apiUrl.concat('/v1/geographies')
                 },
+                getSingle: {
+                    method: 'GET',
+                    isArray: false,
+                    url: environment.apiUrl.concat('/v1/geography/:id')
+                },
                 matrix: {
                     method: 'GET',
                     isArray: false,
@@ -44625,15 +44894,17 @@ angular.module('FieldDoc')
         };
 
         return {
-            machineName: function(name) {
+            machineName: function(name, separator) {
+
+                separator = typeof separator === 'string' ? separator : '-';
 
                 if (name) {
 
-                    var removeDashes = name.replace(/-/g, ''),
-                        removeSpaces = removeDashes.replace(/ /g, '-'),
-                        convertLowerCase = removeSpaces.toLowerCase();
+                    var removeDashes = name.trim().replace(/-/g, ''),
+                        removeSpaces = removeDashes.replace(/ /g, separator);
 
-                    return convertLowerCase;
+                    return removeSpaces.toLowerCase();
+
                 }
 
                 return null;

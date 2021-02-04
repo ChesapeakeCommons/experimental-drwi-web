@@ -51,15 +51,17 @@ angular.module('FieldDoc')
         };
 
         return {
-            machineName: function(name) {
+            machineName: function(name, separator) {
+
+                separator = typeof separator === 'string' ? separator : '-';
 
                 if (name) {
 
-                    var removeDashes = name.replace(/-/g, ''),
-                        removeSpaces = removeDashes.replace(/ /g, '-'),
-                        convertLowerCase = removeSpaces.toLowerCase();
+                    var removeDashes = name.trim().replace(/-/g, ''),
+                        removeSpaces = removeDashes.replace(/ /g, separator);
 
-                    return convertLowerCase;
+                    return removeSpaces.toLowerCase();
+
                 }
 
                 return null;
