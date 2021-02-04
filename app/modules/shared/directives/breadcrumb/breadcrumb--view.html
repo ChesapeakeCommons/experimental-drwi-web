@@ -48,9 +48,22 @@
         <a href="/programs/{{ program.id }}">
             {{ program.name }}
         </a>
-        <span data-ng-if="(tail && tail.length) || metric || practiceType">
+        <span data-ng-if="(tail && tail.length) || metric || practiceType || territory">
             /
         </span>
+    </div>
+    <div class="no-shrink anchor"
+         data-ng-if="territory && territory.id">
+        <a href="#">
+            Territories
+        </a>
+        <span>/</span>
+    </div>
+    <div class="no-shrink anchor"
+         data-ng-if="territory && territory.id">
+        <a href="/geographies/{{ territory.id }}">
+            {{ territory.name }}
+        </a>
     </div>
     <div class="no-shrink anchor"
          data-ng-if="metric && metric.id">

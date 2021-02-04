@@ -20,7 +20,8 @@
                         'report': '=?',
                         'rootPath': '@',
                         'site': '=?',
-                        'tail': '@'
+                        'tail': '@',
+                        'territory': '=?'
                     },
                     templateUrl: function (elem, attrs) {
 

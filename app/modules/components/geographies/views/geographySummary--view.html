@@ -28,6 +28,10 @@
 
             <div class="module--grid">
 
+                <div breadcrumb class="full-width"
+                     program="page.geography.program"
+                     territory="page.geography"></div>
+
                 <div class="group">
 
                     <!-- Descriptors -->
@@ -333,13 +337,6 @@
                 <span class="material-icons">
                     map
                 </span>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="/geographies/{{ page.geography.id }}/edit">
-                    <i class="material-icons">
-                        edit
-                    </i>
                 </a>
             </li>
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTargets}">

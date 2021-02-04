@@ -65,13 +65,6 @@
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.edit}">
-                <a href="/geographies/{{ page.geography.id }}/edit">
-                    <i class="material-icons">
-                        edit
-                    </i>
-                </a>
-            </li>
             <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTargets}">
                 <a href="/geographies/{{ page.geography.id }}/targets">
                     <i class="material-icons">

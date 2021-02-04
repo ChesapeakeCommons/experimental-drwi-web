@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612475859959})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612478716413})
 
 ;
 /**
@@ -39311,7 +39311,7 @@ angular.module('FieldDoc')
 
                         var filter = false;
 
-                        if (AtlasDataManager.primaryNode) {
+                        try {
 
                             console.log(
                                 'LayerUtil.addCustomLayers:primaryNode',
@@ -39320,11 +39320,14 @@ angular.module('FieldDoc')
 
                             var layer = AtlasDataManager.primaryNode.properties.layer.layer_spec;
 
-                            if (layer.hasOwnProperty('id')) {
+                            feature.selected = filter = (feature.layer_spec.id === layer.id);
 
-                                feature.selected = filter = (feature.layer_spec.id === layer.id);
+                        } catch (e) {
 
-                            }
+                            console.log(
+                                'LayerUtil.addCustomLayers:',
+                                'Unable to parse stored primary node.'
+                            );
 
                         }
 
@@ -49181,7 +49184,8 @@ angular.module('FieldDoc')
                         'report': '=?',
                         'rootPath': '@',
                         'site': '=?',
-                        'tail': '@'
+                        'tail': '@',
+                        'territory': '=?'
                     },
                     templateUrl: function (elem, attrs) {
 

@@ -217,7 +217,7 @@ angular.module('FieldDoc')
 
                         var filter = false;
 
-                        if (AtlasDataManager.primaryNode) {
+                        try {
 
                             console.log(
                                 'LayerUtil.addCustomLayers:primaryNode',
@@ -226,11 +226,14 @@ angular.module('FieldDoc')
 
                             var layer = AtlasDataManager.primaryNode.properties.layer.layer_spec;
 
-                            if (layer.hasOwnProperty('id')) {
+                            feature.selected = filter = (feature.layer_spec.id === layer.id);
 
-                                feature.selected = filter = (feature.layer_spec.id === layer.id);
+                        } catch (e) {
 
-                            }
+                            console.log(
+                                'LayerUtil.addCustomLayers:',
+                                'Unable to parse stored primary node.'
+                            );
 
                         }
 
