@@ -208,7 +208,28 @@ angular.module('FieldDoc')
                 ].join('');
 
             },
-            getDenominator: function(metric, global) {
+            getDenominator: function(metric, global, nodeType) {
+
+                console.log(
+                    'Utility.getDenominator:metric',
+                    metric
+                );
+
+                console.log(
+                    'Utility.getDenominator:global',
+                    global
+                );
+
+                console.log(
+                    'Utility.getDenominator:nodeType',
+                    nodeType
+                );
+
+                if (nodeType === 'territory') {
+
+                    return metric.goal.parent;
+
+                }
 
                 if (global) {
 
@@ -239,17 +260,47 @@ angular.module('FieldDoc')
                 return metric.current_value;
 
             },
-            calcProgress: function(metric, global) {
+            calcProgress: function(metric, global, nodeType) {
+
+                console.log(
+                    'Utility.calcProgress:metric',
+                    metric
+                );
+
+                console.log(
+                    'Utility.calcProgress:global',
+                    global
+                );
+
+                console.log(
+                    'Utility.calcProgress:nodeType',
+                    nodeType
+                );
 
                 var numerator = this.getNumerator(metric, global);
 
-                var denominator = this.getDenominator(metric, global);
+                console.log(
+                    'Utility.calcProgress:numerator',
+                    numerator
+                );
+
+                var denominator = this.getDenominator(metric, global, nodeType);
+
+                console.log(
+                    'Utility.calcProgress:denominator',
+                    denominator
+                );
 
                 if (numerator >= 0 && (typeof denominator === 'number' && denominator > 0)) {
 
                     var progress = (numerator / denominator);
 
                     metric.percentComplete = Math.round(progress * 100);
+
+                    console.log(
+                        'Utility.calcProgress:percentComplete',
+                        metric.percentComplete
+                    );
 
                     metric.arcValue = (progress > 1) ? 1 : progress;
 

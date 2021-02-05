@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612478716413})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612554183345})
 
 ;
 /**
@@ -26956,7 +26956,7 @@ angular.module('FieldDoc')
                             successResponse
                         );
 
-                        Utility.processMetrics(successResponse.features);
+                        // Utility.processMetrics(successResponse.features);
 
                         if (successResponse.hasOwnProperty('timestamp')) {
 
@@ -26979,7 +26979,11 @@ angular.module('FieldDoc')
 
                         self.metrics.forEach(function(metric) {
 
-                            Utility.calcProgress(metric, true);
+                            Utility.calcProgress(
+                                metric,
+                                true,
+                                self.geography.type
+                            );
 
                         });
 
@@ -37182,6 +37186,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.queryFeatures = [];
+
             self.showAllFeatures = false;
 
             self.urlComponents = LayerUtil.getUrlComponents();
@@ -37486,6 +37492,8 @@ angular.module('FieldDoc')
                     'self.fetchPrimaryNode:programId',
                     programId
                 );
+
+                self.queryFeatures = undefined;
 
                 var cls = self.clsMap[featureType];
 
@@ -37899,28 +37907,37 @@ angular.module('FieldDoc')
                         features
                     );
 
+                    if (!features.length) return;
+
                     if (features.length > 1) {
 
-                        var names = [];
+                        console.log(
+                            'map.click:features.length > 1:',
+                            features
+                        );
 
-                        features.forEach(function (feature) {
+                        $scope.$apply(function () {
 
-                            names.push(feature.properties.name);
+                            self.queryFeatures = features;
 
                         });
 
-                        var text = names.join(', ');
+                        // var names = [];
+                        //
+                        // features.forEach(function (feature) {
+                        //
+                        //     names.push(feature.properties.name);
+                        //
+                        // });
+                        //
+                        // var text = names.join(', ');
+                        //
+                        // new mapboxgl.Popup()
+                        //     .setLngLat(e.lngLat)
+                        //     .setHTML(text)
+                        //     .addTo(self.map);
 
-                        new mapboxgl.Popup()
-                            .setLngLat(e.lngLat)
-                            .setHTML(text)
-                            .addTo(self.map);
-
-                        return
-
-                    }
-
-                    if (features.length) {
+                    } else {
 
                         var target = features[0];
 
@@ -38328,7 +38345,11 @@ angular.module('FieldDoc')
 
                 self.metrics.forEach(function(metric) {
 
-                    Utility.calcProgress(metric, true);
+                    Utility.calcProgress(
+                        metric,
+                        true,
+                        self.primaryNode.properties.type
+                    );
 
                 });
 
@@ -45054,7 +45075,28 @@ angular.module('FieldDoc')
                 ].join('');
 
             },
-            getDenominator: function(metric, global) {
+            getDenominator: function(metric, global, nodeType) {
+
+                console.log(
+                    'Utility.getDenominator:metric',
+                    metric
+                );
+
+                console.log(
+                    'Utility.getDenominator:global',
+                    global
+                );
+
+                console.log(
+                    'Utility.getDenominator:nodeType',
+                    nodeType
+                );
+
+                if (nodeType === 'territory') {
+
+                    return metric.goal.parent;
+
+                }
 
                 if (global) {
 
@@ -45085,17 +45127,47 @@ angular.module('FieldDoc')
                 return metric.current_value;
 
             },
-            calcProgress: function(metric, global) {
+            calcProgress: function(metric, global, nodeType) {
+
+                console.log(
+                    'Utility.calcProgress:metric',
+                    metric
+                );
+
+                console.log(
+                    'Utility.calcProgress:global',
+                    global
+                );
+
+                console.log(
+                    'Utility.calcProgress:nodeType',
+                    nodeType
+                );
 
                 var numerator = this.getNumerator(metric, global);
 
-                var denominator = this.getDenominator(metric, global);
+                console.log(
+                    'Utility.calcProgress:numerator',
+                    numerator
+                );
+
+                var denominator = this.getDenominator(metric, global, nodeType);
+
+                console.log(
+                    'Utility.calcProgress:denominator',
+                    denominator
+                );
 
                 if (numerator >= 0 && (typeof denominator === 'number' && denominator > 0)) {
 
                     var progress = (numerator / denominator);
 
                     metric.percentComplete = Math.round(progress * 100);
+
+                    console.log(
+                        'Utility.calcProgress:percentComplete',
+                        metric.percentComplete
+                    );
 
                     metric.arcValue = (progress > 1) ? 1 : progress;
 

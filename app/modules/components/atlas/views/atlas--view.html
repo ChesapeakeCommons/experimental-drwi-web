@@ -130,6 +130,39 @@
                 scrolling="no"></iframe>
     </div>
 
+    <div class="multi-feature-modal-container"
+         data-ng-show="page.queryFeatures && page.queryFeatures.length"
+         data-ng-click="page.queryFeatures = undefined">
+        <div class="multi-feature-modal pad-75p rad-50">
+            <div class="title pad-l-50p margin-b-50p">
+                <span class="title-text">
+                    Multiple features found:
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss margin-0"
+                         data-ng-click="page.queryFeatures = undefined">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                        close
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <ul class="pad-0 margin-0">
+                <li class="pad-50p"
+                    data-ng-repeat="feature in page.queryFeatures"
+                    data-ng-click="page.fetchPrimaryNode(feature.properties.type, feature.properties.id)">
+                    <span>
+                        <strong>{{ feature.properties.type }}:</strong>&nbsp;
+                    </span>
+                    <span>
+                        {{ feature.properties.name }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
 </main>
 
 <!--<div data-ng-include="'/templates/footer&#45;&#45;view.html'"></div>-->

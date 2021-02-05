@@ -44,7 +44,7 @@
                     <span data-ng-if="page.featureType === 'territory'"
                           class="label"
                           style="font-weight: 600; color: #757575; font-size: .8rem;">
-                        Geography
+                        {{ page.featureType }} &middot; {{ page.primaryNode.properties.category.name }}
                     </span>
                 </div>
                 <div class="stat--block"
@@ -113,7 +113,7 @@
             </h2>
 
             <p class="pad-0 margin-b-1" data-ng-if="page.progressTimestamp">
-                <span style="font-size: .9rem; color: #757575;">
+                <span style="font-size: .8rem; color: #757575;">
                     Last updated on {{ page.progressTimestamp | date : 'mediumDate' }} at {{
                     page.progressTimestamp | localTime | date:'h:mm' }} {{
                     page.progressTimestamp | localTime | date:'a' }}

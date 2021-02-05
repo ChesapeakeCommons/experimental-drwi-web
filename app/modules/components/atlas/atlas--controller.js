@@ -17,6 +17,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.queryFeatures = [];
+
             self.showAllFeatures = false;
 
             self.urlComponents = LayerUtil.getUrlComponents();
@@ -321,6 +323,8 @@ angular.module('FieldDoc')
                     'self.fetchPrimaryNode:programId',
                     programId
                 );
+
+                self.queryFeatures = undefined;
 
                 var cls = self.clsMap[featureType];
 
@@ -734,28 +738,37 @@ angular.module('FieldDoc')
                         features
                     );
 
+                    if (!features.length) return;
+
                     if (features.length > 1) {
 
-                        var names = [];
+                        console.log(
+                            'map.click:features.length > 1:',
+                            features
+                        );
 
-                        features.forEach(function (feature) {
+                        $scope.$apply(function () {
 
-                            names.push(feature.properties.name);
+                            self.queryFeatures = features;
 
                         });
 
-                        var text = names.join(', ');
+                        // var names = [];
+                        //
+                        // features.forEach(function (feature) {
+                        //
+                        //     names.push(feature.properties.name);
+                        //
+                        // });
+                        //
+                        // var text = names.join(', ');
+                        //
+                        // new mapboxgl.Popup()
+                        //     .setLngLat(e.lngLat)
+                        //     .setHTML(text)
+                        //     .addTo(self.map);
 
-                        new mapboxgl.Popup()
-                            .setLngLat(e.lngLat)
-                            .setHTML(text)
-                            .addTo(self.map);
-
-                        return
-
-                    }
-
-                    if (features.length) {
+                    } else {
 
                         var target = features[0];
 
@@ -1163,7 +1176,11 @@ angular.module('FieldDoc')
 
                 self.metrics.forEach(function(metric) {
 
-                    Utility.calcProgress(metric, true);
+                    Utility.calcProgress(
+                        metric,
+                        true,
+                        self.primaryNode.properties.type
+                    );
 
                 });
 

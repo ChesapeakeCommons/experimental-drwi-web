@@ -249,7 +249,7 @@
                             successResponse
                         );
 
-                        Utility.processMetrics(successResponse.features);
+                        // Utility.processMetrics(successResponse.features);
 
                         if (successResponse.hasOwnProperty('timestamp')) {
 
@@ -272,7 +272,11 @@
 
                         self.metrics.forEach(function(metric) {
 
-                            Utility.calcProgress(metric, true);
+                            Utility.calcProgress(
+                                metric,
+                                true,
+                                self.geography.type
+                            );
 
                         });
 
