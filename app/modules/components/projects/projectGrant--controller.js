@@ -205,7 +205,7 @@ angular.module('FieldDoc')
                     * our temporary array of program objects. Yay!
                     * */
 
-                    if(self.projectPrograms.length == 0){
+               /*     if(self.projectPrograms.length == 0){
                         i = 0;
                         self.availablePrograms.forEach(function(availProgram){
                             if(availProgram.main == true){
@@ -216,6 +216,8 @@ angular.module('FieldDoc')
                         });
 
                     }
+
+                */
 
                     console.log("available programs updated-->", self.availablePrograms);
 
