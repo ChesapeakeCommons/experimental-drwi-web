@@ -31,7 +31,7 @@ angular.module('FieldDoc')
 
             self.showDeletionDialog = false;
 
-            self.deletionId = undefined
+            self.deletionId = undefined;
 
             self.summary = {
                 program_count : 0
