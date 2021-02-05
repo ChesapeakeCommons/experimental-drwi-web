@@ -306,7 +306,7 @@ angular.module('FieldDoc')
                     if(availProgram.program.id == program_id){
 
                         self.availablePrograms[i].active = true;
-
+                        self.availablePrograms[i].is_organization_program = true;
                     }
 
                     i = i +1;
