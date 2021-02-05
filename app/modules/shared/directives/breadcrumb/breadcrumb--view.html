@@ -164,9 +164,42 @@
         <span>/</span>
     </div>
     <!-- END handling for multiple programs -->
+
+    <!-- START legacy for single program model-->
+    <!--
+   <div class="no-shrink anchor"
+         data-ng-if="program && program.id && !site && !practice && !report">
+        <a href="/">
+            Programs
+        </a>
+        <span>/</span>
+    </div>
+    <div style="max-width: {{ basis }}px;"
+         data-ng-if="program && program.id && !site && !practice && !report">
+        <a href="/programs/{{ program.id }}">
+            {{ program.name }}
+        </a>
+        <span>
+            /
+        </span>
+    </div>
+    <div class="no-shrink anchor">
+        <a href="/projects"
+           data-ng-if="!program">
+            Projects AA
+        </a>
+        <a href="/projects?program={{ program.id }}"
+           data-ng-if="program && program.id">
+            Projects BB
+        </a>
+        <span>/</span>
+    </div>
+    -->
+    <!-- END legacy for single program model-->
+
     <div style="max-width: {{ basis }}px;">
         <a href="/projects/{{ project.id }}">
-            {{ project.name }} CC
+            {{ project.name }}
         </a>
         <span data-ng-if="(tail && tail.length) || (practice && practice.id) || (site && site.id)">
             /
