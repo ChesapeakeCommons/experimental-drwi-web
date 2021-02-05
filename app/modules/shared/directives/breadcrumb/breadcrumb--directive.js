@@ -16,6 +16,7 @@
                         'practice': '=?',
                         'practiceType': '=?',
                         'program': '=?',
+                        'programs': '=?',
                         'project': '=?',
                         'report': '=?',
                         'rootPath': '@',
@@ -99,6 +100,11 @@
                             }, 50)
 
                         };
+                        scope.programDropDownVisible = false;
+
+                        scope.toggleProgramDropDown = function(){
+                            scope.programDropDownVisible = !scope.programDropDownVisible;
+                        }
 
                         scope.$watch('report', function (newVal) {
 
@@ -131,6 +137,12 @@
                         });
 
                         scope.$watch('program', function (newVal) {
+
+                            scope.setBasis();
+
+                        });
+
+                        scope.$watch('programs', function (newVal) {
 
                             scope.setBasis();
 

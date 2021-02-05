@@ -96,36 +96,77 @@
         </a>
         <span>/</span>
     </div>
+    <!-- START handling for multiple programs -->
     <div class="no-shrink anchor"
-         data-ng-if="program && program.id && !site && !practice && !report">
+         data-ng-if="programs && programs.length && !site && !practice && !report">
         <a href="/">
             Programs
         </a>
         <span>/</span>
     </div>
-    <div style="max-width: {{ basis }}px;"
-         data-ng-if="program && program.id && !site && !practice && !report">
-        <a href="/programs/{{ program.id }}">
-            {{ program.name }}
-        </a>
+
+    <div style="max-width: {{ basis }}px; z-index:999;position:relative;"
+         data-ng-if="programs && programs.length && !site && !practice && !report">
+
+            <a href="/programs/{{ program.id }}" data-ng-if="programs.length == 1">
+                {{ programs[0].name }}
+            </a>
+
+            <a href="" data-ng-click="toggleProgramDropDown();" data-ng-if="programs.length > 1"
+               style="height:24px; margin-right: -6px; margin-left: 0px;">
+                Funded by {{programs.length}} programs
+                <sub><i class="material-icons" style="position:relative; top: 3px; margin-left: -6px;">expand_more</i></sub>
+            </a>
+
         <span>
             /
         </span>
     </div>
+
+    <form name=""
+          class="collection-filter drop-down collection-filter-modal"
+         style="width: 400px; background-color: #ffffff;position:absolute; z-index:9999; left:115px; top:65px;
+                min-width: 240px;
+                max-height: 400px;
+
+                border-radius: 0.5rem;
+                border: 1px solid #e0e0e0;
+                overflow-y: auto; "
+         data-ng-if="programDropDownVisible">
+
+        <label data-ng-repeat="program in programs track by $index| orderBy: 'name' "
+                style ="display: flex; flex-flow: row nowrap;
+
+                    flex-grow: 1;
+                    flex-shrink: 0;
+                    padding: 1rem;"
+               title="{{ program.name }}">
+
+            <span>
+
+                <a href="/programs/{{program.id}}">{{program.name }}</a>
+
+            </span>
+        </label>
+    </form>
+
     <div class="no-shrink anchor">
         <a href="/projects"
-           data-ng-if="!program">
+           data-ng-if="!programs">
             Projects
         </a>
+        <!-- This link needs updating-->
         <a href="/projects?program={{ program.id }}"
-           data-ng-if="program && program.id">
+           data-ng-if="programs && programs.length">
             Projects
         </a>
+        <!-- Above link needs updating-->
         <span>/</span>
     </div>
+    <!-- END handling for multiple programs -->
     <div style="max-width: {{ basis }}px;">
         <a href="/projects/{{ project.id }}">
-            {{ project.name }}
+            {{ project.name }} CC
         </a>
         <span data-ng-if="(tail && tail.length) || (practice && practice.id) || (site && site.id)">
             /
