@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'multiprogram',apiUrl:'https://multi.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://multiprogram.fielddoc.org',clientId:'iwN6fjRffe1RUmSfiJL3FPZA7WVwrA8B',version:1611934485635})
+.constant('environment', {name:'multiprogram',apiUrl:'https://multi.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://multiprogram.fielddoc.org',clientId:'iwN6fjRffe1RUmSfiJL3FPZA7WVwrA8B',version:1612538914643})
 
 ;
 /**
@@ -3537,7 +3537,7 @@ angular.module('FieldDoc')
 
             self.showDeletionDialog = false;
 
-            self.deletionId = undefined
+            self.deletionId = undefined;
 
             self.summary = {
                 program_count : 0
@@ -5276,6 +5276,27 @@ angular.module('FieldDoc')
 
             };
 
+            self.getArchiveCount = function () {
+
+                Project.collection({
+                    limit: 1,
+                    page: 1,
+                    archived: true,
+                    count_only: true
+                }).$promise.then(function(successResponse) {
+
+                    self.archiveCount = successResponse.count;
+
+                }, function(errorResponse) {
+
+                    console.log('errorResponse', errorResponse);
+
+                    self.showElements();
+
+                });
+
+            };
+
             self.loadTags = function() {
 
                 Tag.collection({}).$promise.then(function(successResponse) {
@@ -5433,6 +5454,12 @@ angular.module('FieldDoc')
                     //
 
                     self.loadTags();
+
+                    //
+                    // Fetch archive count.
+                    //
+
+                    self.getArchiveCount();
 
                 });
 
@@ -7253,7 +7280,7 @@ angular.module('FieldDoc')
                     'images',
                     'last_modified_by',
                     'organization',
-                    'program',
+                    'programs',
                     'tags',
                     'tasks'
                 ];
@@ -7687,7 +7714,7 @@ angular.module('FieldDoc')
                         'images',
                         'last_modified_by',
                         'organization',
-                        'program',
+                        'programs',
                         'tags',
                         'tasks'
                     ];
@@ -8118,7 +8145,7 @@ angular.module('FieldDoc')
                     'tasks',
                     'centroid',
                     'extent',
-                    'program'
+                    'programs'
                 ];
 
                 var reservedProperties = [
@@ -8560,6 +8587,10 @@ angular.module('FieldDoc')
                 processing: true
             };
 
+            self.showDeletionDialog = false;
+
+            self.deletionId = undefined;
+
             self.showElements = function() {
 
                 $timeout(function() {
@@ -8616,36 +8647,6 @@ angular.module('FieldDoc')
 
                     self.loadOrganization(Account.userObject.organization_id);
 
-                    //
-                    // Assign project to a scoped variable
-                    //
-                    project.$promise.then(function(successResponse) {
-
-                        if (!successResponse.permissions.read &&
-                            !successResponse.permissions.write) {
-
-                            self.makePrivate = true;
-
-                        } else {
-
-                            self.processFeature(successResponse);
-
-                            self.permissions.can_edit = successResponse.permissions.write;
-                            self.permissions.can_delete = successResponse.permissions.write;
-
-                            $rootScope.page.title = 'Edit Project';
-
-                        }
-
-                        self.showElements();
-
-                    }, function(errorResponse) {
-
-                        console.log('Unable to load request project');
-
-                        self.showElements();
-
-                    });
 
                 });
 
@@ -8672,6 +8673,7 @@ angular.module('FieldDoc')
 
                     self.permissions = successResponse.permissions;
 
+                    self.availablePrograms = self.feature.programs;
 
                  //   self.summary.program_count = self.feature.programs.length;
 
@@ -8688,29 +8690,307 @@ angular.module('FieldDoc')
 
                     }
 
-                    self.status.loading = false;
+                    self.loadProject();
 
                 }, function(errorResponse) {
 
                     console.error('Unable to load organization.');
 
-                    self.status.loading = false;
+                    self.loadProject();
+
+                //    self.status.loading = false;
 
                 });
 
             };
 
 
-            /*add program to project*/
+            self.loadProject = function(){
 
-            self.addProgram = function(id){
+                //
+                // Assign project to a scoped variable
+                //
+                project.$promise.then(function(successResponse) {
+
+                    console.log("self.project-->",successResponse);
+
+                    self.project = successResponse;
+
+                    self.projectPrograms = self.project.programs;
+
+                    if (!successResponse.permissions.read &&
+                        !successResponse.permissions.write) {
+
+                        self.makePrivate = true;
+
+                    } else {
+
+                        self.processFeature(successResponse);
+
+                        self.permissions.can_edit = successResponse.permissions.write;
+                        self.permissions.can_delete = successResponse.permissions.write;
+
+                        $rootScope.page.title = 'Edit Project';
+
+                    }
+
+                    console.log("available programs -->", self.availablePrograms);
+
+                    /*So, we're going to use some temporary controller array of objects
+                    * (self.availableProgram and self.projectsProgram to track what programs
+                    * are available on the organization level vs what programs have been added to project.
+                    * we do this by looping over the organization programs, then checking that program
+                    * exists under the project. We add the attribute 'active' as false first, then update
+                    * to true if it exists.
+                    * */
+
+                    let i = 0;
+                    self.availablePrograms.forEach(function(availProgram){
+                        self.availablePrograms[i].active = false;
+                        self.projectPrograms.forEach(function(projProgram){
+                            if(availProgram.program.id == projProgram.id){
+                                self.availablePrograms[i].active = true;
+                                self.availablePrograms[i].is_organization_program = true;
+                            }
+
+                        });
+                        i = i+1;
+                    });
+
+                    /*The below logic should not need to be used, as a program must be added to a
+                    * project on creation. However, it represents a stop-gap for now if 1)
+                    * a program does not exist, and 2) if all programs are removed from
+                    * the project. This will set the default program to an active program in
+                    * our temporary array of program objects. Yay!
+                    * */
+
+               /*     if(self.projectPrograms.length == 0){
+                        i = 0;
+                        self.availablePrograms.forEach(function(availProgram){
+                            if(availProgram.main == true){
+                                self.availablePrograms[i].active = true;
+                                self.availablePrograms[i].is_organization_program = true;
+                            }
+                        i = i+1;
+                        });
+
+                    }
+
+                */
+
+                    console.log("available programs updated-->", self.availablePrograms);
+
+                    /*Because programs being associated with organization is new feature as of this
+                    * comment (2.4.2021) we can assume there will be a mismatch between the
+                    * organization programs and those (one actually) currently associated with existing projects.
+                    * The below logic is meant to handle this condition.
+                    * */
+
+                    if(self.projectPrograms.length != 0){
+                     //   i = 0;
+
+                        self.projectPrograms.forEach(function(projProgram){
+                          //  let i2 = 0;
+                            let exists_in_program = false;
+                            self.availablePrograms.forEach(function(availProgram){
+                                if(availProgram.program.id == projProgram.id){
+                                    exists_in_program = true;
+                                }
+
+                             //   i2 = i2+1;
+                            });
+                            if(exists_in_program == false){
+                                let legacy_program = {
+                                    active: true,
+                                    is_organization_program: false,
+                                    program: projProgram,
+                                    program_id: projProgram.id
+
+                                }
+                                self.availablePrograms.push(legacy_program);
+                            }
+
+
+                          //  i = i+1;
+                        });
+                    }
+
+
+
+
+                    self.status.loading = false;
+
+                    self.showElements();
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load request project');
+
+                    self.status.loading = false;
+
+                    self.showElements();
+
+                });
+            }
+
+            /*add program to project
+            * Okay, so to do this, we're going pass in our program_id then loop over our
+            * availableProgram object array, set it's active attribute to true.
+            * That's for the UI and so we can extract the program info from
+            * that list and add it to our project object, which we will then save.
+            * Also, to prevent the browser from registering the click twice (oy!)
+            * we pass the click event and stop it's propagation.
+            * Sound good? let's do it !
+            * */
+
+            self.addProgram = function($event,program_id){
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+                self.status.processing = true;
+
+                console.log("Adding program to project-->",program_id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                let i = 0;
+
+                /*Set the new program to active in our availableProgram array*/
+
+                self.availablePrograms.forEach(function(availProgram){
+                    
+                    if(availProgram.program.id == program_id){
+
+                        self.availablePrograms[i].active = true;
+                        self.availablePrograms[i].is_organization_program = true;
+                    }
+
+                    i = i +1;
+                });
+
+                /*Update the project object*/
+
+                i = 0;
+                self.tempActivePrograms = [];
+                self.availablePrograms.forEach(function(availProgram){
+                   if(availProgram.active == true){
+
+                       self.tempActivePrograms.push({"id":availProgram.program.id});
+
+                   }
+                   i=i+1
+                });
+
+                console.log("self.project.programs -->",self.project.programs);
+
+                self.project.programs = self.tempActivePrograms;
+
+                console.log("self.project.programs updated-->",self.project.programs);
+
+                /*Save, Save, Save the project - and your money - it's never to late to start.*/
+
+                self.saveProject();
 
 
             }
+            /*Confirm deletion
+            * This is logic for the confirm popup dialog
+            * */
+            self.confirmProgramDelete = function ($event,id) {
 
-            self.removeProgram = function(id){
+                console.log("Confirm dialog");
+
+                console.log(id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = !self.showDeletionDialog;
+
+                self.deletionId = id;
+            };
+            /*Cancel deletion*/
+            self.cancelProgramDelete = function($event) {
+
+                console.log("Cancel Removal");
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
 
 
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+
+            };
+
+            /*remove program from project
+            Ok, so how do we do this ? well, first pass the event in and stop it's propagation.
+            We do basically what we did for adding a program (above) but we set
+            the active attribute of available programs object to false.
+             */
+
+            self.removeProgram = function($event,program_id){
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+                self.status.processing = true;
+
+                console.log("Removing program to project-->",program_id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                /*Set the program active attribute to false in our availableProgram array*/
+
+                let i = 0;
+
+                self.availablePrograms.forEach(function(availProgram){
+
+                    if(availProgram.program.id == program_id){
+
+                        self.availablePrograms[i].active = false;
+
+                    }
+
+                    i = i +1;
+                });
+
+                /*Update the project object*/
+
+                i = 0;
+                self.tempActivePrograms = [];
+                self.availablePrograms.forEach(function(availProgram){
+                    if(availProgram.active == true){
+
+                        self.tempActivePrograms.push({"id":availProgram.program.id});
+
+                    }
+                    i=i+1
+                });
+
+                console.log("self.project.programs -->",self.project.programs);
+
+                self.project.programs = self.tempActivePrograms;
+
+                console.log("self.project.programs updated-->",self.project.programs);
+
+                /*Save the project */
+
+                self.saveProject();
             }
 
          /*   self.searchPrograms = function(value) {
@@ -8793,7 +9073,7 @@ angular.module('FieldDoc')
                 console.log('Updated ' + collection + ' (removal)', collection);
 
             };
-
+        */
             self.processRelations = function(list) {
 
                 var _list = [];
@@ -8813,7 +9093,7 @@ angular.module('FieldDoc')
                 return _list;
 
             };
-*/
+
             self.processFeature = function(data) {
 
                 self.project = data;
@@ -8830,7 +9110,7 @@ angular.module('FieldDoc')
 
             };
 
-            self.setProgram = function(item, model, label) {
+        /*    self.setProgram = function(item, model, label) {
 
                 self.project.program_id = item.id;
 
@@ -8843,6 +9123,8 @@ angular.module('FieldDoc')
                 self.program = null;
 
             };
+
+         */
 
             self.scrubFeature = function(feature) {
 
@@ -8893,9 +9175,12 @@ angular.module('FieldDoc')
 
                 self.scrubFeature(self.project);
 
+
                 self.project.partners = self.processRelations(self.tempPartners);
 
                 self.project.workflow_state = "Draft";
+
+                console.log("self.project --> submit", self.project);
 
                 var exclude = [
                     'centroid',
@@ -9522,7 +9807,7 @@ angular.module('FieldDoc')
                     'partnerships',
                     'practices',
                     'practice_types',
-                    'program',
+                    'programs',
                     'reports',
                     'sites',
                     'status',
@@ -38104,6 +38389,8 @@ angular.module('FieldDoc')
 
             var self = this;
 
+            self.loadAllFeatures = false;
+
             self.urlComponents = LayerUtil.getUrlComponents();
 
             var DRAINAGE_ID = 'fd.drainage.polygon';
@@ -38220,6 +38507,41 @@ angular.module('FieldDoc')
 
             };
 
+            self.toggleLayerConstraint = function () {
+
+                console.log(
+                    'toggleLayerConstraint:loadAllFeatures',
+                    self.loadAllFeatures
+                );
+
+                LayerUtil.toggleFocusFilter(
+                    self.map,
+                    self.loadAllFeatures);
+
+                // if (self.loadAllFeatures) {
+                //
+                //     self.refreshFeatureLayers();
+                //
+                // }
+
+            };
+
+            self.refreshFeatureLayers = function () {
+
+                // if (!self.loadAllFeatures) return;
+
+                self.urlComponents.forEach(function (component) {
+
+                    $timeout(function () {
+
+                        self.updateNodeLayer(component[0], component[1]);
+
+                    }, 500);
+
+                });
+
+            };
+
             self.updateNodeLayer = function (nodeType, geometryType) {
 
                 var zoom = self.map.getZoom();
@@ -38240,10 +38562,17 @@ angular.module('FieldDoc')
                     boundsArray
                 );
 
+                var nodeString = self.urlData.node;
+
+                var nodeTokens = nodeString.split('.');
+
+                var focus = nodeTokens.join(':');
+
                 var params = {
                     bbox: boundsArray,
                     // exclude: exclude,
                     featureType: nodeType,
+                    focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };
@@ -38711,6 +39040,27 @@ angular.module('FieldDoc')
                         features
                     );
 
+                    if (features.length > 1) {
+
+                        var names = [];
+
+                        features.forEach(function (feature) {
+
+                            names.push(feature.properties.name);
+
+                        });
+
+                        var text = names.join(', ');
+
+                        new mapboxgl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(text)
+                            .addTo(self.map);
+
+                        return
+
+                    }
+
                     if (features.length) {
 
                         var target = features[0];
@@ -38794,8 +39144,6 @@ angular.module('FieldDoc')
                         styleString
                     );
 
-                    // if (styleString === self.currentStyleString) return;
-
                     //
                     // Restore reference sources and layers.
                     //
@@ -38818,15 +39166,7 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.urlComponents.forEach(function (component) {
-
-                        $timeout(function () {
-
-                            self.updateNodeLayer(component[0], component[1]);
-
-                        }, 500);
-
-                    });
+                    self.refreshFeatureLayers();
 
                 });
 
@@ -38883,13 +39223,13 @@ angular.module('FieldDoc')
                         padding: self.padding
                     });
 
-                    self.map.loadImage(
-                        'https://dev.fielddoc.org/images/diagonal-lines.png',
-                        function (err, image) {
-
-                            if (err) throw err;
-
-                            self.map.addImage('diagonal-pattern', image);
+                    // self.map.loadImage(
+                    //     'https://dev.fielddoc.org/images/diagonal-lines.png',
+                    //     function (err, image) {
+                    //
+                    //         if (err) throw err;
+                    //
+                    //         self.map.addImage('diagonal-pattern', image);
 
                             //
                             // Add reference sources and layers.
@@ -38906,23 +39246,15 @@ angular.module('FieldDoc')
                                 +nodeTokens[1]
                             );
 
-                        }
+                            LayerUtil.fetchCustomLayers(
+                                nodeTokens[0],
+                                nodeTokens[1],
+                                self.layers,
+                                self.map
+                            );
 
-                    );
-
+                    //     }
                     //
-                    // Add reference sources and layers.
-                    //
-
-                    // self.populateMap();
-                    //
-                    // var nodeString = self.urlData.node;
-                    //
-                    // var nodeTokens = nodeString.split('.');
-                    //
-                    // self.fetchPrimaryNode(
-                    //     nodeTokens[0],
-                    //     +nodeTokens[1]
                     // );
 
                 });
@@ -39069,35 +39401,15 @@ angular.module('FieldDoc')
 
                 DataLayer.addDataLayers(self.map);
 
+                LayerUtil.addCustomLayers(
+                    LayerUtil.customLayerIdx(),
+                    self.layers,
+                    self.map
+                );
+
                 LayerUtil.setVisibility(self.map, self.visibilityIndex);
 
                 self.setLayerVisibility();
-
-                // self.layers.forEach(function (layer) {
-                //
-                //     var visibility = layer.selected ? 'visible' : 'none';
-                //
-                //     var labelLayerId = layer.id + '-label';
-                //
-                //     var labelLayer = self.map.getLayer(labelLayerId);
-                //
-                //     if (labelLayer !== undefined) {
-                //
-                //         self.map.setLayoutProperty(
-                //             labelLayerId,
-                //             'visibility',
-                //             visibility
-                //         );
-                //
-                //     }
-                //
-                //     self.map.setLayoutProperty(
-                //         layer.id,
-                //         'visibility',
-                //         visibility
-                //     );
-                //
-                // });
 
             };
 
@@ -39584,11 +39896,13 @@ angular.module('FieldDoc')
                 'point': {}
             },
             'practice': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}
             },
             'site': {
+                'centroid': {},
                 'line': {},
                 'point': {},
                 'polygon': {}
@@ -39867,286 +40181,403 @@ angular.module('FieldDoc')
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('LayerUtil', function(LabelLayer) {
+    .service('LayerUtil',
+        function(LabelLayer, LayerService, Utility) {
 
-        var EMPTY_SOURCE = {
-            type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: []
-            },
-            generateId: true
-        };
+            var CUSTOM_LAYERS = {};
 
-        var REFERENCE_SOURCES = {
-            'empty': EMPTY_SOURCE,
-            'fd.drainage.polygon': EMPTY_SOURCE,
-            'fd.practice.point': EMPTY_SOURCE,
-            'fd.practice.line': EMPTY_SOURCE,
-            'fd.practice.polygon': EMPTY_SOURCE,
-            'fd.site.point': EMPTY_SOURCE,
-            'fd.site.line': EMPTY_SOURCE,
-            'fd.site.polygon': EMPTY_SOURCE,
-            'fd.project.point': EMPTY_SOURCE,
-            // 'wr.post.point': EMPTY_SOURCE,
-            'wr.station.point': EMPTY_SOURCE
-        };
-
-        var REFERENCE_LAYERS = [
-            //
-            // The project and label layers have the highest z-index priority.
-            //
-            {
-                layerConfig: {
-                    id: 'project-index',
-                    type: 'symbol',
-                    source: 'empty'
+            var EMPTY_SOURCE = {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
                 },
-                beforeId: ''
-            },
-            {
-                layerConfig: {
-                    id: 'label-index',
-                    type: 'symbol',
-                    source: 'empty'
+                generateId: true
+            };
+
+            var REFERENCE_SOURCES = {
+                'empty': EMPTY_SOURCE,
+                'fd.drainage.polygon': EMPTY_SOURCE,
+                'fd.practice.centroid': EMPTY_SOURCE,
+                'fd.practice.point': EMPTY_SOURCE,
+                'fd.practice.line': EMPTY_SOURCE,
+                'fd.practice.polygon': EMPTY_SOURCE,
+                'fd.site.centroid': EMPTY_SOURCE,
+                'fd.site.point': EMPTY_SOURCE,
+                'fd.site.line': EMPTY_SOURCE,
+                'fd.site.polygon': EMPTY_SOURCE,
+                // 'fd.project.centroid': EMPTY_SOURCE,
+                'fd.project.point': EMPTY_SOURCE,
+                // 'wr.post.point': EMPTY_SOURCE,
+                'wr.station.point': EMPTY_SOURCE
+            };
+
+            var REFERENCE_LAYERS = [
+                //
+                // The project and label layers have the highest z-index priority.
+                //
+                {
+                    layerConfig: {
+                        id: 'project-index',
+                        type: 'symbol',
+                        source: 'empty'
+                    },
+                    beforeId: ''
                 },
-                beforeId: ''
-            },
-            {
-                layerConfig: {
-                    id: 'station-index',
-                    type: 'symbol',
-                    source: 'empty'
+                {
+                    layerConfig: {
+                        id: 'label-index',
+                        type: 'symbol',
+                        source: 'empty'
+                    },
+                    beforeId: ''
                 },
-                beforeId: ''
-            },
-            // {
-            //     layerConfig: {
-            //         id: 'post-index',
-            //         type: 'symbol',
-            //         source: 'empty'
-            //     },
-            //     beforeId: ''
-            // },
-            //
-            // The practice layer has the second-highest z-index priority.
-            //
-            {
-                layerConfig: {
-                    id: 'practice-index',
-                    type: 'symbol',
-                    source: 'empty'
+                {
+                    layerConfig: {
+                        id: 'station-index',
+                        type: 'symbol',
+                        source: 'empty'
+                    },
+                    beforeId: ''
                 },
-                beforeId: 'project-index'
-            },
-            //
-            // The site layer has the second-lowest z-index priority.
-            //
-            {
-                layerConfig: {
-                    id: 'site-index',
-                    type: 'symbol',
-                    source: 'empty'
+                // {
+                //     layerConfig: {
+                //         id: 'post-index',
+                //         type: 'symbol',
+                //         source: 'empty'
+                //     },
+                //     beforeId: ''
+                // },
+                //
+                // The practice layer has the second-highest z-index priority.
+                //
+                {
+                    layerConfig: {
+                        id: 'practice-index',
+                        type: 'symbol',
+                        source: 'empty'
+                    },
+                    beforeId: 'project-index'
                 },
-                beforeId: 'practice-index'
-            }
-        ];
-
-        var zoomConfig = {
-            practice: {
-                min: 14,
-                max: 22
-            },
-            site: {
-                min: 10,
-                max: 16
-            },
-            project: {
-                min: 9,
-                max: 14
-            }
-        };
-
-        var URL_COMPONENTS = [
-            ['post', 'point'],
-            ['practice', 'line'],
-            ['practice', 'point'],
-            ['practice', 'polygon'],
-            ['site', 'line'],
-            ['site', 'point'],
-            ['site', 'polygon'],
-            ['station', 'point'],
-            ['project', 'point'],
-        ];
-
-        return {
-            addReferenceLayers: function (map) {
-
-                REFERENCE_LAYERS.forEach(function (layer) {
-
-                    if (map.getLayer(layer.layerConfig.id) === undefined) {
-
-                        map.addLayer(layer.layerConfig, layer.beforeId);
-
-                    }
-
-                });
-
-            },
-            addReferenceSources: function (map) {
-
-                for (var key in REFERENCE_SOURCES) {
-
-                    if (map.getSource(key) === undefined) {
-
-                        map.addSource(key, REFERENCE_SOURCES[key]);
-
-                    }
-
+                //
+                // The site layer has the second-lowest z-index priority.
+                //
+                {
+                    layerConfig: {
+                        id: 'site-index',
+                        type: 'symbol',
+                        source: 'empty'
+                    },
+                    beforeId: 'practice-index'
                 }
+            ];
 
-            },
-            _index: {},
-            getUrlComponents: function () {
-
-                return URL_COMPONENTS;
-
-            },
-            getZoom: function (featureType) {
-
-                console.log(
-                    'LayerUtil:getZoom:featureType',
-                    featureType);
-
-                if (zoomConfig.hasOwnProperty(featureType)) {
-
-                    return zoomConfig[featureType];
-
+            var zoomConfig = {
+                practice: {
+                    min: 14,
+                    max: 22
+                },
+                site: {
+                    min: 10,
+                    max: 16
+                },
+                project: {
+                    min: 9,
+                    max: 14
                 }
+            };
 
-                return zoomConfig;
+            var URL_COMPONENTS = [
+                // ['post', 'point'],
+                ['practice', 'centroid'],
+                ['practice', 'line'],
+                ['practice', 'point'],
+                ['practice', 'polygon'],
+                ['site', 'centroid'],
+                ['site', 'line'],
+                ['site', 'point'],
+                ['site', 'polygon'],
+                ['station', 'point'],
+                ['project', 'point'],
+            ];
 
-            },
-            list: function () {
+            return {
+                addReferenceLayers: function (map) {
 
-                var vals = [];
+                    REFERENCE_LAYERS.forEach(function (layer) {
 
-                for (var key in this._index) {
+                        if (map.getLayer(layer.layerConfig.id) === undefined) {
 
-                    if (this._index.hasOwnProperty(key)) {
+                            map.addLayer(layer.layerConfig, layer.beforeId);
 
-                        vals.push(this._index[key]);
+                        }
+
+                    });
+
+                },
+                addReferenceSources: function (map) {
+
+                    for (var key in REFERENCE_SOURCES) {
+
+                        if (map.getSource(key) === undefined) {
+
+                            map.addSource(key, REFERENCE_SOURCES[key]);
+
+                        }
 
                     }
 
-                }
+                },
+                _index: {},
+                getUrlComponents: function () {
 
-                return vals;
+                    return URL_COMPONENTS;
 
-            },
-            removeAll: function() {
+                },
+                getZoom: function (featureType) {
 
-                this._index = {};
+                    console.log(
+                        'LayerUtil:getZoom:featureType',
+                        featureType);
 
-            },
-            removeLayers: function(map) {
+                    if (zoomConfig.hasOwnProperty(featureType)) {
 
-                var layers = map.getStyle().layers;
-
-                layers.forEach(function (layer) {
-
-                    if ((layer.id.startsWith('fd.') ||
-                        layer.id.startsWith('wr.')) &&
-                        map.getLayer(layer.id)) {
-
-                        map.removeLayer(layer.id);
+                        return zoomConfig[featureType];
 
                     }
 
-                });
+                    return zoomConfig;
 
-            },
-            setTextColor: function (map, styleString) {
+                },
+                list: function () {
 
-                var mod = this;
+                    var vals = [];
 
-                var layerIds = Object.keys(LabelLayer.index());
+                    for (var key in this._index) {
 
-                layerIds.forEach(function (layerId) {
+                        if (this._index.hasOwnProperty(key)) {
 
-                    if ((layerId.startsWith('fd.') ||
-                        layerId.startsWith('wr.')) &&
-                        layerId.indexOf('drainage') < 0) {
+                            vals.push(this._index[key]);
 
-                        var tokens = layerId.split('.');
+                        }
+
+                    }
+
+                    return vals;
+
+                },
+                addCustomLayers: function(features, layers, map) {
+
+                    features.forEach(function(feature) {
+
+                        if (feature.layer_spec === undefined) return;
 
                         console.log(
-                            'setTextColor:tokens:',
-                            tokens
-                        );
-
-                        var nodeType = tokens[1];
-
-                        var zoomConfig = mod.getZoom(nodeType);
+                            'LayerUtil.addCustomLayers --> feature',
+                            feature);
 
                         console.log(
-                            'setTextColor:zoomConfig:',
-                            zoomConfig
-                        );
+                            'LayerUtil.addCustomLayers --> feature.layer_spec',
+                            feature.layer_spec);
 
-                        var layer = map.getLayer(layerId);
+                        if (!feature.selected ||
+                            typeof feature.selected === 'undefined') {
 
-                        if (layer !== undefined) {
+                            feature.selected = false;
 
-                            if (styleString.indexOf('satellite') >= 0) {
+                        } else {
 
-                                try {
+                            feature.layer_spec.layout.visibility = 'visible';
 
-                                    map.setPaintProperty(
-                                        layerId,
-                                        'text-color',
-                                        '#FFFFFF'
-                                    );
+                        }
 
-                                    map.setPaintProperty(
-                                        layerId,
-                                        'text-halo-color',
-                                        '#212121'
-                                    );
+                        //
+                        // Append config item to layer control array.
+                        //
 
-                                } catch (e) {
+                        var data = {
+                            id: feature.layer_spec.id,
+                            name: feature.name,
+                            selected: feature.selected,
+                            symbol: feature.symbol
+                        };
 
-                                    console.warn(e);
+                        if (!CUSTOM_LAYERS.hasOwnProperty(feature.layer_spec.id)) {
 
-                                }
+                            CUSTOM_LAYERS[feature.layer_spec.id] = feature;
 
-                            } else {
+                            layers.push(data);
 
-                                try {
+                        }
 
-                                    map.setPaintProperty(
-                                        layerId,
-                                        'text-color',
-                                        [
-                                            'interpolate',
-                                            ['exponential', 0.5],
-                                            ['zoom'],
-                                            zoomConfig.min,
-                                            '#616161',
-                                            zoomConfig.max,
+                        if (map.getLayer(feature.layer_spec.id) === undefined) {
+
+                            //
+                            // Add custom layers below practice features.
+                            //
+
+                            map.addLayer(feature.layer_spec, 'practice-index');
+
+                        }
+
+                    });
+
+                },
+                customLayerIdx: function () {
+
+                    return Utility.values(CUSTOM_LAYERS);
+
+                },
+                fetchCustomLayers: function (featureType, featureId,
+                                             layers, map) {
+
+                    var mod = this;
+
+                    var origin = featureType + ':' + featureId;
+
+                    LayerService.collection({
+                        origin: origin,
+                        sort: 'index'
+                    }).$promise.then(function(successResponse) {
+
+                        console.log(
+                            'LayerUtil.fetchCustomLayers --> successResponse',
+                            successResponse);
+
+                        mod.addCustomLayers(successResponse.features, layers, map);
+
+                    }, function(errorResponse) {
+
+                        console.log(
+                            'LayerUtil.fetchCustomLayers --> errorResponse',
+                            errorResponse);
+
+                    });
+
+                },
+                removeAll: function() {
+
+                    this._index = {};
+
+                },
+                removeLayers: function(map) {
+
+                    var layers = map.getStyle().layers;
+
+                    layers.forEach(function (layer) {
+
+                        if ((layer.id.startsWith('fd.') ||
+                            layer.id.startsWith('wr.')) &&
+                            map.getLayer(layer.id)) {
+
+                            map.removeLayer(layer.id);
+
+                        }
+
+                    });
+
+                },
+                toggleFocusFilter: function(map, focus) {
+
+                    var filterDef = focus ? null : ['get', 'focus'];
+
+                    var layers = map.getStyle().layers;
+
+                    layers.forEach(function (layer) {
+
+                        if (layer.id.startsWith('fd.') &&
+                            map.getLayer(layer.id)) {
+
+                            map.setFilter(layer.id, filterDef);
+
+                        }
+
+                    });
+
+                },
+                setTextColor: function (map, styleString) {
+
+                    var mod = this;
+
+                    var layerIds = Object.keys(LabelLayer.index());
+
+                    layerIds.forEach(function (layerId) {
+
+                        if ((layerId.startsWith('fd.') ||
+                            layerId.startsWith('wr.')) &&
+                            layerId.indexOf('drainage') < 0) {
+
+                            var tokens = layerId.split('.');
+
+                            console.log(
+                                'setTextColor:tokens:',
+                                tokens
+                            );
+
+                            var nodeType = tokens[1];
+
+                            var zoomConfig = mod.getZoom(nodeType);
+
+                            console.log(
+                                'setTextColor:zoomConfig:',
+                                zoomConfig
+                            );
+
+                            var layer = map.getLayer(layerId);
+
+                            if (layer !== undefined) {
+
+                                if (styleString.indexOf('satellite') >= 0) {
+
+                                    try {
+
+                                        map.setPaintProperty(
+                                            layerId,
+                                            'text-color',
+                                            '#FFFFFF'
+                                        );
+
+                                        map.setPaintProperty(
+                                            layerId,
+                                            'text-halo-color',
                                             '#212121'
-                                        ]
-                                    );
+                                        );
 
-                                    map.setPaintProperty(
-                                        layerId,
-                                        'text-halo-color',
-                                        'rgba(255,255,255,0.75)'
-                                    );
+                                    } catch (e) {
 
-                                } catch (e) {
+                                        console.warn(e);
 
-                                    console.warn(e);
+                                    }
+
+                                } else {
+
+                                    try {
+
+                                        map.setPaintProperty(
+                                            layerId,
+                                            'text-color',
+                                            [
+                                                'interpolate',
+                                                ['exponential', 0.5],
+                                                ['zoom'],
+                                                zoomConfig.min,
+                                                '#616161',
+                                                zoomConfig.max,
+                                                '#212121'
+                                            ]
+                                        );
+
+                                        map.setPaintProperty(
+                                            layerId,
+                                            'text-halo-color',
+                                            'rgba(255,255,255,0.75)'
+                                        );
+
+                                    } catch (e) {
+
+                                        console.warn(e);
+
+                                    }
 
                                 }
 
@@ -40154,108 +40585,106 @@ angular.module('FieldDoc')
 
                         }
 
-                    }
+                    });
 
-                });
+                },
+                setVisibility: function(map, idx) {
 
-            },
-            setVisibility: function(map, idx) {
+                    if (!angular.isDefined(idx)) return;
 
-                if (!angular.isDefined(idx)) return;
+                    for (var key in idx) {
 
-                for (var key in idx) {
+                        if (idx.hasOwnProperty(key)) {
 
-                    if (idx.hasOwnProperty(key)) {
+                            if (map.getLayer(key) !== undefined) {
 
-                        if (map.getLayer(key) !== undefined) {
+                                map.setLayoutProperty(
+                                    key,
+                                    'visibility',
+                                    idx[key]
+                                );
 
-                            map.setLayoutProperty(
-                                key,
-                                'visibility',
-                                idx[key]
-                            );
+                            }
 
                         }
 
                     }
 
+                },
+                toggleLayer: function(layerId, map) {
+
+                    console.log(
+                        'LayerUtil.toggleLayer:layerId:',
+                        layerId
+                    );
+
+                    var visibility = map.getLayoutProperty(layerId, 'visibility');
+
+                    console.log(
+                        'LayerUtil.toggleLayer:visibility:',
+                        visibility
+                    );
+
+                    //
+                    // If undefined, assume that layers have the default visibility.
+                    //
+
+                    visibility = typeof visibility === 'string' ? visibility : 'visible';
+
+                    var labelLayerId = layerId + '-label';
+
+                    var labelLayer = map.getLayer(labelLayerId);
+
+                    if (visibility === 'visible') {
+
+                        map.setLayoutProperty(layerId, 'visibility', 'none');
+
+                        if (labelLayer !== undefined) {
+
+                            map.setLayoutProperty(labelLayerId, 'visibility', 'none');
+
+                        }
+
+                    } else {
+
+                        map.setLayoutProperty(layerId, 'visibility', 'visible');
+
+                        if (labelLayer !== undefined) {
+
+                            map.setLayoutProperty(labelLayerId, 'visibility', 'visible');
+
+                        }
+
+                    }
+
+                },
+                visibilityIndex: function (map) {
+
+                    var layers = map.getStyle().layers;
+
+                    var idx = {};
+
+                    layers.forEach(function (layer) {
+
+                        if (layer.id.startsWith('fd.') ||
+                            layer.id.startsWith('wr.')) {
+
+                            idx[layer.id] = map.getLayoutProperty(
+                                layer.id,
+                                'visibility'
+                            );
+
+                        }
+
+                    });
+
+                    return idx;
+
                 }
 
-            },
-            toggleLayer: function(layerId, map) {
+            };
 
-                console.log(
-                    'LayerUtil.toggleLayer:layerId:',
-                    layerId
-                );
-
-                var visibility = map.getLayoutProperty(layerId, 'visibility');
-
-                console.log(
-                    'LayerUtil.toggleLayer:visibility:',
-                    visibility
-                );
-
-                //
-                // If undefined, assume that layers have the default visibility.
-                //
-
-                visibility = typeof visibility === 'string' ? visibility : 'visible';
-
-                var labelLayerId = layerId + '-label';
-
-                var labelLayer = map.getLayer(labelLayerId);
-
-                if (visibility === 'visible') {
-
-                    map.setLayoutProperty(layerId, 'visibility', 'none');
-
-                    if (labelLayer !== undefined) {
-
-                        map.setLayoutProperty(labelLayerId, 'visibility', 'none');
-
-                    }
-
-                } else {
-
-                    map.setLayoutProperty(layerId, 'visibility', 'visible');
-
-                    if (labelLayer !== undefined) {
-
-                        map.setLayoutProperty(labelLayerId, 'visibility', 'visible');
-
-                    }
-
-                }
-
-            },
-            visibilityIndex: function (map) {
-
-                var layers = map.getStyle().layers;
-
-                var idx = {};
-
-                layers.forEach(function (layer) {
-
-                    if (layer.id.startsWith('fd.') ||
-                        layer.id.startsWith('wr.')) {
-
-                        idx[layer.id] = map.getLayoutProperty(
-                            layer.id,
-                            'visibility'
-                        );
-
-                    }
-
-                });
-
-                return idx;
-
-            }
-
-        };
-
-    });
+        });
 'use strict';
 
 /**
@@ -40807,462 +41236,473 @@ angular.module('FieldDoc')
 
         var zoomConfig = ZoomUtil.getZoom();
 
-        var LABEL_LAYERS = [{
-            'id': 'fd.practice.polygon-label',
-            'source': 'fd.practice.polygon',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
+        var LABEL_LAYERS = [
+            {
+                'id': 'fd.practice.centroid-label',
+                'source': 'fd.practice.centroid',
+                'type': 'symbol',
+                'minzoom': zoomConfig.practice.min,
+                'maxzoom': zoomConfig.practice.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                zoomConfig.practice.min,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
+                                zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.practice.line-label',
-            'source': 'fd.practice.line',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.practice.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.practice.min,
+                        12,
+                        zoomConfig.practice.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.5,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.practice.min,
+                        '#616161',
+                        zoomConfig.practice.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
+                'filter': ['get', 'focus']
             },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.practice.point-label',
-            'source': 'fd.practice.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.practice.min,
-            'maxzoom': zoomConfig.practice.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.practice.min,
+            // {
+            //     'id': 'fd.practice.line-label',
+            //     'source': 'fd.practice.line',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.practice.min,
+            //     'maxzoom': zoomConfig.practice.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.practice.min,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             12,
+            //             zoomConfig.practice.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             '#616161',
+            //             zoomConfig.practice.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            // {
+            //     'id': 'fd.practice.point-label',
+            //     'source': 'fd.practice.point',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.practice.min,
+            //     'maxzoom': zoomConfig.practice.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.practice.min,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.practice.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             12,
+            //             zoomConfig.practice.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.practice.min,
+            //             '#616161',
+            //             zoomConfig.practice.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            {
+                'id': 'fd.site.centroid-label',
+                'source': 'fd.site.centroid',
+                'type': 'symbol',
+                'minzoom': zoomConfig.site.min + 1,
+                'maxzoom': zoomConfig.site.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.min + Math.ceil((zoomConfig.practice.max - zoomConfig.practice.min) / 2),
+                                zoomConfig.site.min + 1,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.practice.max,
+                                zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.site.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.site.min + 1,
+                        12,
+                        zoomConfig.site.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.5,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.site.min + 1,
+                        '#616161',
+                        zoomConfig.site.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    12,
-                    zoomConfig.practice.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
+                'filter': ['get', 'focus']
             },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.practice.min,
-                    '#616161',
-                    zoomConfig.practice.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.site.polygon-label',
-            'source': 'fd.site.polygon',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
+            // {
+            //     'id': 'fd.site.line-label',
+            //     'source': 'fd.site.line',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            // {
+            //     'id': 'fd.site.point-label',
+            //     'source': 'fd.site.point',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max + 1,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     }
+            // },
+            {
+                'id': 'fd.project.point-label',
+                'source': 'fd.project.point',
+                'type': 'symbol',
+                'minzoom': zoomConfig.project.min,
+                'maxzoom': zoomConfig.project.max,
+                'layout': {
+                    'symbol-placement': 'point',
+                    'text-anchor': 'bottom',
+                    'text-field': ['get', 'name'],
+                    'text-variable-anchor': [
+                        'top', 'bottom', 'left', 'right'
+                    ],
+                    'text-font': {
+                        'stops': [
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+                                zoomConfig.project.min,
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
+                                zoomConfig.project.min + Math.ceil((zoomConfig.project.max - zoomConfig.project.min) / 2),
+                                [
+                                    'DIN Offc Pro Regular',
+                                    'Arial Unicode MS Regular'
+                                ]
+                            ],
                             [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
+                                zoomConfig.project.max,
+                                [
+                                    'DIN Offc Pro Medium',
+                                    'Arial Unicode MS Bold'
+                                ]
                             ]
                         ]
+                    },
+                    'text-size': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.project.min,
+                        12,
+                        zoomConfig.project.max,
+                        16
+                    ],
+                    'text-radial-offset': 0.75,
+                    'text-justify': 'auto',
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'text-halo-width': 1,
+                    'text-halo-color': 'rgba(255,255,255,0.75)',
+                    'text-halo-blur': 1,
+                    'text-color': [
+                        'interpolate',
+                        ['exponential', 0.5],
+                        ['zoom'],
+                        zoomConfig.project.min,
+                        '#616161',
+                        zoomConfig.project.max,
+                        '#212121'
                     ]
                 },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
+                'filter': ['get', 'focus']
             }
-        }, {
-            'id': 'fd.site.line-label',
-            'source': 'fd.site.line',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.site.point-label',
-            'source': 'fd.site.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.site.min + 1,
-            'maxzoom': zoomConfig.site.max + 1,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.site.min + 1,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.site.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min + 1,
-                    12,
-                    zoomConfig.site.max,
-                    16
-                ],
-                'text-radial-offset': 0.5,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.site.min,
-                    '#616161',
-                    zoomConfig.site.max,
-                    '#212121'
-                ]
-            }
-        }, {
-            'id': 'fd.project.point-label',
-            'source': 'fd.project.point',
-            'type': 'symbol',
-            'minzoom': zoomConfig.project.min,
-            'maxzoom': zoomConfig.project.max,
-            'layout': {
-                'symbol-placement': 'point',
-                'text-anchor': 'bottom',
-                'text-field': ['get', 'name'],
-                'text-variable-anchor': [
-                    'top', 'bottom', 'left', 'right'
-                ],
-                'text-font': {
-                    'stops': [
-                        [
-                            zoomConfig.project.min,
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.project.min + Math.ceil((zoomConfig.project.max - zoomConfig.project.min) / 2),
-                            [
-                                'DIN Offc Pro Regular',
-                                'Arial Unicode MS Regular'
-                            ]
-                        ],
-                        [
-                            zoomConfig.project.max,
-                            [
-                                'DIN Offc Pro Medium',
-                                'Arial Unicode MS Bold'
-                            ]
-                        ]
-                    ]
-                },
-                'text-size': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.project.min,
-                    12,
-                    zoomConfig.project.max,
-                    16
-                ],
-                'text-radial-offset': 0.75,
-                'text-justify': 'auto',
-                'visibility': 'visible'
-            },
-            'paint': {
-                'text-halo-width': 1,
-                'text-halo-color': 'rgba(255,255,255,0.75)',
-                'text-halo-blur': 1,
-                'text-color': [
-                    'interpolate',
-                    ['exponential', 0.5],
-                    ['zoom'],
-                    zoomConfig.project.min,
-                    '#616161',
-                    zoomConfig.project.max,
-                    '#212121'
-                ]
-            }
-        }];
+        ];
 
         return {
             addLabelLayers: function (map) {
@@ -41366,7 +41806,8 @@ angular.module('FieldDoc')
                         ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: ''
             },
@@ -41409,9 +41850,9 @@ angular.module('FieldDoc')
                     'type': 'circle',
                     'minzoom': zoomConfig.station.min,
                     'maxzoom': zoomConfig.station.max,
-                    'layout': {
-                        'visibility': 'none'
-                    },
+                    // 'layout': {
+                    //     'visibility': 'none'
+                    // },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -41436,6 +41877,37 @@ angular.module('FieldDoc')
             },
             {
                 config: {
+                    'id': 'fd.practice.centroid',
+                    'source': 'fd.practice.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
                     'id': 'fd.practice.polygon',
                     'source': 'fd.practice.polygon',
                     'type': 'fill',
@@ -41445,16 +41917,17 @@ angular.module('FieldDoc')
                         'visibility': 'visible'
                     },
                     'paint': {
-                        'fill-pattern': 'diagonal-pattern'
-                        // 'fill-color': [
-                        //     'case',
-                        //     ['boolean', ['feature-state', 'focus'], false],
-                        //     '#C81E1E',
-                        //     '#3fd48a'
-                        // ],
-                        // 'fill-opacity': 0.4,
-                        // 'fill-outline-color': '#005e7d'
-                    }
+                        // 'fill-pattern': 'diagonal-pattern'
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -41476,7 +41949,8 @@ angular.module('FieldDoc')
                             '#3fd48a'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -41506,7 +41980,8 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'project-index'
             },
@@ -41529,7 +42004,8 @@ angular.module('FieldDoc')
                         ],
                         'fill-opacity': 0.4,
                         'fill-outline-color': '#005e7d'
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -41551,7 +42027,8 @@ angular.module('FieldDoc')
                             '#a94efe'
                         ],
                         'line-width': 2
-                    }
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             },
@@ -41581,7 +42058,39 @@ angular.module('FieldDoc')
                         },
                         'circle-stroke-width': 1,
                         'circle-stroke-color': '#FFFFFF'
-                    }
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.centroid',
+                    'source': 'fd.site.centroid',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
                 },
                 beforeId: 'practice-index'
             }
@@ -45850,6 +46359,34 @@ angular.module('FieldDoc')
 
                 return dimension;
 
+            },
+            values: function (obj) {
+
+                var vals = [];
+
+                try {
+
+                    for (var key in obj) {
+
+                        if (obj.hasOwnProperty(key)) {
+
+                            vals.push(obj[key]);
+
+                        }
+
+                    }
+
+                } catch (e) {
+
+                    console.warn(
+                        'Utility.values: Unable to retrieve object property values.',
+                        e
+                    )
+
+                }
+
+                return vals;
+
             }
         };
 
@@ -49689,6 +50226,7 @@ angular.module('FieldDoc')
                         'practice': '=?',
                         'practiceType': '=?',
                         'program': '=?',
+                        'programs': '=?',
                         'project': '=?',
                         'report': '=?',
                         'rootPath': '@',
@@ -49772,6 +50310,11 @@ angular.module('FieldDoc')
                             }, 50)
 
                         };
+                        scope.programDropDownVisible = false;
+
+                        scope.toggleProgramDropDown = function(){
+                            scope.programDropDownVisible = !scope.programDropDownVisible;
+                        }
 
                         scope.$watch('report', function (newVal) {
 
@@ -49804,6 +50347,12 @@ angular.module('FieldDoc')
                         });
 
                         scope.$watch('program', function (newVal) {
+
+                            scope.setBasis();
+
+                        });
+
+                        scope.$watch('programs', function (newVal) {
 
                             scope.setBasis();
 
