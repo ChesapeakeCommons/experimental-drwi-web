@@ -105,14 +105,28 @@
                                     <div class="button--container">
                                         <div class="selection-input" style="float:left; vertical-align: middle; padding:0px;display:block;border:0px solid green;">
 
-                                            <div data-ng-if="program.active === false"
+                                            <div data-ng-if="(program.active === false) && (page.status.processing == true)"
+                                                 style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                <i class="material-icons">
+                                                    radio_button_unchecked
+                                                </i>
+                                            </div>
+
+                                            <div data-ng-if="(program.active === true) && (page.status.processing == true)"
+                                                 style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                <i class="material-icons">
+                                                    radio_button_checked
+                                                </i>
+                                            </div>
+
+                                            <div data-ng-if="(program.active === false) && (page.status.processing == false)"
                                                  data-ng-click = "page.addProgram($event,program.program.id)";
                                                  style="float:right; display:inline-block;border:0px solid red;">
                                                 <i class="material-icons">
                                                     radio_button_unchecked
                                                 </i>
                                             </div>
-                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === true)"
+                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === true) && (page.status.processing == false)"
                                                  data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
                                                  style="color:#0366d6;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
                                                 <i class="material-icons">
@@ -133,7 +147,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === false)"
+                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === false) && (page.status.processing == false)"
                                                  data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
                                                  style="color:#ff0000;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
                                                 <i class="material-icons">
