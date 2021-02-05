@@ -28,6 +28,10 @@ angular.module('FieldDoc')
                 processing: true
             };
 
+            self.showDeletionDialog = false;
+
+            self.deletionId = undefined;
+
             self.showElements = function() {
 
                 $timeout(function() {
@@ -280,6 +284,10 @@ angular.module('FieldDoc')
 
             self.addProgram = function($event,program_id){
 
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
                 self.status.processing = true;
 
                 console.log("Adding program to project-->",program_id);
@@ -329,6 +337,40 @@ angular.module('FieldDoc')
 
 
             }
+            /*Confirm deletion
+            * This is logic for the confirm popup dialog
+            * */
+            self.confirmProgramDelete = function ($event,id) {
+
+                console.log("Confirm dialog");
+
+                console.log(id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = !self.showDeletionDialog;
+
+                self.deletionId = id;
+            };
+            /*Cancel deletion*/
+            self.cancelProgramDelete = function($event) {
+
+                console.log("Cancel Removal");
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+
+            };
 
             /*remove program from project
             Ok, so how do we do this ? well, first pass the event in and stop it's propagation.
@@ -337,6 +379,10 @@ angular.module('FieldDoc')
              */
 
             self.removeProgram = function($event,program_id){
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
 
                 self.status.processing = true;
 
