@@ -229,7 +229,7 @@ angular.module('FieldDoc')
                     'partnerships',
                     'practices',
                     'practice_types',
-                    'program',
+                    'programs',
                     'reports',
                     'sites',
                     'status',

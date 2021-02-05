@@ -200,7 +200,7 @@ angular.module('FieldDoc')
                     'tasks',
                     'centroid',
                     'extent',
-                    'program'
+                    'programs'
                 ];
 
                 var reservedProperties = [

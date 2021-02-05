@@ -166,7 +166,7 @@
                         'images',
                         'last_modified_by',
                         'organization',
-                        'program',
+                        'programs',
                         'tags',
                         'tasks'
                     ];
