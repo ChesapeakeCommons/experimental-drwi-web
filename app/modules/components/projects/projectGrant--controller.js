@@ -84,36 +84,6 @@ angular.module('FieldDoc')
 
                     self.loadOrganization(Account.userObject.organization_id);
 
-                    //
-                    // Assign project to a scoped variable
-                    //
-                    project.$promise.then(function(successResponse) {
-
-                        if (!successResponse.permissions.read &&
-                            !successResponse.permissions.write) {
-
-                            self.makePrivate = true;
-
-                        } else {
-
-                            self.processFeature(successResponse);
-
-                            self.permissions.can_edit = successResponse.permissions.write;
-                            self.permissions.can_delete = successResponse.permissions.write;
-
-                            $rootScope.page.title = 'Edit Project';
-
-                        }
-
-                        self.showElements();
-
-                    }, function(errorResponse) {
-
-                        console.log('Unable to load request project');
-
-                        self.showElements();
-
-                    });
 
                 });
 
@@ -140,6 +110,7 @@ angular.module('FieldDoc')
 
                     self.permissions = successResponse.permissions;
 
+                    self.availablePrograms = self.feature.programs;
 
                  //   self.summary.program_count = self.feature.programs.length;
 
@@ -156,29 +127,219 @@ angular.module('FieldDoc')
 
                     }
 
-                    self.status.loading = false;
+                    self.loadProject();
 
                 }, function(errorResponse) {
 
                     console.error('Unable to load organization.');
 
-                    self.status.loading = false;
+                    self.loadProject();
+
+                //    self.status.loading = false;
 
                 });
 
             };
 
 
-            /*add program to project*/
+            self.loadProject = function(){
 
-            self.addProgram = function(id){
+                //
+                // Assign project to a scoped variable
+                //
+                project.$promise.then(function(successResponse) {
+
+                    console.log("self.project-->",successResponse);
+
+                    self.project = successResponse;
+
+                    self.projectPrograms = self.project.programs;
+
+                    if (!successResponse.permissions.read &&
+                        !successResponse.permissions.write) {
+
+                        self.makePrivate = true;
+
+                    } else {
+
+                        self.processFeature(successResponse);
+
+                        self.permissions.can_edit = successResponse.permissions.write;
+                        self.permissions.can_delete = successResponse.permissions.write;
+
+                        $rootScope.page.title = 'Edit Project';
+
+                    }
+
+                    console.log("available programs -->", self.availablePrograms);
+
+                    /*So, we're going to use some temporary controller array of objects
+                    * (self.availableProgram and self.projectsProgram to track what programs
+                    * are available on the organization level vs what programs have been added to project.
+                    * we do this by looping over the organization programs, then checking that program
+                    * exists under the project. We add the attribute 'active' as false first, then update
+                    * to true if it exists.
+                    * */
+
+                    let i = 0;
+                    self.availablePrograms.forEach(function(availProgram){
+                        self.availablePrograms[i].active = false;
+                        self.projectPrograms.forEach(function(projProgram){
+                            if(availProgram.program.id == projProgram.id){
+                                self.availablePrograms[i].active = true;
+                            }
+
+                        });
+                        i = i+1;
+                    });
+
+                    /*The below logic should not need to be used, as a program must be added to a
+                    * project on creation. However, it represents a stop-gap for now if 1)
+                    * a program does not exist, and 2) if all programs are removed from
+                    * the project. This will set the default program to an active program in
+                    * our temporary array of program objects. Yay!
+                    * */
+
+                    if(self.projectPrograms.length == 0){
+                        i = 0;
+                        self.availablePrograms.forEach(function(availProgram){
+                            if(availProgram.main == true){
+                                self.availablePrograms[i].active = true;
+                            }
+                        i = i+1;
+                        });
+
+                    }
+
+                    console.log("available programs updated-->", self.availablePrograms);
+
+                    self.status.loading = false;
+
+                    self.showElements();
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load request project');
+
+                    self.status.loading = false;
+
+                    self.showElements();
+
+                });
+            }
+
+            /*add program to project
+            * Okay, so to do this, we're going pass in our program_id then loop over our
+            * availableProgram object array, set it's active attribute to true.
+            * That's for the UI and so we can extract the program info from
+            * that list and add it to our project object, which we will then save.
+            * Also, to prevent the browser from registering the click twice (oy!)
+            * we pass the click event and stop it's propagation.
+            * Sound good? let's do it !
+            * */
+
+            self.addProgram = function($event,program_id){
+
+                console.log("Adding program to project-->",program_id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                let i = 0;
+
+                /*Set the new program to active in our availableProgram array*/
+
+                self.availablePrograms.forEach(function(availProgram){
+                    
+                    if(availProgram.program.id == program_id){
+
+                        self.availablePrograms[i].active = true;
+
+                    }
+
+                    i = i +1;
+                });
+
+                /*Update the project object*/
+
+                i = 0;
+                self.tempActivePrograms = [];
+                self.availablePrograms.forEach(function(availProgram){
+                   if(availProgram.active == true){
+
+                       self.tempActivePrograms.push({"id":availProgram.program.id});
+
+                   }
+                   i=i+1
+                });
+
+                console.log("self.project.programs -->",self.project.programs);
+
+                self.project.programs = self.tempActivePrograms;
+
+                console.log("self.project.programs updated-->",self.project.programs);
+
+                /*Save, Save, Save the project - and your money - it's never to late to start.*/
+
+                self.saveProject();
 
 
             }
 
-            self.removeProgram = function(id){
+            /*remove program from project
+            Ok, so how do we do this ? well, first pass the event in and stop it's propagation.
+            We do basically what we did for adding a program (above) but we set
+            the active attribute of available programs object to false.
+             */
 
+            self.removeProgram = function($event,program_id){
 
+                console.log("Removing program to project-->",program_id);
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                /*Set the program active attribute to false in our availableProgram array*/
+
+                let i = 0;
+
+                self.availablePrograms.forEach(function(availProgram){
+
+                    if(availProgram.program.id == program_id){
+
+                        self.availablePrograms[i].active = false;
+
+                    }
+
+                    i = i +1;
+                });
+
+                /*Update the project object*/
+
+                i = 0;
+                self.tempActivePrograms = [];
+                self.availablePrograms.forEach(function(availProgram){
+                    if(availProgram.active == true){
+
+                        self.tempActivePrograms.push({"id":availProgram.program.id});
+
+                    }
+                    i=i+1
+                });
+
+                console.log("self.project.programs -->",self.project.programs);
+
+                self.project.programs = self.tempActivePrograms;
+
+                console.log("self.project.programs updated-->",self.project.programs);
+
+                /*Save the project */
+
+                self.saveProject();
             }
 
          /*   self.searchPrograms = function(value) {
@@ -261,7 +422,7 @@ angular.module('FieldDoc')
                 console.log('Updated ' + collection + ' (removal)', collection);
 
             };
-
+        */
             self.processRelations = function(list) {
 
                 var _list = [];
@@ -281,7 +442,7 @@ angular.module('FieldDoc')
                 return _list;
 
             };
-*/
+
             self.processFeature = function(data) {
 
                 self.project = data;
@@ -298,7 +459,7 @@ angular.module('FieldDoc')
 
             };
 
-            self.setProgram = function(item, model, label) {
+        /*    self.setProgram = function(item, model, label) {
 
                 self.project.program_id = item.id;
 
@@ -311,6 +472,8 @@ angular.module('FieldDoc')
                 self.program = null;
 
             };
+
+         */
 
             self.scrubFeature = function(feature) {
 
@@ -361,9 +524,12 @@ angular.module('FieldDoc')
 
                 self.scrubFeature(self.project);
 
+
                 self.project.partners = self.processRelations(self.tempPartners);
 
                 self.project.workflow_state = "Draft";
+
+                console.log("self.project --> submit", self.project);
 
                 var exclude = [
                     'centroid',

@@ -87,7 +87,7 @@
 
                         <div class="classification--list" style="margin-top: 2em;" data-ng-if="page.feature.programs">
                             <ul>
-                                <li data-ng-repeat="program in page.feature.programs track by $index">
+                                <li data-ng-repeat="program in page.availablePrograms track by $index">
                                     <!-- <i class="material-icons">
                                         account_balance
                                     </i> -->
@@ -97,12 +97,16 @@
                                     <div class="button--container">
                                         <div class="selection-input" data-ng-click="page.addProgram(program.id)" style=" vertical-align: middle; padding:0px;display:block;border:0px solid green;">
 
-                                            <div data-ng-if="program.main === false" style="float:right; display:inline-block;border:0px solid red;">
+                                            <div data-ng-if="program.active === false"
+                                                 data-ng-click = "page.addProgram($event,program.program.id)";
+                                                 style="float:right; display:inline-block;border:0px solid red;">
                                                 <span class="material-icons">
                                                     radio_button_unchecked
                                                 </span>
                                             </div>
-                                            <div data-ng-if="program.main === true" style="color:#0366d6;  float:right; display:inline-block; border:0px solid red;">
+                                            <div data-ng-if="program.active === true"
+                                                 data-ng-click = "page.removeProgram($event,program.program.id)";
+                                                 style="color:#0366d6;  float:right; display:inline-block; border:0px solid red;">
                                                 <span class="material-icons">
                                                     radio_button_checked
                                                 </span>
