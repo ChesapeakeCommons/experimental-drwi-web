@@ -187,6 +187,7 @@ angular.module('FieldDoc')
                         self.projectPrograms.forEach(function(projProgram){
                             if(availProgram.program.id == projProgram.id){
                                 self.availablePrograms[i].active = true;
+                                self.availablePrograms[i].is_organization_program = true;
                             }
 
                         });
@@ -205,6 +206,7 @@ angular.module('FieldDoc')
                         self.availablePrograms.forEach(function(availProgram){
                             if(availProgram.main == true){
                                 self.availablePrograms[i].active = true;
+                                self.availablePrograms[i].is_organization_program = true;
                             }
                         i = i+1;
                         });
@@ -212,6 +214,44 @@ angular.module('FieldDoc')
                     }
 
                     console.log("available programs updated-->", self.availablePrograms);
+
+                    /*Because programs being associated with organization is new feature as of this
+                    * comment (2.4.2021) we can assume there will be a mismatch between the
+                    * organization programs and those (one actually) currently associated with existing projects.
+                    * The below logic is meant to handle this condition.
+                    * */
+
+                    if(self.projectPrograms.length != 0){
+                     //   i = 0;
+
+                        self.projectPrograms.forEach(function(projProgram){
+                          //  let i2 = 0;
+                            let exists_in_program = false;
+                            self.availablePrograms.forEach(function(availProgram){
+                                if(availProgram.program.id == projProgram.id){
+                                    exists_in_program = true;
+                                }
+
+                             //   i2 = i2+1;
+                            });
+                            if(exists_in_program == false){
+                                let legacy_program = {
+                                    active: true,
+                                    is_organization_program: false,
+                                    program: projProgram,
+                                    program_id: projProgram.id
+
+                                }
+                                self.availablePrograms.push(legacy_program);
+                            }
+
+
+                          //  i = i+1;
+                        });
+                    }
+
+
+
 
                     self.status.loading = false;
 
@@ -239,6 +279,8 @@ angular.module('FieldDoc')
             * */
 
             self.addProgram = function($event,program_id){
+
+                self.status.processing = true;
 
                 console.log("Adding program to project-->",program_id);
 
@@ -295,6 +337,8 @@ angular.module('FieldDoc')
              */
 
             self.removeProgram = function($event,program_id){
+
+                self.status.processing = true;
 
                 console.log("Removing program to project-->",program_id);
 
