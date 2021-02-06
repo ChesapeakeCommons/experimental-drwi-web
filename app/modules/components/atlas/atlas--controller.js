@@ -324,7 +324,13 @@ angular.module('FieldDoc')
                     programId
                 );
 
+                //
+                // Reset stored array of queried features.
+                //
+
                 self.queryFeatures = undefined;
+
+                AtlasDataManager.setQueryFeatures([]);
 
                 var cls = self.clsMap[featureType];
 
