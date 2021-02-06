@@ -10,6 +10,8 @@
 angular.module('FieldDoc')
     .service('AtlasDataManager', function() {
 
+        var queryFeatures = [];
+
         var fetchedFeatures = {
             'drainage': {
                 'polygon': {}
@@ -296,7 +298,18 @@ angular.module('FieldDoc')
 
                 this.primaryNode = feature;
 
+            },
+            getQueryFeatures: function () {
+
+                return this.queryFeatures;
+
+            },
+            setQueryFeatures: function (features) {
+
+                this.queryFeatures = features;
+
             }
+
         };
 
     });

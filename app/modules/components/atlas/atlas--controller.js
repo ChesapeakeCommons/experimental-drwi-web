@@ -731,7 +731,9 @@ angular.module('FieldDoc')
 
                     }
 
-                    var features = self.map.queryRenderedFeatures(e.point);
+                    var features = LayerUtil.validateQueryFeatures(
+                        self.map.queryRenderedFeatures(e.point)
+                    );
 
                     console.log(
                         'map.click:features:',
@@ -750,6 +752,10 @@ angular.module('FieldDoc')
                         $scope.$apply(function () {
 
                             self.queryFeatures = features;
+
+                            AtlasDataManager.setQueryFeatures(
+                                features
+                            );
 
                         });
 

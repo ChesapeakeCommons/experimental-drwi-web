@@ -41,6 +41,7 @@
         z-index: 9;
 
         .multi-feature-modal {
+            max-width: 400px;
             background: #FFFFFF;
             border: 1px solid #E0E0E0;
 
@@ -48,13 +49,34 @@
                 list-style: none;
 
                 li {
+                    display: flex;
+                    flex-flow: row nowrap;
+                    align-items: center;
+                    justify-content: flex-start;
                     cursor: pointer;
                     border-radius: 0.25rem;
 
                     &:hover {
                         background: #f5f5f5;
                     }
+
+                    span {
+                        line-height: 1.25;
+                    }
+
+                    span:first-of-type {
+                        flex-grow: 0;
+                        flex-shrink: 0;
+                    }
+
+                    span:last-of-type {
+                        display: block;
+                        flex-grow: 1;
+                        flex-shrink: 1;
+                    }
+
                 }
+
             }
 
             .title {

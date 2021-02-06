@@ -151,11 +151,14 @@
             <ul class="pad-0 margin-0">
                 <li class="pad-50p"
                     data-ng-repeat="feature in page.queryFeatures"
-                    data-ng-click="page.fetchPrimaryNode(feature.properties.type, feature.properties.id)">
+                    data-ng-click="page.fetchPrimaryNode(
+                        feature.properties.type,
+                        feature.properties.id,
+                        feature.programId)">
                     <span>
-                        <strong>{{ feature.properties.type }}:</strong>&nbsp;
+                        <strong>{{ feature.properties.type }}:</strong>
                     </span>
-                    <span>
+                    <span class="pad-l-50p">
                         {{ feature.properties.name }}
                     </span>
                 </li>

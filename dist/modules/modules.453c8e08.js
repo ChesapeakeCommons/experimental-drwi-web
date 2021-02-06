@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612554183345})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612574474712})
 
 ;
 /**
@@ -37900,7 +37900,9 @@ angular.module('FieldDoc')
 
                     }
 
-                    var features = self.map.queryRenderedFeatures(e.point);
+                    var features = LayerUtil.validateQueryFeatures(
+                        self.map.queryRenderedFeatures(e.point)
+                    );
 
                     console.log(
                         'map.click:features:',
@@ -37919,6 +37921,10 @@ angular.module('FieldDoc')
                         $scope.$apply(function () {
 
                             self.queryFeatures = features;
+
+                            AtlasDataManager.setQueryFeatures(
+                                features
+                            );
 
                         });
 
@@ -38823,6 +38829,8 @@ angular.module('FieldDoc')
 angular.module('FieldDoc')
     .service('AtlasDataManager', function() {
 
+        var queryFeatures = [];
+
         var fetchedFeatures = {
             'drainage': {
                 'polygon': {}
@@ -39109,7 +39117,18 @@ angular.module('FieldDoc')
 
                 this.primaryNode = feature;
 
+            },
+            getQueryFeatures: function () {
+
+                return this.queryFeatures;
+
+            },
+            setQueryFeatures: function (features) {
+
+                this.queryFeatures = features;
+
             }
+
         };
 
     });
@@ -39124,7 +39143,10 @@ angular.module('FieldDoc')
  */
 angular.module('FieldDoc')
     .service('LayerUtil',
-        function(LabelLayer, LayerService, MapUtil, AtlasDataManager, Utility) {
+        function(LabelLayer, LayerService, MapUtil,
+                 AtlasDataManager, Utility) {
+
+            var programId = undefined;
 
             var CUSTOM_LAYERS = {};
 
@@ -39313,6 +39335,29 @@ angular.module('FieldDoc')
 
                     var mod = this;
 
+                    console.log(
+                        'LayerUtil.addCustomLayers.features:',
+                        features);
+
+                    console.log(
+                        'LayerUtil.addCustomLayers.layers:',
+                        layers);
+
+                    console.log(
+                        'LayerUtil.addCustomLayers.padding:',
+                        padding);
+
+                    console.log(
+                        'LayerUtil.addCustomLayers.map:',
+                        map);
+
+                    console.log(
+                        'LayerUtil.addCustomLayers.programId:',
+                        mod.programId);
+
+                    if (!features.length ||
+                        !Number.isInteger(mod.programId)) return;
+
                     features.forEach(function(feature) {
 
                         if (feature.layer_spec === undefined) return;
@@ -39406,6 +39451,8 @@ angular.module('FieldDoc')
                                     feature.layer_spec.id
                                 );
 
+                                if (AtlasDataManager.getQueryFeatures().length > 1) return;
+
                                 if (e.features.length > 0) {
 
                                     console.log(
@@ -39425,6 +39472,11 @@ angular.module('FieldDoc')
                                     //
                                     // Fetch metadata and metric summary.
                                     //
+
+                                    console.log(
+                                        'map:customLayer.click:programId',
+                                        mod.programId
+                                    );
 
                                     callback(
                                         'territory',
@@ -39459,7 +39511,7 @@ angular.module('FieldDoc')
 
                         data.program = featureId;
 
-                        mod.programId = featureId;
+                        mod.setProgramId(featureId);
 
                     } else {
 
@@ -39475,7 +39527,9 @@ angular.module('FieldDoc')
                             'LayerUtil.fetchCustomLayers --> successResponse',
                             successResponse);
 
-                        mod.programId = successResponse.program_id;
+                        mod.setProgramId(
+                            successResponse.program_id
+                        );
 
                         mod.addCustomLayers(
                             successResponse.features,
@@ -39651,6 +39705,16 @@ angular.module('FieldDoc')
                     });
 
                 },
+                setProgramId: function(programId) {
+
+                    console.log(
+                        'LayerUtil.setProgramId:programId:',
+                        programId
+                    );
+
+                    this.programId = programId;
+
+                },
                 setVisibility: function(map, idx) {
 
                     if (!angular.isDefined(idx)) return;
@@ -39719,6 +39783,53 @@ angular.module('FieldDoc')
                         }
 
                     }
+
+                },
+                validateQueryFeatures: function (features) {
+
+                    var mod = this;
+
+                    var validFeatures = {};
+
+                    features.forEach(function (feature) {
+
+                        feature.programId = mod.programId;
+
+                        var layerId = feature.layer.id;
+
+                        var featureId = feature.properties.id;
+
+                        var featureType = feature.properties.type;
+
+                        if (featureId === undefined &&
+                            featureType === undefined) {
+
+                            featureId = layerId + '-' + feature.id;
+
+                            feature.properties.type = 'territory';
+
+                            if (CUSTOM_LAYERS.hasOwnProperty(layerId)) {
+
+                                feature.properties.id = Utility.machineName(
+                                    feature.properties.name,
+                                    '_'
+                                );
+
+                            }
+
+                        }
+
+                        if (layerId.startsWith('fd.') ||
+                            layerId.startsWith('wr.') ||
+                            CUSTOM_LAYERS.hasOwnProperty(layerId)) {
+
+                            validFeatures[featureId] = feature;
+
+                        }
+
+                    });
+
+                    return Utility.values(validFeatures);
 
                 },
                 visibilityIndex: function (map) {
