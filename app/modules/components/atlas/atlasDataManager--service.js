@@ -289,9 +289,27 @@ angular.module('FieldDoc')
                 }
 
             },
-            trackFeature: function (featureType, geometryType, feature) {
+            resetTrackedFeatures: function () {
 
-                fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
+                for (var key in fetchedFeatures) {
+
+                    if (fetchedFeatures.hasOwnProperty(key)) {
+
+                        var config = fetchedFeatures[key];
+
+                        var configKeys = Object.keys(config);
+
+                        configKeys.forEach(function (a) {
+
+                            config[a] = {};
+
+                        });
+
+                        fetchedFeatures[key] = config;
+
+                    }
+
+                }
 
             },
             setPrimaryNode: function (feature) {
@@ -307,6 +325,11 @@ angular.module('FieldDoc')
             setQueryFeatures: function (features) {
 
                 this.queryFeatures = features;
+
+            },
+            trackFeature: function (featureType, geometryType, feature) {
+
+                fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
 
             }
 

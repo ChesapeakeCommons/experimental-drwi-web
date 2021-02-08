@@ -168,6 +168,8 @@ angular.module('FieldDoc')
             self.updateNodeLayer = function (nodeType, geometryType,
                                              programId) {
 
+                if (self.map === undefined) return;
+
                 var zoom = self.map.getZoom();
 
                 if (zoom < 14 &&
@@ -1294,6 +1296,20 @@ angular.module('FieldDoc')
                 console.log(
                     'AtlasController:destroy...'
                 );
+
+                //
+                // Perform a hard reset of all map data.
+                //
+
+                AtlasDataManager.resetTrackedFeatures();
+
+                // LayerUtil.resetCustomIdx();
+                //
+                // LayerUtil.removeLayers(self.map);
+                //
+                // LayerUtil.resetSources(self.map);
+
+                self.map.remove();
 
             });
 

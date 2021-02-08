@@ -156,7 +156,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612802101227})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612807101963})
 
 ;
 /**
@@ -37337,6 +37337,8 @@ angular.module('FieldDoc')
             self.updateNodeLayer = function (nodeType, geometryType,
                                              programId) {
 
+                if (self.map === undefined) return;
+
                 var zoom = self.map.getZoom();
 
                 if (zoom < 14 &&
@@ -38464,6 +38466,20 @@ angular.module('FieldDoc')
                     'AtlasController:destroy...'
                 );
 
+                //
+                // Perform a hard reset of all map data.
+                //
+
+                AtlasDataManager.resetTrackedFeatures();
+
+                // LayerUtil.resetCustomIdx();
+                //
+                // LayerUtil.removeLayers(self.map);
+                //
+                // LayerUtil.resetSources(self.map);
+
+                self.map.remove();
+
             });
 
             //
@@ -39122,9 +39138,27 @@ angular.module('FieldDoc')
                 }
 
             },
-            trackFeature: function (featureType, geometryType, feature) {
+            resetTrackedFeatures: function () {
 
-                fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
+                for (var key in fetchedFeatures) {
+
+                    if (fetchedFeatures.hasOwnProperty(key)) {
+
+                        var config = fetchedFeatures[key];
+
+                        var configKeys = Object.keys(config);
+
+                        configKeys.forEach(function (a) {
+
+                            config[a] = {};
+
+                        });
+
+                        fetchedFeatures[key] = config;
+
+                    }
+
+                }
 
             },
             setPrimaryNode: function (feature) {
@@ -39140,6 +39174,11 @@ angular.module('FieldDoc')
             setQueryFeatures: function (features) {
 
                 this.queryFeatures = features;
+
+            },
+            trackFeature: function (featureType, geometryType, feature) {
+
+                fetchedFeatures[featureType][geometryType][feature.properties.id] = feature;
 
             }
 
@@ -39591,6 +39630,8 @@ angular.module('FieldDoc')
                 resetSources: function (map) {
 
                     var sourceIds = Object.keys(REFERENCE_SOURCES);
+
+                    sourceIds = sourceIds.concat(Object.keys(CUSTOM_LAYERS));
 
                     sourceIds.forEach(function (sourceId) {
 
