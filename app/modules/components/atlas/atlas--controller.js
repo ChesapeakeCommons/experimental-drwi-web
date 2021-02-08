@@ -1289,6 +1289,14 @@ angular.module('FieldDoc')
 
             }, false);
 
+            $scope.$on('$destroy', function () {
+
+                console.log(
+                    'AtlasController:destroy...'
+                );
+
+            });
+
             //
             // Verify Account information for proper UI element display
             //

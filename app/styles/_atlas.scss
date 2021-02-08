@@ -41,7 +41,8 @@
         z-index: 9;
 
         .multi-feature-modal {
-            max-width: 400px;
+            max-width: 480px;
+            min-width: 296px;
             background: #FFFFFF;
             border: 1px solid #E0E0E0;
 
@@ -50,9 +51,9 @@
 
                 li {
                     display: flex;
-                    flex-flow: row nowrap;
-                    align-items: center;
-                    justify-content: flex-start;
+                    flex-flow: column nowrap;
+                    align-items: flex-start;
+                    justify-content: center;
                     cursor: pointer;
                     border-radius: 0.25rem;
 
@@ -61,18 +62,22 @@
                     }
 
                     span {
+                        display: block;
                         line-height: 1.25;
                     }
 
                     span:first-of-type {
-                        flex-grow: 0;
-                        flex-shrink: 0;
+                        flex-grow: 1;
+                        flex-shrink: 1;
                     }
 
                     span:last-of-type {
-                        display: block;
-                        flex-grow: 1;
-                        flex-shrink: 1;
+                        flex-grow: 0;
+                        flex-shrink: 0;
+                        font-size: 0.8rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.04rem;
+                        color: #9E9E9E;
                     }
 
                 }
