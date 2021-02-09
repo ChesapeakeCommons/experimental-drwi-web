@@ -87,7 +87,8 @@ angular
 
         (function (fn) {
             console.log = function () {
-                if (environment.name !== 'production') {
+                if (environment.name !== 'production' &&
+                    environment.name !== 'development') {
                     fn.apply(void 0, arguments);
                 }
             };
@@ -156,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612807101963})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612914456506})
 
 ;
 /**
@@ -37181,8 +37182,8 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
-                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer,
-                 WaterReporterInterface, GeographyService) {
+                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
+                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService) {
 
             var self = this;
 
@@ -37936,24 +37937,19 @@ angular.module('FieldDoc')
 
                         });
 
-                        // var names = [];
-                        //
-                        // features.forEach(function (feature) {
-                        //
-                        //     names.push(feature.properties.name);
-                        //
-                        // });
-                        //
-                        // var text = names.join(', ');
-                        //
-                        // new mapboxgl.Popup()
-                        //     .setLngLat(e.lngLat)
-                        //     .setHTML(text)
-                        //     .addTo(self.map);
-
                     } else {
 
                         var target = features[0];
+
+                        console.log(
+                            'map.click:target:',
+                            target
+                        );
+
+                        // HighlightLayer.setHighlight(
+                        //     self.map,
+                        //     target
+                        // );
 
                         if (target.layer.id.indexOf('station') >= 0) {
 
@@ -37977,7 +37973,7 @@ angular.module('FieldDoc')
 
                                 frame.style.backgroundColor = 'transparent';
                                 frame.frameBorder = '0';
-                                frame.allowTransparency= 'true';
+                                frame.allowTransparency = 'true';
 
                                 frame.src = [
                                     'https://dev.api.waterreporter.org/v2/embed/station/',
@@ -38160,63 +38156,63 @@ angular.module('FieldDoc')
 
                 });
 
-                self.urlComponents.forEach(function (combination) {
-
-                    var prefix = 'fd';
-
-                    if (combination[0] === 'station' ||
-                        combination[0] === 'post') {
-
-                        prefix = 'wr';
-
-                    }
-
-                    var layerId = [
-                        prefix,
-                        combination[0],
-                        combination[1]
-                    ].join('.');
-
-                    self.map.on('click', layerId, function (e) {
-
-                        console.log(
-                            'map:click:layerId',
-                            layerId
-                        );
-
-                        SourceUtil.resetFeatureStates(
-                            self.map, self.urlComponents);
-
-                        if (e.features.length > 0) {
-
-                            console.log(
-                                'map:click:focusedFeature',
-                                e.features[0]
-                            );
-
-                            if (typeof self.focusedFeature === 'number') {
-
-                                self.map.removeFeatureState({
-                                    source: layerId,
-                                    id: self.focusedFeature
-                                });
-
-                            }
-
-                            self.focusedFeature = e.features[0].id;
-
-                            self.map.setFeatureState({
-                                source: layerId,
-                                id: self.focusedFeature,
-                            }, {
-                                focus: true
-                            });
-
-                        }
-
-                    });
-
-                });
+// self.urlComponents.forEach(function (combination) {
+//
+//     var prefix = 'fd';
+//
+//     if (combination[0] === 'station' ||
+//         combination[0] === 'post') {
+//
+//         prefix = 'wr';
+//
+//     }
+//
+//     var layerId = [
+//         prefix,
+//         combination[0],
+//         combination[1]
+//     ].join('.');
+//
+//     self.map.on('click', layerId, function (e) {
+//
+//         console.log(
+//             'map:click:layerId',
+//             layerId
+//         );
+//
+//         SourceUtil.resetFeatureStates(
+//             self.map, self.urlComponents);
+//
+//         if (e.features.length > 0) {
+//
+//             console.log(
+//                 'map:click:focusedFeature',
+//                 e.features[0]
+//             );
+//
+//             if (typeof self.focusedFeature === 'number') {
+//
+//                 self.map.removeFeatureState({
+//                     source: layerId,
+//                     id: self.focusedFeature
+//                 });
+//
+//             }
+//
+//             self.focusedFeature = e.features[0].id;
+//
+//             self.map.setFeatureState({
+//                 source: layerId,
+//                 id: self.focusedFeature,
+//             }, {
+//                 focus: true
+//             });
+//
+//         }
+//
+//     });
+//
+// });
 
             };
 
@@ -38301,6 +38297,8 @@ angular.module('FieldDoc')
                 LabelLayer.addLabelLayers(self.map);
 
                 DataLayer.addDataLayers(self.map);
+
+                HighlightLayer.addHighlightLayers(self.map);
 
                 LayerUtil.addCustomLayers(
                     LayerUtil.customLayerIdx(),
@@ -38482,9 +38480,9 @@ angular.module('FieldDoc')
 
             });
 
-            //
-            // Verify Account information for proper UI element display
-            //
+//
+// Verify Account information for proper UI element display
+//
             if (Account.userObject && user) {
 
                 user.$promise.then(function(userResponse) {
@@ -39216,17 +39214,25 @@ angular.module('FieldDoc')
                 'empty': EMPTY_SOURCE,
                 'fd.drainage.polygon': EMPTY_SOURCE,
                 'fd.practice.centroid': EMPTY_SOURCE,
+                // 'fd.practice.centroid-highlight': EMPTY_SOURCE,
                 'fd.practice.point': EMPTY_SOURCE,
+                // 'fd.practice.point-highlight': EMPTY_SOURCE,
                 'fd.practice.line': EMPTY_SOURCE,
+                // 'fd.practice.line-highlight': EMPTY_SOURCE,
                 'fd.practice.polygon': EMPTY_SOURCE,
-                'fd.site.centroid': EMPTY_SOURCE,
+                // 'fd.practice.polygon-highlight': EMPTY_SOURCE,
+                // 'fd.site.centroid': EMPTY_SOURCE,
+                // 'fd.site.centroid-highlight': EMPTY_SOURCE,
                 'fd.site.point': EMPTY_SOURCE,
+                // 'fd.site.point-highlight': EMPTY_SOURCE,
                 'fd.site.line': EMPTY_SOURCE,
+                // 'fd.site.line-highlight': EMPTY_SOURCE,
                 'fd.site.polygon': EMPTY_SOURCE,
-                // 'fd.project.centroid': EMPTY_SOURCE,
+                // 'fd.site.polygon-highlight': EMPTY_SOURCE,
                 'fd.project.point': EMPTY_SOURCE,
-                // 'wr.post.point': EMPTY_SOURCE,
-                'wr.station.point': EMPTY_SOURCE
+                // 'fd.project.point-highlight': EMPTY_SOURCE,
+                'wr.station.point': EMPTY_SOURCE,
+                // 'wr.station.point-highlight': EMPTY_SOURCE
             };
 
             var REFERENCE_LAYERS = [
@@ -39658,6 +39664,7 @@ angular.module('FieldDoc')
                     layers.forEach(function (layer) {
 
                         if (layer.id.startsWith('fd.') &&
+                            layer.id.indexOf('highlight') < 0 &&
                             map.getLayer(layer.id)) {
 
                             map.setFilter(layer.id, filterDef);
@@ -40665,73 +40672,73 @@ angular.module('FieldDoc')
             //         ]
             //     }
             // },
-            {
-                'id': 'fd.site.centroid-label',
-                'source': 'fd.site.centroid',
-                'type': 'symbol',
-                'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max,
-                'layout': {
-                    'symbol-placement': 'point',
-                    'text-anchor': 'bottom',
-                    'text-field': ['get', 'name'],
-                    'text-variable-anchor': [
-                        'top', 'bottom', 'left', 'right'
-                    ],
-                    'text-font': {
-                        'stops': [
-                            [
-                                zoomConfig.site.min + 1,
-                                [
-                                    'DIN Offc Pro Regular',
-                                    'Arial Unicode MS Regular'
-                                ]
-                            ],
-                            [
-                                zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                                [
-                                    'DIN Offc Pro Regular',
-                                    'Arial Unicode MS Regular'
-                                ]
-                            ],
-                            [
-                                zoomConfig.site.max,
-                                [
-                                    'DIN Offc Pro Medium',
-                                    'Arial Unicode MS Bold'
-                                ]
-                            ]
-                        ]
-                    },
-                    'text-size': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.site.min + 1,
-                        12,
-                        zoomConfig.site.max,
-                        16
-                    ],
-                    'text-radial-offset': 0.5,
-                    'text-justify': 'auto',
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'text-halo-width': 1,
-                    'text-halo-color': 'rgba(255,255,255,0.75)',
-                    'text-halo-blur': 1,
-                    'text-color': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.site.min + 1,
-                        '#616161',
-                        zoomConfig.site.max,
-                        '#212121'
-                    ]
-                },
-                'filter': ['get', 'focus']
-            },
+            // {
+            //     'id': 'fd.site.centroid-label',
+            //     'source': 'fd.site.centroid',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     },
+            //     'filter': ['get', 'focus']
+            // },
             // {
             //     'id': 'fd.site.line-label',
             //     'source': 'fd.site.line',
@@ -40989,9 +40996,6 @@ angular.module('FieldDoc')
                     'source': 'fd.drainage.polygon',
                     'type': 'fill',
                     'minzoom': 8,
-                    // 'layout': {
-                    //     'visibility': 'none'
-                    // },
                     paint: {
                         'fill-color': '#00C8FF',
                         'fill-opacity': 0.4,
@@ -41292,37 +41296,37 @@ angular.module('FieldDoc')
                 },
                 beforeId: 'practice-index'
             },
-            {
-                config: {
-                    'id': 'fd.site.centroid',
-                    'source': 'fd.site.centroid',
-                    'type': 'circle',
-                    'minzoom': 4,
-                    'maxzoom': zoomConfig.site.max + 1,
-                    'layout': {
-                        'visibility': 'visible'
-                    },
-                    'paint': {
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#a94efe'
-                        ],
-                        'circle-radius': {
-                            'base': 2,
-                            'stops': [
-                                [12, 4],
-                                [22, 24]
-                            ]
-                        },
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FFFFFF'
-                    },
-                    'filter': ['get', 'focus']
-                },
-                beforeId: 'practice-index'
-            }
+            // {
+            //     config: {
+            //         'id': 'fd.site.centroid',
+            //         'source': 'fd.site.centroid',
+            //         'type': 'circle',
+            //         'minzoom': 4,
+            //         'maxzoom': zoomConfig.site.max + 1,
+            //         'layout': {
+            //             'visibility': 'visible'
+            //         },
+            //         'paint': {
+            //             'circle-color': [
+            //                 'case',
+            //                 ['boolean', ['feature-state', 'focus'], false],
+            //                 '#C81E1E',
+            //                 '#a94efe'
+            //             ],
+            //             'circle-radius': {
+            //                 'base': 2,
+            //                 'stops': [
+            //                     [12, 4],
+            //                     [22, 24]
+            //                 ]
+            //             },
+            //             'circle-stroke-width': 1,
+            //             'circle-stroke-color': '#FFFFFF'
+            //         },
+            //         'filter': ['get', 'focus']
+            //     },
+            //     beforeId: 'practice-index'
+            // }
         ];
 
         return {
@@ -41342,6 +41346,325 @@ angular.module('FieldDoc')
             list: function () {
 
                 return DATA_LAYERS;
+
+            }
+        };
+
+    });
+'use strict';
+
+/**
+ * @ngdoc service
+ * @name FieldDoc.template
+ * @description
+ * # template
+ * Provider in the FieldDoc.
+ */
+angular.module('FieldDoc')
+    .service('HighlightLayer', function(ZoomUtil) {
+
+        var zoomConfig = ZoomUtil.getZoom();
+
+        var HIGHLIGHT_LAYERS = [
+            {
+                config: {
+                    'id': 'fd.project.point-highlight',
+                    'source': 'fd.project.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.project.min,
+                    'maxzoom': zoomConfig.project.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': '#ff0000',
+                        'circle-radius': [
+                            'interpolate',
+                            ['exponential', 0.5],
+                            ['zoom'],
+                            zoomConfig.project.min,
+                            0.5,
+                            zoomConfig.project.max,
+                            6
+                        ],
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: ''
+            },
+            // {
+            //     config: {
+            //         'id': 'wr.station.point-highlight',
+            //         'source': 'wr.station.point',
+            //         'type': 'circle',
+            //         'minzoom': zoomConfig.station.min,
+            //         'maxzoom': zoomConfig.station.max,
+            //         'paint': {
+            //             'circle-color': '#ff0000',
+            //             'circle-radius': [
+            //                 'interpolate',
+            //                 ['exponential', 0.5],
+            //                 ['zoom'],
+            //                 zoomConfig.station.min,
+            //                 0.5,
+            //                 zoomConfig.station.max,
+            //                 6
+            //             ],
+            //             'circle-stroke-width': 2,
+            //             'circle-stroke-color': '#FFFFFF'
+            //         }
+            //     },
+            //     beforeId: ''
+            // },
+            {
+                config: {
+                    'id': 'fd.practice.centroid-highlight',
+                    'source': 'fd.practice.centroid',
+                    'type': 'circle',
+                    'minzoom': 4,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': '#C81E1E',
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.polygon-highlight',
+                    'source': 'fd.practice.polygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-color': '#C81E1E',
+                        'fill-opacity': 0.2,
+                        'fill-outline-color': '#C81E1E'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.line-highlight',
+                    'source': 'fd.practice.line',
+                    'type': 'line',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': '#C81E1E',
+                        'line-width': 2
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.point-highlight',
+                    'source': 'fd.practice.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': '#C81E1E',
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.polygon-highlight',
+                    'source': 'fd.site.polygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-color': '#C81E1E',
+                        'fill-opacity': 0.2,
+                        'fill-outline-color': '#C81E1E'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.line-highlight',
+                    'source': 'fd.site.line',
+                    'type': 'line',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': '#C81E1E',
+                        'line-width': 2
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.point-highlight',
+                    'source': 'fd.site.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': '#C81E1E',
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.centroid-highlight',
+                    'source': 'fd.site.centroid',
+                    'type': 'circle',
+                    'minzoom': 4,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': '#C81E1E',
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            }
+        ];
+
+        return {
+            addHighlightLayers: function (map) {
+
+                HIGHLIGHT_LAYERS.forEach(function (layerSpec) {
+
+                    if (map.getLayer(layerSpec.config.id) === undefined) {
+
+                        map.addLayer(layerSpec.config, layerSpec.beforeId);
+
+                    }
+
+                });
+
+            },
+            list: function () {
+
+                return HIGHLIGHT_LAYERS;
+
+            },
+            setHighlight: function (map, feature) {
+
+                console.log(
+                    'HighlightLayer.setHighlight.feature:',
+                    feature
+                );
+
+                if (!feature.source.startsWith('fd.') &&
+                    !feature.source.startsWith('wr.')) return;
+
+                var targetSource = feature.source.split('-')[0];
+
+                console.log(
+                    'HighlightLayer.setHighlight.targetSource:',
+                    targetSource
+                );
+
+                var featureMatches = map.querySourceFeatures(targetSource, {
+                    sourceLayer: targetSource,
+                    filter: ['==', 'id', feature.properties.id]
+                });
+
+                console.log(
+                    'HighlightLayer.setHighlight.featureMatches:',
+                    featureMatches
+                );
+
+                if (featureMatches.length) {
+
+                    var highlightSource = targetSource + '-highlight';
+
+                    console.log(
+                        'HighlightLayer.setHighlight.highlightSource:',
+                        highlightSource
+                    );
+
+                    var source = map.getSource(highlightSource);
+
+                    if (source !== undefined) {
+
+                        source.setData({
+                            'type': 'FeatureCollection',
+                            'features': featureMatches
+                        });
+
+                    }
+
+                }
 
             }
         };
@@ -43776,7 +44099,7 @@ angular
      */
     angular.module('FieldDoc')
         .service('GeographyService', function(environment, Preprocessors, $resource) {
-            return $resource(environment.apiUrl.concat('/v1/data/geography/:id'), {
+            return $resource(environment.apiUrl.concat('/v1/data/territory/:id'), {
                 id: '@id'
             }, {
                 query: {
@@ -43791,49 +44114,49 @@ angular
                 getSingle: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id')
+                    url: environment.apiUrl.concat('/v1/territory/:id')
                 },
                 matrix: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/matrix')
+                    url: environment.apiUrl.concat('/v1/territory/:id/matrix')
                 },
                 updateMatrix: {
                     method: 'POST',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/matrix')
+                    url: environment.apiUrl.concat('/v1/territory/:id/matrix')
                 },
                 update: {
                     method: 'PATCH'
                 },
                 'metrics': {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/metrics'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/metrics'),
                     'isArray': false
                 },
                 'outcomes': {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/outcomes'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/outcomes'),
                     'isArray': false
                 },
                 pointLayer: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/point-layer')
+                    url: environment.apiUrl.concat('/v1/territory/:id/point-layer')
                 },
                 progress: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/progress')
+                    url: environment.apiUrl.concat('/v1/territory/:id/progress')
                 },
                 tags: {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/tags'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/tags'),
                     'isArray': false
                 },
                 tasks: {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/tasks'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/tasks'),
                     'isArray': false
                 },
                 batchDelete: {

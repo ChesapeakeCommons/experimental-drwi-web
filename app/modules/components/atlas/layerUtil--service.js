@@ -29,17 +29,25 @@ angular.module('FieldDoc')
                 'empty': EMPTY_SOURCE,
                 'fd.drainage.polygon': EMPTY_SOURCE,
                 'fd.practice.centroid': EMPTY_SOURCE,
+                // 'fd.practice.centroid-highlight': EMPTY_SOURCE,
                 'fd.practice.point': EMPTY_SOURCE,
+                // 'fd.practice.point-highlight': EMPTY_SOURCE,
                 'fd.practice.line': EMPTY_SOURCE,
+                // 'fd.practice.line-highlight': EMPTY_SOURCE,
                 'fd.practice.polygon': EMPTY_SOURCE,
-                'fd.site.centroid': EMPTY_SOURCE,
+                // 'fd.practice.polygon-highlight': EMPTY_SOURCE,
+                // 'fd.site.centroid': EMPTY_SOURCE,
+                // 'fd.site.centroid-highlight': EMPTY_SOURCE,
                 'fd.site.point': EMPTY_SOURCE,
+                // 'fd.site.point-highlight': EMPTY_SOURCE,
                 'fd.site.line': EMPTY_SOURCE,
+                // 'fd.site.line-highlight': EMPTY_SOURCE,
                 'fd.site.polygon': EMPTY_SOURCE,
-                // 'fd.project.centroid': EMPTY_SOURCE,
+                // 'fd.site.polygon-highlight': EMPTY_SOURCE,
                 'fd.project.point': EMPTY_SOURCE,
-                // 'wr.post.point': EMPTY_SOURCE,
-                'wr.station.point': EMPTY_SOURCE
+                // 'fd.project.point-highlight': EMPTY_SOURCE,
+                'wr.station.point': EMPTY_SOURCE,
+                // 'wr.station.point-highlight': EMPTY_SOURCE
             };
 
             var REFERENCE_LAYERS = [
@@ -471,6 +479,7 @@ angular.module('FieldDoc')
                     layers.forEach(function (layer) {
 
                         if (layer.id.startsWith('fd.') &&
+                            layer.id.indexOf('highlight') < 0 &&
                             map.getLayer(layer.id)) {
 
                             map.setFilter(layer.id, filterDef);

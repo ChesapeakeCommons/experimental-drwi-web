@@ -32,7 +32,8 @@ angular
 
         (function (fn) {
             console.log = function () {
-                if (environment.name !== 'production') {
+                if (environment.name !== 'production' &&
+                    environment.name !== 'development') {
                     fn.apply(void 0, arguments);
                 }
             };

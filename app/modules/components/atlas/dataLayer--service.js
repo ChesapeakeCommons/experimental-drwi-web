@@ -19,9 +19,6 @@ angular.module('FieldDoc')
                     'source': 'fd.drainage.polygon',
                     'type': 'fill',
                     'minzoom': 8,
-                    // 'layout': {
-                    //     'visibility': 'none'
-                    // },
                     paint: {
                         'fill-color': '#00C8FF',
                         'fill-opacity': 0.4,
@@ -322,37 +319,37 @@ angular.module('FieldDoc')
                 },
                 beforeId: 'practice-index'
             },
-            {
-                config: {
-                    'id': 'fd.site.centroid',
-                    'source': 'fd.site.centroid',
-                    'type': 'circle',
-                    'minzoom': 4,
-                    'maxzoom': zoomConfig.site.max + 1,
-                    'layout': {
-                        'visibility': 'visible'
-                    },
-                    'paint': {
-                        'circle-color': [
-                            'case',
-                            ['boolean', ['feature-state', 'focus'], false],
-                            '#C81E1E',
-                            '#a94efe'
-                        ],
-                        'circle-radius': {
-                            'base': 2,
-                            'stops': [
-                                [12, 4],
-                                [22, 24]
-                            ]
-                        },
-                        'circle-stroke-width': 1,
-                        'circle-stroke-color': '#FFFFFF'
-                    },
-                    'filter': ['get', 'focus']
-                },
-                beforeId: 'practice-index'
-            }
+            // {
+            //     config: {
+            //         'id': 'fd.site.centroid',
+            //         'source': 'fd.site.centroid',
+            //         'type': 'circle',
+            //         'minzoom': 4,
+            //         'maxzoom': zoomConfig.site.max + 1,
+            //         'layout': {
+            //             'visibility': 'visible'
+            //         },
+            //         'paint': {
+            //             'circle-color': [
+            //                 'case',
+            //                 ['boolean', ['feature-state', 'focus'], false],
+            //                 '#C81E1E',
+            //                 '#a94efe'
+            //             ],
+            //             'circle-radius': {
+            //                 'base': 2,
+            //                 'stops': [
+            //                     [12, 4],
+            //                     [22, 24]
+            //                 ]
+            //             },
+            //             'circle-stroke-width': 1,
+            //             'circle-stroke-color': '#FFFFFF'
+            //         },
+            //         'filter': ['get', 'focus']
+            //     },
+            //     beforeId: 'practice-index'
+            // }
         ];
 
         return {

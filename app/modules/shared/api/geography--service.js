@@ -9,7 +9,7 @@
      */
     angular.module('FieldDoc')
         .service('GeographyService', function(environment, Preprocessors, $resource) {
-            return $resource(environment.apiUrl.concat('/v1/data/geography/:id'), {
+            return $resource(environment.apiUrl.concat('/v1/data/territory/:id'), {
                 id: '@id'
             }, {
                 query: {
@@ -24,49 +24,49 @@
                 getSingle: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id')
+                    url: environment.apiUrl.concat('/v1/territory/:id')
                 },
                 matrix: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/matrix')
+                    url: environment.apiUrl.concat('/v1/territory/:id/matrix')
                 },
                 updateMatrix: {
                     method: 'POST',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/matrix')
+                    url: environment.apiUrl.concat('/v1/territory/:id/matrix')
                 },
                 update: {
                     method: 'PATCH'
                 },
                 'metrics': {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/metrics'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/metrics'),
                     'isArray': false
                 },
                 'outcomes': {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/outcomes'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/outcomes'),
                     'isArray': false
                 },
                 pointLayer: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/point-layer')
+                    url: environment.apiUrl.concat('/v1/territory/:id/point-layer')
                 },
                 progress: {
                     method: 'GET',
                     isArray: false,
-                    url: environment.apiUrl.concat('/v1/geography/:id/progress')
+                    url: environment.apiUrl.concat('/v1/territory/:id/progress')
                 },
                 tags: {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/tags'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/tags'),
                     'isArray': false
                 },
                 tasks: {
                     'method': 'GET',
-                    'url': environment.apiUrl.concat('/v1/geography/:id/tasks'),
+                    'url': environment.apiUrl.concat('/v1/territory/:id/tasks'),
                     'isArray': false
                 },
                 batchDelete: {

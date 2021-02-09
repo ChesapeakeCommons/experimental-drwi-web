@@ -12,8 +12,8 @@ angular.module('FieldDoc')
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
-                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer, DataLayer,
-                 WaterReporterInterface, GeographyService) {
+                 Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
+                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService) {
 
             var self = this;
 
@@ -767,24 +767,19 @@ angular.module('FieldDoc')
 
                         });
 
-                        // var names = [];
-                        //
-                        // features.forEach(function (feature) {
-                        //
-                        //     names.push(feature.properties.name);
-                        //
-                        // });
-                        //
-                        // var text = names.join(', ');
-                        //
-                        // new mapboxgl.Popup()
-                        //     .setLngLat(e.lngLat)
-                        //     .setHTML(text)
-                        //     .addTo(self.map);
-
                     } else {
 
                         var target = features[0];
+
+                        console.log(
+                            'map.click:target:',
+                            target
+                        );
+
+                        // HighlightLayer.setHighlight(
+                        //     self.map,
+                        //     target
+                        // );
 
                         if (target.layer.id.indexOf('station') >= 0) {
 
@@ -808,7 +803,7 @@ angular.module('FieldDoc')
 
                                 frame.style.backgroundColor = 'transparent';
                                 frame.frameBorder = '0';
-                                frame.allowTransparency= 'true';
+                                frame.allowTransparency = 'true';
 
                                 frame.src = [
                                     'https://dev.api.waterreporter.org/v2/embed/station/',
@@ -991,63 +986,63 @@ angular.module('FieldDoc')
 
                 });
 
-                self.urlComponents.forEach(function (combination) {
-
-                    var prefix = 'fd';
-
-                    if (combination[0] === 'station' ||
-                        combination[0] === 'post') {
-
-                        prefix = 'wr';
-
-                    }
-
-                    var layerId = [
-                        prefix,
-                        combination[0],
-                        combination[1]
-                    ].join('.');
-
-                    self.map.on('click', layerId, function (e) {
-
-                        console.log(
-                            'map:click:layerId',
-                            layerId
-                        );
-
-                        SourceUtil.resetFeatureStates(
-                            self.map, self.urlComponents);
-
-                        if (e.features.length > 0) {
-
-                            console.log(
-                                'map:click:focusedFeature',
-                                e.features[0]
-                            );
-
-                            if (typeof self.focusedFeature === 'number') {
-
-                                self.map.removeFeatureState({
-                                    source: layerId,
-                                    id: self.focusedFeature
-                                });
-
-                            }
-
-                            self.focusedFeature = e.features[0].id;
-
-                            self.map.setFeatureState({
-                                source: layerId,
-                                id: self.focusedFeature,
-                            }, {
-                                focus: true
-                            });
-
-                        }
-
-                    });
-
-                });
+// self.urlComponents.forEach(function (combination) {
+//
+//     var prefix = 'fd';
+//
+//     if (combination[0] === 'station' ||
+//         combination[0] === 'post') {
+//
+//         prefix = 'wr';
+//
+//     }
+//
+//     var layerId = [
+//         prefix,
+//         combination[0],
+//         combination[1]
+//     ].join('.');
+//
+//     self.map.on('click', layerId, function (e) {
+//
+//         console.log(
+//             'map:click:layerId',
+//             layerId
+//         );
+//
+//         SourceUtil.resetFeatureStates(
+//             self.map, self.urlComponents);
+//
+//         if (e.features.length > 0) {
+//
+//             console.log(
+//                 'map:click:focusedFeature',
+//                 e.features[0]
+//             );
+//
+//             if (typeof self.focusedFeature === 'number') {
+//
+//                 self.map.removeFeatureState({
+//                     source: layerId,
+//                     id: self.focusedFeature
+//                 });
+//
+//             }
+//
+//             self.focusedFeature = e.features[0].id;
+//
+//             self.map.setFeatureState({
+//                 source: layerId,
+//                 id: self.focusedFeature,
+//             }, {
+//                 focus: true
+//             });
+//
+//         }
+//
+//     });
+//
+// });
 
             };
 
@@ -1132,6 +1127,8 @@ angular.module('FieldDoc')
                 LabelLayer.addLabelLayers(self.map);
 
                 DataLayer.addDataLayers(self.map);
+
+                HighlightLayer.addHighlightLayers(self.map);
 
                 LayerUtil.addCustomLayers(
                     LayerUtil.customLayerIdx(),
@@ -1313,9 +1310,9 @@ angular.module('FieldDoc')
 
             });
 
-            //
-            // Verify Account information for proper UI element display
-            //
+//
+// Verify Account information for proper UI element display
+//
             if (Account.userObject && user) {
 
                 user.$promise.then(function(userResponse) {

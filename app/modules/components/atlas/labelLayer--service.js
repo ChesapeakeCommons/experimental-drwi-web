@@ -212,73 +212,73 @@ angular.module('FieldDoc')
             //         ]
             //     }
             // },
-            {
-                'id': 'fd.site.centroid-label',
-                'source': 'fd.site.centroid',
-                'type': 'symbol',
-                'minzoom': zoomConfig.site.min + 1,
-                'maxzoom': zoomConfig.site.max,
-                'layout': {
-                    'symbol-placement': 'point',
-                    'text-anchor': 'bottom',
-                    'text-field': ['get', 'name'],
-                    'text-variable-anchor': [
-                        'top', 'bottom', 'left', 'right'
-                    ],
-                    'text-font': {
-                        'stops': [
-                            [
-                                zoomConfig.site.min + 1,
-                                [
-                                    'DIN Offc Pro Regular',
-                                    'Arial Unicode MS Regular'
-                                ]
-                            ],
-                            [
-                                zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
-                                [
-                                    'DIN Offc Pro Regular',
-                                    'Arial Unicode MS Regular'
-                                ]
-                            ],
-                            [
-                                zoomConfig.site.max,
-                                [
-                                    'DIN Offc Pro Medium',
-                                    'Arial Unicode MS Bold'
-                                ]
-                            ]
-                        ]
-                    },
-                    'text-size': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.site.min + 1,
-                        12,
-                        zoomConfig.site.max,
-                        16
-                    ],
-                    'text-radial-offset': 0.5,
-                    'text-justify': 'auto',
-                    'visibility': 'visible'
-                },
-                'paint': {
-                    'text-halo-width': 1,
-                    'text-halo-color': 'rgba(255,255,255,0.75)',
-                    'text-halo-blur': 1,
-                    'text-color': [
-                        'interpolate',
-                        ['exponential', 0.5],
-                        ['zoom'],
-                        zoomConfig.site.min + 1,
-                        '#616161',
-                        zoomConfig.site.max,
-                        '#212121'
-                    ]
-                },
-                'filter': ['get', 'focus']
-            },
+            // {
+            //     'id': 'fd.site.centroid-label',
+            //     'source': 'fd.site.centroid',
+            //     'type': 'symbol',
+            //     'minzoom': zoomConfig.site.min + 1,
+            //     'maxzoom': zoomConfig.site.max,
+            //     'layout': {
+            //         'symbol-placement': 'point',
+            //         'text-anchor': 'bottom',
+            //         'text-field': ['get', 'name'],
+            //         'text-variable-anchor': [
+            //             'top', 'bottom', 'left', 'right'
+            //         ],
+            //         'text-font': {
+            //             'stops': [
+            //                 [
+            //                     zoomConfig.site.min + 1,
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.min + Math.ceil((zoomConfig.site.max - zoomConfig.site.min) / 2),
+            //                     [
+            //                         'DIN Offc Pro Regular',
+            //                         'Arial Unicode MS Regular'
+            //                     ]
+            //                 ],
+            //                 [
+            //                     zoomConfig.site.max,
+            //                     [
+            //                         'DIN Offc Pro Medium',
+            //                         'Arial Unicode MS Bold'
+            //                     ]
+            //                 ]
+            //             ]
+            //         },
+            //         'text-size': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             12,
+            //             zoomConfig.site.max,
+            //             16
+            //         ],
+            //         'text-radial-offset': 0.5,
+            //         'text-justify': 'auto',
+            //         'visibility': 'visible'
+            //     },
+            //     'paint': {
+            //         'text-halo-width': 1,
+            //         'text-halo-color': 'rgba(255,255,255,0.75)',
+            //         'text-halo-blur': 1,
+            //         'text-color': [
+            //             'interpolate',
+            //             ['exponential', 0.5],
+            //             ['zoom'],
+            //             zoomConfig.site.min + 1,
+            //             '#616161',
+            //             zoomConfig.site.max,
+            //             '#212121'
+            //         ]
+            //     },
+            //     'filter': ['get', 'focus']
+            // },
             // {
             //     'id': 'fd.site.line-label',
             //     'source': 'fd.site.line',
