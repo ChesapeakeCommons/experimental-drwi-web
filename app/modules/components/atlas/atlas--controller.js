@@ -1128,7 +1128,7 @@ angular.module('FieldDoc')
 
                 DataLayer.addDataLayers(self.map);
 
-                HighlightLayer.addHighlightLayers(self.map);
+                // HighlightLayer.addHighlightLayers(self.map);
 
                 LayerUtil.addCustomLayers(
                     LayerUtil.customLayerIdx(),

@@ -17,7 +17,7 @@ angular.module('FieldDoc')
                 'id': 'fd.practice.centroid-label',
                 'source': 'fd.practice.centroid',
                 'type': 'symbol',
-                'minzoom': zoomConfig.practice.min,
+                'minzoom': 4,
                 'maxzoom': zoomConfig.practice.max,
                 'layout': {
                     'symbol-placement': 'point',

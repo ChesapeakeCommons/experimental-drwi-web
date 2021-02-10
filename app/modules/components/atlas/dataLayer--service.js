@@ -40,16 +40,16 @@ angular.module('FieldDoc')
                     'paint': {
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#ff0000',
-                            // '#2196F3'
-                            [
-                                'match',
-                                ['get', 'status'],
-                                'draft',
-                                '#f37e21',
-                                /* other */ '#2196F3'
-                            ]
+                            '#2196F3'
+                            // [
+                            //     'match',
+                            //     ['get', 'status'],
+                            //     'draft',
+                            //     '#f37e21',
+                            //     /* other */ '#2196F3'
+                            // ]
                         ],
                         'circle-radius': [
                             'interpolate',
@@ -67,38 +67,6 @@ angular.module('FieldDoc')
                 },
                 beforeId: ''
             },
-            // {
-            //     config: {
-            //         'id': 'wr.post.point',
-            //         'source': 'wr.post.point',
-            //         'type': 'circle',
-            //         'minzoom': zoomConfig.post.min,
-            //         'maxzoom': zoomConfig.post.max,
-            //         'layout': {
-            //             'visibility': 'none'
-            //         },
-            //         'paint': {
-            //             'circle-color': [
-            //                 'case',
-            //                 ['boolean', ['feature-state', 'focus'], false],
-            //                 '#ff0000',
-            //                 '#00ff00'
-            //             ],
-            //             'circle-radius': [
-            //                 'interpolate',
-            //                 ['exponential', 0.5],
-            //                 ['zoom'],
-            //                 zoomConfig.post.min,
-            //                 0.5,
-            //                 zoomConfig.post.max,
-            //                 6
-            //             ],
-            //             'circle-stroke-width': 2,
-            //             'circle-stroke-color': '#FFFFFF'
-            //         }
-            //     },
-            //     beforeId: ''
-            // },
             {
                 config: {
                     'id': 'wr.station.point',
@@ -106,9 +74,6 @@ angular.module('FieldDoc')
                     'type': 'circle',
                     'minzoom': zoomConfig.station.min,
                     'maxzoom': zoomConfig.station.max,
-                    // 'layout': {
-                    //     'visibility': 'none'
-                    // },
                     'paint': {
                         'circle-color': [
                             'case',
@@ -144,7 +109,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#3fd48a'
                         ],
@@ -173,10 +138,9 @@ angular.module('FieldDoc')
                         'visibility': 'visible'
                     },
                     'paint': {
-                        // 'fill-pattern': 'diagonal-pattern'
                         'fill-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#3fd48a'
                         ],
@@ -200,7 +164,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'line-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#3fd48a'
                         ],
@@ -223,7 +187,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#3fd48a'
                         ],
@@ -254,7 +218,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'fill-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#a94efe'
                         ],
@@ -278,7 +242,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'line-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#a94efe'
                         ],
@@ -301,7 +265,7 @@ angular.module('FieldDoc')
                     'paint': {
                         'circle-color': [
                             'case',
-                            ['boolean', ['feature-state', 'focus'], false],
+                            ['boolean', ['get', 'focus'], false],
                             '#C81E1E',
                             '#a94efe'
                         ],
