@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612916843971})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612970902539})
 
 ;
 /**
@@ -37679,6 +37679,45 @@ angular.module('FieldDoc')
                 );
 
                 self.positionSidebar(elem);
+
+            };
+
+            self.positionMenu = function(elem) {
+
+                var transform = 'translateX(' + 0 + 'px)';
+
+                if (self.menuCollapsed) {
+
+                    transform = 'translateX(' + elem.offsetWidth + 'px)';
+
+                }
+
+                console.log(
+                    'self.positionMenu:transform',
+                    transform
+                );
+
+                elem.style.transform = transform;
+
+            };
+
+            self.toggleMenu = function() {
+
+                self.menuCollapsed = !self.menuCollapsed;
+
+                console.log(
+                    'self.toggleMenu:menuCollapsed',
+                    self.menuCollapsed
+                );
+
+                var elem = document.querySelector('#sidebar');
+
+                console.log(
+                    'self.toggleMenu:elem',
+                    elem
+                );
+
+                self.positionMenu(elem);
 
             };
 

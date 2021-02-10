@@ -340,14 +340,8 @@
         flex-grow: 0;
         flex-shrink: 0;
         flex-direction: column;
-        //width: 24%;
-        //min-width: 200px;
         max-width: 240px;
-        //padding-left: 2em;
-        //padding-top: 2em;
-        //height: 100%;
         left: 0;
-        //background-color: rgb(70,168,223);
     }
 
     /* Larger than Desktop HD */
@@ -361,19 +355,7 @@
             padding-left: 0;
             height: 100%;
             left: 0;
-            //max-width: 240px;
         }
-
-        //#sidebar {
-        //    position: relative;
-        //    display: flex;
-        //    flex-direction: column;
-        //    //width: 20%;
-        //    min-width: 240px;
-        //    //min-width: 120px;
-        //    height: 100%;
-        //    left: 0;
-        //}
 
     }
 
@@ -398,22 +380,14 @@
         width: 100%;
         padding: 1rem;
         color: #616161;
-        //font-weight: bold;
-        //text-transform: uppercase;
-        //letter-spacing: 0.08em;
-        //font-size: 0.8em;
         text-decoration: none;
-        //text-align: right;
         border: 0 none;
         outline: 0 none;
-        //opacity: 0.5;
         transition: all 200ms ease 0s;
     }
 
     #sidebar nav ul li a:hover,
     #sidebar nav ul li a.viewing {
-        //opacity: 1;
-        //padding: 1em 1.5em 1em 0;
         color: #212121;
         text-decoration: none;
         background: #F5F5F5;
@@ -423,8 +397,6 @@
     #toolbar {
         float: none;
         width: auto;
-        //height: 100%;
-        //border-left: 1px solid #e0e0e0;
         padding-top: 2em;
         padding-right: 1em;
 

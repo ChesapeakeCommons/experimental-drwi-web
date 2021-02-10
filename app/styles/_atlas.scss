@@ -14,8 +14,72 @@
     height: 100%;
     width: 100%;
     padding: 0;
-    //background: #252f3a;
     background: #EEEEEE;
+
+    #sidebar {
+        position: absolute;
+        display: flex;
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-direction: column;
+        max-width: 240px;
+        height: 100%;
+        right: 100%;
+        background: #FFFFFF;
+        border-right: 1px solid #E0E0E0;
+        transition: transform .2s, height .2s cubic-bezier(.4,0,.2,1);
+        z-index: 9;
+    }
+
+    /* Larger than Desktop HD */
+    @media (min-width: 1200px) {
+
+        #sidebar {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding-left: 0;
+            height: 100%;
+            right: 100%;
+        }
+
+    }
+
+    #sidebar nav {
+        float: none;
+        width: 100%;
+        line-height: 1;
+    }
+
+    #sidebar nav ul li {
+        position: relative;
+        display: flex;
+        width: 100%;
+        padding: 0.5rem 0.5rem 0;
+    }
+
+    #sidebar nav ul li a {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        padding: 1rem;
+        color: #616161;
+        text-decoration: none;
+        border: 0 none;
+        outline: 0 none;
+        transition: all 200ms ease 0s;
+    }
+
+    #sidebar nav ul li a:hover,
+    #sidebar nav ul li a.viewing {
+        color: #212121;
+        text-decoration: none;
+        background: #F5F5F5;
+        border-radius: .25rem;
+    }
 
     #map {
         flex: 1;
@@ -282,10 +346,8 @@
             left: 10px;
             width: 30%;
             height: 100%;
-            //background: #252f3a;
             background-color: #FFFFFF;
             border-radius: .5rem;
-            //overflow-y: scroll;
             transition: transform .5s, height .2s cubic-bezier(.4,0,.2,1);
             z-index: 2;
 
@@ -295,7 +357,6 @@
                 justify-content: flex-start;
                 align-items: flex-start;
                 height: 100%;
-                //background: #252f3a;
                 background-color: #FFFFFF;
                 border-radius: 0 0 .5rem .5rem;
                 overflow-y: scroll;
@@ -326,12 +387,38 @@
                     width: 100%;
 
                     .menu-toggle {
+                        position: relative;
                         display: flex;
+                        flex-flow: column;
                         justify-content: center;
                         align-content: center;
                         flex-grow: 0;
                         flex-shrink: 0;
                         padding: .5rem;
+                        border-radius: 50%;
+                        cursor: pointer;
+
+                        .halo {
+                            transition: transform .05s cubic-bezier(0.4,0,0.2,1);
+                            background-color: #202124;
+                            -moz-border-radius: 50%;
+                            border-radius: 50%;
+                            height: 40px;
+                            width: 40px;
+                            left: 0;
+                            top: 0;
+                            opacity: .04;
+                            position: absolute;
+                            transform-origin: center;
+                            transform: scale(0);
+                        }
+
+                    }
+
+                    .menu-toggle:hover {
+                        .halo {
+                            transform: scale(1);
+                        }
                     }
 
                     .geocoder-container {

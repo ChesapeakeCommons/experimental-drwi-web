@@ -1,0 +1,90 @@
+<div data-ng-if="$root.user.id">
+
+    <nav role="navigation">
+        <ul class="margin-0 pad-0">
+            <li>
+                <a href="/" data-ng-class="{viewing: $root.viewState.home}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        home
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Home
+                    </span>
+                </a>
+            </li>
+            <!--START Working link for Organization Profile-->
+            <li>
+                <a href="/organizations"
+                   data-ng-class="{viewing: $root.viewState.organization || $root.viewState.organization}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        group
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Organizations
+                    </span>
+                </a>
+            </li>
+
+            <!--END Working link for Organization Profile-->
+            <li class="margin-b-50p">
+                <a href="/account" data-ng-class="{viewing: $root.viewState.account}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        account_circle
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Profile
+                    </span>
+                </a>
+            </li>
+
+            <li style="border-top: 1px solid #e0e0e0;">
+                <a href="/projects" data-ng-class="{viewing: $root.viewState.project}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        apps
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Projects
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="/exports" data-ng-class="{viewing: $root.viewState.export}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        cloud_download
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Exports
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="/dashboards" data-ng-class="{viewing: $root.viewState.dashboard}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        dashboard
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Dashboards
+                    </span>
+                </a>
+            </li>
+            <li data-ng-if="$root.user.is_admin || $root.user.is_manager">
+                <a href="/tags" data-ng-class="{viewing: $root.viewState.tag}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        local_offer
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Tags
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>

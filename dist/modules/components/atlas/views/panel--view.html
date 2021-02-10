@@ -1,7 +1,9 @@
 <div class="outer-controls-container"
      data-ng-class="{banner: page.primaryNode.properties.picture}">
     <div class="outer-controls pad-0 pad-x-50p">
-        <div class="menu-toggle">
+        <div class="menu-toggle"
+             data-ng-click="page.toggleMenu()">
+            <div class="halo"></div>
             <span class="material-icons">
                 menu
             </span>

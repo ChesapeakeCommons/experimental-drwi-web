@@ -2,6 +2,13 @@
 
 <main role="main" class="atlas main snapshot" id="main">
 
+    <div id="sidebar" data-ng-include="'/templates/atlas-menu-bar.html'"></div>
+
+    <div class="menu-mask"
+         style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.05); z-index: 8;"
+         data-ng-if="page.menuCollapsed"
+         data-ng-click="page.toggleMenu()"></div>
+
     <div class="panel--container">
 
         <div class="sidebar" style="height: 0;">

@@ -512,6 +512,45 @@ angular.module('FieldDoc')
 
             };
 
+            self.positionMenu = function(elem) {
+
+                var transform = 'translateX(' + 0 + 'px)';
+
+                if (self.menuCollapsed) {
+
+                    transform = 'translateX(' + elem.offsetWidth + 'px)';
+
+                }
+
+                console.log(
+                    'self.positionMenu:transform',
+                    transform
+                );
+
+                elem.style.transform = transform;
+
+            };
+
+            self.toggleMenu = function() {
+
+                self.menuCollapsed = !self.menuCollapsed;
+
+                console.log(
+                    'self.toggleMenu:menuCollapsed',
+                    self.menuCollapsed
+                );
+
+                var elem = document.querySelector('#sidebar');
+
+                console.log(
+                    'self.toggleMenu:elem',
+                    elem
+                );
+
+                self.positionMenu(elem);
+
+            };
+
             self.delineateWatershed = function(feature) {
 
                 $http({
