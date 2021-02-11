@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613001746698})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613011930020})
 
 ;
 /**
@@ -37583,6 +37583,9 @@ angular.module('FieldDoc')
                         self.primaryNode,
                         false,
                         {
+                            filterString: AtlasDataManager.createFilterString(
+                                self.activeFilters
+                            ),
                             style: self.styleString,
                             zoom: self.map.getZoom()
                         }
@@ -37850,6 +37853,9 @@ angular.module('FieldDoc')
                         self.primaryNode,
                         false,
                         {
+                            filterString: AtlasDataManager.createFilterString(
+                                self.activeFilters
+                            ),
                             style: style.name.toLowerCase(),
                             zoom: self.map.getZoom()
                         }
@@ -38471,11 +38477,82 @@ angular.module('FieldDoc')
 
                 self.urlData = dataObj;
 
+                self.storedFilters = AtlasDataManager.getUrlFilters(
+                    self.urlData
+                );
+
+                console.log(
+                    'extractUrlParams:storedFilters:',
+                    self.storedFilters
+                );
+
                 if (!angular.isDefined(self.map)) {
 
                     self.stageMap(true);
 
                 }
+
+            };
+
+            self.syncActiveFilters = function () {
+
+                if (!angular.isDefined(self.storedFilters)) return;
+
+                for (var key in self.filterOptions) {
+
+                    if (self.filterOptions.hasOwnProperty(key)) {
+
+                        var options = self.filterOptions[key];
+
+                        console.log(
+                            'self.syncActiveFilters:options',
+                            options
+                        );
+
+                        if (options.length) {
+
+                            var storedIds = self.storedFilters[key];
+
+                            console.log(
+                                'self.syncActiveFilters:storedIds',
+                                storedIds
+                            );
+
+                            if (Array.isArray(storedIds)) {
+
+                                options.forEach(function (feature) {
+
+                                    if (storedIds.indexOf(feature.id) >= 0) {
+
+                                        feature.selected = true;
+
+                                        self.activeFilters[key].push(feature);
+
+                                    }
+
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            };
+
+            self.resetActiveFilters = function () {
+
+                self.activeFilters = {};
+
+                var categories = Object.keys(self.filterOptions);
+
+                categories.forEach(function (category) {
+
+                    self.activeFilters[category] = [];
+
+                });
 
             };
 
@@ -38497,21 +38574,40 @@ angular.module('FieldDoc')
 
             };
 
+            self.captureFilters = function () {
+
+                var filterString = AtlasDataManager.createFilterString(
+                    self.activeFilters
+                );
+
+                console.log(
+                    'self.captureFilters:filterString',
+                    filterString
+                );
+
+                var urlData = AtlasDataManager.createURLData(
+                    self.primaryNode,
+                    false,
+                    {
+                        filterString: filterString,
+                        style: self.styleString,
+                        zoom: self.map.getZoom()
+                    }
+                );
+
+                $location.search(urlData);
+
+            };
+
             self.loadFilterOptions = function () {
 
                 User.atlasFilters().$promise.then(function(successResponse) {
 
                     self.filterOptions = successResponse;
 
-                    self.activeFilters = {};
+                    self.resetActiveFilters();
 
-                    var categories = Object.keys(successResponse);
-
-                    categories.forEach(function (category) {
-
-                        self.activeFilters[category] = [];
-
-                    });
+                    self.syncActiveFilters();
 
                 });
 
@@ -38967,6 +39063,46 @@ angular.module('FieldDoc')
         };
 
         return {
+            createFilterString: function (activeFilters) {
+
+                var data = [];
+
+                for (var key in activeFilters) {
+
+                    if (activeFilters.hasOwnProperty(key)) {
+
+                        var arr = activeFilters[key];
+
+                        if (arr.length) {
+
+                            var featureIds = [];
+
+                            arr.forEach(function (feature) {
+
+                                featureIds.push(feature.id);
+
+                            });
+
+                            featureIds.sort(function (a, b) {
+                                return a - b;
+                            });
+
+                            var filterString = [
+                                key,
+                                featureIds.join(',')
+                            ].join('.');
+
+                            data.push(filterString);
+
+                        }
+
+                    }
+
+                }
+
+                return data.join('--');
+
+            },
             createURLData: function (feature, toString, options) {
 
                 console.log(
@@ -39038,10 +39174,20 @@ angular.module('FieldDoc')
 
                 var node = feature.type + '.' + feature.id;
 
-                var dataString = [
+                var tokens = [
                     'style:' + style,
                     'node:' + node
-                ].join('|');
+                ];
+
+                if (typeof options.filterString === 'string') {
+
+                    tokens.push(
+                        'filters:' + options.filterString
+                    );
+
+                }
+
+                var dataString = tokens.join('|');
 
                 params.data = encodeURIComponent(btoa(dataString));
 
@@ -39206,6 +39352,49 @@ angular.module('FieldDoc')
                     });
 
                     return datum;
+
+                } catch (e) {
+
+                    console.warn(e);
+
+                    return undefined;
+
+                }
+
+            },
+            getUrlFilters: function (params) {
+
+                try {
+
+                    var filterString = params.filters;
+
+                    var categories = filterString.split('--');
+
+                    var data = {};
+
+                    categories.forEach(function (category) {
+
+                        var tokens = category.split('.');
+
+                        data[tokens[0]] = [];
+
+                        var featureIds = tokens[1].split(',');
+
+                        featureIds.forEach(function (featureId) {
+
+                            var numericId = +featureId;
+
+                            if (Number.isInteger(numericId)) {
+
+                                data[tokens[0]].push(numericId);
+
+                            }
+
+                        });
+
+                    });
+
+                    return data;
 
                 } catch (e) {
 

@@ -212,16 +212,32 @@
                             {{ feature.name }}
                         </div>
                     </div>
+                    <div class="pad-t-50p pad-b-1 select-filter-btn"
+                         style="font-size: .9rem;"
+                         data-ng-if="group.length && page.activeFilters[key].length"
+                         data-ng-click="page.filterSet = group; page.filterKey = key">
+                        Edit selections &rarr;
+                    </div>
                 </div>
             </div>
             <div class="dialog-actions pad-1"
                  style="border-top: 1px solid #E0E0E0;">
+                <div class="pad-r-1"
+                     style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-start;
+                     flex-grow: 1; flex-shrink: 1;">
+                    <button type="button"
+                            class="cancel"
+                            data-ng-click="page.resetActiveFilters()">
+                        Clear all
+                    </button>
+                </div>
                 <button type="button"
                         class="cancel"
                         data-ng-click="page.showFilterModal = !page.showFilterModal">
                     Cancel
                 </button>
-                <button type="submit" class="confirm">
+                <button type="submit" class="confirm"
+                        data-ng-click="page.captureFilters()">
                     Apply
                 </button>
             </div>

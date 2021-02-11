@@ -40,6 +40,46 @@ angular.module('FieldDoc')
         };
 
         return {
+            createFilterString: function (activeFilters) {
+
+                var data = [];
+
+                for (var key in activeFilters) {
+
+                    if (activeFilters.hasOwnProperty(key)) {
+
+                        var arr = activeFilters[key];
+
+                        if (arr.length) {
+
+                            var featureIds = [];
+
+                            arr.forEach(function (feature) {
+
+                                featureIds.push(feature.id);
+
+                            });
+
+                            featureIds.sort(function (a, b) {
+                                return a - b;
+                            });
+
+                            var filterString = [
+                                key,
+                                featureIds.join(',')
+                            ].join('.');
+
+                            data.push(filterString);
+
+                        }
+
+                    }
+
+                }
+
+                return data.join('--');
+
+            },
             createURLData: function (feature, toString, options) {
 
                 console.log(
@@ -111,10 +151,20 @@ angular.module('FieldDoc')
 
                 var node = feature.type + '.' + feature.id;
 
-                var dataString = [
+                var tokens = [
                     'style:' + style,
                     'node:' + node
-                ].join('|');
+                ];
+
+                if (typeof options.filterString === 'string') {
+
+                    tokens.push(
+                        'filters:' + options.filterString
+                    );
+
+                }
+
+                var dataString = tokens.join('|');
 
                 params.data = encodeURIComponent(btoa(dataString));
 
@@ -279,6 +329,49 @@ angular.module('FieldDoc')
                     });
 
                     return datum;
+
+                } catch (e) {
+
+                    console.warn(e);
+
+                    return undefined;
+
+                }
+
+            },
+            getUrlFilters: function (params) {
+
+                try {
+
+                    var filterString = params.filters;
+
+                    var categories = filterString.split('--');
+
+                    var data = {};
+
+                    categories.forEach(function (category) {
+
+                        var tokens = category.split('.');
+
+                        data[tokens[0]] = [];
+
+                        var featureIds = tokens[1].split(',');
+
+                        featureIds.forEach(function (featureId) {
+
+                            var numericId = +featureId;
+
+                            if (Number.isInteger(numericId)) {
+
+                                data[tokens[0]].push(numericId);
+
+                            }
+
+                        });
+
+                    });
+
+                    return data;
 
                 } catch (e) {
 

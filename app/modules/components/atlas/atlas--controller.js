@@ -413,6 +413,9 @@ angular.module('FieldDoc')
                         self.primaryNode,
                         false,
                         {
+                            filterString: AtlasDataManager.createFilterString(
+                                self.activeFilters
+                            ),
                             style: self.styleString,
                             zoom: self.map.getZoom()
                         }
@@ -680,6 +683,9 @@ angular.module('FieldDoc')
                         self.primaryNode,
                         false,
                         {
+                            filterString: AtlasDataManager.createFilterString(
+                                self.activeFilters
+                            ),
                             style: style.name.toLowerCase(),
                             zoom: self.map.getZoom()
                         }
@@ -1301,11 +1307,82 @@ angular.module('FieldDoc')
 
                 self.urlData = dataObj;
 
+                self.storedFilters = AtlasDataManager.getUrlFilters(
+                    self.urlData
+                );
+
+                console.log(
+                    'extractUrlParams:storedFilters:',
+                    self.storedFilters
+                );
+
                 if (!angular.isDefined(self.map)) {
 
                     self.stageMap(true);
 
                 }
+
+            };
+
+            self.syncActiveFilters = function () {
+
+                if (!angular.isDefined(self.storedFilters)) return;
+
+                for (var key in self.filterOptions) {
+
+                    if (self.filterOptions.hasOwnProperty(key)) {
+
+                        var options = self.filterOptions[key];
+
+                        console.log(
+                            'self.syncActiveFilters:options',
+                            options
+                        );
+
+                        if (options.length) {
+
+                            var storedIds = self.storedFilters[key];
+
+                            console.log(
+                                'self.syncActiveFilters:storedIds',
+                                storedIds
+                            );
+
+                            if (Array.isArray(storedIds)) {
+
+                                options.forEach(function (feature) {
+
+                                    if (storedIds.indexOf(feature.id) >= 0) {
+
+                                        feature.selected = true;
+
+                                        self.activeFilters[key].push(feature);
+
+                                    }
+
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            };
+
+            self.resetActiveFilters = function () {
+
+                self.activeFilters = {};
+
+                var categories = Object.keys(self.filterOptions);
+
+                categories.forEach(function (category) {
+
+                    self.activeFilters[category] = [];
+
+                });
 
             };
 
@@ -1327,21 +1404,40 @@ angular.module('FieldDoc')
 
             };
 
+            self.captureFilters = function () {
+
+                var filterString = AtlasDataManager.createFilterString(
+                    self.activeFilters
+                );
+
+                console.log(
+                    'self.captureFilters:filterString',
+                    filterString
+                );
+
+                var urlData = AtlasDataManager.createURLData(
+                    self.primaryNode,
+                    false,
+                    {
+                        filterString: filterString,
+                        style: self.styleString,
+                        zoom: self.map.getZoom()
+                    }
+                );
+
+                $location.search(urlData);
+
+            };
+
             self.loadFilterOptions = function () {
 
                 User.atlasFilters().$promise.then(function(successResponse) {
 
                     self.filterOptions = successResponse;
 
-                    self.activeFilters = {};
+                    self.resetActiveFilters();
 
-                    var categories = Object.keys(successResponse);
-
-                    categories.forEach(function (category) {
-
-                        self.activeFilters[category] = [];
-
-                    });
+                    self.syncActiveFilters();
 
                 });
 
