@@ -156,7 +156,8 @@ angular.module('FieldDoc')
                     'node:' + node
                 ];
 
-                if (typeof options.filterString === 'string') {
+                if (angular.isDefined(options) &&
+                    typeof options.filterString === 'string') {
 
                     tokens.push(
                         'filters:' + options.filterString
