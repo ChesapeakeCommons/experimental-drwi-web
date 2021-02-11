@@ -1,11 +1,9 @@
-<!--<div data-ng-include="'/templates/header&#45;&#45;view.html'"></div>-->
-
 <main role="main" class="atlas main snapshot" id="main">
 
     <div id="sidebar" data-ng-include="'/templates/atlas-menu-bar.html'"></div>
 
     <div class="menu-mask"
-         style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.05); z-index: 8;"
+         style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.1); z-index: 8;"
          data-ng-if="page.menuCollapsed"
          data-ng-click="page.toggleMenu()"></div>
 
@@ -16,12 +14,6 @@
         </div>
 
         <div id="map">
-
-<!--            <div class="sidebar"-->
-<!--                 data-ng-class="{collapsed: page.collapsed}"-->
-<!--                 data-ng-click="page.toggleSidebar()">-->
-<!--                <div data-ng-include="'/modules/components/atlas/views/panel&#45;&#45;view.html'"></div>-->
-<!--            </div>-->
 
             <div class="mapboxgl-layer-ctrl"
                  data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
@@ -102,15 +94,17 @@
                 </div>
             </div>
 
+            <div class="mapboxgl-filter-ctrl"
+                 data-ng-click="page.showFilterModal = !page.showFilterModal"
+                 title="Add filters">
+                <i class="material-icons">
+                    tune
+                </i>
+            </div>
+
         </div>
 
     </div>
-
-<!--    <div class="progress&#45;&#45;modal reveal fade-in t0" data-ng-if="page.status.loading">-->
-<!--        <div class="progress&#45;&#45;container">-->
-<!--            <p style="font-weight: bold;" class="color-pulse">Loading map data&hellip;</p>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <section class="privacy-message reveal fade-in t0"
              data-ng-if="!page.status.loading && page.makePrivate">
@@ -173,6 +167,138 @@
         </div>
     </div>
 
-</main>
+    <div class="atlas-filter-dialog-container"
+         data-ng-if="page.showFilterModal">
+        <form class="dialog" style="width: auto;"
+              data-ng-if="!page.filterSet">
+            <div class="title">
+                <span class="title-text" style="font-size: 1.5rem; font-weight: 500;">
+                    Filters
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss"
+                         data-ng-click="page.showFilterModal = !page.showFilterModal">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                            close
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="inputs" style="overflow: auto;">
+                <span class="flex prompt margin-b-1">
+                    Add filter categories to map a subset of your projects. Note that filters override other map
+                    settings and data, including projects currently in view.
+                </span>
+                <div class="pad-b-50p"
+                     data-ng-repeat="(key, group) in page.filterOptions"
+                     data-ng-click="page.filterSet = group; page.filterKey = key">
+                    <div class="pad-b-1"
+                          style="font-weight: 500; font-size: 1.125rem;">
+                        {{ key | capitalAttribute }}
+                    </div>
+                    <div class="pad-b-1"
+                         data-ng-if="!group.length">
+                        <em>No {{ key | replaceChar: '_':' ' }} available.</em>
+                    </div>
+                    <div class="pad-b-1 select-filter-btn"
+                         data-ng-if="group.length && !page.activeFilters[key].length"
+                         data-ng-click="page.filterSet = group; page.filterKey = key">
+                        Select {{ key | replaceChar: '_':' ' }} &rarr;
+                    </div>
+                    <div data-ng-if="group.length && page.activeFilters[key].length">
+                        <div class="active-filter-node"
+                             data-ng-repeat="feature in page.activeFilters[key]">
+                            {{ feature.name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-actions pad-1"
+                 style="border-top: 1px solid #E0E0E0;">
+                <button type="button"
+                        class="cancel"
+                        data-ng-click="page.showFilterModal = !page.showFilterModal">
+                    Cancel
+                </button>
+                <button type="submit" class="confirm">
+                    Apply
+                </button>
+            </div>
+        </form>
+        <div class="dialog filter-options"
+             data-ng-if="page.filterSet">
+            <div class="title">
+                <span class="title-text" style="padding-left: 1.5rem; font-size: 1.5rem; font-weight: 500;">
+                    {{ page.filterKey | capitalAttribute }}
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss"
+                         data-ng-click="page.setFilter(page.filterKey, page.filterSet)">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                            close
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <input id="filter-option-search"
+                   type="text"
+                   data-ng-if="page.filterSet.length > 10"
+                   data-ng-model="page.filterSearch"
+                   placeholder="Search by name&hellip;">
+            <div style="padding: 1rem 1.5rem; overflow: auto;">
+                <ul class="margin-0 pad-0 margin-b-1">
+                    <li class="pad-y-50p flex flex-dir-row flex-align-center"
+                        data-ng-repeat="feature in page.filterSet | filter: page.filterSearch">
+                        <div>
+                            {{ feature.name }}
+                        </div>
+                        <div data-ng-if="feature.selected"
+                             data-ng-click="feature.selected = !feature.selected">
+                            <span class="material-icons">
+                                check_box
+                            </span>
+                        </div>
+                        <div data-ng-if="!feature.selected"
+                             data-ng-click="feature.selected = !feature.selected">
+                            <span class="material-icons">
+                                check_box_outline_blank
+                            </span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+<!--        <div class="dialog"-->
+<!--             data-ng-if="page.filterFocus === key"-->
+<!--             data-ng-repeat="(key, group) in page.filterOptions">-->
+<!--            <div class="title">-->
+<!--                <span class="title-text" style="font-size: 1.5rem; font-weight: 500;">-->
+<!--                    {{ key | capitalAttribute }}-->
+<!--                </span>-->
+<!--                <div class="dismiss-container">-->
+<!--                    <div class="dismiss"-->
+<!--                         data-ng-click="page.filterFocus === undefined">-->
+<!--                        <div class="halo"></div>-->
+<!--                        <span class="material-icons">-->
+<!--                            close-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <input id="filter-option-search"-->
+<!--                   style="float:left; display:inline-block; clear:right;"-->
+<!--                   type="text"-->
+<!--                   class="search-bar list-filter"-->
+<!--                   data-ng-model="page.filterSearch.q"-->
+<!--                   placeholder="Search {{ key }}&hellip;">-->
+<!--            <ul>-->
+<!--                <li data-ng-repeat="feature in group | filter: page.filterSearch.q">-->
+<!--                    {{ feature.name }}-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+    </div>
 
-<!--<div data-ng-include="'/templates/footer&#45;&#45;view.html'"></div>-->
+</main>

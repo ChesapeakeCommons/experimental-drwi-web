@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1612970902539})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613001746698})
 
 ;
 /**
@@ -37183,7 +37183,7 @@ angular.module('FieldDoc')
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
-                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService) {
+                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService, User) {
 
             var self = this;
 
@@ -38479,6 +38479,44 @@ angular.module('FieldDoc')
 
             };
 
+            self.setFilter = function (category, arr) {
+
+                self.activeFilters[category] = [];
+
+                arr.forEach(function (feature) {
+
+                    if (feature.selected) {
+
+                        self.activeFilters[category].push(feature);
+
+                    }
+
+                });
+
+                self.filterSet = undefined;
+
+            };
+
+            self.loadFilterOptions = function () {
+
+                User.atlasFilters().$promise.then(function(successResponse) {
+
+                    self.filterOptions = successResponse;
+
+                    self.activeFilters = {};
+
+                    var categories = Object.keys(successResponse);
+
+                    categories.forEach(function (category) {
+
+                        self.activeFilters[category] = [];
+
+                    });
+
+                });
+
+            };
+
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
 
@@ -38519,9 +38557,10 @@ angular.module('FieldDoc')
 
             });
 
-//
-// Verify Account information for proper UI element display
-//
+            //
+            // Verify Account information for proper UI element display
+            //
+
             if (Account.userObject && user) {
 
                 user.$promise.then(function(userResponse) {
@@ -38541,6 +38580,8 @@ angular.module('FieldDoc')
                     var params = $location.search();
 
                     self.extractUrlParams(params, true);
+
+                    self.loadFilterOptions();
 
                 });
 
@@ -41058,14 +41099,16 @@ angular.module('FieldDoc')
                             'case',
                             ['boolean', ['get', 'focus'], false],
                             '#ff0000',
-                            '#2196F3'
-                            // [
-                            //     'match',
-                            //     ['get', 'status'],
-                            //     'draft',
-                            //     '#f37e21',
-                            //     /* other */ '#2196F3'
-                            // ]
+                            // '#2196F3'
+                            [
+                                'match',
+                                ['get', 'status'],
+                                'draft',
+                                '#f37e21',
+                                'active',
+                                '#3AA63A',
+                                /* other */ '#2196F3'
+                            ]
                         ],
                         'circle-radius': [
                             'interpolate',
@@ -46808,6 +46851,10 @@ angular.module('FieldDoc')
                 update: {
                     method: 'PATCH'
                 },
+                atlasFilters: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/atlas-filters')
+                },
                 me: {
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/data/user/me')
@@ -52048,6 +52095,38 @@ angular.module('FieldDoc')
                 }
 
                 return 'Unknown platform';
+
+            };
+
+        });
+
+}());
+(function() {
+
+    'use strict';
+
+    /**
+     * @ngdoc function
+     * @name
+     * @description
+     */
+    angular.module('FieldDoc')
+        .filter('replaceChar', function() {
+
+            return function(string, char, replacement) {
+
+                replacement = (typeof replacement === 'string') ? replacement : '';
+
+                if (typeof string === 'string' &&
+                    typeof char === 'string') {
+
+                    var re = new RegExp(char, 'g');
+
+                    return string.replace(re, replacement);
+
+                }
+
+                return string;
 
             };
 

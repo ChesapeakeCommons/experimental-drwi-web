@@ -18,6 +18,10 @@
                 update: {
                     method: 'PATCH'
                 },
+                atlasFilters: {
+                    method: 'GET',
+                    url: environment.apiUrl.concat('/v1/atlas-filters')
+                },
                 me: {
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/data/user/me')

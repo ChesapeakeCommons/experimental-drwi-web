@@ -13,7 +13,7 @@ angular.module('FieldDoc')
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
-                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService) {
+                 DataLayer, HighlightLayer, WaterReporterInterface, GeographyService, User) {
 
             var self = this;
 
@@ -1309,6 +1309,44 @@ angular.module('FieldDoc')
 
             };
 
+            self.setFilter = function (category, arr) {
+
+                self.activeFilters[category] = [];
+
+                arr.forEach(function (feature) {
+
+                    if (feature.selected) {
+
+                        self.activeFilters[category].push(feature);
+
+                    }
+
+                });
+
+                self.filterSet = undefined;
+
+            };
+
+            self.loadFilterOptions = function () {
+
+                User.atlasFilters().$promise.then(function(successResponse) {
+
+                    self.filterOptions = successResponse;
+
+                    self.activeFilters = {};
+
+                    var categories = Object.keys(successResponse);
+
+                    categories.forEach(function (category) {
+
+                        self.activeFilters[category] = [];
+
+                    });
+
+                });
+
+            };
+
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
 
@@ -1349,9 +1387,10 @@ angular.module('FieldDoc')
 
             });
 
-//
-// Verify Account information for proper UI element display
-//
+            //
+            // Verify Account information for proper UI element display
+            //
+
             if (Account.userObject && user) {
 
                 user.$promise.then(function(userResponse) {
@@ -1371,6 +1410,8 @@ angular.module('FieldDoc')
                     var params = $location.search();
 
                     self.extractUrlParams(params, true);
+
+                    self.loadFilterOptions();
 
                 });
 
