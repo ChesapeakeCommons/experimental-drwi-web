@@ -188,8 +188,13 @@ angular.module('FieldDoc')
                 ].join(',');
 
                 console.log(
-                    'boundsArray:',
+                    'self.updateNodeLayer:boundsArray:',
                     boundsArray
+                );
+
+                console.log(
+                    'self.updateNodeLayer:urlData:',
+                    self.urlData
                 );
 
                 var nodeString = self.urlData.node;
@@ -206,6 +211,14 @@ angular.module('FieldDoc')
                     geometryType: geometryType,
                     zoom: zoom
                 };
+
+                if (angular.isDefined(self.urlData.filters) &&
+                    typeof self.urlData.filters === 'string' &&
+                    self.urlData.filters.length) {
+
+                    params.filters = self.urlData.filters;
+
+                }
 
                 if (programId) {
 
@@ -409,19 +422,7 @@ angular.module('FieldDoc')
 
                     AtlasDataManager.setPrimaryNode(self.primaryNode);
 
-                    var urlData = AtlasDataManager.createURLData(
-                        self.primaryNode,
-                        false,
-                        {
-                            filterString: AtlasDataManager.createFilterString(
-                                self.activeFilters
-                            ),
-                            style: self.styleString,
-                            zoom: self.map.getZoom()
-                        }
-                    );
-
-                    $location.search(urlData);
+                    self.updateUrlParams();
 
                     self.showElements();
 
@@ -679,19 +680,7 @@ angular.module('FieldDoc')
 
                 if (self.primaryNode) {
 
-                    var urlData = AtlasDataManager.createURLData(
-                        self.primaryNode,
-                        false,
-                        {
-                            filterString: AtlasDataManager.createFilterString(
-                                self.activeFilters
-                            ),
-                            style: style.name.toLowerCase(),
-                            zoom: self.map.getZoom()
-                        }
-                    );
-
-                    $location.search(urlData);
+                    self.updateUrlParams();
 
                 }
 
@@ -1262,23 +1251,53 @@ angular.module('FieldDoc')
 
                     self.processMetrics(successResponse);
 
-                    // Utility.processMetrics(successResponse.features);
-                    //
-                    // self.metrics = Utility.groupByModel(successResponse.features);
-                    //
-                    // console.log('self.metrics', self.metrics);
-                    //
-                    // $timeout(function () {
-                    //
-                    //     AtlasLayoutUtil.resizeMainContent();
-                    //
-                    // }, 50);
-
                 }, function(errorResponse) {
 
                     console.log('errorResponse', errorResponse);
 
                 });
+
+            };
+
+            self.updateUrlParams = function (filterString) {
+
+                if (!angular.isDefined(filterString) ||
+                    typeof filterString !== 'string') {
+
+                    filterString = AtlasDataManager.createFilterString(
+                        self.activeFilters
+                    );
+
+                }
+
+                console.log(
+                    'self.updateUrlParams:filterString',
+                    filterString
+                );
+
+                var urlParams = AtlasDataManager.createURLData(
+                    self.primaryNode,
+                    false,
+                    {
+                        filterString: filterString,
+                        style: self.styleString,
+                        zoom: self.map.getZoom()
+                    }
+                );
+
+                console.log(
+                    'self.updateUrlParams:urlParams',
+                    urlParams
+                );
+
+                $location.search(urlParams);
+
+                self.urlData = AtlasDataManager.getData(urlParams);
+
+                console.log(
+                    'self.updateUrlParams:urlData',
+                    self.urlData
+                );
 
             };
 
@@ -1415,17 +1434,13 @@ angular.module('FieldDoc')
                     filterString
                 );
 
-                var urlData = AtlasDataManager.createURLData(
-                    self.primaryNode,
-                    false,
-                    {
-                        filterString: filterString,
-                        style: self.styleString,
-                        zoom: self.map.getZoom()
-                    }
-                );
+                self.updateUrlParams(filterString);
 
-                $location.search(urlData);
+                AtlasDataManager.resetTrackedFeatures();
+
+                LayerUtil.resetSources(self.map);
+
+                self.refreshFeatureLayers();
 
             };
 

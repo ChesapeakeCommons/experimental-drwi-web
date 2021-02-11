@@ -67,7 +67,7 @@ angular.module('FieldDoc')
                             var filterString = [
                                 key,
                                 featureIds.join(',')
-                            ].join('.');
+                            ].join('--');
 
                             data.push(filterString);
 
@@ -77,7 +77,7 @@ angular.module('FieldDoc')
 
                 }
 
-                return data.join('--');
+                return data.join('.');
 
             },
             createURLData: function (feature, toString, options) {
@@ -346,13 +346,13 @@ angular.module('FieldDoc')
 
                     var filterString = params.filters;
 
-                    var categories = filterString.split('--');
+                    var categories = filterString.split('.');
 
                     var data = {};
 
                     categories.forEach(function (category) {
 
-                        var tokens = category.split('.');
+                        var tokens = category.split('--');
 
                         data[tokens[0]] = [];
 

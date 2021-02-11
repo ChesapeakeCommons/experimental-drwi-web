@@ -452,7 +452,7 @@ angular.module('FieldDoc')
 
                     var sourceIds = Object.keys(REFERENCE_SOURCES);
 
-                    sourceIds = sourceIds.concat(Object.keys(CUSTOM_LAYERS));
+                    // sourceIds = sourceIds.concat(Object.keys(CUSTOM_LAYERS));
 
                     sourceIds.forEach(function (sourceId) {
 

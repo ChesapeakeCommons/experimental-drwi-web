@@ -95,7 +95,7 @@
             </div>
 
             <div class="mapboxgl-filter-ctrl"
-                 data-ng-click="page.showFilterModal = !page.showFilterModal"
+                 data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()"
                  title="Add filters">
                 <i class="material-icons">
                     tune
@@ -177,7 +177,7 @@
                 </span>
                 <div class="dismiss-container">
                     <div class="dismiss"
-                         data-ng-click="page.showFilterModal = !page.showFilterModal">
+                         data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()">
                         <div class="halo"></div>
                         <span class="material-icons">
                             close
@@ -233,7 +233,7 @@
                 </div>
                 <button type="button"
                         class="cancel"
-                        data-ng-click="page.showFilterModal = !page.showFilterModal">
+                        data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()">
                     Cancel
                 </button>
                 <button type="submit" class="confirm"
