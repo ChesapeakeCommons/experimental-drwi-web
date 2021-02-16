@@ -287,6 +287,8 @@
 
                     // loop over programs to see if currentProgram is currently set.
 
+                    console.log("load program",program_id);
+
                     for(let program of self.programs){
 
                         if (program.program_id === program_id) {
@@ -303,6 +305,7 @@
                     //
                     Report.targetMatrix({
                         id: report_id,
+                        program : program_id,
                         simple_bool: 'true'
                     }).$promise.then(function(successResponse) {
 
