@@ -10,7 +10,8 @@ angular.module('FieldDoc')
         function($scope, Account, $location, $log, Practice,
                  Organization, QueryParamManager,
                  $rootScope, $route, user, FilterStore, $timeout, SearchService,
-                 MetricType, Model, $filter, $interval, Program) {
+                 MetricType, Model, $filter, $interval, Program,
+                 Project) {
 
             var self = this;
 
@@ -64,7 +65,7 @@ angular.module('FieldDoc')
             }
 
             self.loadMatrix = function() {
-
+                console.log("Load Matrix -->")
                 console.log("self.practice.project.program_id",self.practice.project.program_id);
                 //
                 // Assign practice to a scoped variable
@@ -172,6 +173,8 @@ angular.module('FieldDoc')
 
                     self.organization = successResponse.organization;
 
+                    self.project_id = successResponse.project_id;
+
                     console.log("practice response",successResponse)
 
                     if (!successResponse.permissions.read &&
@@ -188,7 +191,8 @@ angular.module('FieldDoc')
 
                     /*organization programs will need to be redefined using project.programs*/
 
-                    self.loadOrganization(self.organization.id);
+               //     self.loadOrganization(self.organization.id);
+                    self.loadProject(self.project_id);
 
 
 
@@ -340,10 +344,65 @@ angular.module('FieldDoc')
             /*
             START Program context switch logic
             Note: we are currently loading in Organization Programs
-            This is to be replaced with
+            This needs to be updated to loadProject
              */
+            self.loadProject = function(projectId){
 
 
+                var exclude = [
+                    'centroid',
+                    'creator',
+                    'dashboards',
+                    'extent',
+                    'geometry',
+                    'members',
+                    'metric_types',
+                    // 'partners',
+                    'practices',
+                    'practice_types',
+                    'properties',
+                    'tags',
+                    'targets',
+                    'tasks',
+                    'sites'
+                ].join(',');
+
+                Project.getSingle({
+                    id: projectId,
+                    exclude: exclude
+                }).$promise.then(function(successResponse) {
+
+
+                    console.log("project response -->",successResponse);
+
+                    self.project = successResponse;
+
+                    self.programs = successResponse.programs;
+
+                    console.log("project programs -->", self.programs);
+
+                    self.summary.program_count = self.programs.length;
+
+                    if(self.programs.length > 0 && self.currentProgram == undefined){
+                        self.currentProgram = self.programs[0];
+                    }
+
+                    self.loadMetrics(self.practice.id,self.currentProgram.program_id);
+
+                    self.status.loading = false;
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load request project');
+
+               //     self.showElements();
+
+                });
+
+            }
+
+
+            /*self.loadOrganization is obsolete - can be removed*/
             self.loadOrganization = function(organizationId) {
 
                 Organization.profile({
@@ -440,9 +499,23 @@ angular.module('FieldDoc')
 
                 // loop over programs to see if currentProgram is currently set.
 
+                console.log("load metrics for program_id-->",program_id)
+
+                console.log('self.programs',self.programs);
+
+                /* Here we're going to loop over the self programs
+                object and check feature ids against the parameter id.
+                If there's a match (which there should be) we'll assign
+                the match as self.currentProgram.
+                * */
+
                 for(let program of self.programs){
 
-                    if (program.program_id === program_id) {
+                    console.log("program -->",program);
+
+                    if (program.id === program_id) {
+
+                        console.log("program matched");
 
                         self.currentProgram = program;
 
@@ -452,15 +525,56 @@ angular.module('FieldDoc')
                 }
 
                 Practice.metrics({
-                    id: practice_id
+                    id: practice_id,
+                    program: program_id
+                }).$promise.then(function(successResponse){
+                    console.log("loadMetrics TEST SUCCESS");
+                    console.log("successResponse -->",successResponse);
+
+                },function(errorResponse){
+
+                    console.log("loadMetrics TEST error",errorResponse);
+                });
+
+
+                Practice.metrics({
+                    id: practice_id,
+                    program: program_id
                 }).$promise.then(function(successResponse){
 
-                    console.log("loadMetrics",successResponse);
+                        console.log("loadMetrics",successResponse);
 
                     self.info = successResponse;
                     self.programMetrics = self.info.metrics.secondary;
 
-                    self.assignedMetrics = self.info.targets;
+                  //  console.log(self.pro);
+
+                    /* 2021.02.10 - RZT
+                    We're going to sort the targets by program id
+                    * This is will not account for unassigned primary and secondary metrics or unassigned metrics
+                    * seperate handling will be needed
+                    * Ideally we'll a better request/end point structure to simplify front end logic.
+                    * */
+                    self.assignedMetrics = [];
+
+                    console.log("self.currentProgram -->",self.currentProgram);
+
+                    self.info.targets.forEach(function(target){
+                        console.log("target -->",target);
+                        console.log("target.program_id -->",target.program_id);
+                        console.log("self.currentProgram.id -->",self.currentProgram.id);
+
+                        if(target.program_id == self.currentProgram.id){
+
+                            self.assignedMetrics.push(target);
+
+                        }
+
+                    })
+                    console.log("assignedMetrics -->",self.assignedMetrics);
+
+
+                   // self.assignedMetrics = self.info.targets;
 
                     /*Check if secondary metrics are automated and have caputred extent
                     * if so so, remove from programMetrics arr (ie Secondary Metrics
@@ -482,6 +596,9 @@ angular.module('FieldDoc')
 
                     /*Check if primary metrics are also assign metrics,
                     if not, add them to the programMetrics (secondary) arr
+                    * */
+                    /*We're going to add conditional checks against the current program id
+                    * and only add those to the assigned metrics panel.
                     * */
 
                     let unassignedPrimaryMetrics = [];
@@ -591,7 +708,13 @@ angular.module('FieldDoc')
 
                 self.programMetrics = tempProgramMetrics;
 
-                self.saveTarget($item, null, 0);
+                console.log("save Target-->",$item);
+
+               self.saveTarget($item, null, 0);
+
+
+
+            //    self.updateTarget($item);
 
                 // document.getElementById("assignTargetsBlock").blur();
 
@@ -605,7 +728,8 @@ angular.module('FieldDoc')
 
                 Practice.targetUpdate({
                     id: +self.practice.id,
-                    targetId: $item.id
+                    targetId: $item.id,
+                    program: self.currentProgram.id
                 }, $item).$promise.then(function(successResponse) {
 
                     self.alerts = [{
@@ -649,16 +773,21 @@ angular.module('FieldDoc')
                 var target_arr = [];
 
                 target_arr.push({
+
                     'metric': $item,
-                    'value': $value
+                    'value': $value,
+
                 });
 
                 var data = {
+                    program : self.currentProgram.id,
                     targets: target_arr
                 };
 
+                console.log("target_arr -->",target_arr);
+
                 Practice.updateMatrix({
-                    id: +self.practice.id,
+                    id: +self.practice.id
                 }, data).$promise.then(function(successResponse) {
 
                     self.alerts = [{
