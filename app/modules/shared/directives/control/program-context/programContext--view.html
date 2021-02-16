@@ -20,14 +20,14 @@
           data-ng-if="modalVisible"
           >
         <label data-ng-repeat="feature in features track by $index| orderBy: 'name' "
-               data-ng-class="{'active': current === feature.program.id}"
-               ng-click="toggleModal(feature.id, true); controllerMethod(antecedent.id,feature.program.id);"
+               data-ng-class="{'active': current === (feature.program.id || feature.id)}"
+               ng-click="toggleModal(feature.id, true); controllerMethod(antecedent.id,feature.program.id || feature.id);"
                data-ng-if="trackName"
                title="{{ feature.name }}">
 
             <span>
 
-             {{feature.program.name }}
+             {{feature.program.name || feature.name }}
 
             </span>
         </label>
