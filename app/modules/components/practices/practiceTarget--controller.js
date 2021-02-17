@@ -524,7 +524,8 @@ angular.module('FieldDoc')
 
                 }
 
-                Practice.metrics({
+                /* Extranious Code - delete.*/
+           /*     Practice.metrics({
                     id: practice_id,
                     program: program_id
                 }).$promise.then(function(successResponse){
@@ -535,7 +536,7 @@ angular.module('FieldDoc')
 
                     console.log("loadMetrics TEST error",errorResponse);
                 });
-
+            */
 
                 Practice.metrics({
                     id: practice_id,
@@ -633,7 +634,8 @@ angular.module('FieldDoc')
 
                         self.programMetrics.splice(0,0,uMetric);
 
-                    });
+                    }); ``
+
 
                     self.assignedMetrics.forEach(function(am){
 
@@ -652,6 +654,30 @@ angular.module('FieldDoc')
                         });
 
                     });
+
+                    /*We're going to loop through the array of unassigend
+                    program metrics again
+                    and get rid of anything not in the current program
+                   * */
+                    /*This immediate logic and other that isn't
+                    * directly relevant to the API call are going
+                    * to need to move into a sorting method
+                    * once the complete API response is save locally
+                    * in a controller var for reference/optimization*/
+
+                    //  i = 0;
+
+                    let tempMetrics = [];
+
+                    self.programMetrics.forEach(function(pMetric){
+                        console.log("pMetrics -->",pMetric);
+                        if(pMetric.program_id == self.currentProgram.id){
+                            console.log("MATCH");
+                           tempMetrics.push(pMetric);
+                        }
+                    });
+
+                    self.programMetrics = tempMetrics;
 
                     self.loadModels(self.activeDomain);
 
