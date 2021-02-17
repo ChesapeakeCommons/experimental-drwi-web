@@ -54,6 +54,8 @@ angular.module('FieldDoc')
                 program_count : 0
             };
 
+            self.showDeletionDialog = false;
+
             function closeRoute() {
 
                 if(self.practice.site != null){
@@ -748,6 +750,22 @@ angular.module('FieldDoc')
 
             };
 
+            self.autoSave = function($item){
+
+                console.log("changed target-->",$item);
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Updating practice target...',
+                    'prompt': 'OK'
+                }];
+
+                self.updateTarget($item);
+
+
+            };
+
             self.updateTarget = function($item){
 
                 console.log("self.updateTarget", $item);
@@ -859,7 +877,45 @@ angular.module('FieldDoc')
 
             }
 
-            self.deleteTarget = function($item,$index){
+
+            /*
+               START Target Delete Logic
+                */
+            self.confirmTargetDelete = function ($event,id) {
+
+                console.log("Confirm dialog");
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = !self.showDeletionDialog;
+
+                self.deletionId = id;
+
+            };
+
+            self.cancelTargetDelete = function($event) {
+
+                console.log("Cancel Removal");
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+            };
+
+            self.deleteTarget = function($event,$item,$index){
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
 
                 console.log("$delete $item,",$item)
 
@@ -897,6 +953,11 @@ angular.module('FieldDoc')
                     self.programMetrics.push($item.metric);
 
                     $timeout(self.closeAlerts, 2000);
+
+                    self.showDeletionDialog = false;
+
+                    self.deletionId = undefined;
+
 
                     self.status.processing = false;
 

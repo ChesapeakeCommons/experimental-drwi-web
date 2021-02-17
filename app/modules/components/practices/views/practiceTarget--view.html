@@ -423,10 +423,18 @@
 
                         <div>{{ target.metric.name }}</div>
 
-                        <input type="number" class="form-control" data-ng-model="target.value"
-                               id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}" placeholder="0"
+                        <input type="number" class="form-control"
+                               style="text-align: right;"
+                               data-ng-model="target.value"
+                               data-ng-model-options="{ debounce: 1000 }"
+                               id="name-inactive-{{ $index }}"
+                               name="name-inactive-{{ $index }}"
+                               placeholder="0"
+                               data-ng-change="page.autoSave(target)"
                                step="0.0001" min="0" autocomplete="off"/>
 
+
+                        <!--
                         <button type="button" class="add-item"
                                 data-ng-click="page.updateTarget(target)"
                                 data-ng-disabled="page.status.processing">
@@ -434,12 +442,29 @@
                                 done
                             </span>
                         </button>
-
-                        <button type="button" class="add-item" data-ng-click="page.deleteTarget(target, $index)"
-                                data-ng-disabled="page.status.processing">
+                        -->
+                        <button type="button" class="add-item"
+                                data-ng-click="page.confirmTargetDelete($event, target.id)"
+                                data-ng-disabled="page.status.processing"
+                                style="z-index:999; position:relative;"
+                        >
                             <span class="material-icons">
                                 remove_circle
                             </span>
+                            <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:0%; top:0%;"
+                                 data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == target.id)">
+                                <p>Do you want to delete this practice target?</p>
+                                <div class="actions">
+                                    <a class="snapshot--title" title="Remove Program"
+                                       data-ng-click="page.deleteTarget($event, target, $index)">
+                                        <!--data-ng-click="page.removeAll($event)">-->
+                                        Yes
+                                    </a>
+                                    <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelTargetDelete($event)">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
                         </button>
 
                     </li>
@@ -452,14 +477,18 @@
 
                         <div>{{ metric.name }}</div>
 
-                        <input type="number" class="form-control" data-ng-model="metric.value"
-                               id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}" placeholder="0"
+                        <input type="number" class="form-control"
+                               data-ng-model="metric.value"
+                               data-ng-model-options="{ debounce: 1000 }"
+                               id="name-inactive-{{ $index }}"
+                               name="name-inactive-{{ $index }}"
+                               placeholder="0"
                                step="0.0001" min="0" autocomplete="off"/>
 
                         <button type="button" class="add-item"
                                 data-ng-click="page.saveTarget(metric, $index, metric.value)"
                                 data-ng-disabled="page.status.processing">
-                            <span class="material-icons">
+                             <span class="material-icons">
                                 done
                             </span>
                         </button>
