@@ -50,7 +50,7 @@ angular.module('FieldDoc')
 
                         var arr = activeFilters[key];
 
-                        if (arr.length) {
+                        if (Array.isArray(arr) && arr.length) {
 
                             var featureIds = [];
 
@@ -89,23 +89,23 @@ angular.module('FieldDoc')
 
                 toString = typeof toString === 'boolean' ? toString : true;
 
-                var style;
+                var style = (angular.isDefined(options) && options.style) ? options.style : 'mapbox://styles/mapbox/streets-v11';
 
-                var zoom;
+                var zoom = (angular.isDefined(options) && options.zoom) ? options.zoom : 12;
 
-                try {
-
-                    style = options.style;
-
-                    zoom = options.zoom;
-
-                } catch (e) {
-
-                    style = 'streets';
-
-                    zoom = 12;
-
-                }
+                // try {
+                //
+                //     style = options.style;
+                //
+                //     zoom = options.zoom;
+                //
+                // } catch (e) {
+                //
+                //     style = 'streets';
+                //
+                //     zoom = 12;
+                //
+                // }
 
                 console.log(
                     'createURLData:style:',
@@ -149,12 +149,25 @@ angular.module('FieldDoc')
                     origin
                 ).replace(/\./g, '%2E');
 
-                var node = feature.type + '.' + feature.id;
-
                 var tokens = [
-                    'style:' + style,
-                    'node:' + node
+                    'style:' + style
                 ];
+
+                try {
+
+                    var node = feature.type + '.' + feature.id;
+
+                    tokens.push(
+                        'node:' + node
+                    )
+
+                } catch (e) {
+
+                    console.warn(
+                        'Feature is undefined.'
+                    );
+
+                }
 
                 if (angular.isDefined(options) &&
                     typeof options.filterString === 'string') {
@@ -192,6 +205,8 @@ angular.module('FieldDoc')
                     'getCentroid:feature',
                     feature
                 );
+
+                if (!feature || !angular.isDefined(feature)) return;
 
                 var featureType = feature.type;
 
@@ -323,7 +338,10 @@ angular.module('FieldDoc')
                             entity
                         );
 
-                        var tokens = entity.split(':');
+                        var tokens = [
+                            entity.substring(0, entity.indexOf(':')),
+                            entity.substring(entity.indexOf(':') + 1)
+                        ];
 
                         datum[tokens[0]] = tokens[1];
 

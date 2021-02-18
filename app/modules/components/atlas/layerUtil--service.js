@@ -426,6 +426,24 @@ angular.module('FieldDoc')
                     this._index = {};
 
                 },
+                removeProjectFilter: function(map) {
+
+                    var layerIds = [
+                        'fd.project.point',
+                        'fd.project.point-label'
+                    ];
+
+                    layerIds.forEach(function (layerId) {
+
+                        if (map.getLayer(layerId)) {
+
+                            map.setFilter(layerId, null);
+
+                        }
+
+                    });
+
+                },
                 removeLayers: function(map) {
 
                     var layers = map.getStyle().layers;
@@ -521,7 +539,8 @@ angular.module('FieldDoc')
 
                             if (layer !== undefined) {
 
-                                if (styleString.indexOf('satellite') >= 0) {
+                                if (styleString.indexOf('satellite') >= 0 ||
+                                    styleString.indexOf('dark') >= 0) {
 
                                     try {
 

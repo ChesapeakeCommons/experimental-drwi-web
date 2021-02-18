@@ -1,0 +1,265 @@
+<div class="atlas-filter-dialog-container"
+     data-ng-if="modalDisplay.creationStep === 1">
+    <form class="dialog map-step" style="width: auto;"
+          data-ng-submit="modalDisplay.creationStep = 2">
+        <div class="title">
+            <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">
+                Create map
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="cancelCreate()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p class="pad-1 margin-0">
+                Save this map for later. Maps stored in your account track data updates and refresh when project
+                information or metric summaries change.
+            </p>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="cancelCreate()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm">
+                Start
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="atlas-filter-dialog-container"
+     data-ng-if="modalDisplay.creationStep === 2">
+    <form class="dialog map-step" style="width: auto;"
+          data-ng-submit="modalDisplay.creationStep = 3">
+        <div class="title">
+            <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">
+                Step 1: Add a name (required)
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="cancelCreate()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <input id="map-name-input"
+               type="text"
+               style="border-bottom: 0 none;"
+               data-ng-model="newMap.name"
+               placeholder="Enter a name&hellip;">
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="cancelCreate()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm"
+                    data-ng-disabled="!newMap.name">
+                Next
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="atlas-filter-dialog-container"
+     data-ng-if="modalDisplay.creationStep === 3">
+    <form class="dialog map-step" style="width: auto;"
+          data-ng-submit="modalDisplay.creationStep = 4">
+        <div class="title">
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="modalDisplay.creationStep = 2">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        arrow_back
+                    </span>
+                </div>
+            </div>
+            <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">
+                Step 2: Add a description (optional)
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="cancelCreate()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <p class="pad-1 margin-0"
+           style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
+            Descriptions may contain up to 500 characters, including spaces and punctuation.
+            <strong>({{ (newMap.description.length || 0) | number }} used)</strong>
+        </p>
+        <div class="form-element margin-0" style="overflow: auto; background: #f7f7f7;">
+            <textarea class="form-control pad-1"
+                      style="border: 0 none; box-shadow: none; resize: none; background: #f7f7f7;"
+                      msd-elastic
+                      data-ng-model="newMap.description"
+                      maxlength="500"
+                      placeholder="Enter a description&hellip;"
+                      rows="20">{{ newMap.description }}</textarea>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="cancelCreate()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm">
+                Next
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="atlas-filter-dialog-container"
+     data-ng-submit="modalDisplay.creationStep = 5"
+     data-ng-if="modalDisplay.creationStep === 4">
+    <form class="dialog map-step" style="width: auto;">
+        <div class="title">
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="modalDisplay.creationStep = 3">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        arrow_back
+                    </span>
+                </div>
+            </div>
+            <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">
+                Step 3: Choose a style (optional)
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="cancelCreate()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="map--style--list">
+            <ul>
+                <li data-ng-repeat="style in mapStyles"
+                    data-ng-click="setNewMapStyle(style); modalDisplay.creationStep = 5">
+                    <div class="thumbnail"
+                         style="background-image: url({{ style.staticSrc }});"></div>
+                </li>
+            </ul>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="cancelCreate()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm">
+                Next
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="atlas-filter-dialog-container"
+     data-ng-if="modalDisplay.creationStep === 5">
+    <form class="dialog map-step" style="width: auto;"
+          data-ng-submit="saveMap()">
+        <div class="title">
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="modalDisplay.creationStep = 4">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        arrow_back
+                    </span>
+                </div>
+            </div>
+            <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">
+                Step 4: Set filters (required)
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="cancelCreate()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs" style="overflow: auto;">
+            <span class="flex prompt margin-b-1">
+                Add filter categories to map a subset of your projects. Note that filters override other map
+                settings and data, including projects currently in view.
+            </span>
+            <div class="pad-b-50p"
+                 data-ng-repeat="(key, group) in filterOptions"
+                 data-ng-click="viewOptions(key, group)">
+                <div class="pad-b-1"
+                     style="font-weight: 500; font-size: 1.125rem;">
+                    {{ key | capitalAttribute }}
+                </div>
+                <div class="pad-b-1"
+                     data-ng-if="!group.length">
+                    <em>No {{ key | replaceChar: '_':' ' }} available.</em>
+                </div>
+                <div class="pad-b-1 select-filter-btn"
+                     data-ng-if="group.length && !activeFilters[key].length"
+                     data-ng-click="viewOptions(key, group)">
+                    Select {{ key | replaceChar: '_':' ' }} &rarr;
+                </div>
+                <div data-ng-if="group.length && activeFilters[key].length">
+                    <div class="active-filter-node"
+                         data-ng-repeat="feature in activeFilters[key]">
+                        {{ feature.name }}
+                    </div>
+                </div>
+                <div class="pad-t-50p pad-b-1 select-filter-btn"
+                     style="font-size: .9rem;"
+                     data-ng-if="group.length && activeFilters[key].length"
+                     data-ng-click="viewOptions(key, group)">
+                    Edit selections &rarr;
+                </div>
+            </div>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <div class="pad-r-1"
+                 style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-start;
+                     flex-grow: 1; flex-shrink: 1;">
+                <button type="button"
+                        class="cancel"
+                        data-ng-click="resetActiveFilters()">
+                    Clear all
+                </button>
+            </div>
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="cancelCreate()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm">
+                Save
+            </button>
+        </div>
+    </form>
+</div>

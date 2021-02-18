@@ -8,7 +8,7 @@
  * Controller of the FieldDoc
  */
 angular.module('FieldDoc')
-    .controller('AtlasController',
+    .controller('AtlasSnapshotController',
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
                  $scope, $location, mapbox, Site, user, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
@@ -34,6 +34,7 @@ angular.module('FieldDoc')
             };
 
             self.clsMap = {
+                map: MapInterface,
                 practice: Practice,
                 program: Program,
                 project: Project,
@@ -407,6 +408,8 @@ angular.module('FieldDoc')
 
                     delete successResponse.$resolved;
 
+                    self.summary = successResponse;
+
                     self.permissions = successResponse.permissions;
 
                     self.primaryNode = successResponse;
@@ -436,7 +439,7 @@ angular.module('FieldDoc')
 
                     AtlasDataManager.setPrimaryNode(self.primaryNode);
 
-                    self.updateUrlParams();
+                    // self.updateUrlParams();
 
                     self.showElements();
 
@@ -455,7 +458,7 @@ angular.module('FieldDoc')
 
                     } else {
 
-                        self.loadMetrics();
+                        self.loadMetrics(self.primaryNode.properties.id);
 
                     }
 
@@ -482,6 +485,64 @@ angular.module('FieldDoc')
                     self.showElements();
 
                     if (callback) callback();
+
+                });
+
+            };
+
+            self.fetchMap = function () {
+
+                MapInterface.get({
+                    id: $routeParams.id
+                }).$promise.then(function(successResponse) {
+
+                    self.summary = successResponse;
+
+                    self.mapSummary = successResponse;
+
+                    self.featureClass = MapInterface;
+
+                    self.loadMetrics($routeParams.id);
+
+                    MapUtil.fitMap(
+                        self.map,
+                        self.mapSummary,
+                        self.padding,
+                        false
+                    );
+
+                    // if (featureType === 'territory') {
+                    //
+                    //     self.processMetrics(
+                    //         successResponse.metric_progress
+                    //     );
+                    //
+                    // } else {
+                    //
+                    //     self.loadMetrics();
+                    //
+                    // }
+
+                    LayerUtil.setProgramId(0);
+
+                    LayerUtil.addCustomLayers(
+                        successResponse.layers,
+                        self.layers,
+                        self.padding,
+                        self.map,
+                        self.fetchPrimaryNode);
+
+                    // LayerUtil.fetchCustomLayers(
+                    //     null,
+                    //     null,
+                    //     self.layers,
+                    //     self.padding,
+                    //     self.map,
+                    //     self.fetchPrimaryNode);
+
+                }, function(errorResponse) {
+
+                    console.log('errorResponse', errorResponse);
 
                 });
 
@@ -1029,44 +1090,19 @@ angular.module('FieldDoc')
 
                     }
 
-                    try {
+                    // LayerUtil.fetchCustomLayers(
+                    //     null,
+                    //     null,
+                    //     self.layers,
+                    //     self.padding,
+                    //     self.map,
+                    //     self.fetchPrimaryNode);
 
-                        var nodeString = self.urlData.node;
+                    self.updateUrlParams();
 
-                        var nodeTokens = nodeString.split('.');
+                    self.fetchMap();
 
-                        self.fetchPrimaryNode(
-                            nodeTokens[0],
-                            +nodeTokens[1],
-                            null,
-                            function () {
-
-                                LayerUtil.fetchCustomLayers(
-                                    nodeTokens[0],
-                                    nodeTokens[1],
-                                    self.layers,
-                                    self.padding,
-                                    self.map,
-                                    self.fetchPrimaryNode);
-
-                            }
-                        );
-
-                    } catch (e) {
-
-                        LayerUtil.fetchCustomLayers(
-                            null,
-                            null,
-                            self.layers,
-                            self.padding,
-                            self.map,
-                            self.fetchPrimaryNode);
-
-                        self.updateUrlParams();
-
-                        self.showElements();
-
-                    }
+                    self.showElements();
 
                 });
 
@@ -1211,12 +1247,20 @@ angular.module('FieldDoc')
 
                 self.metrics = data.features;
 
+                var nodeType;
+
+                if (angular.isDefined(self.primaryNode)) {
+
+                    nodeType = self.primaryNode.properties.type;
+
+                }
+
                 self.metrics.forEach(function(metric) {
 
                     Utility.calcProgress(
                         metric,
                         true,
-                        self.primaryNode.properties.type
+                        nodeType
                     );
 
                 });
@@ -1235,10 +1279,10 @@ angular.module('FieldDoc')
 
             }
 
-            self.loadMetrics = function() {
+            self.loadMetrics = function(featureId) {
 
                 self.featureClass.progress({
-                    id: self.primaryNode.properties.id
+                    id: featureId
                 }).$promise.then(function(successResponse) {
 
                     self.processMetrics(successResponse);
@@ -1399,51 +1443,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.setFilter = function (category, arr) {
-
-                self.activeFilters[category] = [];
-
-                arr.forEach(function (feature) {
-
-                    if (feature.selected) {
-
-                        self.bookmarkReady = true;
-
-                        self.activeFilters[category].push(feature);
-
-                    }
-
-                });
-
-                self.filterSet = undefined;
-
-            };
-
-            self.captureFilters = function () {
-
-                self.showFilterModal = false;
-
-                var filterString = AtlasDataManager.createFilterString(
-                    self.activeFilters
-                );
-
-                console.log(
-                    'self.captureFilters:filterString',
-                    filterString
-                );
-
-                self.updateUrlParams(filterString);
-
-                AtlasDataManager.resetTrackedFeatures();
-
-                LayerUtil.resetSources(self.map);
-
-                LayerUtil.removeProjectFilter(self.map);
-
-                self.refreshFeatureLayers();
-
-            };
-
             self.loadFilterOptions = function () {
 
                 User.atlasFilters().$promise.then(function(successResponse) {
@@ -1453,78 +1452,6 @@ angular.module('FieldDoc')
                     self.resetActiveFilters();
 
                     self.syncActiveFilters();
-
-                });
-
-            };
-
-            //
-            // Map creation methods.
-            //
-
-            self.startMap = function () {
-
-                self.newMap = {};
-
-                self.modalDisplay.creationStep = 1;
-
-                self.showCreateModal = true;
-
-                self.toggleSidebar();
-
-            };
-
-            self.cancelCreate = function () {
-
-                self.newMap = {};
-
-                self.mapStep = undefined;
-
-                self.showCreateModal = false;
-
-                self.toggleSidebar();
-
-            };
-
-            self.setNewMapStyle = function (style) {
-
-                self.newMap.style = style.id;
-
-            };
-
-            self.saveMap = function () {
-
-                for (var key in self.activeFilters) {
-
-                    if (self.activeFilters.hasOwnProperty(key)) {
-
-                        self.newMap[key] = [];
-
-                        self.activeFilters[key].forEach(function(feature) {
-
-                            self.newMap[key].push(feature.id);
-
-                        });
-
-                    }
-
-                }
-
-                var newFeature = new MapInterface(self.newMap);
-
-                newFeature.$save(function(successResponse) {
-
-                    console.log(
-                        'saveMap:successResponse',
-                        successResponse
-                    );
-
-                }, function(errorResponse) {
-
-                    console.log(
-                        'saveMap:errorResponse',
-                        errorResponse
-                    );
 
                 });
 
@@ -1595,6 +1522,8 @@ angular.module('FieldDoc')
                     self.extractUrlParams(params, true);
 
                     self.loadFilterOptions();
+
+                    // self.fetchMap();
 
                 });
 

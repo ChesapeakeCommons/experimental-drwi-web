@@ -77,6 +77,17 @@
                 </a>
             </li>
             <li>
+                <a href="/maps" data-ng-class="{viewing: $root.viewState.map}">
+                    <span class="material-icons"
+                          data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">
+                        map
+                    </span>
+                    <span data-ng-if="!$root.collapseSidebar">
+                        Maps
+                    </span>
+                </a>
+            </li>
+            <li>
                 <a href="/dashboards" data-ng-class="{viewing: $root.viewState.dashboard}">
                     <span class="material-icons"
                           data-ng-class="{'margin-0': $root.collapseSidebar, 'margin-r-1': !$root.collapseSidebar}">

@@ -1,0 +1,52 @@
+<div class="atlas-filter-dialog-container"
+     data-ng-if="filterSet">
+    <div class="dialog filter-options">
+        <div class="title">
+            <span class="title-text"
+                  style="padding-left: 1.5rem; font-size: 1.5rem; font-weight: 500;">
+                {{ filterKey | capitalAttribute }}
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="setFilter(filterKey, filterSet)">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <input id="filter-option-search"
+               type="text"
+               data-ng-if="filterSet.length > 10"
+               data-ng-model="q.token"
+               placeholder="Search by name&hellip;">
+        <div style="padding: 1rem 1.5rem; overflow: auto;">
+            <ul class="margin-0 pad-0 margin-b-1">
+                <li class="pad-y-50p flex flex-dir-row flex-align-center"
+                    data-ng-repeat="feature in filterSet | filter:q.token">
+                    <div class="filter-option-name">
+                        <span style="display: flex;">
+                            {{ feature.name }}
+                        </span>
+                        <span class="option-label" data-ng-if="feature.program">
+                            {{ feature.program.name }}
+                        </span>
+                    </div>
+                    <div data-ng-if="feature.selected"
+                         data-ng-click="feature.selected = !feature.selected">
+                        <span class="material-icons">
+                            check_box
+                        </span>
+                    </div>
+                    <div data-ng-if="!feature.selected"
+                         data-ng-click="feature.selected = !feature.selected">
+                        <span class="material-icons">
+                            check_box_outline_blank
+                        </span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

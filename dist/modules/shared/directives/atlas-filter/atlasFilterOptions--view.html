@@ -1,0 +1,75 @@
+<div class="atlas-filter-dialog-container"
+     data-ng-if="visible || modalDisplay.options">
+    <form class="dialog" style="width: auto;">
+        <div class="title">
+            <span class="title-text" style="font-size: 1.5rem; font-weight: 500;">
+                Filters
+            </span>
+            <div class="dismiss-container">
+                <div class="dismiss"
+                     data-ng-click="closeModal()">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="inputs" style="overflow: auto;">
+            <span class="flex prompt margin-b-1">
+                Add filter categories to map a subset of your projects. Note that filters override other map
+                settings and data, including projects currently in view.
+            </span>
+            <div class="pad-b-50p"
+                 data-ng-repeat="(key, group) in filterOptions"
+                 data-ng-click="viewOptions(key, group)">
+                <div class="pad-b-1"
+                     style="font-weight: 500; font-size: 1.125rem;">
+                    {{ key | capitalAttribute }}
+                </div>
+                <div class="pad-b-1"
+                     data-ng-if="!group.length">
+                    <em>No {{ key | replaceChar: '_':' ' }} available.</em>
+                </div>
+                <div class="pad-b-1 select-filter-btn"
+                     data-ng-if="group.length && !activeFilters[key].length"
+                     data-ng-click="viewOptions(key, group)">
+                    Select {{ key | replaceChar: '_':' ' }} &rarr;
+                </div>
+                <div data-ng-if="group.length && activeFilters[key].length">
+                    <div class="active-filter-node"
+                         data-ng-repeat="feature in activeFilters[key]">
+                        {{ feature.name }}
+                    </div>
+                </div>
+                <div class="pad-t-50p pad-b-1 select-filter-btn"
+                     style="font-size: .9rem;"
+                     data-ng-if="group.length && activeFilters[key].length"
+                     data-ng-click="viewOptions(key, group)">
+                    Edit selections &rarr;
+                </div>
+            </div>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <div class="pad-r-1"
+                 style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-start;
+                     flex-grow: 1; flex-shrink: 1;">
+                <button type="button"
+                        class="cancel"
+                        data-ng-click="resetActiveFilters()">
+                    Clear all
+                </button>
+            </div>
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="closeModal()">
+                Cancel
+            </button>
+            <button type="submit" class="confirm"
+                    data-ng-click="capture()">
+                Apply
+            </button>
+        </div>
+    </form>
+</div>

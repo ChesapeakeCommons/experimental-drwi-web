@@ -17,9 +17,11 @@
     background: rgba(0, 0, 0, 0.2);
     z-index: 1001;
 
-    .filter-options {
+    .filter-options,
+    .map-step {
 
-        input {
+        input,
+        textarea {
             position: relative;
             appearance: none;
             outline: none;
@@ -30,6 +32,22 @@
             //border-radius: .25rem;
             background: #FFFFFF;
             font-size: 1rem;
+        }
+
+    }
+
+    .filter-option-name {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: flex-start;
+
+        .option-label {
+            display: flex;
+            font-size: 0.75rem;
+            color: #9E9E9E;
+            text-transform: uppercase;
+            font-weight: 500;
         }
 
     }

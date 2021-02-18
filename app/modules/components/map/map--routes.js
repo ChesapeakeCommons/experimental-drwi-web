@@ -13,8 +13,8 @@ angular.module('FieldDoc')
 
         $routeProvider
             .when('/maps', {
-                templateUrl: '/modules/components/map/views/mapSummary--view.html?t=' + environment.version,
-                controller: 'MapSummaryController',
+                templateUrl: '/modules/components/map/views/mapList--view.html?t=' + environment.version,
+                controller: 'MapListController',
                 controllerAs: 'page',
                 resolve: {
                     user: function(Account, $rootScope, $document) {

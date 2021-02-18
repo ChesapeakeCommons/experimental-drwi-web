@@ -396,13 +396,14 @@
 }
 
 .mapboxgl-layer-ctrl,
-.mapboxgl-filter-ctrl {
+.mapboxgl-filter-ctrl,
+.mapboxgl-bookmark-ctrl {
     position: absolute;
     right: 10px;
     height: 30px;
     width: 30px;
     display: flex;
-    flex-flow: colum;
+    flex-flow: column;
     justify-content: center;
     align-items: center;
     padding: 0;
@@ -426,6 +427,10 @@
 
 .mapboxgl-filter-ctrl {
     top: 50px;
+}
+
+.mapboxgl-bookmark-ctrl {
+    top: 90px;
 }
 
 .mapboxgl-layer-ctrl .layer-group {

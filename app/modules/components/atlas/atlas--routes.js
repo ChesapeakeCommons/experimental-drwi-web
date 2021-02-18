@@ -32,8 +32,8 @@ angular.module('FieldDoc')
                 }
             })
             .when('/atlas/:id', {
-                templateUrl: '/modules/components/atlas/views/atlas--view.html?t=' + environment.version,
-                controller: 'AtlasController',
+                templateUrl: '/modules/components/atlas/views/atlasSnapshot--view.html?t=' + environment.version,
+                controller: 'AtlasSnapshotController',
                 controllerAs: 'page',
                 reloadOnSearch: false,
                 resolve: {

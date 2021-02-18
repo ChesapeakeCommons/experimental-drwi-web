@@ -83,9 +83,7 @@ angular.module('FieldDoc')
                     '.outer-controls-container'
                 );
 
-                var bgImg = 'url(' + primaryNode.properties.picture + ')';
-
-                controlEl.style.backgroundImage = bgImg;
+                controlEl.style.backgroundImage = 'url(' + primaryNode.properties.picture + ')';
 
             },
             sizeSidebar: function () {

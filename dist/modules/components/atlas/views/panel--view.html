@@ -31,11 +31,12 @@
 
         <div class="metadata--card">
 
-            <h1 class="margin-0 pad-0" data-ng-if="!page.status.loading">
-                {{ page.primaryNode.properties.name }}
+            <h1 class="margin-0 pad-0 margin-b-1" data-ng-if="!page.status.loading">
+                {{ page.summary.name }}
             </h1>
 
-            <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1">
+            <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1"
+                 data-ng-if="page.primaryNode">
                 <div class="stat--block"
                      data-ng-if="page.featureType && page.featureType !== 'practice'">
                     <span data-ng-if="page.featureType !== 'territory'"
@@ -63,11 +64,10 @@
             </div>
 
             <p data-ng-if="!page.status.loading">
-                {{ page.feature.description || page.primaryNode.properties.description || 'No description provided'
-                }}
+                {{ page.summary.description || 'No description provided' }}
             </p>
 
-            <p data-ng-if="!page.status.loading">
+            <p data-ng-if="!page.status.loading && page.primaryNode">
                 <a href="/{{ page.featureType }}s/{{ page.primaryNode.properties.id }}"
                    data-ng-if="page.featureType !== 'territory'"
                    title="View {{ page.featureType }} profile">
@@ -79,29 +79,6 @@
                     View complete profile &rarr;
                 </a>
             </p>
-
-            <div data-ng-if="page.tags && page.tags.length && !page.status.loading">
-
-                <span style="display: block; margin: 1em 0; color: #fff;">Tags</span>
-
-                <div class="tag--group">
-
-                    <div class="tag--pill"
-                         data-ng-class="{'colorize': tag.color && tag.color.length === 7}"
-                         data-ng-repeat="tag in page.tags">
-                        <div class="colorize" data-ng-if="tag.color">
-                            <span class="category" style="background: {{ tag.color }}; color: #f5f5f5; border-bottom: 1px solid {{ tag.color }};">{{ tag.group.name || 'misc' }}</span>
-                            <span style="background: {{ tag.lightColor }}; color: #fafafa;">{{ tag.name }}</span>
-                        </div>
-                        <div data-ng-if="!tag.color || tag.color.length < 7">
-                            <span class="category" style="opacity: 0.6;">{{ tag.group.name || 'misc' }}</span>
-                            <span style="opacity: 0.8;">{{ tag.name }}</span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
 
         </div>
 
@@ -124,63 +101,6 @@
 
         </div>
 
-        <!-- Project list -->
-
-        <!-- <ul class="project--list" data-ng-if="page.filteredProjects && page.filteredProjects.length && page.activeTab.collection === 'list' && (page.featureType === 'snapshot' || page.featureType === 'geography')">
-
-            <li class="project--card" data-ng-repeat="project in page.filteredProjects" data-ng-mouseover="page.setMarkerFocus(project, 'project')">
-
-                <span class="title">{{ project.name }}</span>
-
-                <p>{{ project.description }}</p>
-
-                <p>
-                    <button type="button" data-ng-click="page.setMarkerFocus(project, 'project', true)">View location</button>
-                    <a href="projects/{{ project.id }}">View profile</a>
-                </p>
-
-            </li>
-
-        </ul> -->
-
-        <!-- Site list -->
-
-        <!-- <ul class="project--list" data-ng-if="page.sites && page.sites.features.length && page.activeTab.collection === 'list' && page.featureType === 'project'">
-
-            <li class="project--card" data-ng-repeat="feature in page.sites.features" data-ng-mouseover="page.setMarkerFocus(feature, 'site')">
-
-                <span class="title">{{ feature.properties.name }}</span>
-
-                <p>{{ feature.properties.description }}</p>
-
-                <p>
-                    <button type="button" data-ng-click="page.setMarkerFocus(feature, 'site')">View location</button>
-                    <a href="/sites/{{ feature.properties.id }}">View profile</a>
-                </p>
-
-            </li>
-
-        </ul> -->
-
-        <!-- Practice list -->
-
-        <!-- <ul class="project--list" data-ng-if="page.practices && page.practices.features.length && page.activeTab.collection === 'list' && page.featureType === 'site'">
-
-            <li class="project--card" data-ng-repeat="feature in page.practices.features" data-ng-mouseover="page.setMarkerFocus(feature, 'practice')">
-
-                <span class="title">{{ feature.properties.name }}</span>
-
-                <p>{{ feature.properties.description }}</p>
-
-                <p>
-                    <button type="button" data-ng-click="page.setMarkerFocus(feature, 'practice')">View location</button>
-                    <a href="/practices/{{ feature.properties.id }}">View profile</a>
-                </p>
-
-            </li>
-
-        </ul> -->
-
         <!-- Progress metrics -->
         <div data-ng-if="!page.status.loading">
 
@@ -200,38 +120,38 @@
                         <table class="table table-practices with-metrics" data-ng-repeat="model in page.metrics.models">
 
                             <thead>
-                                <tr>
-                                    <th>
+                            <tr>
+                                <th>
                                         <span style="font-size: .9rem; font-weight: 500;">
                                             {{ model.datum.name }}
                                         </span>
-                                        <p style="margin: 0; padding-top: 2em; font-size: 0.8rem;">
-                                            The following metric values were generated using data and algorithms
-                                            supplied by the {{ model.datum.name }} model. You can find more
-                                            information about this model <a href="/models/{{ model.datum.id }}">here</a>.
-                                        </p>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                    <th class="table-metrics-header">Estimated value</th>
-                                </tr>
+                                    <p style="margin: 0; padding-top: 2em; font-size: 0.8rem;">
+                                        The following metric values were generated using data and algorithms
+                                        supplied by the {{ model.datum.name }} model. You can find more
+                                        information about this model <a href="/models/{{ model.datum.id }}">here</a>.
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="table-column-wide table-metrics-header">&nbsp;</th>
+                                <th class="table-metrics-header">Estimated value</th>
+                            </tr>
                             </thead>
 
                             <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">
-                                <tr class="metrics--metric">
-                                    <td class="table-column-wide">
-                                        <p class="metric--title">
-                                            {{ metric.name }}
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <strong class="metrics--metric--rollup--small">
-                                            {{ metric.current_value | number:2 }}
-                                        </strong> <span class="metrics--metric--rollup--label">
+                            <tr class="metrics--metric">
+                                <td class="table-column-wide">
+                                    <p class="metric--title">
+                                        {{ metric.name }}
+                                    </p>
+                                </td>
+                                <td>
+                                    <strong class="metrics--metric--rollup--small">
+                                        {{ metric.current_value | number:2 }}
+                                    </strong> <span class="metrics--metric--rollup--label">
                                         {{ metric.unit.plural }}</span><br />
-                                    </td>
-                                </tr>
+                                </td>
+                            </tr>
                             </tbody>
 
                         </table>
@@ -242,41 +162,41 @@
                            data-ng-if="page.metrics && page.metrics.generic.length">
 
                         <thead>
-                            <tr>
-                                <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                <th class="table-metrics-header">Installed / Planned</th>
-                                <th class="table-metrics-header">% Installed</th>
-                                <th>&nbsp;</th>
-                            </tr>
+                        <tr>
+                            <th class="table-column-wide table-metrics-header">&nbsp;</th>
+                            <th class="table-metrics-header">Installed / Planned</th>
+                            <th class="table-metrics-header">% Installed</th>
+                            <th>&nbsp;</th>
+                        </tr>
                         </thead>
 
                         <tbody class="metrics" data-ng-repeat="metric in page.metrics.generic track by $index" >
-                            <tr class="metrics--metric">
-                                <td class="table-column-wide">
-                                    <p class="metric--title">
-                                        {{ metric.name }}
-                                    </p>
-                                </td>
-                                <td>
-                                    <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}<br />
+                        <tr class="metrics--metric">
+                            <td class="table-column-wide">
+                                <p class="metric--title">
+                                    {{ metric.name }}
+                                </p>
+                            </td>
+                            <td>
+                                <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}<br />
                                                     / {{ metric.self_target | number:2 }}</span>
-                                </td>
-                                <td>
-                                    <strong class="metrics--metric--percentage">
-                                        {{ metric.selfProgress.value * 100 | number:1 }}%
-                                    </strong>
-                                </td>
-                                <td>
-                                    <progress-arc
-                                            size="32"
-                                            stroke="#2196F3"
-                                            stroke-width="4"
-                                            complete="metric.selfProgress.arcValue"
-                                            counter-clockwise="false"
-                                            background="rgba(0,0,0,0.2)">
-                                    </progress-arc>
-                                </td>
-                            </tr>
+                            </td>
+                            <td>
+                                <strong class="metrics--metric--percentage">
+                                    {{ metric.selfProgress.value * 100 | number:1 }}%
+                                </strong>
+                            </td>
+                            <td>
+                                <progress-arc
+                                        size="32"
+                                        stroke="#2196F3"
+                                        stroke-width="4"
+                                        complete="metric.selfProgress.arcValue"
+                                        counter-clockwise="false"
+                                        background="rgba(0,0,0,0.2)">
+                                </progress-arc>
+                            </td>
+                        </tr>
                         </tbody>
 
                     </table>

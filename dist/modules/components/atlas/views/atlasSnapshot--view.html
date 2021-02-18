@@ -1,0 +1,184 @@
+<main role="main" class="atlas main snapshot" id="main">
+
+    <div id="sidebar" data-ng-include="'/templates/atlas-menu-bar.html'"></div>
+
+    <div class="menu-mask"
+         style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,0.1); z-index: 8;"
+         data-ng-if="page.menuCollapsed"
+         data-ng-click="page.toggleMenu()"></div>
+
+    <div class="panel--container">
+
+        <div class="sidebar" style="height: 0;">
+            <div data-ng-include="'/modules/components/atlas/views/panel--view.html'"></div>
+        </div>
+
+        <div id="map">
+
+            <div class="mapboxgl-layer-ctrl"
+                 data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
+                <i class="material-icons">
+                    layers
+                </i>
+                <div class="layer-group" style="font-weight: normal; font-size: 14px; min-width: 240px;"
+                     data-ng-show="page.showLayerOptions">
+                    <div id="feature-scope"
+                         class="scope--control margin-0" style="padding: 0.5rem 0.75rem; border-bottom: 1px solid
+                         #e0e0e0; flex-grow: 1; flex-shrink: 0;"
+                         data-ng-if="!page.activeFilters">
+                        <div style="flex-grow: 1; flex-shrink: 0;" class="pad-r-1">
+                            <strong>Show all my data</strong>
+                        </div>
+                        <label class="switch" style="flex-grow: 0; flex-shrink: 0; background: #FFFFFF;">
+                            <input type="checkbox"
+                                   data-ng-model="page.showAllFeatures"
+                                   data-ng-checked="page.showAllFeatures"
+                                   data-ng-change="page.toggleLayerConstraint()">
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                    <form>
+                        <label data-ng-repeat="style in page.mapStyles"
+                               data-ng-class="{'active': page.activeStyle === $index}"
+                               style="font-weight: normal;"
+                               title="{{ style.name }}">
+                            <input type="radio" id="base-style-{{ $index }}" name="active-style"
+                                   data-ng-model="page.activeStyle" data-ng-value="{{ $index }}"
+                                   data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
+                        </label>
+                    </form>
+                    <div style="font-size: .75rem; font-weight: bold; text-transform: uppercase; padding: .5rem
+                    .75rem; border-top: 1px solid #e0e0e0;">
+                        Layers
+                    </div>
+                    <form class="layers" data-ng-show="page.layers && page.layers.length">
+                        <label for="layer-{{ $index }}" style="font-weight: normal;"
+                               data-ng-repeat="layer in page.layers"
+                               data-ng-if="layer.id !== 'fd.drainage.polygon' && layer.id !== 'wr.station.point'"
+                               data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
+                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                                   data-ng-change="page.toggleLayer(layer.id)">
+                            <span> {{ layer.name }}</span>
+                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                     style="background: {{ color }};"></div>
+                            </div>
+                        </label>
+                        <label for="layer-{{ $index }}" style="font-weight: normal;"
+                               data-ng-repeat="layer in page.layers"
+                               data-ng-if="layer.id === 'wr.station.point' && $root.user.wr_token"
+                               data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
+                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                                   data-ng-change="page.toggleLayer(layer.id)">
+                            <span> {{ layer.name }}</span>
+                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                     style="background: {{ color }};"></div>
+                            </div>
+                        </label>
+                        <label for="layer-{{ $index }}" style="font-weight: normal;"
+                               data-ng-repeat="layer in page.layers"
+                               data-ng-class="{'active': layer.selected}"
+                               data-ng-if="layer.id === 'fd.drainage.polygon' && (page.primaryNode.properties.type === 'site' || page.primaryNode.properties.type === 'practice')"
+                               title="{{ layer.name }}">
+                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                                   data-ng-change="page.toggleLayer(layer.id)">
+                            <span> {{ layer.name }}</span>
+                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                                     style="background: {{ color }};"></div>
+                            </div>
+                        </label>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <section class="privacy-message reveal fade-in t0"
+             data-ng-if="!page.status.loading && page.makePrivate">
+
+        <p>
+            <i class="material-icons">
+                lock
+            </i>
+        </p>
+
+        <p>This map is private.</p>
+
+    </section>
+
+    <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; display: flex; flex-flow: column nowrap;
+    justify-content: center; align-items: center;" data-ng-show="page.station"
+         data-ng-click="page.station = undefined; page.toggleSidebar()">
+        <iframe style="border: 1px solid #e0e0e0; border-radius: 0.5rem; overflow: hidden; min-height: 400px; width:
+        100%; max-width: 640px;"
+                height="480"
+                width="640"
+                src=""
+                frameBorder="0"
+                scrolling="no"></iframe>
+    </div>
+
+    <div class="multi-feature-modal-container"
+         data-ng-show="page.queryFeatures && page.queryFeatures.length"
+         data-ng-click="page.queryFeatures = undefined">
+        <div class="multi-feature-modal pad-75p rad-50">
+            <div class="title pad-l-50p margin-b-50p">
+                <span class="title-text">
+                    Multiple features found:
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss margin-0"
+                         data-ng-click="page.queryFeatures = undefined">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                        close
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <ul class="pad-0 margin-0">
+                <li class="pad-50p"
+                    data-ng-repeat="feature in page.queryFeatures"
+                    data-ng-click="page.fetchPrimaryNode(
+                        feature.properties.type,
+                        feature.properties.id,
+                        feature.programId)">
+                    <span>
+                        {{ feature.properties.name }}
+                    </span>
+                    <span class="pad-t-25p">
+                        {{ feature.properties.type }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div atlas-filter-options
+         active-filters="page.activeFilters"
+         bookmark-ready="page.bookmarkReady"
+         capture-filters="page.captureFilters()"
+         dismiss-action="page.toggleSidebar()"
+         filter-key="page.filterKey"
+         filter-options="page.filterOptions"
+         filter-set="page.filterSet"
+         modal-display="page.modalDisplay"
+         visible="page.showFilterModal"></div>
+
+    <div atlas-filter-set
+         active-filters="page.activeFilters"
+         bookmark-ready="page.bookmarkReady"
+         filter-key="page.filterKey"
+         filter-set="page.filterSet"
+         modal-display="page.modalDisplay"
+         new-map="page.newMap"
+         visible="page.filterSet && page.filterSet.length"></div>
+
+</main>

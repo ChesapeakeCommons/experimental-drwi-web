@@ -29,6 +29,11 @@
                     method: 'GET',
                     url: environment.apiUrl.concat('/v1/:featureType/:id/layer')
                 },
+                progress: {
+                    method: 'GET',
+                    isArray: false,
+                    url: environment.apiUrl.concat('/v1/map/:id/progress')
+                },
                 update: {
                     method: 'PATCH',
                     url: environment.apiUrl.concat('/v1/map/:id')

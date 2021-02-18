@@ -39,7 +39,7 @@ angular.module('FieldDoc')
                     try {
 
                         bounds = turf.bbox(
-                            feature.properties.extent
+                            feature.extent
                         );
 
                     } catch (e) {
