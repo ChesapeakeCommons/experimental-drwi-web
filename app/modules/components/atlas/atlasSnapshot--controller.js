@@ -490,6 +490,8 @@ angular.module('FieldDoc')
 
             self.fetchMap = function () {
 
+                self.primaryNode = undefined;
+
                 MapInterface.get({
                     id: $routeParams.id
                 }).$promise.then(function(successResponse) {

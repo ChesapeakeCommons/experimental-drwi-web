@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613679982617})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613687540119})
 
 ;
 /**
@@ -38421,6 +38421,17 @@ angular.module('FieldDoc')
 
             };
 
+            self.loadSrcNode = function() {
+
+                var nodeTokens = self.srcNode.split('.');
+
+                self.fetchPrimaryNode(
+                    nodeTokens[0],
+                    +nodeTokens[1]
+                );
+
+            };
+
             self.updateUrlParams = function (filterString) {
 
                 if (!angular.isDefined(filterString) ||
@@ -38463,11 +38474,16 @@ angular.module('FieldDoc')
 
             };
 
-            self.extractUrlParams = function (params) {
+            self.extractUrlParams = function (params, setSrc) {
 
                 console.log(
                     'extractUrlParams:params:',
                     params
+                );
+
+                console.log(
+                    'extractUrlParams:setSrc:',
+                    setSrc
                 );
 
                 self.origin = AtlasDataManager.getOrigin(params);
@@ -38485,6 +38501,8 @@ angular.module('FieldDoc')
                 );
 
                 self.urlData = dataObj;
+
+                if (setSrc) self.srcNode = self.urlData.node;
 
                 self.storedFilters = AtlasDataManager.getUrlFilters(
                     self.urlData
@@ -39266,6 +39284,8 @@ angular.module('FieldDoc')
             };
 
             self.fetchMap = function () {
+
+                self.primaryNode = undefined;
 
                 MapInterface.get({
                     id: $routeParams.id

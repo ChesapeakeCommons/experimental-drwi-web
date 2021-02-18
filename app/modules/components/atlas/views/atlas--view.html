@@ -32,8 +32,7 @@
                      data-ng-show="page.showLayerOptions">
                     <div id="feature-scope"
                          class="scope--control margin-0" style="padding: 0.5rem 0.75rem; border-bottom: 1px solid
-                         #e0e0e0; flex-grow: 1; flex-shrink: 0;"
-                         data-ng-if="!page.activeFilters">
+                         #e0e0e0; flex-grow: 1; flex-shrink: 0;">
                         <div style="flex-grow: 1; flex-shrink: 0;" class="pad-r-1">
                             <strong>Show all my data</strong>
                         </div>
@@ -104,21 +103,33 @@
                 </div>
             </div>
 
-            <div class="mapboxgl-filter-ctrl"
-                 data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()"
-                 title="Add filters">
-                <i class="material-icons">
-                    tune
-                </i>
-            </div>
+            <div class="mapboxgl-ext-ctrl">
 
-            <div class="mapboxgl-bookmark-ctrl"
-                 data-ng-click="page.startMap()"
-                 data-ng-if="page.bookmarkReady"
-                 title="Save map">
-                <i class="material-icons">
-                    bookmark
-                </i>
+                <div class="mapboxgl-refresh-ctrl"
+                     data-ng-click="page.loadSrcNode()"
+                     title="Add filters">
+                    <i class="material-icons">
+                        refresh
+                    </i>
+                </div>
+
+                <div class="mapboxgl-filter-ctrl"
+                     data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()"
+                     title="Add filters">
+                    <i class="material-icons">
+                        tune
+                    </i>
+                </div>
+
+                <div class="mapboxgl-bookmark-ctrl"
+                     data-ng-click="page.startMap()"
+                     data-ng-if="page.bookmarkReady"
+                     title="Save map">
+                    <i class="material-icons">
+                        bookmark
+                    </i>
+                </div>
+
             </div>
 
         </div>
@@ -185,382 +196,6 @@
             </ul>
         </div>
     </div>
-
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.showFilterModal">-->
-<!--        <form class="dialog" style="width: auto;"-->
-<!--              data-ng-if="!page.filterSet">-->
-<!--            <div class="title">-->
-<!--                <span class="title-text" style="font-size: 1.5rem; font-weight: 500;">-->
-<!--                    Filters-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="inputs" style="overflow: auto;">-->
-<!--                <span class="flex prompt margin-b-1">-->
-<!--                    Add filter categories to map a subset of your projects. Note that filters override other map-->
-<!--                    settings and data, including projects currently in view.-->
-<!--                </span>-->
-<!--                <div class="pad-b-50p"-->
-<!--                     data-ng-repeat="(key, group) in page.filterOptions"-->
-<!--                     data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                    <div class="pad-b-1"-->
-<!--                          style="font-weight: 500; font-size: 1.125rem;">-->
-<!--                        {{ key | capitalAttribute }}-->
-<!--                    </div>-->
-<!--                    <div class="pad-b-1"-->
-<!--                         data-ng-if="!group.length">-->
-<!--                        <em>No {{ key | replaceChar: '_':' ' }} available.</em>-->
-<!--                    </div>-->
-<!--                    <div class="pad-b-1 select-filter-btn"-->
-<!--                         data-ng-if="group.length && !page.activeFilters[key].length"-->
-<!--                         data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                        Select {{ key | replaceChar: '_':' ' }} &rarr;-->
-<!--                    </div>-->
-<!--                    <div data-ng-if="group.length && page.activeFilters[key].length">-->
-<!--                        <div class="active-filter-node"-->
-<!--                             data-ng-repeat="feature in page.activeFilters[key]">-->
-<!--                            {{ feature.name }}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="pad-t-50p pad-b-1 select-filter-btn"-->
-<!--                         style="font-size: .9rem;"-->
-<!--                         data-ng-if="group.length && page.activeFilters[key].length"-->
-<!--                         data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                        Edit selections &rarr;-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <div class="pad-r-1"-->
-<!--                     style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-start;-->
-<!--                     flex-grow: 1; flex-shrink: 1;">-->
-<!--                    <button type="button"-->
-<!--                            class="cancel"-->
-<!--                            data-ng-click="page.resetActiveFilters()">-->
-<!--                        Clear all-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.showFilterModal = !page.showFilterModal; page.toggleSidebar()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm"-->
-<!--                        data-ng-click="page.captureFilters()">-->
-<!--                    Apply-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.filterSet">-->
-<!--        <div class="dialog filter-options">-->
-<!--            <div class="title">-->
-<!--                <span class="title-text" style="padding-left: 1.5rem; font-size: 1.5rem; font-weight: 500;">-->
-<!--                    {{ page.filterKey | capitalAttribute }}-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.setFilter(page.filterKey, page.filterSet)">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <input id="filter-option-search"-->
-<!--                   type="text"-->
-<!--                   data-ng-if="page.filterSet.length > 10"-->
-<!--                   data-ng-model="page.filterSearch"-->
-<!--                   placeholder="Search by name&hellip;">-->
-<!--            <div style="padding: 1rem 1.5rem; overflow: auto;">-->
-<!--                <ul class="margin-0 pad-0 margin-b-1">-->
-<!--                    <li class="pad-y-50p flex flex-dir-row flex-align-center"-->
-<!--                        data-ng-repeat="feature in page.filterSet | filter: page.filterSearch">-->
-<!--                        <div>-->
-<!--                            {{ feature.name }}-->
-<!--                        </div>-->
-<!--                        <div data-ng-if="feature.selected"-->
-<!--                             data-ng-click="feature.selected = !feature.selected">-->
-<!--                            <span class="material-icons">-->
-<!--                                check_box-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                        <div data-ng-if="!feature.selected"-->
-<!--                             data-ng-click="feature.selected = !feature.selected">-->
-<!--                            <span class="material-icons">-->
-<!--                                check_box_outline_blank-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.mapStep === 1">-->
-<!--        <form class="dialog map-step" style="width: auto;"-->
-<!--              data-ng-submit="page.mapStep = 2">-->
-<!--            <div class="title">-->
-<!--                <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">-->
-<!--                    Create map-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.cancelCreate()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <p class="pad-1 margin-0">-->
-<!--                    Save this map for later. Maps stored in your account track data updates and refresh when project-->
-<!--                    information or metric summaries change.-->
-<!--                </p>-->
-<!--            </div>-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.cancelCreate()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm">-->
-<!--                    Start-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.mapStep === 2">-->
-<!--        <form class="dialog map-step" style="width: auto;"-->
-<!--              data-ng-submit="page.mapStep = 3">-->
-<!--            <div class="title">-->
-<!--                <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">-->
-<!--                    Step 1: Add a name (required)-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.cancelCreate()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <input id="map-name-input"-->
-<!--                   type="text"-->
-<!--                   style="border-bottom: 0 none;"-->
-<!--                   data-ng-model="page.newMap.name"-->
-<!--                   placeholder="Enter a name&hellip;">-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.cancelCreate()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm"-->
-<!--                        data-ng-disabled="!page.newMap.name">-->
-<!--                    Next-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.mapStep === 3">-->
-<!--        <form class="dialog map-step" style="width: auto;"-->
-<!--              data-ng-submit="page.mapStep = 4">-->
-<!--            <div class="title">-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.mapStep = 2">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            arrow_back-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">-->
-<!--                    Step 2: Add a description (optional)-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.cancelCreate()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <p class="pad-1 margin-0"-->
-<!--               style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">-->
-<!--                Descriptions may contain up to 500 characters, including spaces and punctuation.-->
-<!--                <strong>({{ (page.newMap.description.length || 0) | number }} used)</strong>-->
-<!--            </p>-->
-<!--            <div class="form-element margin-0" style="overflow: auto; background: #f7f7f7;">-->
-<!--                <textarea class="form-control pad-1"-->
-<!--                          style="border: 0 none; box-shadow: none; resize: none; background: #f7f7f7;"-->
-<!--                          msd-elastic-->
-<!--                          data-ng-model="page.newMap.description"-->
-<!--                          maxlength="500"-->
-<!--                          placeholder="Enter a description&hellip;"-->
-<!--                          rows="20">{{ page.newMap.description }}</textarea>-->
-<!--            </div>-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.cancelCreate()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm">-->
-<!--                    Next-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.mapStep === 4">-->
-<!--        <form class="dialog map-step" style="width: auto;">-->
-<!--            <div class="title">-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.mapStep = 3">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            arrow_back-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">-->
-<!--                    Step 3: Choose a style (optional)-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.cancelCreate()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="map&#45;&#45;style&#45;&#45;list">-->
-<!--                <ul>-->
-<!--                    <li data-ng-repeat="style in page.standardStyles"-->
-<!--                        data-ng-click="page.setNewMapStyle(style); page.mapStep = 5">-->
-<!--                        <div class="thumbnail"-->
-<!--                             style="background-image: url({{ style.staticSrc }});"></div>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.cancelCreate()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm">-->
-<!--                    Next-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--    <div class="atlas-filter-dialog-container"-->
-<!--         data-ng-if="page.mapStep === 5">-->
-<!--        <form class="dialog map-step" style="width: auto;"-->
-<!--              data-ng-submit="page.saveMap()">-->
-<!--            <div class="title">-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.mapStep = 4">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            arrow_back-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">-->
-<!--                    Step 4: Confirm filters (required)-->
-<!--                </span>-->
-<!--                <div class="dismiss-container">-->
-<!--                    <div class="dismiss"-->
-<!--                         data-ng-click="page.cancelCreate()">-->
-<!--                        <div class="halo"></div>-->
-<!--                        <span class="material-icons">-->
-<!--                            close-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="inputs" style="overflow: auto;">-->
-<!--                <span class="flex prompt margin-b-1">-->
-<!--                    Add filter categories to map a subset of your projects. Note that filters override other map-->
-<!--                    settings and data, including projects currently in view.-->
-<!--                </span>-->
-<!--                <div class="pad-b-50p"-->
-<!--                     data-ng-repeat="(key, group) in page.filterOptions"-->
-<!--                     data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                    <div class="pad-b-1"-->
-<!--                         style="font-weight: 500; font-size: 1.125rem;">-->
-<!--                        {{ key | capitalAttribute }}-->
-<!--                    </div>-->
-<!--                    <div class="pad-b-1"-->
-<!--                         data-ng-if="!group.length">-->
-<!--                        <em>No {{ key | replaceChar: '_':' ' }} available.</em>-->
-<!--                    </div>-->
-<!--                    <div class="pad-b-1 select-filter-btn"-->
-<!--                         data-ng-if="group.length && !page.activeFilters[key].length"-->
-<!--                         data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                        Select {{ key | replaceChar: '_':' ' }} &rarr;-->
-<!--                    </div>-->
-<!--                    <div data-ng-if="group.length && page.activeFilters[key].length">-->
-<!--                        <div class="active-filter-node"-->
-<!--                             data-ng-repeat="feature in page.activeFilters[key]">-->
-<!--                            {{ feature.name }}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="pad-t-50p pad-b-1 select-filter-btn"-->
-<!--                         style="font-size: .9rem;"-->
-<!--                         data-ng-if="group.length && page.activeFilters[key].length"-->
-<!--                         data-ng-click="page.filterSet = group; page.filterKey = key">-->
-<!--                        Edit selections &rarr;-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="dialog-actions pad-1"-->
-<!--                 style="border-top: 1px solid #E0E0E0;">-->
-<!--                <button type="button"-->
-<!--                        class="cancel"-->
-<!--                        data-ng-click="page.cancelCreate()">-->
-<!--                    Cancel-->
-<!--                </button>-->
-<!--                <button type="submit" class="confirm">-->
-<!--                    Save-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
 
     <div atlas-filter-options
          active-filters="page.activeFilters"

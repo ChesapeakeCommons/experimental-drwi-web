@@ -31,11 +31,11 @@
 
         <div class="metadata--card">
 
-            <h1 class="margin-0 pad-0 margin-b-1" data-ng-if="!page.status.loading">
+            <h1 class="margin-0 pad-0" data-ng-if="!page.status.loading">
                 {{ page.summary.name || page.primaryNode.properties.name }}
             </h1>
 
-            <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1"
+            <div class="stat--group margin-0 pad-0 margin-t-50p"
                  data-ng-if="page.primaryNode">
                 <div class="stat--block"
                      data-ng-if="page.featureType && page.featureType !== 'practice'">
@@ -63,7 +63,8 @@
                 </div>
             </div>
 
-            <p data-ng-if="!page.status.loading">
+            <p class="margin-0 margin-y-1"
+               data-ng-if="!page.status.loading">
                 {{ page.summary.description || page.primaryNode.properties.description || 'No description provided' }}
             </p>
 

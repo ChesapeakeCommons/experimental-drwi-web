@@ -22,21 +22,6 @@
                 </i>
                 <div class="layer-group" style="font-weight: normal; font-size: 14px; min-width: 240px;"
                      data-ng-show="page.showLayerOptions">
-                    <div id="feature-scope"
-                         class="scope--control margin-0" style="padding: 0.5rem 0.75rem; border-bottom: 1px solid
-                         #e0e0e0; flex-grow: 1; flex-shrink: 0;"
-                         data-ng-if="!page.activeFilters">
-                        <div style="flex-grow: 1; flex-shrink: 0;" class="pad-r-1">
-                            <strong>Show all my data</strong>
-                        </div>
-                        <label class="switch" style="flex-grow: 0; flex-shrink: 0; background: #FFFFFF;">
-                            <input type="checkbox"
-                                   data-ng-model="page.showAllFeatures"
-                                   data-ng-checked="page.showAllFeatures"
-                                   data-ng-change="page.toggleLayerConstraint()">
-                            <div class="slider round"></div>
-                        </label>
-                    </div>
                     <form>
                         <label data-ng-repeat="style in page.mapStyles"
                                data-ng-class="{'active': page.activeStyle === $index}"
@@ -94,6 +79,18 @@
                         </label>
                     </form>
                 </div>
+            </div>
+
+            <div class="mapboxgl-ext-ctrl">
+
+                <div class="mapboxgl-refresh-ctrl"
+                     data-ng-click="page.fetchMap()"
+                     title="Add filters">
+                    <i class="material-icons">
+                        refresh
+                    </i>
+                </div>
+
             </div>
 
         </div>

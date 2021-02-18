@@ -1251,6 +1251,17 @@ angular.module('FieldDoc')
 
             };
 
+            self.loadSrcNode = function() {
+
+                var nodeTokens = self.srcNode.split('.');
+
+                self.fetchPrimaryNode(
+                    nodeTokens[0],
+                    +nodeTokens[1]
+                );
+
+            };
+
             self.updateUrlParams = function (filterString) {
 
                 if (!angular.isDefined(filterString) ||
@@ -1293,11 +1304,16 @@ angular.module('FieldDoc')
 
             };
 
-            self.extractUrlParams = function (params) {
+            self.extractUrlParams = function (params, setSrc) {
 
                 console.log(
                     'extractUrlParams:params:',
                     params
+                );
+
+                console.log(
+                    'extractUrlParams:setSrc:',
+                    setSrc
                 );
 
                 self.origin = AtlasDataManager.getOrigin(params);
@@ -1315,6 +1331,8 @@ angular.module('FieldDoc')
                 );
 
                 self.urlData = dataObj;
+
+                if (setSrc) self.srcNode = self.urlData.node;
 
                 self.storedFilters = AtlasDataManager.getUrlFilters(
                     self.urlData
