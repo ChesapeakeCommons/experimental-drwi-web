@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613677359848})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613679982617})
 
 ;
 /**
@@ -39216,8 +39216,6 @@ angular.module('FieldDoc')
 
                     AtlasDataManager.setPrimaryNode(self.primaryNode);
 
-                    // self.updateUrlParams();
-
                     self.showElements();
 
                     MapUtil.fitMap(
@@ -39308,6 +39306,8 @@ angular.module('FieldDoc')
                         self.padding,
                         self.map,
                         self.fetchPrimaryNode);
+
+                    self.updateUrlParams(self.urlData.filters);
 
                     // LayerUtil.fetchCustomLayers(
                     //     null,
@@ -39525,16 +39525,6 @@ angular.module('FieldDoc')
                 console.log(
                     'switchMapStyle:currentStyleString:',
                     self.currentStyleString);
-
-                //
-                // Update URL data.
-                //
-
-                if (self.primaryNode) {
-
-                    self.updateUrlParams();
-
-                }
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
@@ -39875,7 +39865,7 @@ angular.module('FieldDoc')
                     //     self.map,
                     //     self.fetchPrimaryNode);
 
-                    self.updateUrlParams();
+                    // self.updateUrlParams();
 
                     self.fetchMap();
 
@@ -40077,9 +40067,7 @@ angular.module('FieldDoc')
                 if (!angular.isDefined(filterString) ||
                     typeof filterString !== 'string') {
 
-                    filterString = AtlasDataManager.createFilterString(
-                        self.activeFilters
-                    );
+                    filterString = self.urlData.filters;
 
                 }
 
@@ -40154,85 +40142,85 @@ angular.module('FieldDoc')
 
             };
 
-            self.syncActiveFilters = function () {
+            // self.syncActiveFilters = function () {
+            //
+            //     if (!angular.isDefined(self.storedFilters)) return;
+            //
+            //     for (var key in self.filterOptions) {
+            //
+            //         if (self.filterOptions.hasOwnProperty(key)) {
+            //
+            //             var options = self.filterOptions[key];
+            //
+            //             console.log(
+            //                 'self.syncActiveFilters:options',
+            //                 options
+            //             );
+            //
+            //             if (options.length) {
+            //
+            //                 var storedIds = self.storedFilters[key];
+            //
+            //                 console.log(
+            //                     'self.syncActiveFilters:storedIds',
+            //                     storedIds
+            //                 );
+            //
+            //                 if (Array.isArray(storedIds)) {
+            //
+            //                     options.forEach(function (feature) {
+            //
+            //                         if (storedIds.indexOf(feature.id) >= 0) {
+            //
+            //                             feature.selected = true;
+            //
+            //                             self.bookmarkReady = true;
+            //
+            //                             self.activeFilters[key].push(feature);
+            //
+            //                         }
+            //
+            //                     });
+            //
+            //                 }
+            //
+            //             }
+            //
+            //         }
+            //
+            //     }
+            //
+            // };
 
-                if (!angular.isDefined(self.storedFilters)) return;
+            // self.resetActiveFilters = function () {
+            //
+            //     self.bookmarkReady = false;
+            //
+            //     self.activeFilters = {};
+            //
+            //     var categories = Object.keys(self.filterOptions);
+            //
+            //     categories.forEach(function (category) {
+            //
+            //         self.activeFilters[category] = [];
+            //
+            //     });
+            //
+            // };
 
-                for (var key in self.filterOptions) {
-
-                    if (self.filterOptions.hasOwnProperty(key)) {
-
-                        var options = self.filterOptions[key];
-
-                        console.log(
-                            'self.syncActiveFilters:options',
-                            options
-                        );
-
-                        if (options.length) {
-
-                            var storedIds = self.storedFilters[key];
-
-                            console.log(
-                                'self.syncActiveFilters:storedIds',
-                                storedIds
-                            );
-
-                            if (Array.isArray(storedIds)) {
-
-                                options.forEach(function (feature) {
-
-                                    if (storedIds.indexOf(feature.id) >= 0) {
-
-                                        feature.selected = true;
-
-                                        self.bookmarkReady = true;
-
-                                        self.activeFilters[key].push(feature);
-
-                                    }
-
-                                });
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            };
-
-            self.resetActiveFilters = function () {
-
-                self.bookmarkReady = false;
-
-                self.activeFilters = {};
-
-                var categories = Object.keys(self.filterOptions);
-
-                categories.forEach(function (category) {
-
-                    self.activeFilters[category] = [];
-
-                });
-
-            };
-
-            self.loadFilterOptions = function () {
-
-                User.atlasFilters().$promise.then(function(successResponse) {
-
-                    self.filterOptions = successResponse;
-
-                    self.resetActiveFilters();
-
-                    self.syncActiveFilters();
-
-                });
-
-            };
+            // self.loadFilterOptions = function () {
+            //
+            //     User.atlasFilters().$promise.then(function(successResponse) {
+            //
+            //         self.filterOptions = successResponse;
+            //
+            //         self.resetActiveFilters();
+            //
+            //         self.syncActiveFilters();
+            //
+            //     });
+            //
+            // };
 
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
@@ -40298,7 +40286,7 @@ angular.module('FieldDoc')
 
                     self.extractUrlParams(params, true);
 
-                    self.loadFilterOptions();
+                    // self.loadFilterOptions();
 
                     // self.fetchMap();
 
@@ -41325,7 +41313,8 @@ angular.module('FieldDoc')
                         'LayerUtil.addCustomLayers.programId:',
                         mod.programId);
 
-                    if (!features.length ||
+                    if (!Array.isArray(features) ||
+                        !features.length ||
                         !Number.isInteger(mod.programId)) return;
 
                     features.forEach(function(feature) {

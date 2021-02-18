@@ -32,7 +32,7 @@
         <div class="metadata--card">
 
             <h1 class="margin-0 pad-0 margin-b-1" data-ng-if="!page.status.loading">
-                {{ page.summary.name }}
+                {{ page.summary.name || page.primaryNode.properties.name }}
             </h1>
 
             <div class="stat--group margin-0 pad-0 margin-t-50p margin-b-1"
@@ -64,7 +64,7 @@
             </div>
 
             <p data-ng-if="!page.status.loading">
-                {{ page.summary.description || 'No description provided' }}
+                {{ page.summary.description || page.primaryNode.properties.description || 'No description provided' }}
             </p>
 
             <p data-ng-if="!page.status.loading && page.primaryNode">

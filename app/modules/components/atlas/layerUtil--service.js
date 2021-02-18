@@ -229,7 +229,8 @@ angular.module('FieldDoc')
                         'LayerUtil.addCustomLayers.programId:',
                         mod.programId);
 
-                    if (!features.length ||
+                    if (!Array.isArray(features) ||
+                        !features.length ||
                         !Number.isInteger(mod.programId)) return;
 
                     features.forEach(function(feature) {
