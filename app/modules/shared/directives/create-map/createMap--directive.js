@@ -175,6 +175,8 @@
 
                                 scope.modalDisplay.creationStep = undefined;
 
+                                scope.modalDisplay.postSave = true;
+
                                 if (scope.postSave) scope.postSave({});
 
                             }, function(errorResponse) {
@@ -183,6 +185,8 @@
                                     'saveMap:errorResponse',
                                     errorResponse
                                 );
+
+                                scope.modalDisplay.saveError = true;
 
                             });
 

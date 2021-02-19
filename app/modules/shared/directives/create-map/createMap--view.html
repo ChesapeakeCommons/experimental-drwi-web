@@ -161,7 +161,13 @@
                 <li data-ng-repeat="style in mapStyles"
                     data-ng-click="setNewMapStyle(style); modalDisplay.creationStep = 5">
                     <div class="thumbnail"
-                         style="background-image: url({{ style.staticSrc }});"></div>
+                         style="background-image: url({{ style.staticSrc }});">
+                        <div class="check" data-ng-if="style.id === newMap.style">
+                            <span class="material-icons">
+                                check_circle
+                            </span>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

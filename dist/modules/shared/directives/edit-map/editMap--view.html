@@ -1,52 +1,14 @@
 <div class="atlas-filter-dialog-container"
-     data-ng-if="mapStep === 1">
+     data-ng-if="modalDisplay.editStep === 2">
     <form class="dialog map-step" style="width: auto;"
-          data-ng-submit="mapStep = 2">
-        <div class="title">
-            <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">
-                Create map
-            </span>
-            <div class="dismiss-container">
-                <div class="dismiss"
-                     data-ng-click="cancelCreate()">
-                    <div class="halo"></div>
-                    <span class="material-icons">
-                        close
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div>
-            <p class="pad-1 margin-0">
-                Save this map for later. Maps stored in your account track data updates and refresh when project
-                information or metric summaries change.
-            </p>
-        </div>
-        <div class="dialog-actions pad-1"
-             style="border-top: 1px solid #E0E0E0;">
-            <button type="button"
-                    class="cancel"
-                    data-ng-click="cancelCreate()">
-                Cancel
-            </button>
-            <button type="submit" class="confirm">
-                Start
-            </button>
-        </div>
-    </form>
-</div>
-
-<div class="atlas-filter-dialog-container"
-     data-ng-if="mapStep === 2">
-    <form class="dialog map-step" style="width: auto;"
-          data-ng-submit="mapStep = 3">
+          data-ng-submit="modalDisplay.editStep = 3">
         <div class="title">
             <span class="title-text" style="font-size: 1.25rem; font-weight: 500;">
                 Step 1: Add a name (required)
             </span>
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="cancelCreate()">
+                     data-ng-click="cancelEdit()">
                     <div class="halo"></div>
                     <span class="material-icons">
                         close
@@ -57,17 +19,17 @@
         <input id="map-name-input"
                type="text"
                style="border-bottom: 0 none;"
-               data-ng-model="newMap.name"
+               data-ng-model="feature.name"
                placeholder="Enter a name&hellip;">
         <div class="dialog-actions pad-1"
              style="border-top: 1px solid #E0E0E0;">
             <button type="button"
                     class="cancel"
-                    data-ng-click="cancelCreate()">
+                    data-ng-click="cancelEdit()">
                 Cancel
             </button>
             <button type="submit" class="confirm"
-                    data-ng-disabled="!newMap.name">
+                    data-ng-disabled="!feature.name">
                 Next
             </button>
         </div>
@@ -75,13 +37,13 @@
 </div>
 
 <div class="atlas-filter-dialog-container"
-     data-ng-if="mapStep === 3">
+     data-ng-if="modalDisplay.editStep === 3">
     <form class="dialog map-step" style="width: auto;"
-          data-ng-submit="mapStep = 4">
+          data-ng-submit="modalDisplay.editStep = 4">
         <div class="title">
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="mapStep = 2">
+                     data-ng-click="modalDisplay.editStep = 2">
                     <div class="halo"></div>
                     <span class="material-icons">
                         arrow_back
@@ -93,7 +55,7 @@
             </span>
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="cancelCreate()">
+                     data-ng-click="cancelEdit()">
                     <div class="halo"></div>
                     <span class="material-icons">
                         close
@@ -104,22 +66,22 @@
         <p class="pad-1 margin-0"
            style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
             Descriptions may contain up to 500 characters, including spaces and punctuation.
-            <strong>({{ (newMap.description.length || 0) | number }} used)</strong>
+            <strong>({{ (feature.description.length || 0) | number }} used)</strong>
         </p>
         <div class="form-element margin-0" style="overflow: auto; background: #f7f7f7;">
             <textarea class="form-control pad-1"
                       style="border: 0 none; box-shadow: none; resize: none; background: #f7f7f7;"
                       msd-elastic
-                      data-ng-model="newMap.description"
+                      data-ng-model="feature.description"
                       maxlength="500"
                       placeholder="Enter a description&hellip;"
-                      rows="20">{{ newMap.description }}</textarea>
+                      rows="20">{{ feature.description }}</textarea>
         </div>
         <div class="dialog-actions pad-1"
              style="border-top: 1px solid #E0E0E0;">
             <button type="button"
                     class="cancel"
-                    data-ng-click="cancelCreate()">
+                    data-ng-click="cancelEdit()">
                 Cancel
             </button>
             <button type="submit" class="confirm">
@@ -130,12 +92,13 @@
 </div>
 
 <div class="atlas-filter-dialog-container"
-     data-ng-if="mapStep === 4">
+     data-ng-submit="modalDisplay.editStep = 5"
+     data-ng-if="modalDisplay.editStep === 4">
     <form class="dialog map-step" style="width: auto;">
         <div class="title">
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="mapStep = 3">
+                     data-ng-click="modalDisplay.editStep = 3">
                     <div class="halo"></div>
                     <span class="material-icons">
                         arrow_back
@@ -147,7 +110,7 @@
             </span>
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="cancelCreate()">
+                     data-ng-click="cancelEdit()">
                     <div class="halo"></div>
                     <span class="material-icons">
                         close
@@ -157,10 +120,16 @@
         </div>
         <div class="map--style--list">
             <ul>
-                <li data-ng-repeat="style in standardStyles"
-                    data-ng-click="setNewMapStyle(style); mapStep = 5">
+                <li data-ng-repeat="style in mapStyles"
+                    data-ng-click="setMapStyle(style); modalDisplay.editStep = 5">
                     <div class="thumbnail"
-                         style="background-image: url({{ style.staticSrc }});"></div>
+                         style="background-image: url({{ style.staticSrc }});">
+                        <div class="check" data-ng-if="style.id === feature.style">
+                            <span class="material-icons">
+                                check_circle
+                            </span>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -168,7 +137,7 @@
              style="border-top: 1px solid #E0E0E0;">
             <button type="button"
                     class="cancel"
-                    data-ng-click="cancelCreate()">
+                    data-ng-click="cancelEdit()">
                 Cancel
             </button>
             <button type="submit" class="confirm">
@@ -179,13 +148,13 @@
 </div>
 
 <div class="atlas-filter-dialog-container"
-     data-ng-if="mapStep === 5">
+     data-ng-if="modalDisplay.editStep === 5">
     <form class="dialog map-step" style="width: auto;"
           data-ng-submit="saveMap()">
         <div class="title">
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="mapStep = 4">
+                     data-ng-click="modalDisplay.editStep = 4">
                     <div class="halo"></div>
                     <span class="material-icons">
                         arrow_back
@@ -193,11 +162,11 @@
                 </div>
             </div>
             <span class="title-text pad-0" style="font-size: 1.25rem; font-weight: 500;">
-                Step 4: Confirm filters (required)
+                Step 4: Filters
             </span>
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="cancelCreate()">
+                     data-ng-click="cancelEdit()">
                     <div class="halo"></div>
                     <span class="material-icons">
                         close
@@ -207,36 +176,24 @@
         </div>
         <div class="inputs" style="overflow: auto;">
             <span class="flex prompt margin-b-1">
-                Add filter categories to map a subset of your projects. Note that filters override other map
-                settings and data, including projects currently in view.
+                The filters listed below cannot be altered. Create a new map to set a different combination.
             </span>
             <div class="pad-b-50p"
-                 data-ng-repeat="(key, group) in filterOptions"
-                 data-ng-click="filterSet = group; filterKey = key">
+                 data-ng-repeat="(key, group) in activeFilters">
                 <div class="pad-b-1"
                      style="font-weight: 500; font-size: 1.125rem;">
                     {{ key | capitalAttribute }}
                 </div>
                 <div class="pad-b-1"
+                     style="font-size: .9rem; color: #616161;"
                      data-ng-if="!group.length">
-                    <em>No {{ key | replaceChar: '_':' ' }} available.</em>
+                    <em>No {{ key | replaceChar: '_':' ' }} selected.</em>
                 </div>
-                <div class="pad-b-1 select-filter-btn"
-                     data-ng-if="group.length && !activeFilters[key].length"
-                     data-ng-click="filterSet = group; filterKey = key">
-                    Select {{ key | replaceChar: '_':' ' }} &rarr;
-                </div>
-                <div data-ng-if="group.length && activeFilters[key].length">
+                <div data-ng-if="group.length">
                     <div class="active-filter-node"
-                         data-ng-repeat="feature in activeFilters[key]">
+                         data-ng-repeat="feature in group">
                         {{ feature.name }}
                     </div>
-                </div>
-                <div class="pad-t-50p pad-b-1 select-filter-btn"
-                     style="font-size: .9rem;"
-                     data-ng-if="group.length && activeFilters[key].length"
-                     data-ng-click="filterSet = group; filterKey = key">
-                    Edit selections &rarr;
                 </div>
             </div>
         </div>
@@ -244,7 +201,7 @@
              style="border-top: 1px solid #E0E0E0;">
             <button type="button"
                     class="cancel"
-                    data-ng-click="cancelCreate()">
+                    data-ng-click="cancelEdit()">
                 Cancel
             </button>
             <button type="submit" class="confirm">

@@ -200,6 +200,7 @@
     <div atlas-filter-options
          active-filters="page.activeFilters"
          bookmark-ready="page.bookmarkReady"
+         capture-filters="page.captureFilters()"
          dismiss-action="page.toggleSidebar()"
          filter-key="page.filterKey"
          filter-options="page.filterOptions"
@@ -226,5 +227,69 @@
          new-map="page.newMap"
          post-save="page.loadMaps()"
          visible="page.modalDisplay.creationStep >= 1"></div>
+
+    <div class="atlas-filter-dialog-container"
+         data-ng-if="page.modalDisplay.postSave">
+        <form class="dialog" style="width: auto;">
+            <div class="title">
+                <span class="title-text"
+                      style="font-size: 1rem; font-weight: 500; border-bottom: 0 none;">
+                    Success!
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss"
+                         data-ng-click="closeModal()">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                            close
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="inputs" style="overflow: auto;">
+                <p class="prompt margin-0 pad-0">
+                    This atlas snapshot was saved to your <a href="maps">map collection</a>.
+                </p>
+            </div>
+            <div class="dialog-actions pad-1">
+                <button type="submit" class="confirm"
+                        data-ng-click="page.modalDisplay.postSave = !page.modalDisplay.postSave">
+                    OK
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="atlas-filter-dialog-container"
+         data-ng-if="page.modalDisplay.saveError">
+        <form class="dialog" style="width: auto;">
+            <div class="title">
+                <span class="title-text"
+                      style="font-size: 1rem; font-weight: 500; border-bottom: 0 none;">
+                    Error
+                </span>
+                <div class="dismiss-container">
+                    <div class="dismiss"
+                         data-ng-click="closeModal()">
+                        <div class="halo"></div>
+                        <span class="material-icons">
+                            close
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="inputs" style="overflow: auto;">
+                <p class="prompt margin-0 pad-0">
+                    Something went wrong while creating this atlas snapshot. Please try again.
+                </p>
+            </div>
+            <div class="dialog-actions pad-1">
+                <button type="submit" class="confirm"
+                        data-ng-click="page.modalDisplay.saveError = !page.modalDisplay.saveError">
+                    OK
+                </button>
+            </div>
+        </form>
+    </div>
 
 </main>

@@ -1528,10 +1528,24 @@ input:checked + .slider:before {
             }
 
             .thumbnail {
+                position: relative;
                 width: 100%;
                 height: 100%;
                 border-radius: 4px;
                 overflow: hidden;
+
+                .check {
+                    position: absolute;
+                    display: flex;
+                    flex-flow: column nowrap;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 50%;
+                    background: #FFFFFF;
+                    top: .5rem;
+                    left: .5rem;
+                    color: #2196F3;
+                }
 
                 img {
                     //width: 100%;

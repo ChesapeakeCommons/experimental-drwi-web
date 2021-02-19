@@ -323,6 +323,33 @@ angular.module('FieldDoc')
 
                         }
 
+                        if (nodeType === 'project' &&
+                            angular.isDefined(self.activeFilters)) {
+
+                            try {
+
+                                var filters = Utility.values(self.activeFilters);
+
+                                if (filters.length) {
+
+                                    self.map.fitBounds(
+                                        turf.bbox(successResponse),
+                                        self.padding
+                                    );
+
+                                }
+
+                            } catch (e) {
+
+                                console.warn(
+                                    'updateNodeLayer:filterFit:',
+                                    e
+                                );
+
+                            }
+
+                        }
+
                     }, function (errorResponse) {
 
                         console.log('Unable to load node layer data.');
@@ -1486,65 +1513,7 @@ angular.module('FieldDoc')
 
                 self.modalDisplay.creationStep = 1;
 
-                self.showCreateModal = true;
-
                 self.toggleSidebar();
-
-            };
-
-            self.cancelCreate = function () {
-
-                self.newMap = {};
-
-                self.mapStep = undefined;
-
-                self.showCreateModal = false;
-
-                self.toggleSidebar();
-
-            };
-
-            self.setNewMapStyle = function (style) {
-
-                self.newMap.style = style.id;
-
-            };
-
-            self.saveMap = function () {
-
-                for (var key in self.activeFilters) {
-
-                    if (self.activeFilters.hasOwnProperty(key)) {
-
-                        self.newMap[key] = [];
-
-                        self.activeFilters[key].forEach(function(feature) {
-
-                            self.newMap[key].push(feature.id);
-
-                        });
-
-                    }
-
-                }
-
-                var newFeature = new MapInterface(self.newMap);
-
-                newFeature.$save(function(successResponse) {
-
-                    console.log(
-                        'saveMap:successResponse',
-                        successResponse
-                    );
-
-                }, function(errorResponse) {
-
-                    console.log(
-                        'saveMap:errorResponse',
-                        errorResponse
-                    );
-
-                });
 
             };
 

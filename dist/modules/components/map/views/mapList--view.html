@@ -35,33 +35,6 @@
 
             <div class="dyad margin-t-2" data-ng-if="!page.status.loading">
 
-                <div class="table-view-ctrl"
-                     data-ng-if="!page.status.loading">
-                    <button type="button"
-                            title="Card mode"
-                            class="margin-r-50p"
-                            data-ng-class="{active: !page.viewTable}"
-                            data-ng-click="page.toggleTable()">
-                        <span class="material-icons margin-r-50p">
-                            view_module
-                        </span>
-                        <span>
-                            Card
-                        </span>
-                    </button>
-                    <button type="button"
-                            title="Table mode"
-                            data-ng-class="{active: page.viewTable}"
-                            data-ng-click="page.toggleTable()">
-                        <span class="material-icons margin-r-50p">
-                            table_view
-                        </span>
-                        <span>
-                            Table
-                        </span>
-                    </button>
-                </div>
-
                 <div style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-end;
                 flex-grow: 1;"
                      data-ng-if="!page.status.loading">
@@ -75,42 +48,7 @@
 
                 </div>
 
-                <!--                <div style="display: flex; flex-flow: row nowrap; align-items: center;"-->
-                <!--                     data-ng-if="!page.status.loading">-->
-                <!--                    <div data-ng-click="page.toggleTable()">-->
-                <!--                    <span class="material-icons margin-r-1" style="display: inline-block;">-->
-                <!--                        view_module-->
-                <!--                    </span>-->
-                <!--                    </div>-->
-                <!--                    <div data-ng-click="page.toggleTable()">-->
-                <!--                    <span class="material-icons" style="display: inline-block;">-->
-                <!--                        table_view-->
-                <!--                    </span>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-
             </div>
-
-            <!--            <div data-ng-if="!page.status.loading"-->
-            <!--                 pagination-->
-            <!--                 summary="page.summary"-->
-            <!--                 rotate="page.loadProjects(page.queryParams)"-->
-            <!--                 params="page.queryParams"-->
-            <!--                 update-params="true"></div>-->
-
-            <!--            <div style="display: flex; flex-flow: row nowrap; align-items: center;"-->
-            <!--                 data-ng-if="!page.status.loading">-->
-            <!--                <div data-ng-click="page.toggleTable()">-->
-            <!--                    <span class="material-icons margin-r-1" style="display: inline-block;">-->
-            <!--                        view_module-->
-            <!--                    </span>-->
-            <!--                </div>-->
-            <!--                <div data-ng-click="page.toggleTable()">-->
-            <!--                    <span class="material-icons" style="display: inline-block;">-->
-            <!--                        table_view-->
-            <!--                    </span>-->
-            <!--                </div>-->
-            <!--            </div>-->
 
             <div class="features--container" data-ng-if="!page.status.loading">
 
@@ -198,13 +136,14 @@
                                         </i>
                                     </a>
 
-<!--                                    <a class="snapshot&#45;&#45;title" href="/projects/{{ project.id }}/edit"-->
-<!--                                       title="Edit project"-->
-<!--                                       data-ng-if="$root.user.is_admin || project.organization_id == page.user.organization.id || $root.user.is_manager">-->
-<!--                                        <i class="material-icons">-->
-<!--                                            edit-->
-<!--                                        </i>-->
-<!--                                    </a>-->
+                                    <a class="snapshot--title" href="#"
+                                       title="Edit map"
+                                       data-ng-click="page.targetFeature = feature; page.modalDisplay.editStep = 2"
+                                       data-ng-if="$root.user.id === feature.creator_id">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
 
                                     <a class="snapshot--title" href="#" title="Delete map"
                                        data-ng-click="page.confirmDelete(feature)"
@@ -293,6 +232,13 @@
          new-map="page.newMap"
          post-save="page.loadMaps()"
          visible="page.modalDisplay.creationStep >= 1"></div>
+
+    <div edit-map
+         alerts="page.alerts"
+         feature="page.targetFeature"
+         modal-display="page.modalDisplay"
+         post-save="page.loadMaps()"
+         visible="page.modalDisplay.editStep >= 1"></div>
 
 </main>
 
