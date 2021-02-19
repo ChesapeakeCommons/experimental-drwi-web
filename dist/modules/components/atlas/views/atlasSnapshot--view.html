@@ -8,13 +8,15 @@
          data-ng-click="page.toggleMenu()"></div>
 
     <div class="dismiss-station"
-         style="position: absolute; top: 1rem; right: 1rem; z-index: 999;"
+         style="position: absolute; top: 1rem; right: 1rem; z-index: 999; cursor: pointer;"
+         data-ng-click="page.station = undefined"
          data-ng-if="page.station">
         <div class="dismiss-container">
             <div class="dismiss margin-0"
-                 data-ng-click="page.station = undefined">
+                 style="height: 48px; width: 48px; background: #fff; border-radius: 50%; display: flex; flex-flow:
+                 column nowrap; justify-content: center; align-items: center;">
                 <div class="halo"></div>
-                <span class="material-icons">
+                <span class="material-icons md-36">
                     close
                 </span>
             </div>
