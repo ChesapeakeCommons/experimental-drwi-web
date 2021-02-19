@@ -525,20 +525,7 @@ angular.module('FieldDoc')
                     }
 
                 }
-
-                /* Extranious Code - delete.*/
-           /*     Practice.metrics({
-                    id: practice_id,
-                    program: program_id
-                }).$promise.then(function(successResponse){
-                    console.log("loadMetrics TEST SUCCESS");
-                    console.log("successResponse -->",successResponse);
-
-                },function(errorResponse){
-
-                    console.log("loadMetrics TEST error",errorResponse);
-                });
-            */
+                
 
                 Practice.metrics({
                     id: practice_id,
