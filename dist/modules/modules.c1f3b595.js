@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613760769844})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1613768443280})
 
 ;
 /**
@@ -37428,6 +37428,8 @@ angular.module('FieldDoc')
 
                         successResponse.features.forEach(function (feature) {
 
+                            feature.id = feature.properties.id;
+
                             AtlasDataManager.trackFeature(
                                 nodeType, geometryType, feature);
 
@@ -37681,6 +37683,50 @@ angular.module('FieldDoc')
                     if (callback) callback();
 
                 });
+
+            };
+
+            self.fetchStation = function (target) {
+
+                //
+                // Reset stored array of queried features.
+                //
+
+                self.queryFeatures = undefined;
+
+                AtlasDataManager.setQueryFeatures([]);
+
+                self.showLayerOptions = false;
+
+                self.station = target;
+
+                self.toggleSidebar();
+
+                $timeout(function () {
+
+                    var frame = document.getElementsByTagName('iframe')[0];
+
+                    console.log(
+                        'map.click:frame:',
+                        frame
+                    );
+
+                    frame.setAttribute('height', $window.innerHeight);
+                    frame.setAttribute('with', $window.innerWidth);
+
+                    frame.style.height = $window.innerHeight;
+                    frame.style.width = $window.innerWidth;
+
+                    frame.style.backgroundColor = 'transparent';
+                    frame.frameBorder = '0';
+                    frame.allowTransparency = 'true';
+
+                    frame.src = [
+                        'https://dev.api.waterreporter.org/v2/embed/station/',
+                        self.station.properties.id
+                    ].join('');
+
+                }, 10);
 
             };
 
@@ -38043,29 +38089,7 @@ angular.module('FieldDoc')
                                 target
                             );
 
-                            self.station = target;
-
-                            self.toggleSidebar();
-
-                            $timeout(function () {
-
-                                var frame = document.getElementsByTagName('iframe')[0];
-
-                                console.log(
-                                    'map.click:frame:',
-                                    frame
-                                );
-
-                                frame.style.backgroundColor = 'transparent';
-                                frame.frameBorder = '0';
-                                frame.allowTransparency = 'true';
-
-                                frame.src = [
-                                    'https://dev.api.waterreporter.org/v2/embed/station/',
-                                    self.station.properties.id
-                                ].join('');
-
-                            }, 10);
+                            self.fetchStation(target);
 
                         } else {
 
@@ -39023,6 +39047,8 @@ angular.module('FieldDoc')
 
                         successResponse.features.forEach(function (feature) {
 
+                            feature.id = feature.properties.id;
+
                             AtlasDataManager.trackFeature(
                                 nodeType, geometryType, feature);
 
@@ -39249,6 +39275,50 @@ angular.module('FieldDoc')
                     if (callback) callback();
 
                 });
+
+            };
+
+            self.fetchStation = function (target) {
+
+                //
+                // Reset stored array of queried features.
+                //
+
+                self.queryFeatures = undefined;
+
+                AtlasDataManager.setQueryFeatures([]);
+
+                self.showLayerOptions = false;
+
+                self.station = target;
+
+                self.toggleSidebar();
+
+                $timeout(function () {
+
+                    var frame = document.getElementsByTagName('iframe')[0];
+
+                    console.log(
+                        'map.click:frame:',
+                        frame
+                    );
+
+                    frame.setAttribute('height', $window.innerHeight);
+                    frame.setAttribute('width', $window.innerWidth);
+
+                    frame.style.height = $window.innerHeight;
+                    frame.style.width = $window.innerWidth;
+
+                    frame.style.backgroundColor = 'transparent';
+                    frame.frameBorder = '0';
+                    frame.allowTransparency = 'true';
+
+                    frame.src = [
+                        'https://dev.api.waterreporter.org/v2/embed/station/',
+                        self.station.properties.id
+                    ].join('');
+
+                }, 10);
 
             };
 
@@ -39663,29 +39733,7 @@ angular.module('FieldDoc')
                                 target
                             );
 
-                            self.station = target;
-
-                            self.toggleSidebar();
-
-                            $timeout(function () {
-
-                                var frame = document.getElementsByTagName('iframe')[0];
-
-                                console.log(
-                                    'map.click:frame:',
-                                    frame
-                                );
-
-                                frame.style.backgroundColor = 'transparent';
-                                frame.frameBorder = '0';
-                                frame.allowTransparency = 'true';
-
-                                frame.src = [
-                                    'https://dev.api.waterreporter.org/v2/embed/station/',
-                                    self.station.properties.id
-                                ].join('');
-
-                            }, 10);
+                            self.fetchStation(target);
 
                         } else {
 
@@ -41089,7 +41137,7 @@ angular.module('FieldDoc')
 
             var CUSTOM_LAYERS = {};
 
-            var EMPTY_SOURCE = {
+            var AUTO_SOURCE = {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -41098,29 +41146,22 @@ angular.module('FieldDoc')
                 generateId: true
             };
 
+            var BASE_SOURCE = JSON.parse(JSON.stringify(AUTO_SOURCE));
+            
+            BASE_SOURCE.generateId = false;
+
             var REFERENCE_SOURCES = {
-                'empty': EMPTY_SOURCE,
-                'fd.drainage.polygon': EMPTY_SOURCE,
-                'fd.practice.centroid': EMPTY_SOURCE,
-                // 'fd.practice.centroid-highlight': EMPTY_SOURCE,
-                'fd.practice.point': EMPTY_SOURCE,
-                // 'fd.practice.point-highlight': EMPTY_SOURCE,
-                'fd.practice.line': EMPTY_SOURCE,
-                // 'fd.practice.line-highlight': EMPTY_SOURCE,
-                'fd.practice.polygon': EMPTY_SOURCE,
-                // 'fd.practice.polygon-highlight': EMPTY_SOURCE,
-                // 'fd.site.centroid': EMPTY_SOURCE,
-                // 'fd.site.centroid-highlight': EMPTY_SOURCE,
-                'fd.site.point': EMPTY_SOURCE,
-                // 'fd.site.point-highlight': EMPTY_SOURCE,
-                'fd.site.line': EMPTY_SOURCE,
-                // 'fd.site.line-highlight': EMPTY_SOURCE,
-                'fd.site.polygon': EMPTY_SOURCE,
-                // 'fd.site.polygon-highlight': EMPTY_SOURCE,
-                'fd.project.point': EMPTY_SOURCE,
-                // 'fd.project.point-highlight': EMPTY_SOURCE,
-                'wr.station.point': EMPTY_SOURCE,
-                // 'wr.station.point-highlight': EMPTY_SOURCE
+                'empty': AUTO_SOURCE,
+                'fd.drainage.polygon': AUTO_SOURCE,
+                'fd.practice.centroid': BASE_SOURCE,
+                'fd.practice.point': BASE_SOURCE,
+                'fd.practice.line': BASE_SOURCE,
+                'fd.practice.polygon': BASE_SOURCE,
+                'fd.site.point': BASE_SOURCE,
+                'fd.site.line': BASE_SOURCE,
+                'fd.site.polygon': BASE_SOURCE,
+                'fd.project.point': BASE_SOURCE,
+                'wr.station.point': BASE_SOURCE
             };
 
             var REFERENCE_LAYERS = [

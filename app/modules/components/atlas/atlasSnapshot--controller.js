@@ -259,6 +259,8 @@ angular.module('FieldDoc')
 
                         successResponse.features.forEach(function (feature) {
 
+                            feature.id = feature.properties.id;
+
                             AtlasDataManager.trackFeature(
                                 nodeType, geometryType, feature);
 
@@ -485,6 +487,50 @@ angular.module('FieldDoc')
                     if (callback) callback();
 
                 });
+
+            };
+
+            self.fetchStation = function (target) {
+
+                //
+                // Reset stored array of queried features.
+                //
+
+                self.queryFeatures = undefined;
+
+                AtlasDataManager.setQueryFeatures([]);
+
+                self.showLayerOptions = false;
+
+                self.station = target;
+
+                self.toggleSidebar();
+
+                $timeout(function () {
+
+                    var frame = document.getElementsByTagName('iframe')[0];
+
+                    console.log(
+                        'map.click:frame:',
+                        frame
+                    );
+
+                    frame.setAttribute('height', $window.innerHeight);
+                    frame.setAttribute('width', $window.innerWidth);
+
+                    frame.style.height = $window.innerHeight;
+                    frame.style.width = $window.innerWidth;
+
+                    frame.style.backgroundColor = 'transparent';
+                    frame.frameBorder = '0';
+                    frame.allowTransparency = 'true';
+
+                    frame.src = [
+                        'https://dev.api.waterreporter.org/v2/embed/station/',
+                        self.station.properties.id
+                    ].join('');
+
+                }, 10);
 
             };
 
@@ -899,29 +945,7 @@ angular.module('FieldDoc')
                                 target
                             );
 
-                            self.station = target;
-
-                            self.toggleSidebar();
-
-                            $timeout(function () {
-
-                                var frame = document.getElementsByTagName('iframe')[0];
-
-                                console.log(
-                                    'map.click:frame:',
-                                    frame
-                                );
-
-                                frame.style.backgroundColor = 'transparent';
-                                frame.frameBorder = '0';
-                                frame.allowTransparency = 'true';
-
-                                frame.src = [
-                                    'https://dev.api.waterreporter.org/v2/embed/station/',
-                                    self.station.properties.id
-                                ].join('');
-
-                            }, 10);
+                            self.fetchStation(target);
 
                         } else {
 

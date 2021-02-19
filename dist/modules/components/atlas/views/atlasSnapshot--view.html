@@ -7,6 +7,20 @@
          data-ng-if="page.menuCollapsed"
          data-ng-click="page.toggleMenu()"></div>
 
+    <div class="dismiss-station"
+         style="position: absolute; top: 1rem; right: 1rem; z-index: 999;"
+         data-ng-if="page.station">
+        <div class="dismiss-container">
+            <div class="dismiss margin-0"
+                 data-ng-click="page.station = undefined">
+                <div class="halo"></div>
+                <span class="material-icons">
+                    close
+                </span>
+            </div>
+        </div>
+    </div>
+
     <div class="panel--container">
 
         <div class="sidebar" style="height: 0;">
@@ -16,12 +30,13 @@
         <div id="map">
 
             <div class="mapboxgl-layer-ctrl"
+                 data-ng-if="!page.station"
                  data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
                 <i class="material-icons">
                     layers
                 </i>
                 <div class="layer-group" style="font-weight: normal; font-size: 14px; min-width: 240px;"
-                     data-ng-show="page.showLayerOptions">
+                     data-ng-show="page.showLayerOptions && !page.station">
                     <form>
                         <label data-ng-repeat="style in page.mapStyles"
                                data-ng-class="{'active': page.activeStyle === $index}"
@@ -81,7 +96,8 @@
                 </div>
             </div>
 
-            <div class="mapboxgl-ext-ctrl">
+            <div class="mapboxgl-ext-ctrl"
+                 data-ng-if="!page.station">
 
                 <div class="mapboxgl-refresh-ctrl"
                      data-ng-click="page.fetchMap()"
@@ -113,8 +129,8 @@
     <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; display: flex; flex-flow: column nowrap;
     justify-content: center; align-items: center;" data-ng-show="page.station"
          data-ng-click="page.station = undefined; page.toggleSidebar()">
-        <iframe style="border: 1px solid #e0e0e0; border-radius: 0.5rem; overflow: hidden; min-height: 400px; width:
-        100%; max-width: 640px;"
+        <iframe style="border: 1px solid #e0e0e0; border-radius: 0.5rem; overflow: hidden; height: 100%; min-height:
+        400px; width: 100%;"
                 height="480"
                 width="640"
                 src=""
@@ -143,12 +159,24 @@
             <ul class="pad-0 margin-0">
                 <li class="pad-50p"
                     data-ng-repeat="feature in page.queryFeatures"
+                    data-ng-if="feature.properties.type !== 'station'"
                     data-ng-click="page.fetchPrimaryNode(
                         feature.properties.type,
                         feature.properties.id,
                         feature.programId)">
                     <span>
                         {{ feature.properties.name }}
+                    </span>
+                    <span class="pad-t-25p">
+                        {{ feature.properties.type }}
+                    </span>
+                </li>
+                <li class="pad-50p"
+                    data-ng-repeat="feature in page.queryFeatures"
+                    data-ng-if="feature.properties.type === 'station'"
+                    data-ng-click="page.fetchStation(feature)">
+                    <span>
+                        {{ feature.properties.name }} &middot; {{ feature.properties.key }}
                     </span>
                     <span class="pad-t-25p">
                         {{ feature.properties.type }}
