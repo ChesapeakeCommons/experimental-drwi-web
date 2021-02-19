@@ -13,8 +13,6 @@
                     restrict: 'EA',
                     scope: {
                         'alerts': '=?',
-                        'bookmarkReady': '=?',
-                        'captureFilters': '&',
                         'feature': '=?',
                         'dismissAction': '&',
                         'modalDisplay': '=?',
@@ -90,6 +88,12 @@
                         };
 
                         scope.cancelEdit = function () {
+
+                            scope.feature = undefined;
+
+                            scope.activeFilters = undefined;
+
+                            scope.cloneParsed = false;
 
                             scope.modalDisplay.editStep = undefined;
 
