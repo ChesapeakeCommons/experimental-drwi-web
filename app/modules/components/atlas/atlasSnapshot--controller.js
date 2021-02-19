@@ -1306,7 +1306,7 @@ angular.module('FieldDoc')
                     false,
                     {
                         filterString: filterString,
-                        style: self.styleString,
+                        style: self.urlData.style,
                         zoom: self.map.getZoom()
                     }
                 );
