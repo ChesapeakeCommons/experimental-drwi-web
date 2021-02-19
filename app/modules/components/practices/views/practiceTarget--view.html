@@ -374,7 +374,7 @@
                          features="page.programs"
                          antecedent="page.practice"
                          display-states="page.showModal"
-                         controller-method="loadMetrics"></div>
+                         controller-method="sortMetrics"></div>
 
                     <h2 class="reveal fade-in t3">
 
@@ -478,13 +478,15 @@
                         <div>{{ metric.name }}</div>
 
                         <input type="number" class="form-control"
+                               style="text-align: right;"
                                data-ng-model="metric.value"
                                data-ng-model-options="{ debounce: 1000 }"
                                id="name-inactive-{{ $index }}"
                                name="name-inactive-{{ $index }}"
                                placeholder="0"
+                               data-ng-change="page.autoSaveNewTarget(metric,$index,metric.value)"
                                step="0.0001" min="0" autocomplete="off"/>
-
+                        <!--
                         <button type="button" class="add-item"
                                 data-ng-click="page.saveTarget(metric, $index, metric.value)"
                                 data-ng-disabled="page.status.processing">
@@ -492,12 +494,16 @@
                                 done
                             </span>
                         </button>
-
-                        <button type="button" class="add-item" data-ng-click="page.removeMetric(metric, $index)"
-                                data-ng-disabled="page.status.processing">
+                    -->
+                        <button type="button" class="add-item"
+                                data-ng-click="page.removeMetric(metric, $index)"
+                                data-ng-disabled="page.status.processing"
+                                style="z-index:999; position:relative;"
+                        >
                             <span class="material-icons">
                                 remove_circle
                             </span>
+
                         </button>
 
                     </li>

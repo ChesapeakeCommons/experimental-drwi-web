@@ -505,27 +505,8 @@ angular.module('FieldDoc')
 
                 console.log('self.programs',self.programs);
 
-                /* Here we're going to loop over the self programs
-                object and check feature ids against the parameter id.
-                If there's a match (which there should be) we'll assign
-                the match as self.currentProgram.
-                * */
 
-                for(let program of self.programs){
 
-                    console.log("program -->",program);
-
-                    if (program.id === program_id) {
-
-                        console.log("program matched");
-
-                        self.currentProgram = program;
-
-                        break;
-                    }
-
-                }
-                
 
                 Practice.metrics({
                     id: practice_id,
@@ -535,140 +516,12 @@ angular.module('FieldDoc')
                         console.log("loadMetrics",successResponse);
 
                     self.info = successResponse;
-                    self.programMetrics = self.info.metrics.secondary;
-
-                  //  console.log(self.pro);
-
-                    /* 2021.02.10 - RZT
-                    We're going to sort the targets by program id
-                    * This is will not account for unassigned primary and secondary metrics or unassigned metrics
-                    * seperate handling will be needed
-                    * Ideally we'll a better request/end point structure to simplify front end logic.
-                    * */
-                    self.assignedMetrics = [];
-
-                    console.log("self.currentProgram -->",self.currentProgram);
-
-                    self.info.targets.forEach(function(target){
-                        console.log("target -->",target);
-                        console.log("target.program_id -->",target.program_id);
-                        console.log("self.currentProgram.id -->",self.currentProgram.id);
-
-                        if(target.program_id == self.currentProgram.id){
-
-                            self.assignedMetrics.push(target);
-
-                        }
-
-                    })
-                    console.log("assignedMetrics -->",self.assignedMetrics);
+                    self.allprogramMetrics = self.info.metrics.secondary;
 
 
-                   // self.assignedMetrics = self.info.targets;
-
-                    /*Check if secondary metrics are automated and have caputred extent
-                    * if so so, remove from programMetrics arr (ie Secondary Metrics
-                    * */
-
-                    let i = 0;
-
-                    self.programMetrics.forEach(function(metric) {
-
-                        if(metric.automated === true && metric.capture_extent === true){
-
-                            self.programMetrics.splice(i,1);
-
-                            i = i+1;
-
-                        }
-
-                    });
-
-                    /*Check if primary metrics are also assign metrics,
-                    if not, add them to the programMetrics (secondary) arr
-                    * */
-                    /*We're going to add conditional checks against the current program id
-                    * and only add those to the assigned metrics panel.
-                    * */
-
-                    let unassignedPrimaryMetrics = [];
-
-                    self.info.metrics.primary.forEach(function(pMetric) {
-
-                        let metricAssigned = false;
-
-                        self.assignedMetrics.forEach(function(aMetric){
-
-                            if(pMetric.id === aMetric.id){
-
-                                metricAssigned = true;
-
-                            }
-
-                        });
-
-                        if(metricAssigned === false){
-
-                            unassignedPrimaryMetrics.push(pMetric);
-
-                        }
-
-                    });
-
-                    /* loop over our unassigned primary metrics
-                    and add them to program/secondary metrics array
-                    * */
-
-                    unassignedPrimaryMetrics.forEach(function(uMetric){
-
-                        self.programMetrics.splice(0,0,uMetric);
-
-                    }); ``
+                    self.sortMetrics(practice_id,program_id);
 
 
-                    self.assignedMetrics.forEach(function(am){
-
-                        self.activeDomain.push(am.id);
-
-                        var i = 0;
-
-                        self.programMetrics.forEach(function(pm){
-
-                            if(am.metric.id == pm.id){
-
-                                self.programMetrics.splice(i,1);
-                            }
-
-                            i = i+1;
-                        });
-
-                    });
-
-                    /*We're going to loop through the array of unassigend
-                    program metrics again
-                    and get rid of anything not in the current program
-                   * */
-                    /*This immediate logic and other that isn't
-                    * directly relevant to the API call are going
-                    * to need to move into a sorting method
-                    * once the complete API response is save locally
-                    * in a controller var for reference/optimization*/
-
-                    //  i = 0;
-
-                    let tempMetrics = [];
-
-                    self.programMetrics.forEach(function(pMetric){
-                        console.log("pMetrics -->",pMetric);
-                        if(pMetric.program_id == self.currentProgram.id){
-                            console.log("MATCH");
-                           tempMetrics.push(pMetric);
-                        }
-                    });
-
-                    self.programMetrics = tempMetrics;
-
-                    self.loadModels(self.activeDomain);
 
                     self.calculating = false;
 
@@ -678,6 +531,160 @@ angular.module('FieldDoc')
                 });
 
             };
+
+            $scope.sortMetrics = self.sortMetrics = function(practice_id,program_id){
+
+                self.programMetrics = self.allprogramMetrics;
+
+                /* Here we're going to loop over the self programs
+               object and check feature ids against the parameter id.
+               If there's a match (which there should be) we'll assign
+               the match as self.currentProgram.
+               * */
+
+
+
+                for(let program of self.programs){
+
+                    console.log("program -->",program);
+
+                    if (program.id === program_id) {
+
+                        self.currentProgram = program;
+
+                        break;
+                    }
+
+                }
+
+                //  console.log(self.pro);
+
+                /* 2021.02.10 - RZT
+                We're going to sort the targets by program id
+                * This is will not account for unassigned primary and secondary metrics or unassigned metrics
+                * seperate handling will be needed
+                * Ideally we'll a better request/end point structure to simplify front end logic.
+                * */
+                self.assignedMetrics = [];
+
+                self.info.targets.forEach(function(target){
+
+                    if(target.program_id == self.currentProgram.id){
+
+                        self.assignedMetrics.push(target);
+
+                    }
+
+                })
+                console.log("assignedMetrics -->",self.assignedMetrics);
+
+
+                // self.assignedMetrics = self.info.targets;
+
+                /*Check if secondary metrics are automated and have caputred extent
+                * if so so, remove from programMetrics arr (ie Secondary Metrics
+                * */
+
+                let i = 0;
+
+                self.programMetrics.forEach(function(metric) {
+
+                    if(metric.automated === true && metric.capture_extent === true){
+
+                        self.programMetrics.splice(i,1);
+
+                        i = i+1;
+
+                    }
+
+                });
+
+                /*Check if primary metrics are also assign metrics,
+                if not, add them to the programMetrics (secondary) arr
+                * */
+                /*We're going to add conditional checks against the current program id
+                * and only add those to the assigned metrics panel.
+                * */
+
+                let unassignedPrimaryMetrics = [];
+
+                self.info.metrics.primary.forEach(function(pMetric) {
+
+                    let metricAssigned = false;
+
+                    self.assignedMetrics.forEach(function(aMetric){
+
+                        if(pMetric.id === aMetric.id){
+
+                            metricAssigned = true;
+
+                        }
+
+                    });
+
+                    if(metricAssigned === false){
+
+                        unassignedPrimaryMetrics.push(pMetric);
+
+                    }
+
+                });
+
+                /* loop over our unassigned primary metrics
+                and add them to program/secondary metrics array
+                * */
+
+                unassignedPrimaryMetrics.forEach(function(uMetric){
+
+                    self.programMetrics.splice(0,0,uMetric);
+
+                }); ``
+
+
+                self.assignedMetrics.forEach(function(am){
+
+                    self.activeDomain.push(am.id);
+
+                    var i = 0;
+
+                    self.programMetrics.forEach(function(pm){
+
+                        if(am.metric.id == pm.id){
+
+                            self.programMetrics.splice(i,1);
+                        }
+
+                        i = i+1;
+                    });
+
+                });
+
+                /*We're going to loop through the array of unassigend
+                program metrics again
+                and get rid of anything not in the current program
+               * */
+                /*This immediate logic and other that isn't
+                * directly relevant to the API call are going
+                * to need to move into a sorting method
+                * once the complete API response is save locally
+                * in a controller var for reference/optimization*/
+
+                //  i = 0;
+
+                let tempMetrics = [];
+
+                self.programMetrics.forEach(function(pMetric){
+                    console.log("pMetrics -->",pMetric);
+                    if(pMetric.program_id == self.currentProgram.id){
+                        console.log("MATCH");
+                        tempMetrics.push(pMetric);
+                    }
+                });
+
+                self.programMetrics = tempMetrics;
+
+                self.loadModels(self.activeDomain);
+            }
 
             self.bgLoadMetrics = function(){
 
@@ -700,10 +707,18 @@ angular.module('FieldDoc')
 
             self.addMetric = function($item, $model, $label) {
 
+                console.log("self.assignedMetrics-->", self.assignedMetrics);
+
                 self.metricMatrix.push($item);
+               // self.assignedMetrics.push($item);
+
+                console.log("self.assignedMetrics 22-->", self.assignedMetrics);
+
 
                 var tempProgramMetrics = [];
 
+
+                /*remove the item from current program metrics*/
 
                 self.programMetrics.forEach(function(newItem){
 
@@ -715,10 +730,7 @@ angular.module('FieldDoc')
 
                     }
 
-
-
                 });
-
 
 
                 self.programMetrics = tempProgramMetrics;
@@ -797,6 +809,23 @@ angular.module('FieldDoc')
 
             };
 
+            self.autoSaveNewTarget = function($item,$index,$value){
+
+                console.log("changed target-->",$item);
+                console.log("$value-->",$value);
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Updating practice target...',
+                    'prompt': 'OK'
+                }];
+
+                self.saveTarget($item,$index,$value);
+
+
+            };
+
             self.saveTarget = function($item,$index,$value){
 
                 console.log("save $item", $item);
@@ -815,6 +844,8 @@ angular.module('FieldDoc')
                     targets: target_arr
                 };
 
+                console.log("data-->",data);
+
                 console.log("target_arr -->",target_arr);
 
                 Practice.updateMatrix({
@@ -831,6 +862,8 @@ angular.module('FieldDoc')
                     $timeout(self.closeAlerts, 2000);
 
                     self.status.processing = false;
+
+                    console.log("Assigned.metrics-->",self.assignedMetrics);
 
                     console.log("practice.updateMatrix", successResponse);
 
@@ -854,6 +887,38 @@ angular.module('FieldDoc')
                 });
             };
 
+            /*
+              START Metric Delete Logic
+               */
+            self.confirmMetricDelete = function ($event,id) {
+
+                console.log("Confirm dialog");
+
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = !self.showDeletionDialog;
+
+                self.deletionId = id;
+
+            };
+
+            self.cancelMetricDelete = function($event) {
+
+                console.log("Cancel Removal");
+                if($event){
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                }
+
+                self.showDeletionDialog = false;
+
+                self.deletionId = undefined;
+
+            };
+
             self.removeMetric = function($item,$index){
 
                 console.log($item+" "+$index);
@@ -863,7 +928,6 @@ angular.module('FieldDoc')
                 self.programMetrics.push($item);
 
             }
-
 
             /*
                START Target Delete Logic
