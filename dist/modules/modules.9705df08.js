@@ -144,7 +144,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1612343408824})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1613750921213})
 
 ;
 /**
@@ -22156,7 +22156,7 @@ angular.module('FieldDoc')
 
                 self.practice = data.properties || data;
 
-                if(self.practice.custom_extent == null){
+                if(self.practice.custom_extent === null && self.practice.geometry.type !== 'Point'){
                     self.practice.custom_extent = self.practice.calculated_extent.converted;
                 }
 
