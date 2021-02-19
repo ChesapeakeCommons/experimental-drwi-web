@@ -332,10 +332,10 @@ angular.module('FieldDoc')
 
                                 if (filters.length) {
 
-                                    self.map.fitBounds(
-                                        turf.bbox(successResponse),
-                                        self.padding
-                                    );
+                                    // self.map.fitBounds(
+                                    //     turf.bbox(successResponse),
+                                    //     self.padding
+                                    // );
 
                                 }
 
