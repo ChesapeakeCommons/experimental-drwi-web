@@ -144,7 +144,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1613750921213})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1614098793429})
 
 ;
 /**
@@ -39972,7 +39972,7 @@ angular.module('FieldDoc')
 
                     simplified = turf.simplify(geometry, simplify_options);
 
-                }else if(lengthCheck > 1024){
+                }else if(lengthCheck > 3072){
 
                     let simplify_options = {tolerance: 0.3, highQuality: true, mutate: false};
 
