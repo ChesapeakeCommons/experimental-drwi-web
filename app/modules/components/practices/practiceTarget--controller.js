@@ -709,7 +709,7 @@ angular.module('FieldDoc')
 
                 console.log("self.assignedMetrics-->", self.assignedMetrics);
 
-                self.metricMatrix.push($item);
+           //     self.metricMatrix.push($item);
                // self.assignedMetrics.push($item);
 
                 console.log("self.assignedMetrics 22-->", self.assignedMetrics);
@@ -830,6 +830,8 @@ angular.module('FieldDoc')
 
                 console.log("save $item", $item);
 
+                /*construct an array formatted for sending to the api*/
+
                 var target_arr = [];
 
                 target_arr.push({
@@ -848,6 +850,8 @@ angular.module('FieldDoc')
 
                 console.log("target_arr -->",target_arr);
 
+                /*Send to api*/
+
                 Practice.updateMatrix({
                     id: +self.practice.id
                 }, data).$promise.then(function(successResponse) {
@@ -861,11 +865,26 @@ angular.module('FieldDoc')
 
                     $timeout(self.closeAlerts, 2000);
 
-                    self.status.processing = false;
-
                     console.log("Assigned.metrics-->",self.assignedMetrics);
 
                     console.log("practice.updateMatrix", successResponse);
+
+                    let newMatrix = successResponse;
+
+                    /*get the last element of returned target array*/
+
+                    let newMetric = (newMatrix.features.active[newMatrix.features.active.length - 1]);
+
+                    /*We push the new Metric to our assigned and target arrays*/
+
+                    self.assignedMetrics.push(newMetric);
+
+                    self.info.targets.push(newMetric);
+
+                    console.log("new assignedMetric-->",self.assignedMetrics);
+
+                    self.status.processing = false;
+
 
                 }).catch(function(error) {
 
@@ -890,6 +909,7 @@ angular.module('FieldDoc')
             /*
               START Metric Delete Logic
                */
+            /*
             self.confirmMetricDelete = function ($event,id) {
 
                 console.log("Confirm dialog");
@@ -928,7 +948,7 @@ angular.module('FieldDoc')
                 self.programMetrics.push($item);
 
             }
-
+*/
             /*
                START Target Delete Logic
                 */
@@ -991,7 +1011,9 @@ angular.module('FieldDoc')
 
                     console.log("assignedMetrics",self.assignedMetrics);
 
-                    var i = 0;
+
+                    /*Remove the newly deleted target from the assignedMetrics*/
+                    let i = 0;
                     self.assignedMetrics.forEach(function(am){
 
                         if(am.id == $item.id){
@@ -1000,6 +1022,21 @@ angular.module('FieldDoc')
                         }
                         i = i+1;
                     });
+
+
+                    /*Add logic here to remove target from self.info*/
+
+                    i = 0;
+
+                    self.info.targets.forEach(function(target){
+                        if(target.id == $item.id){
+
+                            self.info.targets.splice(i,1);
+                        }
+                        i = i+1;
+                    });
+
+
 
                     self.programMetrics.push($item.metric);
 
