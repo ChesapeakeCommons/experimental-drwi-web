@@ -350,8 +350,19 @@
 
             <!-- START ASSIGN METRICS -->
 
+            <div class="target-block-wrapper"
+                 data-ng-if="!page.info" >
+
+                <p style="width: 100%; padding-top: 50px; padding-bottom:50px;
+                        text-align: center; font-weight: bold;">
+                    Loading practice targets...
+                </p>
+
+            </div>
+
             <div class="target-block-wrapper" id="assignTargetsBlock"
-                 data-ng-if="page.assignedMetrics && page.metricMatrix">
+                 data-ng-if="page.info" >
+                <!-- data-ng-if="page.assignedMetrics && page.metricMatrix" -->
 
                 <div class="target-block-header" style="margin-bottom: 5px;">
 
