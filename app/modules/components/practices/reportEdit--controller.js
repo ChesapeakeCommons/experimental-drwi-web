@@ -869,8 +869,11 @@
 
                     // self.scrubFeature(self.report);
 
+                    console.log("currentProgram", self.currentProgram);
+
                     var data = {
-                        targets: self.targets.active.slice(0)
+                        targets: self.targets.active.slice(0),
+                        program: self.currentProgram.program_id
                     };
 
                     self.targets.inactive.forEach(function(item) {
@@ -886,6 +889,7 @@
 
                     Report.updateMatrix({
                         id: +self.report.id
+
                     }, data).$promise.then(function(successResponse) {
 
                         self.alerts = [{
