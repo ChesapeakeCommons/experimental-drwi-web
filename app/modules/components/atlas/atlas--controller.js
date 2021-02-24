@@ -530,7 +530,7 @@ angular.module('FieldDoc')
 
                 self.station = target;
 
-                self.toggleSidebar();
+                self.toggleSidebar(false, true);
 
                 $timeout(function () {
 
@@ -560,11 +560,13 @@ angular.module('FieldDoc')
 
             };
 
-            self.positionSidebar = function(elem) {
+            self.positionSidebar = function(elem, forceClose) {
+
+                forceClose = (typeof forceClose === 'boolean') ? forceClose : false;
 
                 var transform = 'translateX(' + 0 + 'px)';
 
-                if (self.collapsed) {
+                if (self.collapsed || forceClose) {
 
                     transform = 'translateX(-' + elem.offsetWidth + 'px)';
 
@@ -574,7 +576,11 @@ angular.module('FieldDoc')
 
             };
 
-            self.toggleSidebar = function() {
+            self.toggleSidebar = function(fitMap, forceClose) {
+
+                fitMap = (typeof fitMap === 'boolean') ? fitMap : true;
+
+                forceClose = (typeof forceClose === 'boolean') ? forceClose : false;
 
                 self.collapsed = !self.collapsed;
 
@@ -592,14 +598,18 @@ angular.module('FieldDoc')
                     self.padding
                 );
 
-                MapUtil.fitMap(
-                    self.map,
-                    self.primaryNode,
-                    self.padding,
-                    true
-                );
+                if (fitMap) {
 
-                self.positionSidebar(elem);
+                    MapUtil.fitMap(
+                        self.map,
+                        self.primaryNode,
+                        self.padding,
+                        true
+                    );
+
+                }
+
+                self.positionSidebar(elem, forceClose);
 
             };
 
@@ -646,7 +656,7 @@ angular.module('FieldDoc')
 
                 $http({
                     method: 'POST',
-                    url: 'http://watersheds.cci.drexel.edu/api/watershedboundary/',
+                    url: 'https://watersheds.cci.drexel.edu/api/watershedboundary/',
                     data: feature.geometry,
                     headers: {
                         'Authorization-Bypass': true
@@ -866,7 +876,7 @@ angular.module('FieldDoc')
 
                         self.station = undefined;
 
-                        self.toggleSidebar();
+                        self.toggleSidebar(false);
 
                     }
 
@@ -1537,7 +1547,7 @@ angular.module('FieldDoc')
 
                 self.modalDisplay.creationStep = 1;
 
-                self.toggleSidebar();
+                self.toggleSidebar(false, true);
 
             };
 

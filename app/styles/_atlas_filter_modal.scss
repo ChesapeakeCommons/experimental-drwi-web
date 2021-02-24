@@ -42,8 +42,17 @@
         justify-content: center;
         align-items: flex-start;
 
+        span {
+            display: block;
+            width: 100%;
+            padding-right: 1rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
         .option-label {
-            display: flex;
+            display: block;
             font-size: 0.75rem;
             color: #9E9E9E;
             text-transform: uppercase;
@@ -87,6 +96,13 @@
                     flex-shrink: 0;
                     color: #2196F3;
                     cursor: default;
+                }
+
+                .selection-ctrl {
+                    display: flex;
+                    flex-flow: column nowrap;
+                    justify-content: center;
+                    align-items: center;
                 }
 
             }
