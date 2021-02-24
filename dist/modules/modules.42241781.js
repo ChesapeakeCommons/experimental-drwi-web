@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614192345878})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614198226484})
 
 ;
 /**
@@ -38191,12 +38191,6 @@ angular.module('FieldDoc')
 
                 });
 
-                self.map.on('idle', function() {
-
-                    //
-
-                });
-
                 self.map.on('load', function() {
 
                     console.log("Loading Map");
@@ -39845,12 +39839,6 @@ angular.module('FieldDoc')
 
                 });
 
-                self.map.on('idle', function() {
-
-                    //
-
-                });
-
                 self.map.on('load', function() {
 
                     console.log("Loading Map");
@@ -41294,6 +41282,19 @@ angular.module('FieldDoc')
                         if (map.getSource(key) === undefined) {
 
                             map.addSource(key, REFERENCE_SOURCES[key]);
+
+                            if (key.startsWith('fd.') ||
+                                key.startsWith('wr.')) {
+
+                                map.on('mouseleave', key, function () {
+                                    map.getCanvas().style.cursor = '';
+                                });
+
+                                map.on('mouseover', key, function () {
+                                    map.getCanvas().style.cursor = 'pointer';
+                                });
+
+                            }
 
                         }
 

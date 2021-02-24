@@ -1021,12 +1021,6 @@ angular.module('FieldDoc')
 
                 });
 
-                self.map.on('idle', function() {
-
-                    //
-
-                });
-
                 self.map.on('load', function() {
 
                     console.log("Loading Map");

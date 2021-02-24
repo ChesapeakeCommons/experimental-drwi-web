@@ -154,6 +154,19 @@ angular.module('FieldDoc')
 
                             map.addSource(key, REFERENCE_SOURCES[key]);
 
+                            if (key.startsWith('fd.') ||
+                                key.startsWith('wr.')) {
+
+                                map.on('mouseleave', key, function () {
+                                    map.getCanvas().style.cursor = '';
+                                });
+
+                                map.on('mouseover', key, function () {
+                                    map.getCanvas().style.cursor = 'pointer';
+                                });
+
+                            }
+
                         }
 
                     }
