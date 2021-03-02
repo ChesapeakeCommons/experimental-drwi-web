@@ -11,6 +11,14 @@ angular.module('FieldDoc')
     .service('SourceUtil', function(AtlasDataManager) {
 
         var FEATURE_SOURCES = {
+            'fd.practice.centroid': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
             'fd.practice.point': {
                 type: 'geojson',
                 data: {

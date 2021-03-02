@@ -131,7 +131,11 @@ angular.module('FieldDoc')
                     params
                 );
 
-                params = QueryParamManager.adjustParams(params);
+                params = QueryParamManager.adjustParams(
+                    params,
+                    {
+                        sort: 'id:desc'
+                    });
 
                 self.queryParams = QueryParamManager.getParams();
 

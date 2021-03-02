@@ -783,6 +783,10 @@ angular.module('FieldDoc')
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
+                LayerUtil.setGlobalLabelColor(
+                    self.mapOptions.style
+                );
+
                 self.map.setStyle(
                     self.mapStyles[index].url,
                     {
@@ -997,7 +1001,7 @@ angular.module('FieldDoc')
                     // Set text color for label layers.
                     //
 
-                    LayerUtil.setTextColor(self.map, styleString);
+                    LayerUtil.setTextColor(self.map);
 
                     if (!angular.isDefined(self.currentStyleString)) return;
 
@@ -1386,6 +1390,8 @@ angular.module('FieldDoc')
                 );
 
                 self.urlData = dataObj;
+
+                LayerUtil.setGlobalLabelColor(self.urlData.style);
 
                 if (setSrc) self.srcNode = self.urlData.node;
 

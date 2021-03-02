@@ -14,6 +14,8 @@ angular.module('FieldDoc')
 
             var programId = undefined;
 
+            var globalLabelColor = 'dark';
+
             var CUSTOM_LAYERS = {};
 
             var AUTO_SOURCE = {
@@ -514,7 +516,20 @@ angular.module('FieldDoc')
                     });
 
                 },
-                setTextColor: function (map, styleString) {
+                setGlobalLabelColor: function (styleString) {
+
+                    this.globalLabelColor = 'dark';
+
+                    if (typeof styleString === 'string' &&
+                        (styleString.indexOf('dark') >= 0 ||
+                        styleString.indexOf('satellite') >= 0)) {
+
+                        this.globalLabelColor = 'light';
+
+                    }
+
+                },
+                setTextColor: function (map) {
 
                     var mod = this;
 
@@ -546,8 +561,7 @@ angular.module('FieldDoc')
 
                             if (layer !== undefined) {
 
-                                if (styleString.indexOf('satellite') >= 0 ||
-                                    styleString.indexOf('dark') >= 0) {
+                                if (mod.globalLabelColor === 'light') {
 
                                     try {
 

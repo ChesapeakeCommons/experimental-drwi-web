@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614701545833})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614720515166})
 
 ;
 /**
@@ -37954,6 +37954,10 @@ angular.module('FieldDoc')
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
+                LayerUtil.setGlobalLabelColor(
+                    self.mapOptions.style
+                );
+
                 self.map.setStyle(
                     self.mapStyles[index].url,
                     {
@@ -38168,7 +38172,7 @@ angular.module('FieldDoc')
                     // Set text color for label layers.
                     //
 
-                    LayerUtil.setTextColor(self.map, styleString);
+                    LayerUtil.setTextColor(self.map);
 
                     if (!angular.isDefined(self.currentStyleString)) return;
 
@@ -38557,6 +38561,8 @@ angular.module('FieldDoc')
                 );
 
                 self.urlData = dataObj;
+
+                LayerUtil.setGlobalLabelColor(self.urlData.style);
 
                 if (setSrc) self.srcNode = self.urlData.node;
 
@@ -39602,6 +39608,10 @@ angular.module('FieldDoc')
 
                 self.mapOptions.style = self.mapStyles[index].url;
 
+                LayerUtil.setGlobalLabelColor(
+                    self.mapOptions.style
+                );
+
                 self.map.setStyle(
                     self.mapStyles[index].url,
                     {
@@ -39816,7 +39826,7 @@ angular.module('FieldDoc')
                     // Set text color for label layers.
                     //
 
-                    LayerUtil.setTextColor(self.map, styleString);
+                    LayerUtil.setTextColor(self.map);
 
                     if (!angular.isDefined(self.currentStyleString)) return;
 
@@ -40170,6 +40180,8 @@ angular.module('FieldDoc')
                 );
 
                 self.urlData = dataObj;
+
+                LayerUtil.setGlobalLabelColor(self.urlData.style);
 
                 self.storedFilters = AtlasDataManager.getUrlFilters(
                     self.urlData
@@ -41144,6 +41156,8 @@ angular.module('FieldDoc')
 
             var programId = undefined;
 
+            var globalLabelColor = 'dark';
+
             var CUSTOM_LAYERS = {};
 
             var AUTO_SOURCE = {
@@ -41644,7 +41658,20 @@ angular.module('FieldDoc')
                     });
 
                 },
-                setTextColor: function (map, styleString) {
+                setGlobalLabelColor: function (styleString) {
+
+                    this.globalLabelColor = 'dark';
+
+                    if (typeof styleString === 'string' &&
+                        (styleString.indexOf('dark') >= 0 ||
+                        styleString.indexOf('satellite') >= 0)) {
+
+                        this.globalLabelColor = 'light';
+
+                    }
+
+                },
+                setTextColor: function (map) {
 
                     var mod = this;
 
@@ -41676,8 +41703,7 @@ angular.module('FieldDoc')
 
                             if (layer !== undefined) {
 
-                                if (styleString.indexOf('satellite') >= 0 ||
-                                    styleString.indexOf('dark') >= 0) {
+                                if (mod.globalLabelColor === 'light') {
 
                                     try {
 
@@ -41905,6 +41931,14 @@ angular.module('FieldDoc')
     .service('SourceUtil', function(AtlasDataManager) {
 
         var FEATURE_SOURCES = {
+            'fd.practice.centroid': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
             'fd.practice.point': {
                 type: 'geojson',
                 data: {
@@ -43881,7 +43915,11 @@ angular.module('FieldDoc')
                     params
                 );
 
-                params = QueryParamManager.adjustParams(params);
+                params = QueryParamManager.adjustParams(
+                    params,
+                    {
+                        sort: 'id:desc'
+                    });
 
                 self.queryParams = QueryParamManager.getParams();
 
