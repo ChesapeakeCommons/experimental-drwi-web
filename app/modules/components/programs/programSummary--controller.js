@@ -80,9 +80,9 @@
 
                             self.createMap(self.mapOptions);
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 

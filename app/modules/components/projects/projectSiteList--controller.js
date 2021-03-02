@@ -87,11 +87,11 @@ angular.module('FieldDoc')
                                     self.sites, "site", 400, 200);
                             }
 
-                        }, 500);
+                        }, 50);
 
                     }
 
-                }, 200);
+                }, 50);
 
             };
 

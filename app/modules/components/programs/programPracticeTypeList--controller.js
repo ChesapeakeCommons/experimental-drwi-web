@@ -72,7 +72,7 @@
 
                         self.scrollManager.scrollToAnchor();
 
-                    }, 500);
+                    }, 50);
 
                 };
 

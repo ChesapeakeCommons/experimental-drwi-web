@@ -46,7 +46,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 
@@ -140,7 +140,8 @@ angular.module('FieldDoc')
                 params = QueryParamManager.adjustParams(
                     params,
                     {
-                        combine: 'true'
+                        combine: 'true',
+                        sort: 'modified_on:desc'
                     });
 
                 self.queryParams = QueryParamManager.getParams();

@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614198226484})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614701545833})
 
 ;
 /**
@@ -1212,7 +1212,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -4648,7 +4648,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 
@@ -4742,7 +4742,8 @@ angular.module('FieldDoc')
                 params = QueryParamManager.adjustParams(
                     params,
                     {
-                        combine: 'true'
+                        combine: 'true',
+                        sort: 'modified_on:desc'
                     });
 
                 self.queryParams = QueryParamManager.getParams();
@@ -5128,11 +5129,11 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
                     }
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -6579,7 +6580,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -7059,7 +7060,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -7454,7 +7455,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -8066,7 +8067,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -8481,7 +8482,7 @@ angular.module('FieldDoc')
 
         self.showElements = function(delay) {
 
-            var ms = delay || 1000;
+            var ms = delay || 50;
 
             $timeout(function() {
 
@@ -8800,7 +8801,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -9457,9 +9458,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -9862,9 +9863,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -10230,11 +10231,11 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
                     }
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -10999,11 +11000,11 @@ angular.module('FieldDoc')
                                     self.sites, "site", 400, 200);
                             }
 
-                        }, 500);
+                        }, 50);
 
                     }
 
-                }, 200);
+                }, 50);
 
             };
 
@@ -11765,7 +11766,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 
@@ -13496,9 +13497,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -14546,7 +14547,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -14843,9 +14844,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -15540,9 +15541,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -16026,7 +16027,7 @@ angular.module('FieldDoc')
 
         self.showElements = function(delay) {
 
-            var ms = delay || 1000;
+            var ms = delay || 50;
 
             $timeout(function() {
 
@@ -16345,7 +16346,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -17005,9 +17006,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -17329,9 +17330,9 @@ angular.module('FieldDoc')
 
                             }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -18331,7 +18332,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -18775,9 +18776,9 @@ angular.module('FieldDoc')
 
                             self.createMap(self.mapOptions);
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -19482,9 +19483,9 @@ angular.module('FieldDoc')
 
                         }
 
-                    }, 500);
+                    }, 50);
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -21405,7 +21406,7 @@ angular.module('FieldDoc')
 
         self.showElements = function(delay) {
 
-            var ms = delay || 1000;
+            var ms = delay || 50;
 
             $timeout(function() {
 
@@ -21714,7 +21715,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -22980,7 +22981,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -23789,7 +23790,7 @@ angular.module('FieldDoc')
 
                 self.status.processing = false;
 
-            }, 500);
+            }, 50);
 
         };
 
@@ -24085,7 +24086,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -24293,7 +24294,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -24708,7 +24709,7 @@ angular.module('FieldDoc')
 
                 self.status.processing = false;
 
-            }, 500);
+            }, 50);
 
         };
 
@@ -25181,7 +25182,7 @@ angular.module('FieldDoc')
 
                     self.status.loadingFeatures = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -25538,7 +25539,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -25771,7 +25772,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -26453,7 +26454,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -26764,9 +26765,9 @@ angular.module('FieldDoc')
 
                             // }
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -27357,7 +27358,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -28071,7 +28072,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -29534,7 +29535,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -29855,7 +29856,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -30192,7 +30193,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -31052,7 +31053,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -31345,9 +31346,9 @@ angular.module('FieldDoc')
 
                             self.createMap(self.mapOptions);
 
-                        }, 500);
+                        }, 50);
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -31938,7 +31939,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -32130,7 +32131,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -32541,7 +32542,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -32816,7 +32817,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -33240,7 +33241,7 @@ angular.module('FieldDoc')
 
                         self.scrollManager.scrollToAnchor();
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -33594,7 +33595,7 @@ angular.module('FieldDoc')
 
                 self.status.processing = false;
 
-            }, 500);
+            }, 50);
 
         };
 
@@ -34002,7 +34003,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -34299,7 +34300,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -34718,7 +34719,7 @@ angular.module('FieldDoc')
 
                         self.status.processing = false;
 
-                    }, 500);
+                    }, 50);
 
                 };
 
@@ -35201,7 +35202,7 @@ angular.module('FieldDoc')
 
                 self.status.processing = false;
 
-            }, 500);
+            }, 50);
 
         };
 
@@ -35604,7 +35605,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -35937,7 +35938,7 @@ angular.module('FieldDoc')
 
                 self.status.processing = false;
 
-            }, 500);
+            }, 50);
 
         };
 
@@ -36340,7 +36341,7 @@ angular.module('FieldDoc')
 
                     self.status.loading = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -36917,7 +36918,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 
@@ -43789,7 +43790,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 
@@ -44026,7 +44027,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 
@@ -44490,7 +44491,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 500);
+                }, 50);
 
             };
 

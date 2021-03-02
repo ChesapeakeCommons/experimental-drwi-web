@@ -50,7 +50,7 @@ angular.module('FieldDoc')
 
                     self.status.loadingFeatures = false;
 
-                }, 500);
+                }, 50);
 
             };
 

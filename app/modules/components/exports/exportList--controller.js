@@ -39,7 +39,7 @@ angular.module('FieldDoc')
 
                     self.status.processing = false;
 
-                }, 250);
+                }, 50);
 
             };
 

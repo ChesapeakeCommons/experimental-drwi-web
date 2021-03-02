@@ -26,7 +26,7 @@ angular.module('FieldDoc')
 
         self.showElements = function(delay) {
 
-            var ms = delay || 1000;
+            var ms = delay || 50;
 
             $timeout(function() {
 
