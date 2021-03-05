@@ -506,6 +506,7 @@ angular.module('FieldDoc')
                     layers.forEach(function (layer) {
 
                         if (layer.id.startsWith('fd.') &&
+                            layer.id.indexOf('drainage') < 0 &&
                             layer.id.indexOf('highlight') < 0 &&
                             map.getLayer(layer.id)) {
 

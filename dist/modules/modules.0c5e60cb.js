@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614720515166})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614972071823})
 
 ;
 /**
@@ -5076,6 +5076,10 @@ angular.module('FieldDoc')
 
                 Project.practices(params).$promise.then(function(successResponse) {
 
+                    self.createStaticMapURLs(
+                        successResponse.features,
+                        'practice');
+
                     self.practices = successResponse.features;
 
                     self.practicesSummary = successResponse.summary;
@@ -5115,19 +5119,6 @@ angular.module('FieldDoc')
                             }
 
                             self.createMap(self.mapOptions);
-
-                            if (self.sites && self.sites.length) {
-                                console.log("A 1");
-                                self.createStaticMapURLs(self.sites, "site", 400, 200);
-                                //       self.addMapPreviews(self.sites);
-
-                            }
-                            if (self.practices && self.practices.length) {
-                                console.log("A 2");
-                                self.createStaticMapURLs(self.practices, "practice", 400, 200);
-                                //       self.addMapPreviews(self.sites);
-
-                            }
 
                         }, 50);
 
@@ -5534,11 +5525,11 @@ angular.module('FieldDoc')
 
                 Project.sites(params).$promise.then(function(successResponse) {
 
-                    console.log('Project sites --> ', successResponse);
+                    self.createStaticMapURLs(
+                        successResponse.features,
+                        'site');
 
                     self.sites = successResponse.features;
-
-                    console.log("self.sites", self.sites);
 
                     self.summary = successResponse.summary;
 
@@ -5682,69 +5673,37 @@ angular.module('FieldDoc')
                 branch : FD_489-turf.simplify 2020.07.28
             */
             self.createStaticMapURLs = function(arr, feature_type) {
-                console.log("createStaticMapURLS -> arr", arr)
 
-                arr.forEach(function(feature, index) {
+                arr.forEach(function(feature) {
 
-                    if (feature.geometry != null) {
+                    var staticURL;
 
-                        console.log("THUMB", feature);
+                    if (feature.geometry) {
 
-                        feature.staticURL = Utility.buildStaticMapURL(
+                        staticURL = Utility.buildStaticMapURL(
                             feature.geometry,
                             feature_type,
                             400,
                             200);
 
-                        if (feature.staticURL.length >= 4096) {
+                        if (staticURL.length >= 4096) {
 
-                            feature.staticURL = ['https://api.mapbox.com/styles/v1',
+                            staticURL = ['https://api.mapbox.com/styles/v1',
                                 '/mapbox/streets-v11/static/-76.4034,38.7699,3.67/400x200?access_token=',
                                 'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
                             ].join('');
                         }
 
-                        console.log('feature.staticURL', feature.staticURL);
-
-                        if (feature_type == "site") {
-
-                            self.sites[index].staticURL = feature.staticURL;
-
-                            console.log("self.sites" + index + ".staticURL", self.sites[index].staticURL);
-
-                        }
-                        if (feature_type == "practice") {
-                            self.practices[index].staticURL = feature.staticURL;
-
-                            console.log("self.practices" + index + ".staticURL", self.practices[index].staticURL);
-
-                        }
-
-
-
                     } else {
 
-                        if (feature_type == "site") {
-                            self.sites[index].staticURL = ['https://api.mapbox.com/styles/v1',
-                                '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
-                                'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
-                            ].join('');
-
-
-                        }
-                        if (feature_type == "practice") {
-                            self.practices[index].staticURL = ['https://api.mapbox.com/styles/v1',
-                                '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
-                                'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
-                            ].join('');
-
-                        }
+                        staticURL = ['https://api.mapbox.com/styles/v1',
+                            '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
+                            'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
+                        ].join('');
 
                     }
 
-                    //    }else{
-                    //      console.log("A 7");
-                    //   }
+                    feature.staticURL = staticURL;
 
                 });
 
@@ -41648,6 +41607,7 @@ angular.module('FieldDoc')
                     layers.forEach(function (layer) {
 
                         if (layer.id.startsWith('fd.') &&
+                            layer.id.indexOf('drainage') < 0 &&
                             layer.id.indexOf('highlight') < 0 &&
                             map.getLayer(layer.id)) {
 
@@ -43694,993 +43654,6 @@ angular.module('FieldDoc')
         };
 
     });
-'use strict';
-
-/**
- * @ngdoc overview
- * @name FieldDoc
- * @description
- * # FieldDoc
- *
- * Main module of the application.
- */
-angular.module('FieldDoc')
-    .config(function($routeProvider, environment) {
-
-        $routeProvider
-            .when('/maps', {
-                templateUrl: '/modules/components/map/views/mapList--view.html?t=' + environment.version,
-                controller: 'MapListController',
-                controllerAs: 'page',
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
-            })
-            .when('/maps/:id', {
-                templateUrl: '/modules/components/map/views/mapSummary--view.html?t=' + environment.version,
-                controller: 'MapSummaryController',
-                controllerAs: 'page',
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
-            })
-            .when('/maps/:id/edit', {
-                templateUrl: '/modules/components/map/views/mapEdit--view.html?t=' + environment.version,
-                controller: 'MapEditController',
-                controllerAs: 'page',
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
-            })
-            .when('/maps/:id/images', {
-                templateUrl: '/modules/components/map/views/mapImage--view.html?t=' + environment.version,
-                controller: 'MapImageController',
-                controllerAs: 'page',
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
-            });
-
-    });
-'use strict';
-
-/**
- * @ngdoc function
- * @name
- * @description
- */
-angular.module('FieldDoc')
-    .controller('MapListController',
-        function(Account, $location, $log, MapInterface, Tag,
-                 $rootScope, $scope, Site, User, user, mapbox,
-                 $interval, $timeout, Utility, QueryParamManager,
-                 AtlasDataManager) {
-
-            var self = this;
-
-            $rootScope.viewState = {
-                'map': true
-            };
-
-            //
-            // Setup basic page variables
-            //
-            $rootScope.page = {
-                title: 'Maps',
-                actions: []
-            };
-
-            self.showModal = {};
-
-            self.status = {
-                loading: true
-            };
-
-            self.showElements = function() {
-
-                $timeout(function() {
-
-                    self.status.loading = false;
-
-                    self.status.processing = false;
-
-                }, 50);
-
-            };
-
-            self.alerts = [];
-
-            function closeAlerts() {
-
-                self.alerts = [];
-
-            }
-
-            self.confirmDelete = function(obj) {
-
-                self.deletionTarget = obj;
-
-            };
-
-            self.cancelDelete = function() {
-
-                self.deletionTarget = null;
-
-            };
-
-            self.deleteFeature = function(obj, index) {
-
-                MapInterface.delete({
-                    id: obj.id
-                }).$promise.then(function(data) {
-
-                    self.deletionTarget = null;
-
-                    self.alerts = [{
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Successfully deleted this map.',
-                        'prompt': 'OK'
-                    }];
-
-                    self.maps.splice(index, 1);
-
-                    self.summary.feature_count--;
-
-                    $timeout(closeAlerts, 2000);
-
-                }).catch(function(errorResponse) {
-
-                    console.log('self.deleteFeature.errorResponse', errorResponse);
-
-                    if (errorResponse.status === 409) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Unable to delete “' + obj.name + '”. There are pending tasks affecting this map.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else if (errorResponse.status === 403) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'You don’t have permission to delete this map.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Something went wrong while attempting to delete this map.',
-                            'prompt': 'OK'
-                        }];
-
-                    }
-
-                    $timeout(closeAlerts, 2000);
-
-                });
-
-            };
-
-            self.loadMaps = function(params) {
-
-                console.log(
-                    'loadMaps:params:',
-                    params
-                );
-
-                params = QueryParamManager.adjustParams(
-                    params,
-                    {
-                        sort: 'id:desc'
-                    });
-
-                self.queryParams = QueryParamManager.getParams();
-
-                MapInterface.query(params).$promise.then(function(successResponse) {
-
-                    successResponse.features.forEach(function (feature) {
-
-                        var filterString = AtlasDataManager.createFilterString(
-                            feature
-                        );
-
-                        console.log(
-                            'loadMaps:filterString',
-                            filterString
-                        );
-
-                        feature.atlasParams = AtlasDataManager.createURLData(
-                            null,
-                            true,
-                            {
-                                filterString: filterString,
-                                style: feature.style
-                            }
-                        );
-
-                    });
-
-                    self.maps = successResponse.features;
-
-                    self.summary = successResponse.summary;
-
-                    self.showElements();
-
-                }, function(errorResponse) {
-
-                    console.log('errorResponse', errorResponse);
-
-                    self.showElements();
-
-                });
-
-            };
-
-            self.toggleTable = function () {
-
-                $rootScope.collapseSidebar = !$rootScope.collapseSidebar;
-
-                self.viewTable = !self.viewTable;
-
-            };
-
-            self.loadFilterOptions = function () {
-
-                User.atlasFilters().$promise.then(function(successResponse) {
-
-                    self.filterOptions = successResponse;
-
-                });
-
-            };
-
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = userResponse;
-
-                    self.user = userResponse;
-
-                    self.permissions = {};
-
-                    //
-                    // Set default query string params.
-                    //
-
-                    var existingParams = QueryParamManager.getParams();
-
-                    QueryParamManager.setParams(
-                        existingParams,
-                        true);
-
-                    //
-                    // Set scoped query param variable.
-                    //
-
-                    self.queryParams = QueryParamManager.getParams();
-
-                    self.loadMaps();
-
-                    self.loadFilterOptions();
-
-                });
-
-            } else {
-
-                $location.path('/logout');
-
-            }
-
-        });
-'use strict';
-
-/**
- * @ngdoc function
- * @name
- * @description
- */
-angular.module('FieldDoc')
-    .controller('MapEditController',
-        function(Account, $location, $log, MapInterface, $routeParams,
-                 $rootScope, FilterStore, $route, user,
-                 SearchService, $timeout, Utility, $interval) {
-
-            var self = this;
-
-            $rootScope.viewState = {
-                'map': true
-            };
-
-            $rootScope.toolbarState = {
-                'edit': true
-            };
-
-            $rootScope.page = {};
-
-            self.status = {
-                loading: true,
-                processing: true
-            };
-
-            self.showModal = {
-                status: false
-            };
-
-            self.showElements = function() {
-
-                $timeout(function() {
-
-                    self.status.loading = false;
-
-                    self.status.processing = false;
-
-                }, 50);
-
-            };
-
-            self.alerts = [];
-
-            self.closeAlerts = function() {
-
-                self.alerts = [];
-
-            };
-
-            self.closeRoute = function() {
-
-                $location.path('/maps');
-
-            };
-
-            self.scrubFeature = function(feature) {
-
-                var excludedKeys = [
-                    'creator',
-                    'extent',
-                    'geometry',
-                    'images',
-                    'last_modified_by',
-                    'organization',
-                    'program',
-                    'tags',
-                    'tasks'
-                ];
-
-                var reservedProperties = [
-                    'links',
-                    'permissions',
-                    '$promise',
-                    '$resolved'
-                ];
-
-                excludedKeys.forEach(function(key) {
-
-                    if (feature.properties) {
-
-                        delete feature.properties[key];
-
-                    } else {
-
-                        delete feature[key];
-
-                    }
-
-                });
-
-                reservedProperties.forEach(function(key) {
-
-                    delete feature[key];
-
-                });
-
-            };
-
-            self.saveMap = function() {
-
-                self.status.processing = true;
-
-                self.scrubFeature(self.feature);
-
-                MapInterface.update({
-                    id: $route.current.params.id
-                }, self.feature).then(function(successResponse) {
-
-                    self.feature = successResponse;
-
-                    self.permissions = successResponse.permissions;
-
-                    self.alerts = [{
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Map changes saved.',
-                        'prompt': 'OK'
-                    }];
-
-                    $timeout(self.closeAlerts, 2000);
-
-                    self.status.processing = false;
-
-                }).catch(function(error) {
-
-                    // Do something with the error
-
-                    self.alerts = [{
-                        'type': 'error',
-                        'flag': 'Error!',
-                        'msg': 'Something went wrong and the changes could not be saved.',
-                        'prompt': 'OK'
-                    }];
-
-                    $timeout(self.closeAlerts, 2000);
-
-                    self.status.processing = false;
-
-                });
-
-            };
-
-            self.loadMap = function () {
-
-                console.log(
-                    'loadMap:$routeParams:id:',
-                    $routeParams.id
-                )
-
-                MapInterface.get({
-                    id: $route.current.params.id
-                }).$promise.then(function(successResponse) {
-
-                    self.feature = successResponse;
-
-                    self.permissions = successResponse.permissions;
-
-                    self.showElements();
-
-                }, function(errorResponse) {
-
-                    console.log('Unable to load map data.');
-
-                    self.showElements();
-
-                });
-
-            };
-
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = userResponse;
-
-                    self.permissions = {};
-
-                    self.user = $rootScope.user;
-
-                    //
-                    // Assign map to a scoped variable
-                    //
-
-                    self.loadMap();
-
-                });
-
-            } else {
-
-                $location.path('/logout');
-
-            }
-
-        });
-'use strict';
-
-/**
- * @ngdoc function
- * @name
- * @description
- */
-angular.module('FieldDoc')
-    .controller('MapImageController', function(
-        Account, Image, $location, $log, MapInterface,
-        $q, $rootScope, $route, $scope, $routeParams,
-        $timeout, $interval, user) {
-
-        var self = this;
-
-        $rootScope.toolbarState = {
-            'editImages': true
-        };
-
-        $rootScope.page = {};
-
-        self.status = {
-            loading: true,
-            processing: false
-        };
-
-        self.showElements = function(delay) {
-
-            var ms = delay || 1000;
-
-            $timeout(function() {
-
-                self.status.loading = false;
-
-                self.status.processing = false;
-
-            }, ms);
-
-        };
-
-        self.alerts = [];
-
-        self.closeAlerts = function() {
-
-            self.alerts = [];
-
-        };
-
-        self.closeRoute = function () {
-
-            $location.path('maps');
-
-        };
-
-        self.processMap = function(data) {
-
-            self.feature = data;
-            
-            self.permissions = data.permissions;
-
-            $rootScope.page.title = self.feature.name ? self.feature.name : 'Un-titled Map';
-
-            if (Array.isArray(self.feature.images)) {
-
-                self.feature.images.sort(function (a, b) {
-
-                    return a.id < b.id;
-
-                });
-
-            }
-
-        };
-
-        self.confirmDelete = function(obj, targetCollection) {
-
-            console.log('self.confirmDelete', obj, targetCollection);
-
-            if (self.deletionTarget &&
-                self.deletionTarget.collection === 'map') {
-
-                self.cancelDelete();
-
-            } else {
-
-                self.deletionTarget = {
-                    'collection': targetCollection,
-                    'feature': obj
-                };
-
-            }
-
-        };
-
-        self.cancelDelete = function() {
-
-            self.deletionTarget = null;
-
-        };
-
-        self.deleteFeature = function(featureType, index) {
-
-            console.log('self.deleteFeature', featureType, index);
-
-            var targetCollection;
-
-            var requestConfig = {
-                id: +self.deletionTarget.feature.id
-            };
-
-            switch (featureType) {
-
-                case 'image':
-
-                    targetCollection = Image;
-
-                    requestConfig.target = 'map:' + self.feature.id;
-
-                    break;
-
-                default:
-
-                    break;
-
-            }
-
-            targetCollection.delete(requestConfig).$promise.then(function(data) {
-
-                self.alerts = [{
-                    'type': 'success',
-                    'flag': 'Success!',
-                    'msg': 'Successfully deleted ' + featureType + '.',
-                    'prompt': 'OK'
-                }];
-
-                if (featureType === 'image') {
-
-                    self.feature.images.splice(index, 1);
-
-                    self.cancelDelete();
-
-                    self.loadMapInterface();
-
-                    $timeout(self.closeAlerts, 1500);
-
-                } else {
-
-                    $timeout(self.closeRoute, 1500);
-
-                }
-
-            }).catch(function(errorResponse) {
-
-                console.log('self.deleteFeature.errorResponse', errorResponse);
-
-                if (errorResponse.status === 409) {
-
-                    self.alerts = [{
-                        'type': 'error',
-                        'flag': 'Error!',
-                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
-                        'prompt': 'OK'
-                    }];
-
-                } else if (errorResponse.status === 403) {
-
-                    self.alerts = [{
-                        'type': 'error',
-                        'flag': 'Error!',
-                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
-                        'prompt': 'OK'
-                    }];
-
-                } else {
-
-                    self.alerts = [{
-                        'type': 'error',
-                        'flag': 'Error!',
-                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
-                        'prompt': 'OK'
-                    }];
-
-                }
-
-                $timeout(self.closeAlerts, 2000);
-
-            });
-
-        };
-
-        self.loadMap = function () {
-
-            MapInterface.get({
-                id: $route.current.params.id
-            }).$promise.then(function(successResponse) {
-
-                self.feature = successResponse;
-
-                self.permissions = successResponse.permissions;
-
-                self.showElements();
-
-            }, function(errorResponse) {
-
-                console.log('Unable to load map data.');
-
-                self.showElements();
-
-            });
-
-        };
-
-        //
-        // Verify Account information for proper UI element display
-        //
-        if (Account.userObject && user) {
-
-            user.$promise.then(function(userResponse) {
-
-                $rootScope.user = Account.userObject = userResponse;
-
-                self.permissions = {};
-
-                self.user = $rootScope.user;
-
-                //
-                // Assign map to a scoped variable
-                //
-
-                self.loadMap();
-
-            });
-
-        } else {
-
-            $location.path('/logout');
-
-        }
-
-    });
-'use strict';
-
-/**
- * @ngdoc function
- * @name FieldDoc.controller:MapInterfaceviewController
- * @description
- * # MapInterfaceviewController
- * Controller of the FieldDoc
- */
-angular.module('FieldDoc')
-    .controller('MapSummaryController',
-        function(Account, Notifications, $rootScope, MapInterface, $routeParams,
-                 $scope, $location, mapbox, Site, user, $window, $timeout,
-                 Utility, $interval) {
-
-            var self = this;
-
-            $rootScope.viewState = {
-                'map': true
-            };
-
-            $rootScope.toolbarState = {
-                'dashboard': true
-            };
-
-            $rootScope.page = {};
-
-            self.alerts = [];
-
-            function closeAlerts() {
-
-                self.alerts = [];
-
-            }
-
-            function closeRoute() {
-
-                $location.path('/maps');
-
-            }
-
-            self.status = {
-                loading: true
-            };
-
-            self.presentChildModal = function(featureType) {
-
-                if (featureType !== 'practice' &&
-                    featureType !== 'site') return;
-
-                self.showChildModal = true;
-
-                self.childType = featureType;
-
-            };
-
-            self.showElements = function(createMapInterface) {
-
-                $timeout(function() {
-
-                    self.status.loading = false;
-
-                    self.status.processing = false;
-
-                }, 50);
-
-            };
-
-            //
-            // Assign map to a scoped variable
-            //
-
-            self.loadMapInterface = function() {
-
-                map.$promise.then(function(successResponse) {
-
-                    console.log('self.map', successResponse);
-
-                    self.feature = successResponse;
-
-                    self.permissions = successResponse.permissions;
-
-                    self.showElements(false);
-
-                }).catch(function(errorResponse) {
-
-                    console.log('loadMapInterface.errorResponse', errorResponse);
-
-                    self.showElements(false);
-
-                });
-
-            };
-
-            self.refreshMetricProgress = function () {
-
-                var progressPoll = $interval(function() {
-
-                    self.loadMetrics();
-
-                }, 4000);
-
-                $timeout(function () {
-
-                    $interval.cancel(progressPoll);
-
-                }, 20000);
-
-            };
-
-            self.loadMetrics = function() {
-
-                MapInterface.progress({
-                    id: self.map.id
-                }).$promise.then(function(successResponse) {
-
-                    console.log('MapInterface metrics', successResponse);
-
-                    Utility.processMetrics(successResponse.features);
-
-                    self.metrics = Utility.groupByModel(successResponse.features);
-
-                    console.log('self.metrics', self.metrics);
-
-                }, function(errorResponse) {
-
-                    console.log('errorResponse', errorResponse);
-
-                });
-
-            };
-
-            self.showMetricModal = function(metric) {
-
-                console.log('self.showMetricModal', metric);
-
-                self.selectedMetric = metric;
-
-                self.displayModal = true;
-
-            };
-
-            self.closeMetricModal = function() {
-
-                self.selectedMetric = null;
-
-                self.displayModal = false;
-
-            };
-
-            self.reloadPage = function() {
-                $location.reload();
-            };
-
-            self.loadMap = function () {
-
-                var params = {};
-
-                if ($routeParams.id) {
-
-                    params.id = +$routeParams.id;
-
-                } else {
-
-                    params = $location.search();
-
-                }
-
-                MapInterface.query(
-                    params
-                ).$promise.then(function(successResponse) {
-
-                    self.feature = successResponse;
-
-                    self.permissions = successResponse.permissions;
-
-                    self.showElements();
-
-                }, function(errorResponse) {
-
-                    console.log('Unable to load map data.');
-
-                    self.showElements();
-
-                });
-
-            };
-
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = userResponse;
-
-                    self.permissions = {};
-
-                    self.user = $rootScope.user;
-
-                    //
-                    // Assign map to a scoped variable
-                    //
-
-                    self.loadMap();
-
-                });
-
-            } else {
-
-                $location.path('/logout');
-
-            }
-
-        });
 'use strict';
 
 /**
@@ -53336,6 +52309,212 @@ angular.module('FieldDoc')
                             });
 
                         };
+
+                    }
+
+                };
+
+            }
+
+        ]);
+
+}());
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .directive('tileCard', [
+            'environment',
+            '$routeParams',
+            '$filter',
+            '$parse',
+            '$location',
+            'Project',
+            'Site',
+            'Practice',
+            '$timeout',
+            function(environment, $routeParams, $filter, $parse,
+                     $location, Project, Site, Practice, $timeout) {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        'alerts': '=?',
+                        'collection': '=?',
+                        'feature': '=?',
+                        'permissions': '=?',
+                        'summary': '=?',
+                        'type': '@'
+                    },
+                    templateUrl: function(elem, attrs) {
+
+                        return [
+                            // Base path
+                            'modules/shared/directives/',
+                            // Directive path
+                            'card/tile/tileCard--view.html',
+                            // Query string
+                            '?t=' + environment.version
+                        ].join('');
+
+                    },
+                    link: function(scope, element, attrs) {
+
+                        var modelIdx = {
+                            'practice': Practice,
+                            'project': Project,
+                            'site': Site
+                        };
+
+                        scope.model = modelIdx[scope.type];
+
+                        if (typeof scope.model === 'undefined') {
+
+                            throw new Error('Un-recognized `type` parameter.');
+
+                        }
+
+                        scope.defaultStaticUrl = [
+                            'https://api.mapbox.com/',
+                            'styles/v1/mapbox/streets-v10/',
+                            'static/-98.5795,39.828175,6/',
+                            '400x200@2x?',
+                            'access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
+                        ].join('');
+
+                        function closeAlerts() {
+
+                            scope.alerts = [];
+
+                        }
+
+                        scope.closeChildModal = function() {
+
+                            scope.visible = false;
+
+                            if (scope.resetType && scope.type !== 'project') scope.type = undefined;
+
+                        };
+
+                        scope.confirmDelete = function(obj) {
+
+                            scope.deletionTarget = obj;
+
+                        };
+
+                        scope.cancelDelete = function() {
+
+                            scope.deletionTarget = null;
+
+                        };
+
+                        scope.deleteFeature = function(obj, index) {
+
+                            scope.model.delete({
+                                id: obj.id
+                            }).$promise.then(function(data) {
+
+                                scope.deletionTarget = null;
+
+                                scope.alerts = [{
+                                    'type': 'success',
+                                    'flag': 'Success!',
+                                    'msg': 'Successfully deleted this ' + scope.type + '.',
+                                    'prompt': 'OK'
+                                }];
+
+                                scope.collection.splice(index, 1);
+
+                                scope.summary.feature_count--;
+
+                                $timeout(closeAlerts, 2000);
+
+                            }).catch(function(errorResponse) {
+
+                                console.log(
+                                    'scope.deleteFeature.errorResponse',
+                                    errorResponse
+                                );
+
+                                if (errorResponse.status === 409) {
+
+                                    scope.alerts = [{
+                                        'type': 'error',
+                                        'flag': 'Error!',
+                                        'msg': 'Unable to delete “' + obj.name + '”. There are pending tasks affecting this ' + scope.type + '.',
+                                        'prompt': 'OK'
+                                    }];
+
+                                } else if (errorResponse.status === 403) {
+
+                                    scope.alerts = [{
+                                        'type': 'error',
+                                        'flag': 'Error!',
+                                        'msg': 'You don’t have permission to delete this ' + scope.type + '.',
+                                        'prompt': 'OK'
+                                    }];
+
+                                } else {
+
+                                    scope.alerts = [{
+                                        'type': 'error',
+                                        'flag': 'Error!',
+                                        'msg': 'Something went wrong while attempting to delete this ' + scope.type + '.',
+                                        'prompt': 'OK'
+                                    }];
+
+                                }
+
+                                $timeout(closeAlerts, 2000);
+
+                            });
+
+                        };
+
+                        scope.$watch('collection', function (newVal) {
+
+                            console.log(
+                                'tileCard:collection:',
+                                newVal
+                            );
+
+                        });
+
+                        scope.$watch('feature', function (newVal) {
+
+                            if (newVal) {
+
+                                scope.staticURL = newVal.staticURL;
+
+                                if (newVal.hasOwnProperty('properties')) {
+
+                                    for (var key in newVal.properties) {
+
+                                        if (newVal.properties.hasOwnProperty(key)) {
+
+                                            newVal[key] = newVal.properties[key];
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        });
+
+                        scope.$watch('type', function (newVal) {
+
+                            if (typeof newVal === 'string') {
+
+                                scope.label = newVal.replace(/_/g, ' ');
+
+                                scope.collectionLabel = newVal + 's';
+
+                            }
+
+                        });
 
                     }
 

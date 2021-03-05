@@ -85,102 +85,16 @@
 
                     <ul class="snapshot--cards list-unstyled">
 
-                        <li class="card"
-                            data-ng-repeat="site in page.sites track by $index">
-
-                            <div class="card--content">
-
-                                <div style="position:relative;">
-
-                                    <img data-ng-if="site.staticURL" data-ng-src="{{ site.staticURL }}"
-                                         width="auto" height="auto"/>
-
-                                    <img data-ng-if="!site.staticURL"
-                                         data-ng-src="https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/-98.5795,39.828175,5/400x200@2x?access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw"
-                                         width="auto" height="auto"/>
-
-                                </div>
-
-                                <div class="name" style="background: #fff;">
-                                    <span>{{ site.properties.name || site.properties.site_type || 'Un-named' }}</span>
-                                </div>
-
-                                <div class="body">
-
-                                    <div class="confirm--delete"
-                                         data-ng-if="page.deletionTarget && page.deletionTarget.feature.properties.id === site.properties.id && page.deletionTarget.collection === 'site'">
-                                        <p>Do you want to delete this site?</p>
-                                        <div class="actions" style="flex: 0;">
-                                            <a class="snapshot--title" href="#" title="Delete forever"
-                                               data-ng-click="page.deleteFeature('site', $index)">
-                                                Yes
-                                            </a>
-                                            <a class="snapshot--title" href="#" title="Cancel"
-                                               data-ng-click="page.cancelDelete()">
-                                                Cancel
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="confirm--delete"
-                                         data-ng-if="page.copyTarget && page.copyTarget.feature.properties.id === site.properties.id && page.copyTarget.collection === 'site'">
-                                        <p>Make a copy of this site?</p>
-                                        <div class="actions" style="flex: 0;">
-                                            <a class="snapshot--title" href="#" style="background-color:#29cc82"
-                                               title="Copy" data-ng-click="page.copyFeature('site', $index)">
-                                                Yes
-                                            </a>
-                                            <a class="snapshot--title" href="#" title="Cancel"
-                                               data-ng-click="page.cancelCopy()">
-                                                Cancel
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <p>{{ (site.properties.description || site.properties.annotation || 'No description') | truncate:80 }}</p>
-                                    <div class="actions">
-                                        <a class="snapshot--title" href="/sites/{{ site.properties.id }}"
-                                           title="Practice summary">
-                                            <i class="material-icons">
-                                                dashboard
-                                            </i>
-                                        </a>
-                                        <a class="snapshot--title"
-                                           href="/sites/{{ site.properties.id }}/edit" title="Edit site"
-                                           data-ng-if="page.permissions.write">
-                                            <i class="material-icons">
-                                                edit
-                                            </i>
-                                        </a>
-                                        <a class="snapshot--title"
-                                           href="/sites/{{ site.properties.id }}/location"
-                                           title="Edit location" data-ng-if="page.permissions.write">
-                                            <i class="material-icons">
-                                                location_on
-                                            </i>
-                                        </a>
-                                        <a class="snapshot--title" href="#"
-                                           data-ng-click="page.confirmCopy(site, 'site')"
-                                           title="Copy site" data-ng-if="page.permissions.write">
-                                            <i class="material-icons">
-                                                file_copy
-                                            </i>
-                                        </a>
-
-                                        <a class="snapshot--title" href="#" title="Delete site"
-                                           data-ng-click="page.confirmDelete(site, 'site')"
-                                           data-ng-if="page.permissions.write">
-                                            <i class="material-icons">
-                                                delete
-                                            </i>
-                                        </a>
-                                    </div>
-                                    <span><time datetime="{{ site.properties.created_on }}"
-                                                title="{{ site.properties.created_on }}">
-                                Created on {{ site.properties.created_on | date }}</time></span>
-                                </div>
-
-                            </div>
-
-                        </li>
+                        <li tile-card
+                            alerts="page.alerts"
+                            collection="page.sites"
+                            feature="site"
+                            permissions="page.permissions"
+                            summary="page.summary"
+                            type="site"
+                            class="card reveal fade-in"
+                            style="animation-delay: {{ $index * 50 }}ms;"
+                            data-ng-repeat="site in page.sites track by $index"></li>
 
                         <li data-ng-if="!page.sites.length && page.permissions.write" class="card">
                             <div class="card--content">

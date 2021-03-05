@@ -1,0 +1,125 @@
+<div class="card--content">
+
+    <a href="/{{ collectionLabel }}/{{ feature.id }}">
+
+        <img data-ng-if="feature.staticURL"
+             data-ng-src="{{ feature.staticURL }}"
+             width="auto" height="auto" />
+
+        <img data-ng-if="!feature.staticURL"
+             data-ng-src="{{ defaultStaticUrl }}"
+             width="auto" height="auto" />
+
+        <div class="name"
+             style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
+            <span>
+                {{ feature.name || 'Un-named' }}
+            </span>
+            <span class="sub-label"
+                  data-ng-if="type === 'practice'"
+                  data-ng-class="{'no-type': !feature.practice_type}"
+                  style="text-transform: uppercase; font-size: .75rem;">
+                {{ feature.practice_type.name || 'No practice type assigned' }}
+            </span>
+        </div>
+
+    </a>
+
+    <div data-ng-if="type === 'project'"
+         class="status-wrapper"
+         title="Status: {{ feature.status | capitalAttribute }}">
+        <div class="status status-{{ feature.status }}">
+            <span class="dot"></span>
+            <span>{{ feature.status | capitalAttribute }}</span>
+        </div>
+    </div>
+
+    <div class="body">
+
+        <div class="confirm--delete" data-ng-if="deletionTarget.id === feature.id">
+            <p>Do you want to delete this {{ label }}?</p>
+            <div class="actions" style="flex: 0;">
+                <a class="snapshot--title" href="#" title="Delete forever"
+                   data-ng-click="deleteFeature(feature, $index)">
+                    Yes
+                </a>
+                <a class="snapshot--title" href="#" title="Cancel"
+                   data-ng-click="cancelDelete()">
+                    Cancel
+                </a>
+            </div>
+        </div>
+
+        <p class="pad-0 margin-0"
+           data-ng-if="type === 'project' || type === 'site'">
+            {{ (feature.description || 'No description') | truncate:80 }}
+        </p>
+
+        <p class="pad-0 margin-0"
+           data-ng-if="type === 'practice' && feature.description">
+            {{ feature.description | truncate:80 }}
+        </p>
+
+        <p class="pad-0 margin-0"
+           data-ng-if="type === 'practice' && feature.practice_type && !feature.description">
+            {{ (feature.practice_type.description || 'No description') | truncate:80 }}
+        </p>
+
+        <div class="actions">
+
+            <a class="snapshot--title"
+               href="/{{ collectionLabel }}/{{ feature.id }}"
+               title="{{ label | capitalAttribute }} summary">
+                <span class="material-icons">
+                    dashboard
+                </span>
+            </a>
+
+            <a class="snapshot--title"
+               href="/{{ collectionLabel }}/{{ feature.id }}/edit"
+               title="Edit {{ label }}"
+               data-ng-if="$root.user.is_admin || feature.organization_id === $root.user.organization.id || $root.user.is_manager">
+                <span class="material-icons">
+                    edit
+                </span>
+            </a>
+
+            <a class="snapshot--title"
+               href="/{{ collectionLabel }}/{{ feature.id }}/location"
+               title="Edit location"
+               data-ng-if="permissions.can_edit && (type === 'site' || type === 'practice')">
+                <span class="material-icons">
+                    location_on
+                </span>
+            </a>
+
+            <a class="snapshot--title" href="#"
+               data-ng-click="confirmCopy(practice, 'practice')"
+               title="Copy practice"
+               data-ng-if="permissions.can_edit && type === 'practice'">
+                <span class="material-icons">
+                    file_copy
+                </span>
+            </a>
+
+            <a class="snapshot--title" href="#"
+               title="Delete {{ label }}"
+               data-ng-click="confirmDelete(feature)"
+               data-ng-if="$root.user.is_admin || feature.organization_id === $root.user.organization.id || $root.user.is_manager">
+                <span class="material-icons">
+                    delete
+                </span>
+            </a>
+
+        </div>
+
+        <span>
+            <time datetime="{{ feature.modified_on }}"
+                  title="{{ feature.modified_on }}">
+                Last updated {{ feature.modified_on | date : 'mediumDate' }}
+            </time>
+        </span>
+
+    </div>
+
+</div>

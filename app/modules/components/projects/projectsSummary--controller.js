@@ -95,6 +95,10 @@ angular.module('FieldDoc')
 
                 Project.practices(params).$promise.then(function(successResponse) {
 
+                    self.createStaticMapURLs(
+                        successResponse.features,
+                        'practice');
+
                     self.practices = successResponse.features;
 
                     self.practicesSummary = successResponse.summary;
@@ -134,19 +138,6 @@ angular.module('FieldDoc')
                             }
 
                             self.createMap(self.mapOptions);
-
-                            if (self.sites && self.sites.length) {
-                                console.log("A 1");
-                                self.createStaticMapURLs(self.sites, "site", 400, 200);
-                                //       self.addMapPreviews(self.sites);
-
-                            }
-                            if (self.practices && self.practices.length) {
-                                console.log("A 2");
-                                self.createStaticMapURLs(self.practices, "practice", 400, 200);
-                                //       self.addMapPreviews(self.sites);
-
-                            }
 
                         }, 50);
 
@@ -553,11 +544,11 @@ angular.module('FieldDoc')
 
                 Project.sites(params).$promise.then(function(successResponse) {
 
-                    console.log('Project sites --> ', successResponse);
+                    self.createStaticMapURLs(
+                        successResponse.features,
+                        'site');
 
                     self.sites = successResponse.features;
-
-                    console.log("self.sites", self.sites);
 
                     self.summary = successResponse.summary;
 
@@ -701,69 +692,37 @@ angular.module('FieldDoc')
                 branch : FD_489-turf.simplify 2020.07.28
             */
             self.createStaticMapURLs = function(arr, feature_type) {
-                console.log("createStaticMapURLS -> arr", arr)
 
-                arr.forEach(function(feature, index) {
+                arr.forEach(function(feature) {
 
-                    if (feature.geometry != null) {
+                    var staticURL;
 
-                        console.log("THUMB", feature);
+                    if (feature.geometry) {
 
-                        feature.staticURL = Utility.buildStaticMapURL(
+                        staticURL = Utility.buildStaticMapURL(
                             feature.geometry,
                             feature_type,
                             400,
                             200);
 
-                        if (feature.staticURL.length >= 4096) {
+                        if (staticURL.length >= 4096) {
 
-                            feature.staticURL = ['https://api.mapbox.com/styles/v1',
+                            staticURL = ['https://api.mapbox.com/styles/v1',
                                 '/mapbox/streets-v11/static/-76.4034,38.7699,3.67/400x200?access_token=',
                                 'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
                             ].join('');
                         }
 
-                        console.log('feature.staticURL', feature.staticURL);
-
-                        if (feature_type == "site") {
-
-                            self.sites[index].staticURL = feature.staticURL;
-
-                            console.log("self.sites" + index + ".staticURL", self.sites[index].staticURL);
-
-                        }
-                        if (feature_type == "practice") {
-                            self.practices[index].staticURL = feature.staticURL;
-
-                            console.log("self.practices" + index + ".staticURL", self.practices[index].staticURL);
-
-                        }
-
-
-
                     } else {
 
-                        if (feature_type == "site") {
-                            self.sites[index].staticURL = ['https://api.mapbox.com/styles/v1',
-                                '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
-                                'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
-                            ].join('');
-
-
-                        }
-                        if (feature_type == "practice") {
-                            self.practices[index].staticURL = ['https://api.mapbox.com/styles/v1',
-                                '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
-                                'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
-                            ].join('');
-
-                        }
+                        staticURL = ['https://api.mapbox.com/styles/v1',
+                            '/mapbox/streets-v11/static/-76.8205,38.7069,4.46,0/400x200?access_token=',
+                            'pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw'
+                        ].join('');
 
                     }
 
-                    //    }else{
-                    //      console.log("A 7");
-                    //   }
+                    feature.staticURL = staticURL;
 
                 });
 

@@ -221,87 +221,16 @@
                 <ul class="snapshot--cards list-unstyled"
                     data-ng-if="page.projects.length && !page.viewTable" style="margin-top: 2em;">
 
-                    <li class="card reveal fade-in"
+                    <li tile-card
+                        alerts="page.alerts"
+                        collection="page.projects"
+                        feature="project"
+                        permissions="page.permissions"
+                        summary="page.summary"
+                        type="project"
+                        class="card reveal fade-in"
                         style="animation-delay: {{ $index * 50 }}ms;"
-                        data-ng-repeat="project in page.projects | filter: page.q">
-
-                        <div class="card--content">
-
-                            <img data-ng-if="project.staticURL"
-                                 data-ng-src="{{ project.staticURL }}" width="auto" height="auto" />
-
-                            <img data-ng-if="!project.extent"
-                                 data-ng-src="https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/-98.5795,39.828175,6/400x200@2x?access_token=pk.eyJ1IjoiYm1jaW50eXJlIiwiYSI6IjdST3dWNVEifQ.ACCd6caINa_d4EdEZB_dJw" width="auto" height="auto" />
-
-                            <div class="name"
-                                 style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
-                                <span>{{ project.name }}</span>
-                            </div>
-
-                            <div class="status-wrapper" title="Status: {{ project.status | capitalAttribute }}">
-                                <div class="status status-{{ project.status }}">
-                                    <span class="dot"></span>
-                                    <span>{{ project.status | capitalAttribute }}</span>
-                                </div>
-                            </div>
-
-                            <div class="body">
-
-                                <div class="confirm--delete" data-ng-if="page.deletionTarget.id === project.id">
-                                    <p>Do you want to delete this project?</p>
-                                    <div class="actions" style="flex: 0;">
-                                        <a class="snapshot--title" href="#" title="Delete forever"
-                                           data-ng-click="page.deleteFeature(project, $index)">
-                                            Yes
-                                        </a>
-                                        <a class="snapshot--title" href="#" title="Cancel"
-                                           data-ng-click="page.cancelDelete()">
-                                            Cancel
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <p class="pad-0 margin-0">
-                                    {{ (project.description || 'No description') | truncate:80 }}
-                                </p>
-
-                                <div class="actions">
-
-                                    <a class="snapshot--title" href="/projects/{{ project.id }}" title="Project summary">
-                                        <i class="material-icons">
-                                            dashboard
-                                        </i>
-                                    </a>
-
-                                    <a class="snapshot--title" href="/projects/{{ project.id }}/edit"
-                                       title="Edit project"
-                                       data-ng-if="$root.user.is_admin || project.organization_id == page.user.organization.id || $root.user.is_manager">
-                                        <i class="material-icons">
-                                            edit
-                                        </i>
-                                    </a>
-
-                                    <a class="snapshot--title" href="#" title="Delete project"
-                                       data-ng-click="page.confirmDelete(project)"
-                                       data-ng-if="$root.user.is_admin || project.organization_id == page.user.organization.id || $root.user.is_manager">
-                                        <i class="material-icons">
-                                            delete
-                                        </i>
-                                    </a>
-
-                                </div>
-
-                                <span>
-                                    <time datetime="{{ project.modified_on }}" title="{{ project.modified_on }}">
-                                        Last updated {{ project.modified_on | date : 'mediumDate' }}
-                                    </time>
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </li>
+                        data-ng-repeat="project in page.projects | filter: page.q"></li>
 
                     <li class="card" data-ng-if="!page.projects.length && page.permissions.can_edit">
                         <div class="card--content">
