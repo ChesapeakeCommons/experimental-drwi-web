@@ -46,8 +46,11 @@ angular.module('FieldDoc')
             // Setup all of our basic date information so that we can use it
             // throughout the page
             //
+            self.funded_date = new Date();
+
+            self.completed_date = new Date();
+
             self.today = new Date();
-            self.date = new Date();
 
             self.days = [
                 'Sunday',
@@ -348,32 +351,42 @@ angular.module('FieldDoc')
 
             };
 
+            self.debugDates = function() {
+
+                console.log("AAAAAAA",self.funded_date);
+                console.log("BBBBBBB", self.completed_date)
+
+            }
+
             self.saveProject = function() {
 
                 self.status.processing = true;
 
                 self.scrubFeature(self.project);
 
-                if (self.date !== undefined) {
+                console.log("!!!     self.project -->", self.project);
 
-                    if (typeof self.date.month === 'string' &&
-                        typeof self.date.date === 'number' &&
-                        typeof self.date.year === 'number') {
+                /*Format completed date and append as
+                * sub object to self.project
+                * prior to api submission*/
+                if (self.completed_date !== undefined) {
+
+                    if ( (typeof self.completed_date.month === 'string' ||  typeof self.completed_date.month.name === 'string') &&
+                        typeof self.completed_date.date === 'number' &&
+                        typeof self.completed_date.year === 'number') {
 
                         self.months.forEach(function(m){
 
-                           if (m.name === self.date.month) {
-                               self.date.month = m;
+                           if (m.name === self.completed_date.month) {
+                               self.completed_date.month = m;
                            }
 
                         });
 
-                        console.log("CCC",self.date.month);
-
                         self.project.completed_on = [
-                            self.date.year,
-                            self.date.month.numeric,
-                            self.date.date
+                            self.completed_date.year,
+                            self.completed_date.month.numeric,
+                            self.completed_date.date
                         ].join('-');
 
                     } else {
@@ -382,7 +395,50 @@ angular.module('FieldDoc')
 
                     }
 
+                }else{
+
+                    console.log("COMPLETED DATE UNDEFINED");
                 }
+                console.log(" self.project.completed_on -->",  self.project.completed_on);
+
+                /*Format funded date and append as
+               * sub object to self.project
+               * prior to api submission*/
+                if (self.funded_date !== undefined) {
+
+                    if ( (typeof self.funded_date.month === 'string' || typeof self.funded_date.month.name === 'string')&&
+                        typeof self.funded_date.date === 'number' &&
+                        typeof self.funded_date.year === 'number') {
+
+                        self.months.forEach(function(m){
+
+                            if (m.name === self.funded_date.month) {
+                                self.funded_date.month = m;
+                            }
+
+                        });
+
+                        self.project.funded_on = [
+                            self.funded_date.year,
+                            self.funded_date.month.numeric,
+                            self.funded_date.date
+                        ].join('-');
+
+                    } else {
+
+                        self.project.funded_on = null;
+
+                    }
+
+                }else{
+
+                    console.log("COMPLETED DATE UNDEFINED");
+
+                }
+
+                console.log(" self.project.funded_date -->",  self.project.funded_on);
+
+                console.log("Save self.project -->", self.project);
 
                 self.project.partners = self.processRelations(self.tempPartners);
 
@@ -507,6 +563,17 @@ angular.module('FieldDoc')
 
             };
 
+
+            self.getProjectDates = function(){
+
+
+
+
+
+                console.log("self.completed_date",self.completed_date);
+                console.log("self.funded_date",self.funded_date);
+            }
+
             //
             // Verify Account information for proper UI element display
             //
@@ -539,23 +606,58 @@ angular.module('FieldDoc')
                             self.permissions.can_edit = successResponse.permissions.write;
                             self.permissions.can_delete = successResponse.permissions.write;
 
+
+
+
+                            /*Get completed_date to controller scope var*/
+
                             if (self.project.completed_on) {
 
-                                self.project.completed_on = parseISOLike(self.project.completed_on);
+                                 let project_completed = parseISOLike(self.project.completed_on);
 
 
-                                self.date = {
-                                    month: self.months[self.project.completed_on.getMonth()],
-                                    date: self.project.completed_on.getDate(),
-                                    day: self.days[self.project.completed_on.getDay()],
-                                    year: self.project.completed_on.getFullYear()
+                                self.completed_date = {
+                                    month: self.months[project_completed.getMonth()],
+                                    date: project_completed.getDate(),
+                                    day: self.days[project_completed.getDay()],
+                                    year: project_completed.getFullYear()
+                                };
+                            }else{
+                                self.completed_date = {
+                                    month: '',
+                                    date: '',
+                                    day: '',
+                                    year: ''
                                 };
                             }
 
+                            /*Get funded to controller scope var*/
+
+                            console.log("project.completed_on -->", self.project.completed_on);
+
+                            if (self.project.funded_on) {
+
+                                 let project_funded = parseISOLike(self.project.funded_on);
 
 
+                                self.funded_date = {
+                                    month: self.months[project_funded.getMonth()],
+                                    date: project_funded.getDate(),
+                                    day: self.days[project_funded.getDay()],
+                                    year: project_funded.getFullYear()
+                                };
+                            }else{
+                                self.funded_date = {
+                                    month: '',
+                                    date: '',
+                                    day: '',
+                                    year: ''
+                                };
+                            }
 
-                            console.log("!!!!!! self.date",self.date);
+                            console.log("project.funded_on -->", self.project.funded_on);
+
+
 
                             $rootScope.page.title = 'Edit Project';
 

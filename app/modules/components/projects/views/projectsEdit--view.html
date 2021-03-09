@@ -127,82 +127,6 @@
 
                         <section class="reveal fade-in t0" style="padding: 2em 0 0;">
 
-                            <!--                            <h2>Profile</h2>-->
-
-                            <!--                            <div class="collection-filter-group status_group"-->
-                            <!--                                 data-ng-if="!page.status.loading && ($root.user.is_admin || $root.user.is_manager)">-->
-
-                            <!--&lt;!&ndash;                                <div class="scope&#45;&#45;control status_dropdown_label">&ndash;&gt;-->
-
-                            <!--&lt;!&ndash;                                    <span>&ndash;&gt;-->
-                            <!--&lt;!&ndash;                                        Project Status:&ndash;&gt;-->
-                            <!--&lt;!&ndash;                                    </span>&ndash;&gt;-->
-                            <!--&lt;!&ndash;                                </div>&ndash;&gt;-->
-
-                            <!--                                <div class="status_dropdown">-->
-                            <!--                                    <strong>Status</strong>-->
-                            <!--                                    <div class="collection-filter drop-down"-->
-                            <!--                                         style="float:left; display:inline-block;">-->
-                            <!--                                        <button type="button"-->
-                            <!--                                                data-ng-class="{'open-btn': page.showModal.status }"-->
-                            <!--                                                data-ng-click="page.showModal.status = !page.showModal.status">-->
-                            <!--                                            <b> {{ page.project.status | capitalAttribute}}&nbsp;</b>-->
-                            <!--                                            <i class="material-icons">-->
-                            <!--                                                arrow_drop_down-->
-                            <!--                                            </i>-->
-                            <!--                                        </button>-->
-                            <!--                                        <div name="collection-filter-form"-->
-                            <!--                                             class="collection-filter-modal"-->
-                            <!--                                             style="width: auto;"-->
-                            <!--                                             data-ng-if="page.showModal.status">-->
-
-                            <!--                                            <label data-ng-repeat="status in page.project_status"-->
-                            <!--                                                   data-ng-class="{'active': page.project_status == status}"-->
-                            <!--                                                   title="{{ status }}">-->
-                            <!--                                                <span class="input-mask"-->
-                            <!--                                                      data-ng-if="page.project.status == status">-->
-                            <!--                                                    <i class="material-icons">-->
-                            <!--                                                    radio_button_checked-->
-                            <!--                                                    </i>-->
-                            <!--                                                </span>-->
-                            <!--                                                <span class="input-mask"-->
-                            <!--                                                      data-ng-if="page.project.status != status">-->
-                            <!--                                                    <i class="material-icons">-->
-                            <!--                                                    radio_button_unchecked-->
-                            <!--                                                    </i>-->
-                            <!--                                                </span>-->
-                            <!--                                                <input type="radio"-->
-                            <!--                                                       id="status-option-{{ status }}"-->
-                            <!--                                                       name="active-program" data-ng-model="page.project.status"-->
-                            <!--                                                       data-ng-click="page.showModal.status = !page.showModal.status"-->
-                            <!--                                                       data-ng-value="status"/>-->
-                            <!--                                                <span>-->
-                            <!--                                                    {{ status | capitalAttribute}}-->
-                            <!--                                                </span>-->
-                            <!--                                            </label>-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
-                            <!--                                </div>-->
-
-                            <!--                                <div class="scope&#45;&#45;control"-->
-                            <!--                                     style=" border:0px solid red;-->
-                            <!--                                        margin-top: 10px;-->
-                            <!--                                        float: right;-->
-                            <!--                                        width:150px;-->
-                            <!--                                    ">-->
-                            <!--                                    <span></span>-->
-                            <!--                                    <label class="switch">-->
-                            <!--                                        <input class="inputdemo"-->
-                            <!--                                               type="checkbox"-->
-                            <!--                                               data-ng-model="page.project.archived"-->
-                            <!--                                               data-ng-checked="page.project.archived">-->
-                            <!--                                        <div class="slider round"></div>-->
-                            <!--                                    </label>-->
-                            <!--                                    <span data-ng-class="{on: page.site.archived}">Archived</span>-->
-                            <!--                                </div>-->
-
-                            <!--                            </div>-->
-
                             <div class="form-element">
                                 <span class="meta-label"><b>Name</b></span>
                                 <input type="text"
@@ -239,11 +163,12 @@
                             </div>
 
                         </section>
-                        <!-- DATE INFO-->
+
+                        <!-- FUNDED DATE INFO-->
                         <div data-ng-if="page.user.is_manager === true || page.user.is_admin === true" >
                             <div class="scope--control status_dropdown_label"
                                  style="margin-bottom: 16px;">
-                                <span>Completion Date</span>
+                                <span>Funded Date</span>
                             </div>
                             <div style="border:0px solid red; clear:both; width:100%; min-height: 120px;">
 
@@ -255,11 +180,12 @@
                                       margin-bottom: 0px;
                                 ">
                                     <span class="meta-label"><b>Month</b></span>
-                                    <input id="date_month"
-                                           name="date_month"
+                                    <input id="funded_date_month"
+                                           name="funded_date_month"
                                            type="text"
-                                           value="page.date.month"
-                                           data-ng-model="page.date.month"
+                                           value="page.funded_date.month"
+                                           data-ng-change="page.debugDates()"
+                                           data-ng-model="page.funded_date.month"
                                            uib-typeahead="month.name for month in page.months | filter:$viewValue | limitTo:5"
                                            typeahead-min-length="0" typeahead-template-url="templates/search--tpl.html"
                                            style="width:100%; margin-top:0px;">
@@ -277,10 +203,83 @@
                                     <input type="number"
                                            min="1"
                                            max="31"
+                                           data-ng-change="page.debugDates()"
                                            step="1"
-                                           id="date_date"
-                                           name="report_date_date"
-                                           data-ng-model="page.date.date"
+                                           id="funded_date_date"
+                                           name="funded_date_date"
+                                           data-ng-model="page.funded_date.date"
+                                           style="width:100%; margin-top:0px;"/>
+                                </div>
+
+                                <div class="form-element"
+                                     style="border: 0px solid green;
+                                            float: left;
+                                     width:28%;
+                                     margin-left:8%;
+                                     margin-top:0px;
+                                      margin-bottom: 0px;
+                                    ">
+                                    <span class="meta-label"><b>Year</b></span>
+                                    <input number
+                                           type="number"
+                                           min="1900"
+                                           data-ng-change="page.debugDates()"
+                                           step="1"
+                                           id="funded_date_year"
+                                           name="funded_date_year"
+                                           data-ng-model="page.funded_date.year"
+                                           style="width:100%; margin-top:0px;"/>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!-- END  FUNDED DATE INFO-->
+
+                        <!-- COMPLETION DATE INFO-->
+                        <div data-ng-if="page.user.is_manager === true || page.user.is_admin === true" >
+                            <div class="scope--control status_dropdown_label"
+                                 style="margin-bottom: 16px;">
+                                <span>Completion Date</span>
+                            </div>
+                            <div style="border:0px solid red; clear:both; width:100%; min-height: 120px;">
+
+                                <div class="form-element"
+                                     style="border: 0px solid green;
+                                     float: left;
+                                     width:28%;
+                                     margin-top:0px;
+                                      margin-bottom: 0px;
+                                ">
+                                    <span class="meta-label"><b>Month</b></span>
+                                    <input id="completed_date_month"
+                                           name="completed_date_month"
+                                           type="text"
+                                           data-ng-change="page.debugDates()"
+                                           value="page.completed_date.month"
+                                           data-ng-model="page.completed_date.month"
+                                           uib-typeahead="month.name for month in page.months | filter:$viewValue | limitTo:5"
+                                           typeahead-min-length="0" typeahead-template-url="templates/search--tpl.html"
+                                           style="width:100%; margin-top:0px;">
+                                </div>
+
+                                <div class="form-element"
+                                     style="border: 0px solid green;
+                                        float: left;
+                                        width:28%;
+                                        margin-left:8%;
+                                        margin-top:0px;
+                                        margin-bottom: 0px;
+                                        ">
+                                    <span class="meta-label"><b>Date</b></span>
+                                    <input type="number"
+                                           min="1"
+                                           max="31"
+                                           data-ng-change="page.debugDates()"
+                                           step="1"
+                                           id="completed_date_date"
+                                           name="completed_date_date"
+                                           data-ng-model="page.completed_date.date"
                                            style="width:100%; margin-top:0px;"/>
                                 </div>
 
@@ -297,16 +296,17 @@
                                            type="number"
                                            min="1900"
                                            step="1"
-                                           id="report_date_year"
-                                           name="date_year"
-                                           data-ng-model="page.date.year"
+                                           data-ng-change="page.debugDates()"
+                                           id="completed_date_year"
+                                           name="completed_date_year"
+                                           data-ng-model="page.completed_date.year"
                                            style="width:100%; margin-top:0px;"/>
                                 </div>
 
                             </div>
 
                         </div>
-                        <!-- END DATE INFO-->
+                        <!-- END  COMPLETION DATE INFO-->
 
                         <!-- <section class="reveal fade-in t1" style="padding: 0 0 2em;">
 
