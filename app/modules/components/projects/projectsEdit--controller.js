@@ -351,13 +351,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.debugDates = function() {
-
-                console.log("AAAAAAA",self.funded_date);
-                console.log("BBBBBBB", self.completed_date)
-
-            }
-
             self.saveProject = function() {
 
                 self.status.processing = true;
