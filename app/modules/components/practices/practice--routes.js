@@ -13,7 +13,7 @@ angular.module('FieldDoc')
 
         $routeProvider
             .when('/practices/:practiceId', {
-                templateUrl: '/modules/components/practices/views/summary--view.html?t=' + environment.version,
+                templateUrl: '/modules/components/practices/views/practiceSummary--view.html?t=' + environment.version,
                 controller: 'CustomSummaryController',
                 controllerAs: 'page',
                 resolve: {
@@ -124,6 +124,34 @@ angular.module('FieldDoc')
                         return Practice.get({
                             id: $route.current.params.practiceId
                         //    format: 'geojson'
+                        });
+                    }
+                }
+            })
+            .when('/practices/:practiceId/documents', {
+                templateUrl: '/modules/components/practices/views/practiceDocument--view.html?t=' + environment.version,
+                controller: 'PracticeDocumentController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    site: function(Practice, $route) {
+                        return Practice.site({
+                            id: $route.current.params.practiceId
+                        });
+                    },
+                    practice: function(Practice, $route) {
+                        return Practice.get({
+                            id: $route.current.params.practiceId
                         });
                     }
                 }

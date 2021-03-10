@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('FieldDoc')
-        .directive('imageUploadDialog', [
+        .directive('documentUploadDialog', [
             'environment',
             '$routeParams',
             '$filter',
@@ -20,10 +20,10 @@
             'User',
             'Organization',
             'Media',
-            'Image',
+            'GenericFile',
             function(environment, $routeParams, $filter, $parse, $location,
                      $timeout, $q, Dashboard, Program, Project, Site, Practice,
-                     Report, User, Organization, Media, Image) {
+                     Report, User, Organization, Media, GenericFile) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -41,7 +41,7 @@
                             // Base path
                             'modules/shared/directives/',
                             // Directive path
-                            'dialog/image/imageUploadDialog--view.html',
+                            'dialog/document/documentUploadDialog--view.html',
                             // Query string
                             '?t=' + environment.version
                         ].join('');
@@ -50,14 +50,10 @@
                     link: function(scope, element, attrs) {
 
                         var modelIdx = {
-                            'dashboard': Dashboard,
-                            'organization': Organization,
                             'practice': Practice,
-                            'program': Program,
                             'project': Project,
                             'report': Report,
-                            'site': Site,
-                            'user': User
+                            'site': Site
                         };
 
                         scope.model = modelIdx[scope.featureType];
@@ -76,7 +72,7 @@
 
                         scope.mediaManager = Media;
 
-                        scope.mediaManager.images = [];
+                        scope.mediaManager.documents = [];
 
                         function closeAlerts() {
 
@@ -92,7 +88,7 @@
 
                             scope.uploadError = null;
 
-                            scope.mediaManager.images = [];
+                            scope.mediaManager.documents = [];
 
                             scope.visible = false;
 
@@ -124,41 +120,41 @@
 
                         };
 
-                        scope.uploadImage = function() {
+                        scope.uploadDocument = function() {
 
                             console.log(
-                                'imageUploadDialog:uploadImage:mediaManager.images:',
-                                scope.mediaManager.images
+                                'documentUploadDialog:uploadDocument:mediaManager.documents:',
+                                scope.mediaManager.documents
                             );
 
                             var input = document.getElementById(scope.fileInput);
 
                             scope.processing = true;
 
-                            var imageCollection = {
-                                images: []
+                            var documentCollection = {
+                                documents: []
                             };
 
-                            if (!Array.isArray(scope.parent.images)) {
+                            if (!Array.isArray(scope.parent.documents)) {
 
-                                scope.parent.images = [];
+                                scope.parent.documents = [];
 
                             }
 
-                            scope.parent.images.forEach(function(image) {
+                            scope.parent.documents.forEach(function(document) {
 
-                                imageCollection.images.push({
-                                    id: image.id
+                                documentCollection.documents.push({
+                                    id: document.id
                                 });
 
                             });
 
-                            if (!scope.mediaManager.images) {
+                            if (!scope.mediaManager.documents) {
 
                                 scope.alerts = [{
                                     'type': 'error',
                                     'flag': 'Error!',
-                                    'msg': 'Please select an image.',
+                                    'msg': 'Please select a file.',
                                     'prompt': 'OK'
                                 }];
 
@@ -173,31 +169,32 @@
                             scope.progressMessage = 'Uploading…';
 
                             var savedQueries = scope.mediaManager.preupload(
-                                scope.mediaManager.images,
-                                'image',
+                                scope.mediaManager.documents,
+                                'file',
                                 scope.featureType,
-                                scope.parent.id);
+                                scope.parent.id,
+                                'document');
 
                             console.log(
-                                'ProjectImageController:saveImage:savedQueries:',
+                                'ProjectDocumentController:saveDocument:savedQueries:',
                                 savedQueries
                             );
 
                             $q.all(savedQueries).then(function(successResponse) {
 
-                                console.log('Images::successResponse', successResponse);
+                                console.log('Documents::successResponse', successResponse);
 
-                                angular.forEach(successResponse, function(image) {
+                                angular.forEach(successResponse, function(document) {
 
-                                    imageCollection.images.push({
-                                        id: image.id
+                                    documentCollection.documents.push({
+                                        id: document.id
                                     });
 
                                 });
 
                                 scope.model.update({
                                     id: scope.parent.id
-                                }, imageCollection).$promise.then(function(successResponse) {
+                                }, documentCollection).$promise.then(function(successResponse) {
 
                                     scope.progressMessage = 'Complete';
 

@@ -20,7 +20,7 @@
                 </i>
             </p>
 
-            <p>This practice is private.</p>
+            <p>This project is private.</p>
 
         </section>
 
@@ -58,7 +58,7 @@
                     </span>
                 </h1>
                 <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
-                        data-ng-click="page.showUploadModal = !page.showUploadModal">
+                        data-ng-click="page.modalDisplay.uploadImage = !page.modalDisplay.uploadImage">
                     <span class="material-icons margin-r-50p">
                         add
                     </span>
@@ -125,10 +125,12 @@
                                      data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === image.id && page.deletionTarget.collection === 'image')}">
                                     <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this image?</p>
                                     <div class="actions" style="flex: 0;">
-                                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('image', $index)">
+                                        <a class="snapshot--title" href="#" title="Delete forever"
+                                           data-ng-click="page.deleteFeature('image', $index)">
                                             Yes
                                         </a>
-                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                                        <a class="snapshot--title" href="#" title="Cancel"
+                                           data-ng-click="page.cancelDelete()">
                                             Cancel
                                         </a>
                                     </div>
@@ -137,12 +139,21 @@
                                 <p style="font-style: normal; color: #616161; font-size: 0.9em;">{{ (image.caption || 'No caption') | truncate:80 }}</p>
 
                                 <div class="actions">
-                                    <a class="snapshot--title" href="{{ image.original }}" title="Save image" target="_blank">
+                                    <a class="snapshot--title" href="{{ image.original }}"
+                                       title="Save image" target="_blank">
                                         <i class="material-icons">
                                             save_alt
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete image" data-ng-click="page.confirmDelete(image, 'image')">
+                                    <a class="snapshot--title" href="#" title="Edit image"
+                                       data-ng-click="page.presentEditDialog(image)"
+                                       data-ng-if="page.project.permissions.write">
+                                        <i class="material-icons">
+                                            edit
+                                        </i>
+                                    </a>
+                                    <a class="snapshot--title" href="#" title="Delete image"
+                                       data-ng-click="page.confirmDelete(image, 'image')">
                                         <i class="material-icons">
                                             delete
                                         </i>
@@ -258,7 +269,17 @@
          file-input="image-file-input"
          callback="page.loadProject()"
          feature-type="project"
-         visible="page.showUploadModal"></div>
+         modal-display="page.modalDisplay"
+         visible="page.modalDisplay.uploadImage"></div>
+
+    <div image-edit-dialog
+         alerts="page.alerts"
+         feature="page.targetImage"
+         callback="page.loadProject()"
+         parent="page.project"
+         parent-type="project"
+         modal-display="page.modalDisplay"
+         visible="page.modalDisplay.editImage"></div>
 
 </main>
 

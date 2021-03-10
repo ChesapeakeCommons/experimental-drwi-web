@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('FieldDoc')
-        .directive('imageEditDialog', [
+        .directive('documentEditDialog', [
             'environment',
             '$routeParams',
             '$filter',
@@ -11,9 +11,9 @@
             '$location',
             '$timeout',
             'Media',
-            'Image',
+            'GenericFile',
             function(environment, $routeParams, $filter, $parse, $location,
-                     $timeout, Media, Image) {
+                     $timeout, Media, GenericFile) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -31,7 +31,7 @@
                             // Base path
                             'modules/shared/directives/',
                             // Directive path
-                            'dialog/image/imageEditDialog--view.html',
+                            'dialog/document/documentEditDialog--view.html',
                             // Query string
                             '?t=' + environment.version
                         ].join('');
@@ -67,7 +67,7 @@
 
                         };
 
-                        scope.saveImage = function () {
+                        scope.saveDocument = function () {
 
                             var requestConfig = {
                                 id: scope.feature.id,
@@ -78,7 +78,7 @@
 
                             scope.processing = true;
 
-                            Image.update(
+                            GenericFile.update(
                                 requestConfig,
                                 scope.feature
                             ).$promise.then(function (successResponse) {

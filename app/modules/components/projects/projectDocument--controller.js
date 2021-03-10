@@ -6,15 +6,15 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('PracticeImageController', function(
-        Account, Image, $location, $log, Practice,
-        practice, $q, $rootScope, $route, $scope,
+    .controller('ProjectDocumentController', function(
+        Account, GenericFile, $location, $log, Project,
+        project, $q, $rootScope, $route, $scope,
         $timeout, $interval, user) {
 
         var self = this;
 
         $rootScope.toolbarState = {
-            'editImages': true
+            'editDocuments': true
         };
 
         $rootScope.page = {};
@@ -48,13 +48,13 @@ angular.module('FieldDoc')
 
         self.closeRoute = function () {
 
-            $location.path('practices');
+            $location.path('projects');
 
         };
 
-        self.processPractice = function(data) {
+        self.processProject = function(data) {
 
-            self.practice = data;
+            self.project = data;
 
             if (data.permissions) {
 
@@ -70,15 +70,15 @@ angular.module('FieldDoc')
 
             }
 
-            delete self.practice.organization;
+            delete self.project.organization;
 
-            self.practiceType = data.category;
+            self.projectType = data.category;
 
-            $rootScope.page.title = self.practice.name ? self.practice.name : 'Un-named Practice';
+            $rootScope.page.title = self.project.name ? self.project.name : 'Un-named Project';
 
-            if (Array.isArray(self.practice.images)) {
+            if (Array.isArray(self.project.documents)) {
 
-                self.practice.images.sort(function (a, b) {
+                self.project.documents.sort(function (a, b) {
 
                     return a.id < b.id;
 
@@ -88,7 +88,7 @@ angular.module('FieldDoc')
 
         };
 
-        self.loadPractice = function() {
+        self.loadProject = function() {
 
             var exclude = [
                 'centroid',
@@ -109,14 +109,14 @@ angular.module('FieldDoc')
                 'sites'
             ].join(',');
 
-            Practice.get({
-                id: $route.current.params.practiceId,
+            Project.get({
+                id: $route.current.params.projectId,
                 exclude: exclude
             }).$promise.then(function(successResponse) {
 
-                console.log('self.practice', successResponse);
+                console.log('self.project', successResponse);
 
-                self.processPractice(successResponse);
+                self.processProject(successResponse);
 
                 self.showElements();
 
@@ -131,10 +131,10 @@ angular.module('FieldDoc')
         self.presentEditDialog = function (feature) {
 
             self.modalDisplay = {
-                editImage: true
+                editDocument: true
             };
 
-            self.targetImage = feature;
+            self.targetDocument = feature;
 
         };
 
@@ -143,7 +143,7 @@ angular.module('FieldDoc')
             console.log('self.confirmDelete', obj, targetCollection);
 
             if (self.deletionTarget &&
-                self.deletionTarget.collection === 'practice') {
+                self.deletionTarget.collection === 'project') {
 
                 self.cancelDelete();
 
@@ -176,17 +176,17 @@ angular.module('FieldDoc')
 
             switch (featureType) {
 
-                case 'image':
+                case 'document':
 
-                    targetCollection = Image;
+                    targetCollection = GenericFile;
 
-                    requestConfig.target = 'practice:' + self.practice.id;
+                    requestConfig.target = 'project:' + self.project.id;
 
                     break;
 
                 default:
 
-                    targetCollection = Practice;
+                    targetCollection = Project;
 
                     break;
 
@@ -201,13 +201,13 @@ angular.module('FieldDoc')
                     'prompt': 'OK'
                 }];
 
-                if (featureType === 'image') {
+                if (featureType === 'document') {
 
-                    self.practice.images.splice(index, 1);
+                    self.project.documents.splice(index, 1);
 
                     self.cancelDelete();
 
-                    self.loadPractice();
+                    self.loadProject();
 
                     $timeout(self.closeAlerts, 1500);
 
@@ -269,7 +269,7 @@ angular.module('FieldDoc')
                     can_edit: false
                 };
 
-                self.loadPractice();
+                self.loadProject();
 
             });
 

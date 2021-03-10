@@ -128,6 +128,16 @@ angular.module('FieldDoc')
 
         };
 
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editImage: true
+            };
+
+            self.targetImage = feature;
+
+        };
+
         self.confirmDelete = function(obj, targetCollection) {
 
             console.log('self.confirmDelete', obj, targetCollection);

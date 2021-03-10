@@ -8,7 +8,7 @@
 
         <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
             <div class="progress--container">
-                <p style="font-weight: bold;" class="color-pulse">Loading image collection&hellip;</p>
+                <p style="font-weight: bold;" class="color-pulse">Loading document collection&hellip;</p>
             </div>
         </div>
 
@@ -20,15 +20,15 @@
                 </i>
             </p>
 
-            <p>This practice is private.</p>
+            <p>This project is private.</p>
 
         </section>
 
         <div breadcrumb class="full-width"
              pad="true"
-             site="page.site"
-             project="page.site.project"
-             tail="Images"></div>
+             program="page.project.program"
+             project="page.project"
+             tail="Documents"></div>
 
         <div class="main--ui reveal fade-in t0"
              data-ng-if="!page.status.loading && page.makePrivate">
@@ -52,13 +52,13 @@
 
             <div class="create-heading" data-ng-if="!page.status.loading">
                 <h1 class="margin-0">
-                    Site images
+                    Project documents
                     <span class="tally">
-                        {{ page.site.images.length | number }}
+                        {{ page.project.documents.length | number }}
                     </span>
                 </h1>
                 <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
-                        data-ng-click="page.modalDisplay.uploadImage = !page.modalDisplay.uploadImage">
+                        data-ng-click="page.modalDisplay.uploadDocument = !page.modalDisplay.uploadDocument">
                     <span class="material-icons margin-r-50p">
                         add
                     </span>
@@ -68,7 +68,7 @@
 
             <div class="margin-t-2" style="position: relative; min-height: 640px; width: 100%;">
 
-                <div data-ng-if="!page.site.images.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
+                <div data-ng-if="!page.project.documents.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
                 0;">
 
                     <ul class="selectable-group-items list-unstyled margin-t-2"
@@ -84,14 +84,14 @@
 
                                     <div class="pad-0 margin-t-2 margin-b-1 center">
                                         <span class="material-icons md-36">
-                                            image
+                                            document
                                         </span>
                                     </div>
 
                                     <div class="pad-0">
                                         <p style="font-style: normal; font-size: 1.2em; padding: 0; margin: 0;
                                         text-align: center;">
-                                            <em>This site does not contain any images.</em>
+                                            <em>This project does not contain any documents.</em>
                                         </p>
                                     </div>
 
@@ -106,15 +106,27 @@
                 </div>
 
                 <ul class="snapshot--cards list-unstyled"
-                    data-ng-if="page.site.images.length">
+                    data-ng-if="page.project.documents.length">
 
                     <li class="image-card reveal fade-in"
                         style="animation-delay: {{ $index * 50 }}ms;"
-                        data-ng-repeat="image in page.site.images track by $index">
+                        data-ng-repeat="document in page.project.documents track by $index">
 
                         <div class="card--content">
 
-                            <div style="width: 100%; height: 200px; min-height: 200px; background: #f5f5f5 url('{{ image.original }}') center center / cover no-repeat;"></div>
+                            <div class="file-card-meta">
+                                <span class="file-name">
+                                    <strong>
+                                        {{ document.name || document.file_name || 'Un-titled' }}
+                                    </strong>
+                                </span>
+                                <span class="file-ext-thumb">
+                                    {{ document.url | fileExtExtract }}
+                                </span>
+                                <span class="file-size-label">
+                                    {{ document.file_size | fileSize }}
+                                </span>
+                            </div>
 
                             <img height="0" width="auto" />
 
@@ -122,36 +134,40 @@
 
                                 <div class="confirm--delete"
                                      style="opacity: 0; visibility: hidden;"
-                                     data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === image.id && page.deletionTarget.collection === 'image')}">
-                                    <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this image?</p>
+                                     data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === document.id && page.deletionTarget.collection === 'document')}">
+                                    <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this document?</p>
                                     <div class="actions" style="flex: 0;">
-                                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('image', $index)">
+                                        <a class="snapshot--title" href="#" title="Delete forever"
+                                           data-ng-click="page.deleteFeature('document', $index)">
                                             Yes
                                         </a>
-                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                                        <a class="snapshot--title" href="#" title="Cancel"
+                                           data-ng-click="page.cancelDelete()">
                                             Cancel
                                         </a>
                                     </div>
                                 </div>
 
-                                <p style="font-style: normal; color: #616161; font-size: 0.9em;">{{ (image.caption || 'No caption') | truncate:80 }}</p>
+                                <p style="font-style: normal; color: #616161; font-size: 0.9em;">
+                                    {{ (document.annotation || 'No notes') | truncate:80 }}
+                                </p>
 
                                 <div class="actions">
-                                    <a class="snapshot--title" href="{{ image.original }}"
-                                       title="Save image" target="_blank">
+                                    <a class="snapshot--title" href="{{ document.url }}"
+                                       title="Save document" target="_blank">
                                         <i class="material-icons">
                                             save_alt
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Edit image"
-                                       data-ng-click="page.presentEditDialog(image)"
-                                       data-ng-if="page.site.permissions.write">
+                                    <a class="snapshot--title" href="#" title="Edit document"
+                                       data-ng-click="page.presentEditDialog(document)"
+                                       data-ng-if="page.project.permissions.write">
                                         <i class="material-icons">
                                             edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete image"
-                                       data-ng-click="page.confirmDelete(image, 'image')">
+                                    <a class="snapshot--title" href="#" title="Delete document"
+                                       data-ng-click="page.confirmDelete(document, 'document')">
                                         <i class="material-icons">
                                             delete
                                         </i>
@@ -159,10 +175,10 @@
                                 </div>
 
                                 <span>
-                                    <time datetime="{{ image.created_on }}" title="{{ image.created_on }}">
-                                        {{ image.created_on | localTime | date:'mediumDate' }} &middot; {{
-                                    image.created_on |
-                                        localTime | date:'h:mm' }} {{ image.created_on | localTime | date:'a'
+                                    <time datetime="{{ document.created_on }}" title="{{ document.created_on }}">
+                                        {{ document.created_on | localTime | date:'mediumDate' }} &middot; {{
+                                    document.created_on |
+                                        localTime | date:'h:mm' }} {{ document.created_on | localTime | date:'a'
                                     }}</time>
                                 </span>
                             </div>
@@ -181,72 +197,69 @@
 
     <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
         <ul>
-            <li class="active">
-                <a href="/sites/{{ page.site.id }}" title="Summary">
+            <li>
+                <a href="/projects/{{ page.project.id }}"
+                   data-ng-class="{active: $root.toolbarState.dashboard}" title="Summary">
                     <i class="material-icons">
                         dashboard
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editLocation}">
-                <a href="/sites/{{ page.site.id }}/location" title="Location">
-                    <i class="material-icons">
-                        location_on
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.viewGeographies}">
-                <a href="/sites/{{ page.site.id }}/geographies" title="Geography">
-                    <i class="material-icons">
-                        public
-                    </i>
-                </a>
-            </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTags}">
-                <a href="/sites/{{ page.site.id }}/tags" title="Tags">
-                    <i class="material-icons">
-                        local_offer
-                    </i>
-                </a>
-            </li>
             <li data-ng-if="page.permissions.can_edit"
-                data-ng-class="{active: $root.toolbarState.edit}"
-                style="border-top: 1px solid #e0e0e0;">
-                <a href="/sites/{{ page.site.id }}/edit" title="Edit">
+                data-ng-class="{active: $root.toolbarState.edit}" title="Edit">
+                <a href="/projects/{{ page.project.id }}/edit">
                     <i class="material-icons">
                         edit
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit">
-                <a href="#"
-                   title="Export"
-                   data-ng-click="page.showExportDialog = !page.showExportDialog">
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.grant}" title="Program">
+                <a href="/projects/{{ page.project.id }}/grant">
                     <i class="material-icons">
-                        cloud_download
+                        account_balance
                     </i>
                 </a>
             </li>
             <li data-ng-if="page.permissions.can_edit">
-                <a href="#" data-ng-click="page.print()" title="Print">
+                <a href="/projects/{{ page.project.id }}/users" title="Collaborators">
                     <i class="material-icons">
-                        print
+                        group
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.partnerships}">
+                <a href="/projects/{{ page.project.id }}/partnerships" title="Partnerships">
+                    <i class="material-icons">
+                        group_work
+                    </i>
+                </a>
+            </li>
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.editTags}">
+                <a href="/projects/{{ page.project.id }}/tags" title="Tags">
+                    <i class="material-icons">
+                        local_offer
                     </i>
                 </a>
             </li>
             <li data-ng-if="page.permissions.can_edit">
-                <div class="confirm--delete--popup" data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.site.id && page.deletionTarget.collection === 'site'">
-                    <p>Do you want to delete this site?</p>
+                <div class="confirm--delete--popup"
+                     data-ng-if="page.deletionTarget && page.deletionTarget.feature.id === page.project.id && page.deletionTarget.collection === 'project'">
+                    <p>Do you want to delete this project?</p>
                     <div class="actions">
-                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('site')">
+                        <a class="snapshot--title" href="#" title="Delete forever"
+                           data-ng-click="page.deleteFeature()">
                             Yes
                         </a>
-                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
+                        <a class="snapshot--title" href="#" title="Cancel"
+                           data-ng-click="page.cancelDelete()">
                             Cancel
                         </a>
                     </div>
                 </div>
-                <a href="#" data-ng-click="page.confirmDelete(page.site, 'site')" title="Delete">
+                <a href="#" data-ng-click="page.confirmDelete(page.project, 'project')" title="Delete">
                     <i class="material-icons">
                         delete
                     </i>
@@ -264,23 +277,23 @@
         </div>
     </div>
 
-    <div image-upload-dialog
+    <div document-upload-dialog
          alerts="page.alerts"
-         parent="page.site"
-         file-input="image-file-input"
-         callback="page.loadSite()"
-         feature-type="site"
+         parent="page.project"
+         file-input="document-file-input"
+         callback="page.loadProject()"
+         feature-type="project"
          modal-display="page.modalDisplay"
-         visible="page.modalDisplay.uploadImage"></div>
+         visible="page.modalDisplay.uploadDocument"></div>
 
-    <div image-edit-dialog
+    <div document-edit-dialog
          alerts="page.alerts"
-         feature="page.targetImage"
-         callback="page.loadSite()"
+         feature="page.targetDocument"
+         callback="page.loadProject()"
          modal-display="page.modalDisplay"
-         parent="page.site"
-         parent-type="site"
-         visible="page.modalDisplay.editImage"></div>
+         parent="page.project"
+         parent-type="project"
+         visible="page.modalDisplay.editDocument"></div>
 
 </main>
 

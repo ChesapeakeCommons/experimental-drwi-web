@@ -138,7 +138,11 @@
 
     </div>
 
-    <div practice-toolbar practice="page.practice" toolbar-state="tags" alerts="page.alerts"
+    <div practice-toolbar
+         practice="page.practice"
+         toolbar-state="tags"
+         alerts="page.alerts"
+         load-feature="page.loadPractice()"
          data-ng-if="page.practice"></div>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">

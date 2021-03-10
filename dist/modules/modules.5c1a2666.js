@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1614972071823})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615349043012})
 
 ;
 /**
@@ -4345,6 +4345,51 @@ angular.module('FieldDoc')
                     }
                 }
             })
+            .when('/projects/:projectId/documents', {
+                templateUrl: '/modules/components/projects/views/projectDocument--view.html?t=' + environment.version,
+                controller: 'ProjectDocumentController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    project: function(Project, $route) {
+
+                        var exclude = [
+                            'centroid',
+                            'creator',
+                            'dashboards',
+                            'extent',
+                            'geometry',
+                            'members',
+                            'metric_progress',
+                            'metric_types',
+                            // 'partners',
+                            'practices',
+                            'practice_types',
+                            'properties',
+                            'tags',
+                            'targets',
+                            'tasks',
+                            'sites'
+                        ].join(',');
+
+                        return Project.get({
+                            id: $route.current.params.projectId,
+                            exclude: exclude
+                        });
+
+                    }
+                }
+            })
             .when('/projects/:projectId/images', {
                 templateUrl: '/modules/components/projects/views/projectImage--view.html?t=' + environment.version,
                 controller: 'ProjectImageController',
@@ -8421,6 +8466,288 @@ angular.module('FieldDoc')
  * @description
  */
 angular.module('FieldDoc')
+    .controller('ProjectDocumentController', function(
+        Account, GenericFile, $location, $log, Project,
+        project, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
+
+        var self = this;
+
+        $rootScope.toolbarState = {
+            'editDocuments': true
+        };
+
+        $rootScope.page = {};
+
+        self.status = {
+            loading: true,
+            processing: false
+        };
+
+        self.showElements = function(delay) {
+
+            var ms = delay || 50;
+
+            $timeout(function() {
+
+                self.status.loading = false;
+
+                self.status.processing = false;
+
+            }, ms);
+
+        };
+
+        self.alerts = [];
+
+        self.closeAlerts = function() {
+
+            self.alerts = [];
+
+        };
+
+        self.closeRoute = function () {
+
+            $location.path('projects');
+
+        };
+
+        self.processProject = function(data) {
+
+            self.project = data;
+
+            if (data.permissions) {
+
+                if (!data.permissions.read &&
+                    !data.permissions.write) {
+
+                    self.makePrivate = true;
+
+                }
+
+                self.permissions.can_edit = data.permissions.write;
+                self.permissions.can_delete = data.permissions.write;
+
+            }
+
+            delete self.project.organization;
+
+            self.projectType = data.category;
+
+            $rootScope.page.title = self.project.name ? self.project.name : 'Un-named Project';
+
+            if (Array.isArray(self.project.documents)) {
+
+                self.project.documents.sort(function (a, b) {
+
+                    return a.id < b.id;
+
+                });
+
+            }
+
+        };
+
+        self.loadProject = function() {
+
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'sites'
+            ].join(',');
+
+            Project.get({
+                id: $route.current.params.projectId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
+
+                console.log('self.project', successResponse);
+
+                self.processProject(successResponse);
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                self.showElements();
+
+            });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editDocument: true
+            };
+
+            self.targetDocument = feature;
+
+        };
+
+        self.confirmDelete = function(obj, targetCollection) {
+
+            console.log('self.confirmDelete', obj, targetCollection);
+
+            if (self.deletionTarget &&
+                self.deletionTarget.collection === 'project') {
+
+                self.cancelDelete();
+
+            } else {
+
+                self.deletionTarget = {
+                    'collection': targetCollection,
+                    'feature': obj
+                };
+
+            }
+
+        };
+
+        self.cancelDelete = function() {
+
+            self.deletionTarget = null;
+
+        };
+
+        self.deleteFeature = function(featureType, index) {
+
+            console.log('self.deleteFeature', featureType, index);
+
+            var targetCollection;
+
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
+
+            switch (featureType) {
+
+                case 'document':
+
+                    targetCollection = GenericFile;
+
+                    requestConfig.target = 'project:' + self.project.id;
+
+                    break;
+
+                default:
+
+                    targetCollection = Project;
+
+                    break;
+
+            }
+
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Successfully deleted ' + featureType + '.',
+                    'prompt': 'OK'
+                }];
+
+                if (featureType === 'document') {
+
+                    self.project.documents.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadProject();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
+
+            }).catch(function(errorResponse) {
+
+                console.log('self.deleteFeature.errorResponse', errorResponse);
+
+                if (errorResponse.status === 409) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
+                        'prompt': 'OK'
+                    }];
+
+                } else if (errorResponse.status === 403) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                } else {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                }
+
+                $timeout(self.closeAlerts, 2000);
+
+            });
+
+        };
+
+        //
+        // Verify Account information for proper UI element display
+        //
+        if (Account.userObject && user) {
+
+            user.$promise.then(function(userResponse) {
+
+                $rootScope.user = Account.userObject = userResponse;
+
+                self.permissions = {
+                    can_edit: false
+                };
+
+                self.loadProject();
+
+            });
+
+        } else {
+
+            $location.path('/logout');
+
+        }
+
+    });
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
     .controller('ProjectImageController', function(
         Account, Image, $location, $log, Project,
         project, $q, $rootScope, $route, $scope,
@@ -8540,6 +8867,16 @@ angular.module('FieldDoc')
                 self.showElements();
 
             });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editImage: true
+            };
+
+            self.targetImage = feature;
 
         };
 
@@ -13281,6 +13618,29 @@ angular.module('FieldDoc')
                         }
                     }
                 })
+                .when('/sites/:siteId/documents', {
+                    templateUrl: '/modules/components/sites/views/siteDocument--view.html?t=' + environment.version,
+                    controller: 'SiteDocumentController',
+                    controllerAs: 'page',
+                    resolve: {
+                        user: function(Account, $rootScope, $document) {
+
+                            $rootScope.targetPath = document.location.pathname;
+
+                            if (Account.userObject && !Account.userObject.id) {
+                                return Account.getUser();
+                            }
+
+                            return Account.userObject;
+
+                        },
+                        site: function(Site, $route) {
+                            return Site.get({
+                                id: $route.current.params.siteId
+                            });
+                        }
+                    }
+                })
                 .when('/sites/:siteId/images', {
                     templateUrl: '/modules/components/sites/views/siteImage--view.html?t=' + environment.version,
                     controller: 'SiteImageController',
@@ -15966,6 +16326,288 @@ angular.module('FieldDoc')
  * @description
  */
 angular.module('FieldDoc')
+    .controller('SiteDocumentController', function(
+        Account, GenericFile, $location, $log, Site,
+        site, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
+
+        var self = this;
+
+        $rootScope.toolbarState = {
+            'editDocuments': true
+        };
+
+        $rootScope.page = {};
+
+        self.status = {
+            loading: true,
+            processing: false
+        };
+
+        self.showElements = function(delay) {
+
+            var ms = delay || 50;
+
+            $timeout(function() {
+
+                self.status.loading = false;
+
+                self.status.processing = false;
+
+            }, ms);
+
+        };
+
+        self.alerts = [];
+
+        self.closeAlerts = function() {
+
+            self.alerts = [];
+
+        };
+
+        self.closeRoute = function () {
+
+            $location.path('sites');
+
+        };
+
+        self.processSite = function(data) {
+
+            self.site = data;
+
+            if (data.permissions) {
+
+                if (!data.permissions.read &&
+                    !data.permissions.write) {
+
+                    self.makePrivate = true;
+
+                }
+
+                self.permissions.can_edit = data.permissions.write;
+                self.permissions.can_delete = data.permissions.write;
+
+            }
+
+            delete self.site.organization;
+
+            self.siteType = data.category;
+
+            $rootScope.page.title = self.site.name ? self.site.name : 'Un-named Site';
+
+            if (Array.isArray(self.site.documents)) {
+
+                self.site.documents.sort(function (a, b) {
+
+                    return a.id < b.id;
+
+                });
+
+            }
+
+        };
+
+        self.loadSite = function() {
+
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'sites'
+            ].join(',');
+
+            Site.get({
+                id: $route.current.params.siteId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
+
+                console.log('self.site', successResponse);
+
+                self.processSite(successResponse);
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                self.showElements();
+
+            });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editDocument: true
+            };
+
+            self.targetDocument = feature;
+
+        };
+
+        self.confirmDelete = function(obj, targetCollection) {
+
+            console.log('self.confirmDelete', obj, targetCollection);
+
+            if (self.deletionTarget &&
+                self.deletionTarget.collection === 'site') {
+
+                self.cancelDelete();
+
+            } else {
+
+                self.deletionTarget = {
+                    'collection': targetCollection,
+                    'feature': obj
+                };
+
+            }
+
+        };
+
+        self.cancelDelete = function() {
+
+            self.deletionTarget = null;
+
+        };
+
+        self.deleteFeature = function(featureType, index) {
+
+            console.log('self.deleteFeature', featureType, index);
+
+            var targetCollection;
+
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
+
+            switch (featureType) {
+
+                case 'document':
+
+                    targetCollection = GenericFile;
+
+                    requestConfig.target = 'site:' + self.site.id;
+
+                    break;
+
+                default:
+
+                    targetCollection = Site;
+
+                    break;
+
+            }
+
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Successfully deleted ' + featureType + '.',
+                    'prompt': 'OK'
+                }];
+
+                if (featureType === 'document') {
+
+                    self.site.documents.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadSite();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
+
+            }).catch(function(errorResponse) {
+
+                console.log('self.deleteFeature.errorResponse', errorResponse);
+
+                if (errorResponse.status === 409) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
+                        'prompt': 'OK'
+                    }];
+
+                } else if (errorResponse.status === 403) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                } else {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                }
+
+                $timeout(self.closeAlerts, 2000);
+
+            });
+
+        };
+
+        //
+        // Verify Account information for proper UI element display
+        //
+        if (Account.userObject && user) {
+
+            user.$promise.then(function(userResponse) {
+
+                $rootScope.user = Account.userObject = userResponse;
+
+                self.permissions = {
+                    can_edit: false
+                };
+
+                self.loadSite();
+
+            });
+
+        } else {
+
+            $location.path('/logout');
+
+        }
+
+    });
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
     .controller('SiteImageController', function(
         Account, Image, $location, $log, Site,
         site, $q, $rootScope, $route, $scope,
@@ -16085,6 +16727,16 @@ angular.module('FieldDoc')
                 self.showElements();
 
             });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editImage: true
+            };
+
+            self.targetImage = feature;
 
         };
 
@@ -17932,7 +18584,7 @@ angular.module('FieldDoc')
 
         $routeProvider
             .when('/practices/:practiceId', {
-                templateUrl: '/modules/components/practices/views/summary--view.html?t=' + environment.version,
+                templateUrl: '/modules/components/practices/views/practiceSummary--view.html?t=' + environment.version,
                 controller: 'CustomSummaryController',
                 controllerAs: 'page',
                 resolve: {
@@ -18043,6 +18695,34 @@ angular.module('FieldDoc')
                         return Practice.get({
                             id: $route.current.params.practiceId
                         //    format: 'geojson'
+                        });
+                    }
+                }
+            })
+            .when('/practices/:practiceId/documents', {
+                templateUrl: '/modules/components/practices/views/practiceDocument--view.html?t=' + environment.version,
+                controller: 'PracticeDocumentController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    site: function(Practice, $route) {
+                        return Practice.site({
+                            id: $route.current.params.practiceId
+                        });
+                    },
+                    practice: function(Practice, $route) {
+                        return Practice.get({
+                            id: $route.current.params.practiceId
                         });
                     }
                 }
@@ -21224,7 +21904,7 @@ angular.module('FieldDoc')
 
                         $timeout(self.closeAlerts, 2000);
 
-                        self.modelInputs.attachment_url = successResponse.file_url;
+                        self.modelInputs.attachment_url = successResponse.url;
 
                         self.savePractice();
 
@@ -21337,6 +22017,288 @@ angular.module('FieldDoc')
             }
 
         });
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name
+ * @description
+ */
+angular.module('FieldDoc')
+    .controller('PracticeDocumentController', function(
+        Account, GenericFile, $location, $log, Practice,
+        practice, $q, $rootScope, $route, $scope,
+        $timeout, $interval, user) {
+
+        var self = this;
+
+        $rootScope.toolbarState = {
+            'editDocuments': true
+        };
+
+        $rootScope.page = {};
+
+        self.status = {
+            loading: true,
+            processing: false
+        };
+
+        self.showElements = function(delay) {
+
+            var ms = delay || 50;
+
+            $timeout(function() {
+
+                self.status.loading = false;
+
+                self.status.processing = false;
+
+            }, ms);
+
+        };
+
+        self.alerts = [];
+
+        self.closeAlerts = function() {
+
+            self.alerts = [];
+
+        };
+
+        self.closeRoute = function () {
+
+            $location.path('practices');
+
+        };
+
+        self.processPractice = function(data) {
+
+            self.practice = data;
+
+            if (data.permissions) {
+
+                if (!data.permissions.read &&
+                    !data.permissions.write) {
+
+                    self.makePrivate = true;
+
+                }
+
+                self.permissions.can_edit = data.permissions.write;
+                self.permissions.can_delete = data.permissions.write;
+
+            }
+
+            delete self.practice.organization;
+
+            self.practiceType = data.category;
+
+            $rootScope.page.title = self.practice.name ? self.practice.name : 'Un-named Practice';
+
+            if (Array.isArray(self.practice.documents)) {
+
+                self.practice.documents.sort(function (a, b) {
+
+                    return a.id < b.id;
+
+                });
+
+            }
+
+        };
+
+        self.loadPractice = function() {
+
+            var exclude = [
+                'centroid',
+                'creator',
+                'dashboards',
+                'extent',
+                'geometry',
+                'members',
+                'metric_progress',
+                'metric_types',
+                // 'partners',
+                'practices',
+                'practice_types',
+                'properties',
+                'tags',
+                'targets',
+                'tasks',
+                'sites'
+            ].join(',');
+
+            Practice.get({
+                id: $route.current.params.practiceId,
+                exclude: exclude
+            }).$promise.then(function(successResponse) {
+
+                console.log('self.practice', successResponse);
+
+                self.processPractice(successResponse);
+
+                self.showElements();
+
+            }, function(errorResponse) {
+
+                self.showElements();
+
+            });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editDocument: true
+            };
+
+            self.targetDocument = feature;
+
+        };
+
+        self.confirmDelete = function(obj, targetCollection) {
+
+            console.log('self.confirmDelete', obj, targetCollection);
+
+            if (self.deletionTarget &&
+                self.deletionTarget.collection === 'practice') {
+
+                self.cancelDelete();
+
+            } else {
+
+                self.deletionTarget = {
+                    'collection': targetCollection,
+                    'feature': obj
+                };
+
+            }
+
+        };
+
+        self.cancelDelete = function() {
+
+            self.deletionTarget = null;
+
+        };
+
+        self.deleteFeature = function(featureType, index) {
+
+            console.log('self.deleteFeature', featureType, index);
+
+            var targetCollection;
+
+            var requestConfig = {
+                id: +self.deletionTarget.feature.id
+            };
+
+            switch (featureType) {
+
+                case 'document':
+
+                    targetCollection = GenericFile;
+
+                    requestConfig.target = 'practice:' + self.practice.id;
+
+                    break;
+
+                default:
+
+                    targetCollection = Practice;
+
+                    break;
+
+            }
+
+            targetCollection.delete(requestConfig).$promise.then(function(data) {
+
+                self.alerts = [{
+                    'type': 'success',
+                    'flag': 'Success!',
+                    'msg': 'Successfully deleted ' + featureType + '.',
+                    'prompt': 'OK'
+                }];
+
+                if (featureType === 'document') {
+
+                    self.practice.documents.splice(index, 1);
+
+                    self.cancelDelete();
+
+                    self.loadPractice();
+
+                    $timeout(self.closeAlerts, 1500);
+
+                } else {
+
+                    $timeout(self.closeRoute, 1500);
+
+                }
+
+            }).catch(function(errorResponse) {
+
+                console.log('self.deleteFeature.errorResponse', errorResponse);
+
+                if (errorResponse.status === 409) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Unable to delete ' + featureType + '. There are pending tasks affecting this feature.',
+                        'prompt': 'OK'
+                    }];
+
+                } else if (errorResponse.status === 403) {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'You don’t have permission to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                } else {
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong while attempting to delete this ' + featureType + '.',
+                        'prompt': 'OK'
+                    }];
+
+                }
+
+                $timeout(self.closeAlerts, 2000);
+
+            });
+
+        };
+
+        //
+        // Verify Account information for proper UI element display
+        //
+        if (Account.userObject && user) {
+
+            user.$promise.then(function(userResponse) {
+
+                $rootScope.user = Account.userObject = userResponse;
+
+                self.permissions = {
+                    can_edit: false
+                };
+
+                self.loadPractice();
+
+            });
+
+        } else {
+
+            $location.path('/logout');
+
+        }
+
+    });
 'use strict';
 
 /**
@@ -21464,6 +22426,16 @@ angular.module('FieldDoc')
                 self.showElements();
 
             });
+
+        };
+
+        self.presentEditDialog = function (feature) {
+
+            self.modalDisplay = {
+                editImage: true
+            };
+
+            self.targetImage = feature;
 
         };
 
@@ -45494,10 +46466,11 @@ angular
      * @description Enable consistent, system-wide handling of images
      */
     angular.module('FieldDoc')
-        .service('Media', function(Image, $q) {
+        .service('Media', function(GenericFile, Image, $q) {
             return {
+                documents: [],
                 images: [], // empty image array for handling files
-                preupload: function(filesList, fieldName, parent, parentId) {
+                preupload: function(filesList, fieldName, parent, parentId, model) {
                     /**Process all media prior to uploading to server.
 
                      Create a usable array of deferred requests that will allow
@@ -45512,18 +46485,19 @@ angular
                      */
 
                     var self = this,
+                        modelCls = (model === 'document') ? GenericFile : Image,
                         savedQueries = [],
                         field = (fieldName) ? fieldName : 'image';
 
                     angular.forEach(filesList, function(_file) {
                         savedQueries.push(
-                            self.upload(_file, field, parent, parentId)
+                            self.upload(_file, field, parent, parentId, modelCls)
                         );
                     });
 
                     return savedQueries;
                 },
-                upload: function(file, field, parent, parentId) {
+                upload: function(file, field, parent, parentId, modelCls) {
                     /**Upload a single file to the server.
 
                      Create a single deferred request that enables us to keep
@@ -45549,7 +46523,7 @@ angular
                     //
                     // }
 
-                    var request = Image.upload({
+                    var request = modelCls.upload({
                         target: parent + ':' + parentId
                     }, fileData, function() {
                         defer.resolve(request);
@@ -47888,7 +48862,7 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .service('GenericFile', function(environment, $resource) {
 
-            return $resource(environment.apiUrl.concat('/v1/media/document'), {
+            return $resource(environment.apiUrl.concat('/v1/media/document/:id'), {
                 id: '@id'
             }, {
                 query: {
@@ -47900,6 +48874,14 @@ angular.module('FieldDoc')
                     headers: {
                         'Content-Type': undefined
                     }
+                },
+                update: {
+                    method: 'PATCH',
+                    url: environment.apiUrl.concat('/v1/document/:id')
+                },
+                'delete': {
+                    method: 'DELETE',
+                    url: environment.apiUrl.concat('/v1/document/:id')
                 }
             });
 
@@ -49825,8 +50807,15 @@ angular.module('FieldDoc')
                     restrict: 'EA',
                     scope: {
                         'alerts': '=?',
+                        'loadFeature': '&',
+                        'modalDisplay': '=?',
                         'practice': '=?',
                         'showChildModal': '=?',
+                        'showDocumentModal': '=?',
+                        'showEditModal': '=?',
+                        'showImageModal': '=?',
+                        'targetDocument': '=?',
+                        'targetImage': '=?',
                         'toolbarState': '@'
                     },
                     templateUrl: function (elem, attrs) {
@@ -49877,6 +50866,12 @@ angular.module('FieldDoc')
 
                         }
 
+                        scope.loadFeature = function() {
+
+                            scope.loadFeature({});
+
+                        };
+
                         //
                         // Generic print functionality.
                         //
@@ -49893,7 +50888,21 @@ angular.module('FieldDoc')
 
                         scope.toggleExportModal = function() {
 
-                            scope.showExportDialog = !scope.showExportDialog;
+                            scope.modalDisplay = {
+                                export: true
+                            };
+
+                        };
+
+                        //
+                        // Handling for document modal.
+                        //
+
+                        scope.toggleDocumentModal = function() {
+
+                            scope.modalDisplay = {
+                                uploadDocument: true
+                            };
 
                         };
 
@@ -49903,7 +50912,9 @@ angular.module('FieldDoc')
 
                         scope.toggleImageModal = function() {
 
-                            scope.showImageModal = !scope.showImageModal;
+                            scope.modalDisplay = {
+                                uploadImage: true
+                            };
 
                         };
 
@@ -49913,7 +50924,9 @@ angular.module('FieldDoc')
 
                         scope.presentChildModal = function() {
 
-                            scope.showChildModal = true;
+                            scope.modalDisplay = {
+                                showChildModal: true
+                            };
 
                             scope.type = 'report';
 
@@ -52006,6 +53019,7 @@ angular.module('FieldDoc')
                         'callback': '&',
                         'featureType': '@featureType',
                         'fileInput': '@fileInput',
+                        'modalDisplay': '=?',
                         'parent': '=?',
                         'visible': '=?'
                     },
@@ -52042,6 +53056,12 @@ angular.module('FieldDoc')
 
                         }
 
+                        if (!angular.isDefined(scope.modalDisplay)) {
+
+                            scope.modalDisplay = {};
+
+                        }
+
                         scope.mediaManager = Media;
 
                         scope.mediaManager.images = [];
@@ -52063,6 +53083,8 @@ angular.module('FieldDoc')
                             scope.mediaManager.images = [];
 
                             scope.visible = false;
+
+                            scope.modalDisplay = {};
 
                             if (refresh) scope.callback();
 
@@ -52230,6 +53252,7 @@ angular.module('FieldDoc')
                         'alerts': '=?',
                         'callback': '&',
                         'feature': '=?',
+                        'modalDisplay': '=?',
                         'parent': '=?',
                         'parentType': '@',
                         'visible': '=?'
@@ -52248,6 +53271,12 @@ angular.module('FieldDoc')
                     },
                     link: function (scope, element, attrs) {
 
+                        if (!angular.isDefined(scope.modalDisplay)) {
+
+                            scope.modalDisplay = {};
+
+                        }
+
                         function closeAlerts() {
 
                             scope.alerts = [];
@@ -52263,6 +53292,8 @@ angular.module('FieldDoc')
                             scope.uploadError = null;
 
                             scope.visible = false;
+
+                            scope.modalDisplay = {};
 
                             if (refresh) scope.callback();
 
@@ -52280,6 +53311,367 @@ angular.module('FieldDoc')
                             scope.processing = true;
 
                             Image.update(
+                                requestConfig,
+                                scope.feature
+                            ).$promise.then(function (successResponse) {
+
+                                scope.progressMessage = 'Complete';
+
+                                scope.uploadComplete = true;
+
+                                scope.uploadError = null;
+
+                                $timeout(function () {
+
+                                    scope.closeChildModal(true);
+
+                                }, 1500);
+
+                            }, function (errorResponse) {
+
+                                console.log('errorResponse', errorResponse);
+
+                                scope.uploadError = errorResponse.data;
+
+                                scope.progressMessage = undefined;
+
+                                scope.processing = false;
+
+                            });
+
+                        };
+
+                    }
+
+                };
+
+            }
+
+        ]);
+
+}());
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .directive('documentUploadDialog', [
+            'environment',
+            '$routeParams',
+            '$filter',
+            '$parse',
+            '$location',
+            '$timeout',
+            '$q',
+            'Dashboard',
+            'Program',
+            'Project',
+            'Site',
+            'Practice',
+            'Report',
+            'User',
+            'Organization',
+            'Media',
+            'GenericFile',
+            function(environment, $routeParams, $filter, $parse, $location,
+                     $timeout, $q, Dashboard, Program, Project, Site, Practice,
+                     Report, User, Organization, Media, GenericFile) {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        'alerts': '=?',
+                        'callback': '&',
+                        'featureType': '@featureType',
+                        'fileInput': '@fileInput',
+                        'modalDisplay': '=?',
+                        'parent': '=?',
+                        'visible': '=?'
+                    },
+                    templateUrl: function(elem, attrs) {
+
+                        return [
+                            // Base path
+                            'modules/shared/directives/',
+                            // Directive path
+                            'dialog/document/documentUploadDialog--view.html',
+                            // Query string
+                            '?t=' + environment.version
+                        ].join('');
+
+                    },
+                    link: function(scope, element, attrs) {
+
+                        var modelIdx = {
+                            'practice': Practice,
+                            'project': Project,
+                            'report': Report,
+                            'site': Site
+                        };
+
+                        scope.model = modelIdx[scope.featureType];
+
+                        if (typeof scope.model === 'undefined') {
+
+                            throw new Error('Un-recognized `featureType` parameter.');
+
+                        }
+
+                        if (!angular.isDefined(scope.modalDisplay)) {
+
+                            scope.modalDisplay = {};
+
+                        }
+
+                        scope.mediaManager = Media;
+
+                        scope.mediaManager.documents = [];
+
+                        function closeAlerts() {
+
+                            scope.alerts = [];
+
+                        }
+
+                        scope.closeChildModal = function(refresh) {
+
+                            scope.processing = false;
+
+                            scope.uploadComplete = false;
+
+                            scope.uploadError = null;
+
+                            scope.mediaManager.documents = [];
+
+                            scope.visible = false;
+
+                            scope.modalDisplay = {};
+
+                            if (refresh) scope.callback();
+
+                        };
+
+                        scope.resetFileInput = function(element) {
+
+                            element.value = null;
+
+                            scope.processing = false;
+
+                            scope.uploadComplete = false;
+
+                        };
+
+                        scope.hideTasks = function() {
+
+                            scope.pendingTasks = [];
+
+                            if (typeof scope.taskPoll !== 'undefined') {
+
+                                $interval.cancel(scope.taskPoll);
+
+                            }
+
+                        };
+
+                        scope.uploadDocument = function() {
+
+                            console.log(
+                                'documentUploadDialog:uploadDocument:mediaManager.documents:',
+                                scope.mediaManager.documents
+                            );
+
+                            var input = document.getElementById(scope.fileInput);
+
+                            scope.processing = true;
+
+                            var documentCollection = {
+                                documents: []
+                            };
+
+                            if (!Array.isArray(scope.parent.documents)) {
+
+                                scope.parent.documents = [];
+
+                            }
+
+                            scope.parent.documents.forEach(function(document) {
+
+                                documentCollection.documents.push({
+                                    id: document.id
+                                });
+
+                            });
+
+                            if (!scope.mediaManager.documents) {
+
+                                scope.alerts = [{
+                                    'type': 'error',
+                                    'flag': 'Error!',
+                                    'msg': 'Please select a file.',
+                                    'prompt': 'OK'
+                                }];
+
+                                $timeout(closeAlerts, 2000);
+
+                                return false;
+
+                            }
+
+                            scope.processing = true;
+
+                            scope.progressMessage = 'Uploading…';
+
+                            var savedQueries = scope.mediaManager.preupload(
+                                scope.mediaManager.documents,
+                                'file',
+                                scope.featureType,
+                                scope.parent.id,
+                                'document');
+
+                            console.log(
+                                'ProjectDocumentController:saveDocument:savedQueries:',
+                                savedQueries
+                            );
+
+                            $q.all(savedQueries).then(function(successResponse) {
+
+                                console.log('Documents::successResponse', successResponse);
+
+                                angular.forEach(successResponse, function(document) {
+
+                                    documentCollection.documents.push({
+                                        id: document.id
+                                    });
+
+                                });
+
+                                scope.model.update({
+                                    id: scope.parent.id
+                                }, documentCollection).$promise.then(function(successResponse) {
+
+                                    scope.progressMessage = 'Complete';
+
+                                    scope.uploadComplete = true;
+
+                                    scope.uploadError = null;
+
+                                    $timeout(function () {
+
+                                        scope.closeChildModal(true);
+
+                                    }, 1500);
+
+                                }, function(errorResponse) {
+
+                                    console.log('errorResponse', errorResponse);
+
+                                    scope.uploadError = errorResponse.data;
+
+                                    scope.resetFileInput(input);
+
+                                });
+
+                            }, function(errorResponse) {
+
+                                console.log('errorResponse', errorResponse);
+
+                                scope.uploadError = errorResponse.data;
+
+                                scope.resetFileInput(input);
+
+                            });
+
+                        };
+
+                    }
+
+                };
+
+            }
+
+        ]);
+
+}());
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .directive('documentEditDialog', [
+            'environment',
+            '$routeParams',
+            '$filter',
+            '$parse',
+            '$location',
+            '$timeout',
+            'Media',
+            'GenericFile',
+            function(environment, $routeParams, $filter, $parse, $location,
+                     $timeout, Media, GenericFile) {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        'alerts': '=?',
+                        'callback': '&',
+                        'feature': '=?',
+                        'modalDisplay': '=?',
+                        'parent': '=?',
+                        'parentType': '@',
+                        'visible': '=?'
+                    },
+                    templateUrl: function (elem, attrs) {
+
+                        return [
+                            // Base path
+                            'modules/shared/directives/',
+                            // Directive path
+                            'dialog/document/documentEditDialog--view.html',
+                            // Query string
+                            '?t=' + environment.version
+                        ].join('');
+
+                    },
+                    link: function (scope, element, attrs) {
+
+                        if (!angular.isDefined(scope.modalDisplay)) {
+
+                            scope.modalDisplay = {};
+
+                        }
+
+                        function closeAlerts() {
+
+                            scope.alerts = [];
+
+                        }
+
+                        scope.closeChildModal = function (refresh) {
+
+                            scope.processing = false;
+
+                            scope.uploadComplete = false;
+
+                            scope.uploadError = null;
+
+                            scope.visible = false;
+
+                            scope.modalDisplay = {};
+
+                            if (refresh) scope.callback();
+
+                        };
+
+                        scope.saveDocument = function () {
+
+                            var requestConfig = {
+                                id: scope.feature.id,
+                                target: scope.parentType + ':' + scope.parent.id
+                            };
+
+                            scope.progressMessage = 'Saving…';
+
+                            scope.processing = true;
+
+                            GenericFile.update(
                                 requestConfig,
                                 scope.feature
                             ).$promise.then(function (successResponse) {
@@ -53959,6 +55351,29 @@ angular.module('FieldDoc')
         };
 
     }]);
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .filter('fileExtExtract', ['$filter', function($filter) {
+
+            return function(value) {
+
+                if (typeof value === 'string' &&
+                    value.indexOf('.') >= 0) {
+
+                    return value.split('.').pop();
+
+                }
+
+                return value;
+
+            };
+
+        }]);
+
+}());
 (function() {
 
     'use strict';

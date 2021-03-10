@@ -71,6 +71,17 @@
             </a>
         </li>
 
+        <!-- Documents -->
+
+        <li data-ng-if="practice.permissions.write"
+            title="Documents">
+            <a href="/practices/{{ practice.id }}/documents">
+                <span class="material-icons">
+                    folder
+                </span>
+            </a>
+        </li>
+
         <!-- Images -->
 
         <li data-ng-if="practice.permissions.write && practice.picture"
@@ -81,6 +92,7 @@
                 </span>
             </a>
         </li>
+
         <li data-ng-if="practice.permissions.write && !practice.picture"
             title="Add image">
             <a data-ng-click="toggleImageModal()">
@@ -101,7 +113,6 @@
                     </span>
                 </div>
                 <div class="copy">
-
                     <span>
                         This practice is ready for reporting.
                     </span>
@@ -176,6 +187,18 @@
                 <i data-ng-class="{glow: !practice.practice_type}"
                    class="material-icons">
                     edit
+                </i>
+            </a>
+        </li>
+
+        <!-- Upload file -->
+
+        <li data-ng-if="practice.permissions.write">
+            <a href="#"
+               title="Upload file"
+               data-ng-click="toggleDocumentModal()">
+                <i class="material-icons">
+                    upload_file
                 </i>
             </a>
         </li>
@@ -258,21 +281,53 @@
     
 </nav>
 
-<div creation-dialog alerts="alerts" parent="practice.id"
+<div creation-dialog
+     alerts="alerts"
+     parent="practice.id"
      organization="practice.project.organization_id"
-     reset-type="false" type="'report'" visible="showChildModal"></div>
+     reset-type="false"
+     type="'report'"
+     visible="modalDisplay.showChildModal"></div>
 
 <div export-dialog
      alerts="alerts"
      feature="practice"
      reset-type="false"
      type="'practice'"
-     visible="showExportDialog"></div>
+     visible="modalDisplay.export"></div>
+
+<div document-upload-dialog
+     alerts="alerts"
+     parent="practice"
+     file-input="document-file-input"
+     callback="loadFeature()"
+     feature-type="practice"
+     modal-display="modalDisplay"
+     visible="modalDisplay.uploadDocument"></div>
+
+<div document-edit-dialog
+     alerts="alerts"
+     feature="targetDocument"
+     callback="loadFeature()"
+     modal-display="modalDisplay"
+     parent="practice"
+     parent-type="practice"
+     visible="modalDisplay.editDocument"></div>
+
+<div image-edit-dialog
+     alerts="alerts"
+     feature="targetImage"
+     callback="loadFeature()"
+     modal-display="modalDisplay"
+     parent="practice"
+     parent-type="practice"
+     visible="modalDisplay.editImage"></div>
 
 <div image-upload-dialog
-     alerts="page.alerts"
+     alerts="alerts"
      parent="practice"
      file-input="image-file-input"
-     callback="page.loadPractice()"
+     callback="loadFeature()"
      feature-type="practice"
-     visible="showImageModal"></div>
+     modal-display="modalDisplay"
+     visible="modalDisplay.uploadImage"></div>

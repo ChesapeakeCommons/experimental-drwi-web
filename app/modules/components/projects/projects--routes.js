@@ -295,6 +295,51 @@ angular.module('FieldDoc')
                     }
                 }
             })
+            .when('/projects/:projectId/documents', {
+                templateUrl: '/modules/components/projects/views/projectDocument--view.html?t=' + environment.version,
+                controller: 'ProjectDocumentController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    project: function(Project, $route) {
+
+                        var exclude = [
+                            'centroid',
+                            'creator',
+                            'dashboards',
+                            'extent',
+                            'geometry',
+                            'members',
+                            'metric_progress',
+                            'metric_types',
+                            // 'partners',
+                            'practices',
+                            'practice_types',
+                            'properties',
+                            'tags',
+                            'targets',
+                            'tasks',
+                            'sites'
+                        ].join(',');
+
+                        return Project.get({
+                            id: $route.current.params.projectId,
+                            exclude: exclude
+                        });
+
+                    }
+                }
+            })
             .when('/projects/:projectId/images', {
                 templateUrl: '/modules/components/projects/views/projectImage--view.html?t=' + environment.version,
                 controller: 'ProjectImageController',

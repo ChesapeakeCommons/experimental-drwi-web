@@ -260,7 +260,12 @@
 
     </div>
 
-    <div practice-toolbar practice="page.practice" toolbar-state="edit" alerts="page.alerts"
+    <div practice-toolbar
+         practice="page.practice"
+         toolbar-state="edit"
+         alerts="page.alerts"
+         load-feature="page.loadPractice()"
+         modal-display="page.modalDisplay"
          data-ng-if="page.practice"></div>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">

@@ -716,6 +716,17 @@
                 </a>
             </li>
 
+            <!-- Documents -->
+
+            <li data-ng-if="page.permissions.can_edit"
+                title="Documents">
+                <a href="/projects/{{ page.project.id }}/documents">
+                <span class="material-icons">
+                    folder
+                </span>
+                </a>
+            </li>
+
             <!-- Images -->
 
             <li data-ng-if="page.permissions.can_edit && page.project.picture"
@@ -726,6 +737,7 @@
                 </span>
                 </a>
             </li>
+
             <li data-ng-if="page.permissions.can_edit && !page.project.picture"
                 title="Add image">
                 <a data-ng-click="page.showImageModal = !page.showImageModal">
@@ -767,6 +779,18 @@
                 <a href="/projects/{{ page.project.id }}/edit" title="Edit">
                     <i class="material-icons">
                         edit
+                    </i>
+                </a>
+            </li>
+
+            <!-- Upload file -->
+
+            <li data-ng-if="page.permissions.can_edit">
+                <a href="#"
+                   title="Upload file"
+                   data-ng-click="page.showFileDialog = !page.showFileDialog">
+                    <i class="material-icons">
+                        upload_file
                     </i>
                 </a>
             </li>
@@ -830,6 +854,14 @@
          reset-type="false"
          type="'project'"
          visible="page.showExportDialog"></div>
+
+    <div document-upload-dialog
+         alerts="page.alerts"
+         parent="page.project"
+         file-input="document-file-input"
+         callback="page.loadProject()"
+         feature-type="project"
+         visible="page.showFileDialog"></div>
 
     <div image-upload-dialog
          alerts="page.alerts"

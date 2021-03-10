@@ -476,7 +476,7 @@ angular.module('FieldDoc')
 
                         $timeout(self.closeAlerts, 2000);
 
-                        self.modelInputs.attachment_url = successResponse.file_url;
+                        self.modelInputs.attachment_url = successResponse.url;
 
                         self.savePractice();
 

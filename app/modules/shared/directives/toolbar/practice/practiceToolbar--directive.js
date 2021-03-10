@@ -20,8 +20,15 @@
                     restrict: 'EA',
                     scope: {
                         'alerts': '=?',
+                        'loadFeature': '&',
+                        'modalDisplay': '=?',
                         'practice': '=?',
                         'showChildModal': '=?',
+                        'showDocumentModal': '=?',
+                        'showEditModal': '=?',
+                        'showImageModal': '=?',
+                        'targetDocument': '=?',
+                        'targetImage': '=?',
                         'toolbarState': '@'
                     },
                     templateUrl: function (elem, attrs) {
@@ -72,6 +79,12 @@
 
                         }
 
+                        scope.loadFeature = function() {
+
+                            scope.loadFeature({});
+
+                        };
+
                         //
                         // Generic print functionality.
                         //
@@ -88,7 +101,21 @@
 
                         scope.toggleExportModal = function() {
 
-                            scope.showExportDialog = !scope.showExportDialog;
+                            scope.modalDisplay = {
+                                export: true
+                            };
+
+                        };
+
+                        //
+                        // Handling for document modal.
+                        //
+
+                        scope.toggleDocumentModal = function() {
+
+                            scope.modalDisplay = {
+                                uploadDocument: true
+                            };
 
                         };
 
@@ -98,7 +125,9 @@
 
                         scope.toggleImageModal = function() {
 
-                            scope.showImageModal = !scope.showImageModal;
+                            scope.modalDisplay = {
+                                uploadImage: true
+                            };
 
                         };
 
@@ -108,7 +137,9 @@
 
                         scope.presentChildModal = function() {
 
-                            scope.showChildModal = true;
+                            scope.modalDisplay = {
+                                showChildModal: true
+                            };
 
                             scope.type = 'report';
 

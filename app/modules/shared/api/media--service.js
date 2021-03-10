@@ -8,10 +8,11 @@
      * @description Enable consistent, system-wide handling of images
      */
     angular.module('FieldDoc')
-        .service('Media', function(Image, $q) {
+        .service('Media', function(GenericFile, Image, $q) {
             return {
+                documents: [],
                 images: [], // empty image array for handling files
-                preupload: function(filesList, fieldName, parent, parentId) {
+                preupload: function(filesList, fieldName, parent, parentId, model) {
                     /**Process all media prior to uploading to server.
 
                      Create a usable array of deferred requests that will allow
@@ -26,18 +27,19 @@
                      */
 
                     var self = this,
+                        modelCls = (model === 'document') ? GenericFile : Image,
                         savedQueries = [],
                         field = (fieldName) ? fieldName : 'image';
 
                     angular.forEach(filesList, function(_file) {
                         savedQueries.push(
-                            self.upload(_file, field, parent, parentId)
+                            self.upload(_file, field, parent, parentId, modelCls)
                         );
                     });
 
                     return savedQueries;
                 },
-                upload: function(file, field, parent, parentId) {
+                upload: function(file, field, parent, parentId, modelCls) {
                     /**Upload a single file to the server.
 
                      Create a single deferred request that enables us to keep
@@ -63,7 +65,7 @@
                     //
                     // }
 
-                    var request = Image.upload({
+                    var request = modelCls.upload({
                         target: parent + ':' + parentId
                     }, fileData, function() {
                         defer.resolve(request);

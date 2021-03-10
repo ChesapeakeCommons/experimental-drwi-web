@@ -6,15 +6,15 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('PracticeImageController', function(
-        Account, Image, $location, $log, Practice,
+    .controller('PracticeDocumentController', function(
+        Account, GenericFile, $location, $log, Practice,
         practice, $q, $rootScope, $route, $scope,
         $timeout, $interval, user) {
 
         var self = this;
 
         $rootScope.toolbarState = {
-            'editImages': true
+            'editDocuments': true
         };
 
         $rootScope.page = {};
@@ -76,9 +76,9 @@ angular.module('FieldDoc')
 
             $rootScope.page.title = self.practice.name ? self.practice.name : 'Un-named Practice';
 
-            if (Array.isArray(self.practice.images)) {
+            if (Array.isArray(self.practice.documents)) {
 
-                self.practice.images.sort(function (a, b) {
+                self.practice.documents.sort(function (a, b) {
 
                     return a.id < b.id;
 
@@ -131,10 +131,10 @@ angular.module('FieldDoc')
         self.presentEditDialog = function (feature) {
 
             self.modalDisplay = {
-                editImage: true
+                editDocument: true
             };
 
-            self.targetImage = feature;
+            self.targetDocument = feature;
 
         };
 
@@ -176,9 +176,9 @@ angular.module('FieldDoc')
 
             switch (featureType) {
 
-                case 'image':
+                case 'document':
 
-                    targetCollection = Image;
+                    targetCollection = GenericFile;
 
                     requestConfig.target = 'practice:' + self.practice.id;
 
@@ -201,9 +201,9 @@ angular.module('FieldDoc')
                     'prompt': 'OK'
                 }];
 
-                if (featureType === 'image') {
+                if (featureType === 'document') {
 
-                    self.practice.images.splice(index, 1);
+                    self.practice.documents.splice(index, 1);
 
                     self.cancelDelete();
 

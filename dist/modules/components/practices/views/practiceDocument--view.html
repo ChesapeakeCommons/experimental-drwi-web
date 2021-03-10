@@ -8,7 +8,7 @@
 
         <div class="progress--modal reveal fade-in t0" data-ng-if="page.status.loading">
             <div class="progress--container">
-                <p style="font-weight: bold;" class="color-pulse">Loading image collection&hellip;</p>
+                <p style="font-weight: bold;" class="color-pulse">Loading document collection&hellip;</p>
             </div>
         </div>
 
@@ -29,7 +29,7 @@
              practice="page.practice"
              site="page.practice.site"
              project="page.practice.project"
-             tail="Images"></div>
+             tail="Documents"></div>
 
         <div class="main--ui reveal fade-in t0"
              data-ng-if="!page.status.loading && page.makePrivate">
@@ -53,13 +53,13 @@
 
             <div class="create-heading" data-ng-if="!page.status.loading">
                 <h1 class="margin-0">
-                    Practice images
+                    Practice documents
                     <span class="tally">
-                        {{ page.practice.images.length | number }}
+                        {{ page.practice.documents.length | number }}
                     </span>
                 </h1>
                 <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
-                        data-ng-click="page.modalDisplay.uploadImage = !page.modalDisplay.uploadImage">
+                        data-ng-click="page.modalDisplay.uploadDocument = !page.modalDisplay.uploadDocument">
                     <span class="material-icons margin-r-50p">
                         add
                     </span>
@@ -69,7 +69,7 @@
 
             <div class="margin-t-2" style="position: relative; min-height: 640px; width: 100%;">
 
-                <div data-ng-if="!page.practice.images.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
+                <div data-ng-if="!page.practice.documents.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
                 0;">
 
                     <ul class="selectable-group-items list-unstyled margin-t-2"
@@ -85,14 +85,14 @@
 
                                     <div class="pad-0 margin-t-2 margin-b-1 center">
                                         <span class="material-icons md-36">
-                                            image
+                                            document
                                         </span>
                                     </div>
 
                                     <div class="pad-0">
                                         <p style="font-style: normal; font-size: 1.2em; padding: 0; margin: 0;
                                         text-align: center;">
-                                            <em>This practice does not contain any images.</em>
+                                            <em>This practice does not contain any documents.</em>
                                         </p>
                                     </div>
 
@@ -107,15 +107,27 @@
                 </div>
 
                 <ul class="snapshot--cards list-unstyled"
-                    data-ng-if="page.practice.images.length">
+                    data-ng-if="page.practice.documents.length">
 
                     <li class="image-card reveal fade-in"
                         style="animation-delay: {{ $index * 50 }}ms;"
-                        data-ng-repeat="image in page.practice.images track by $index">
+                        data-ng-repeat="document in page.practice.documents track by $index">
 
                         <div class="card--content">
 
-                            <div style="width: 100%; height: 200px; min-height: 200px; background: #f5f5f5 url('{{ image.original }}') center center / cover no-repeat;"></div>
+                            <div class="file-card-meta">
+                                <span class="file-name">
+                                    <strong>
+                                        {{ document.name || document.file_name || 'Un-titled' }}
+                                    </strong>
+                                </span>
+                                <span class="file-ext-thumb">
+                                    {{ document.url | fileExtExtract }}
+                                </span>
+                                <span class="file-size-label">
+                                    {{ document.file_size | fileSize }}
+                                </span>
+                            </div>
 
                             <img height="0" width="auto" />
 
@@ -123,42 +135,36 @@
 
                                 <div class="confirm--delete"
                                      style="opacity: 0; visibility: hidden;"
-                                     data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === image.id && page.deletionTarget.collection === 'image')}">
-                                    <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this image?</p>
+                                     data-ng-class="{visible: (page.deletionTarget && page.deletionTarget.feature.id === document.id && page.deletionTarget.collection === 'document')}">
+                                    <p style="font-style: normal; color: #616161; font-size: 0.9em; margin: 0;">Delete this document?</p>
                                     <div class="actions" style="flex: 0;">
-                                        <a class="snapshot--title"
-                                           href="#"
-                                           title="Delete forever"
-                                           data-ng-click="page.deleteFeature('image', $index)">
+                                        <a class="snapshot--title" href="#" title="Delete forever" data-ng-click="page.deleteFeature('document', $index)">
                                             Yes
                                         </a>
-                                        <a class="snapshot--title"
-                                           href="#"
-                                           title="Cancel"
-                                           data-ng-click="page.cancelDelete()">
+                                        <a class="snapshot--title" href="#" title="Cancel" data-ng-click="page.cancelDelete()">
                                             Cancel
                                         </a>
                                     </div>
                                 </div>
 
-                                <p style="font-style: normal; color: #616161; font-size: 0.9em;">{{ (image.caption || 'No caption') | truncate:80 }}</p>
+                                <p style="font-style: normal; color: #616161; font-size: 0.9em;">
+                                    {{ (document.annotation || 'No notes') | truncate:80 }}
+                                </p>
 
                                 <div class="actions">
-                                    <a class="snapshot--title" href="{{ image.original }}"
-                                       title="Save image" target="_blank">
+                                    <a class="snapshot--title" href="{{ document.url }}" title="Save document" target="_blank">
                                         <i class="material-icons">
                                             save_alt
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Edit image"
-                                       data-ng-click="page.presentEditDialog(image)"
-                                       data-ng-if="page.permissions.write">
+                                    <a class="snapshot--title" href="#" title="Edit document"
+                                       data-ng-click="page.presentEditDialog(document)"
+                                       data-ng-if="page.practice.permissions.write">
                                         <i class="material-icons">
                                             edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete image"
-                                       data-ng-click="page.confirmDelete(image, 'image')">
+                                    <a class="snapshot--title" href="#" title="Delete document" data-ng-click="page.confirmDelete(document, 'document')">
                                         <i class="material-icons">
                                             delete
                                         </i>
@@ -166,10 +172,10 @@
                                 </div>
 
                                 <span>
-                                    <time datetime="{{ image.created_on }}" title="{{ image.created_on }}">
-                                        {{ image.created_on | localTime | date:'mediumDate' }} &middot; {{
-                                    image.created_on |
-                                        localTime | date:'h:mm' }} {{ image.created_on | localTime | date:'a'
+                                    <time datetime="{{ document.created_on }}" title="{{ document.created_on }}">
+                                        {{ document.created_on | localTime | date:'mediumDate' }} &middot; {{
+                                    document.created_on |
+                                        localTime | date:'h:mm' }} {{ document.created_on | localTime | date:'a'
                                     }}</time>
                                 </span>
                             </div>
@@ -192,9 +198,9 @@
          alerts="page.alerts"
          load-feature="page.loadPractice()"
          modal-display="page.modalDisplay"
+         show-document-modal="page.showDocumentModal"
          show-edit-modal="page.showEditModal"
-         show-image-modal="page.showUploadModal"
-         target-image="page.targetImage"
+         target-document="page.targetDocument"
          data-ng-if="page.practice"></div>
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">

@@ -6,15 +6,15 @@
  * @description
  */
 angular.module('FieldDoc')
-    .controller('PracticeImageController', function(
-        Account, Image, $location, $log, Practice,
-        practice, $q, $rootScope, $route, $scope,
+    .controller('SiteDocumentController', function(
+        Account, GenericFile, $location, $log, Site,
+        site, $q, $rootScope, $route, $scope,
         $timeout, $interval, user) {
 
         var self = this;
 
         $rootScope.toolbarState = {
-            'editImages': true
+            'editDocuments': true
         };
 
         $rootScope.page = {};
@@ -48,13 +48,13 @@ angular.module('FieldDoc')
 
         self.closeRoute = function () {
 
-            $location.path('practices');
+            $location.path('sites');
 
         };
 
-        self.processPractice = function(data) {
+        self.processSite = function(data) {
 
-            self.practice = data;
+            self.site = data;
 
             if (data.permissions) {
 
@@ -70,15 +70,15 @@ angular.module('FieldDoc')
 
             }
 
-            delete self.practice.organization;
+            delete self.site.organization;
 
-            self.practiceType = data.category;
+            self.siteType = data.category;
 
-            $rootScope.page.title = self.practice.name ? self.practice.name : 'Un-named Practice';
+            $rootScope.page.title = self.site.name ? self.site.name : 'Un-named Site';
 
-            if (Array.isArray(self.practice.images)) {
+            if (Array.isArray(self.site.documents)) {
 
-                self.practice.images.sort(function (a, b) {
+                self.site.documents.sort(function (a, b) {
 
                     return a.id < b.id;
 
@@ -88,7 +88,7 @@ angular.module('FieldDoc')
 
         };
 
-        self.loadPractice = function() {
+        self.loadSite = function() {
 
             var exclude = [
                 'centroid',
@@ -109,14 +109,14 @@ angular.module('FieldDoc')
                 'sites'
             ].join(',');
 
-            Practice.get({
-                id: $route.current.params.practiceId,
+            Site.get({
+                id: $route.current.params.siteId,
                 exclude: exclude
             }).$promise.then(function(successResponse) {
 
-                console.log('self.practice', successResponse);
+                console.log('self.site', successResponse);
 
-                self.processPractice(successResponse);
+                self.processSite(successResponse);
 
                 self.showElements();
 
@@ -131,10 +131,10 @@ angular.module('FieldDoc')
         self.presentEditDialog = function (feature) {
 
             self.modalDisplay = {
-                editImage: true
+                editDocument: true
             };
 
-            self.targetImage = feature;
+            self.targetDocument = feature;
 
         };
 
@@ -143,7 +143,7 @@ angular.module('FieldDoc')
             console.log('self.confirmDelete', obj, targetCollection);
 
             if (self.deletionTarget &&
-                self.deletionTarget.collection === 'practice') {
+                self.deletionTarget.collection === 'site') {
 
                 self.cancelDelete();
 
@@ -176,17 +176,17 @@ angular.module('FieldDoc')
 
             switch (featureType) {
 
-                case 'image':
+                case 'document':
 
-                    targetCollection = Image;
+                    targetCollection = GenericFile;
 
-                    requestConfig.target = 'practice:' + self.practice.id;
+                    requestConfig.target = 'site:' + self.site.id;
 
                     break;
 
                 default:
 
-                    targetCollection = Practice;
+                    targetCollection = Site;
 
                     break;
 
@@ -201,13 +201,13 @@ angular.module('FieldDoc')
                     'prompt': 'OK'
                 }];
 
-                if (featureType === 'image') {
+                if (featureType === 'document') {
 
-                    self.practice.images.splice(index, 1);
+                    self.site.documents.splice(index, 1);
 
                     self.cancelDelete();
 
-                    self.loadPractice();
+                    self.loadSite();
 
                     $timeout(self.closeAlerts, 1500);
 
@@ -269,7 +269,7 @@ angular.module('FieldDoc')
                     can_edit: false
                 };
 
-                self.loadPractice();
+                self.loadSite();
 
             });
 
