@@ -22,9 +22,11 @@
             'Project',
             'programs',
             'projects',
+            'Organization',
+            '$scope',
             function(Account, $location, $timeout, $log, $rootScope,
                 $route, Utility, user, $window, Program, Project, programs,
-                projects) {
+                projects, Organization,$scope) {
 
                 var self = this;
 
@@ -241,6 +243,34 @@
 
                 };
 
+                self.loadOrganization = function(organization_id){
+
+                    Organization.profile({
+                        id: organization_id
+                    }).$promise.then(function(successResponse) {
+
+                        console.log('self.organization', successResponse);
+
+                        self.organization = successResponse;
+
+                        $scope.availablePrograms = self.availablePrograms = self.organization.programs;
+
+
+                        console.log("self.availablePrograms -->",self.availablePrograms);
+
+                    }, function(errorResponse) {
+
+                        console.error('Unable to load organization.');
+
+                   //     self.loadProject();
+
+                        //    self.status.loading = false;
+
+                    });
+
+
+                }
+
                 //
                 // Verify Account information for proper UI element display
                 //
@@ -252,6 +282,8 @@
 
                         self.user = userResponse;
 
+                        console.log("self.user -->", self.user);
+
                         if ($rootScope.user.organization_id ||
                             $rootScope.user.memberships.length) {
                            
@@ -262,6 +294,8 @@
                             self.loadPrograms();
 
                             self.loadProjects();
+
+                            self.loadOrganization($rootScope.user.organization_id)
 
                         } else {
 
