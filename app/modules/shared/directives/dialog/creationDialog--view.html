@@ -23,7 +23,7 @@
                 <span class="prompt">
                     Select a program supported by FieldDoc (<strong>required for project setup</strong>).
                 </span>
-                <div class="classification--search" style="position: relative;">
+             <!--   <div class="classification--search" style="position: relative;">
                     <input type="search" style="padding: 1rem; font-size: 1rem;" class="search" value=""
                            placeholder="Search programs"
                            data-ng-model="program"
@@ -31,6 +31,33 @@
                            typeahead-on-select="setProgram($item, $model, $label)"
                            typeahead-wait-ms="100"
                            typeahead-template-url="templates/search--tpl.html">
+                </div>
+                -->
+
+                <div class="classification--list" style="margin-top: 24px; font-size: 0.9rem" data-ng-if="availableprograms">
+                    <ul>
+                        <li data-ng-repeat="a_program in availableprograms track by $index">
+                             <span style="width:80%; display:inline-block;">
+                                        <a href="/programs/{{a_program.program.id}}">{{ a_program.program.name }}
+                                        </a>
+                             </span>
+                            <span >
+                                 <i class="material-icons"
+                                    data-ng-if="programs.indexOf(a_program.program.id) == -1"
+                                    data-ng-click = "selectProgram(a_program.program.id,$index)";>
+                                                    radio_button_unchecked
+                                 </i>
+                                <i class="material-icons"
+                                   data-ng-if="programs.indexOf(a_program.program.id) > -1"
+                                   data-ng-click = "deselectProgram(a_program.program.id,$index)";>
+                                    radio_button_checked
+                                </i>
+                            </span>
+
+                        </li>
+
+                        {{programs}}
+                    </ul>
                 </div>
             </div>
         </div>
@@ -43,7 +70,7 @@
                 OK
             </button>
             <button type="submit" class="confirm" data-ng-if="type === 'project'"
-                    data-ng-disabled="!name || !program_id">
+                    data-ng-disabled="!name || (programs.length == 0)">
                 OK
             </button>
         </div>

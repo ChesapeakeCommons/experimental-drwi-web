@@ -18,7 +18,7 @@
             'SearchService',
             '$timeout',
             function(environment, $routeParams, $filter, $parse, $location, Project,
-                     Site, Practice, Report, MetricType, PracticeType,
+                     Site, Practice, Report, MetricType, PracticeType, Filters,
                      SearchService, $timeout) {
                 return {
                     restrict: 'EA',
@@ -29,7 +29,9 @@
                         'resetType': '=?',
                         'site': '=?',
                         'type': '=?',
-                        'visible': '=?'
+                        'visible': '=?',
+                        'availableprograms' : '=?',
+                        'programs': '=?',
                     },
                     templateUrl: function(elem, attrs) {
 
@@ -56,6 +58,8 @@
                             scope.alerts = [];
 
                         }
+
+                        scope.programs = [];
 
                         scope.closeChildModal = function() {
 
@@ -106,9 +110,18 @@
 
                             } else if (scope.type === 'project') {
 
+                                let tempPrograms = [];
+
+                                scope.programs.forEach(function(p){
+
+                                    tempPrograms.push({"id":p})
+
+                                });
+
                                 data = {
                                     'name': name,
-                                    'program_id': scope.program_id,
+                                    'programs': tempPrograms,
+                                    //'program_id': scope.program_id,
                                     'organization_id': scope.organization
                                 };
 
@@ -199,6 +212,31 @@
                             });
 
                         };
+
+
+                        scope.selectProgram = function (feature_id,index){
+
+                            scope.programs.push(feature_id);
+                            console.log(" scope.programs -->", scope.programs);
+                        }
+                        scope.deselectProgram = function (feature_id,index){
+
+                            let i = 0;
+
+                            scope.programs.forEach(function(program){
+
+                                if (program == feature_id){
+
+                                    scope.programs.splice(i,1);
+
+                                }
+
+                                i = i+1;
+                            });
+
+                           // scope.programs.push(feature_id);
+                          //  console.log(" scope.programs -->", scope.programs);
+                        }
 
                         scope.searchPrograms = function(value) {
 
