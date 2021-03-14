@@ -120,8 +120,7 @@
                                         nextPath
                                     );
 
-                                    if ($rootScope.user.organization_id ||
-                                        $rootScope.user.memberships.length) {
+                                    if ($rootScope.user.membership.id) {
 
                                         $rootScope.targetPath = null;
 

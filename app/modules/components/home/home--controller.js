@@ -252,9 +252,8 @@
 
                         self.user = userResponse;
 
-                        if ($rootScope.user.organization_id ||
-                            $rootScope.user.memberships.length) {
-                           
+                        if ($rootScope.user.membership.id) {
+
                             self.permissions = {
                                 can_edit: false
                             };

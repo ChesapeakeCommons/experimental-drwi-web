@@ -160,7 +160,7 @@
                                         <time datetime="{{ log.timestamp }}"
                                               title="{{ log.timestamp | date : 'mediumDate' }} &middot; {{ log.timestamp |
                                             localTime | date:'h:mm' }} {{ log.timestamp | localTime | date:'a' }}">
-                                            {{ log.timestamp | elapsedTime:true }}
+                                            {{ log.timestamp | localTime | elapsedTime:true }}
                                         </time>
                                     </span>
                                 </div>

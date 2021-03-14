@@ -48,7 +48,7 @@
 
                             <form role="form" class="form" style="overflow: visible;" id="form--{{ group.id }}" name="form--dashboard-filter" data-ng-submit="page.saveFeature()" autocomplete="off">
 
-                                <div data-ng-if="group.internal && ($root.user.organization_id === group.organization.id)">
+                                <div data-ng-if="group.internal && ($root.user.membership.organization.id === group.organization.id)">
 
                                     <h2>
                                         {{ group.name }}

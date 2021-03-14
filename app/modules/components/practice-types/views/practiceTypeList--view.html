@@ -134,12 +134,12 @@
                                         practice
                                         </i>
                                     </a> -->
-                                    <a class="snapshot--title" href="/practice-types/{{ practice.id }}/edit" title="Edit practice" data-ng-if="$root.user.id === practice.creator.id || $root.user.organization_id === practice.organization.id || $root.user.is_admin || $root.user.is_manager">
+                                    <a class="snapshot--title" href="/practice-types/{{ practice.id }}/edit" title="Edit practice" data-ng-if="$root.user.id === practice.creator.id || $root.user.membership.organization.id === practice.organization.id || $root.user.is_admin || $root.user.is_manager">
                                         <i class="material-icons">
                                         edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete practice" data-ng-click="page.confirmDelete(practice)" data-ng-if="$root.user.id === practice.creator.id || $root.user.organization_id === practice.organization.id || $root.user.is_admin">
+                                    <a class="snapshot--title" href="#" title="Delete practice" data-ng-click="page.confirmDelete(practice)" data-ng-if="$root.user.id === practice.creator.id || $root.user.membership.organization.id === practice.organization.id || $root.user.is_admin">
                                         <i class="material-icons">
                                         delete
                                         </i>

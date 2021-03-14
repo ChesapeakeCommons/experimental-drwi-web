@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615397700907})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615765513771})
 
 ;
 /**
@@ -423,8 +423,7 @@ angular.module('FieldDoc')
                                         nextPath
                                     );
 
-                                    if ($rootScope.user.organization_id ||
-                                        $rootScope.user.memberships.length) {
+                                    if ($rootScope.user.membership.id) {
 
                                         $rootScope.targetPath = null;
 
@@ -3796,7 +3795,9 @@ angular.module('FieldDoc')
                     // Load organization data
                     //
 
-                    self.memberships = $rootScope.user.memberships;
+                    self.memberships = [
+                        $rootScope.user.membership
+                    ];
 
                     self.status.loading = false;
 
@@ -12950,9 +12951,8 @@ angular.module('FieldDoc')
 
                         self.user = userResponse;
 
-                        if ($rootScope.user.organization_id ||
-                            $rootScope.user.memberships.length) {
-                           
+                        if ($rootScope.user.membership.id) {
+
                             self.permissions = {
                                 can_edit: false
                             };
@@ -49904,11 +49904,23 @@ angular.module('FieldDoc')
      */
     angular.module('FieldDoc')
         .service('Membership', function(environment, Preprocessors, $resource) {
-            return $resource(environment.apiUrl.concat('/v1/membership/:id'), {
-                'id': '@id'
+            return $resource(environment.apiUrl.concat('/v1/membership/:targetType/:id'), {
+                'id': '@id',
+                'targetType': '@targetType'
             }, {
                 update: {
                     method: 'PATCH'
+                },
+                getConfirmed: {
+                    method: 'GET',
+                    url: '/v1/membership/confirmed/:targetType/:id',
+                    headers: {
+                        'Authorization-Bypass': true
+                    }
+                },
+                invite: {
+                    method: 'POST',
+                    url: environment.apiUrl.concat('/v1/membership/invitation')
                 }
             });
         });
@@ -54468,6 +54480,112 @@ angular.module('FieldDoc')
                                 scope.progressMessage = undefined;
 
                                 scope.processing = false;
+
+                            });
+
+                        };
+
+                    }
+
+                };
+
+            }
+
+        ]);
+
+}());
+(function() {
+
+    'use strict';
+
+    angular.module('FieldDoc')
+        .directive('invitationDialog', [
+            'environment',
+            '$routeParams',
+            '$filter',
+            '$parse',
+            '$location',
+            'SearchService',
+            'Membership',
+            '$timeout',
+            function(environment, $routeParams, $filter, $parse,
+                     $location, SearchService, Membership, $timeout) {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        'alerts': '=?',
+                        'modalDisplay': '=?',
+                        'target': '=?',
+                        'targetType': '@',
+                        'visible': '=?'
+                    },
+                    templateUrl: function(elem, attrs) {
+
+                        return [
+                            // Base path
+                            'modules/shared/directives/',
+                            // Directive path
+                            'dialog/invitation/invitationDialog--view.html',
+                            // Query string
+                            '?t=' + environment.version
+                        ].join('');
+
+                    },
+                    link: function(scope, element, attrs) {
+
+                        if (typeof scope.resetType === 'undefined') {
+
+                            scope.resetType = true;
+
+                        }
+
+                        function closeAlerts() {
+
+                            scope.alerts = [];
+
+                        }
+
+                        scope.closeChildModal = function() {
+
+                            scope.visible = false;
+
+                        };
+
+                        scope.sendInvitation = function(email) {
+
+                            if (!email || typeof email === 'undefined') return;
+
+                            var data = {
+                                'target_type': scope.targetType,
+                                'target_id': scope.target.id,
+                                'member_email': email
+                            };
+
+                            Membership.invite(
+                                data
+                            ).$promise.then(function(successResponse) {
+
+                                scope.alerts = [{
+                                    'type': 'success',
+                                    'flag': 'Success!',
+                                    'msg': 'Invitation sent.',
+                                    'prompt': 'OK'
+                                }];
+
+                                $timeout(closeAlerts, 2000);
+
+                                scope.closeChildModal();
+
+                            }, function(errorResponse) {
+
+                                scope.alerts = [{
+                                    'type': 'error',
+                                    'flag': 'Error!',
+                                    'msg': 'Something went wrong while attempting to send the invitation.',
+                                    'prompt': 'OK'
+                                }];
+
+                                $timeout(closeAlerts, 2000);
 
                             });
 

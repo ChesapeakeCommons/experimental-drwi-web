@@ -100,9 +100,18 @@
 
                             <img height="0" width="auto" />
 
-                            <div class="name pad-0 pad-t-1 pad-r-1 pad-l-1"
+                            <div class="name pad-0 pad-t-1 pad-r-1 pad-l-1 flex flex-dir-row flex-align-center"
                                  style="background: #fff; border-bottom: none;">
-                                <span>{{ image.title || 'Untitled' }}</span>
+                                <span>
+                                    {{ image.title || 'Untitled' }}
+                                </span>
+                                <span data-ng-if="image.featured"
+                                      class="margin-0"
+                                      style="width: auto; flex-grow: 0; flex-shrink: 0; font-weight: normal;
+                                      font-size: .9rem; color: #2196F3; border: 1px solid #7ec2f8; border-radius:
+                                      .25rem; background: #edf7fe; padding: .25rem; line-height: 1;">
+                                    Featured
+                                </span>
                             </div>
 
                             <div class="body">

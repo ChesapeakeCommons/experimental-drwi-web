@@ -68,7 +68,8 @@
                         <span>
                             <time datetime="{{ member.created_on }}"
                                   title="{{ member.created_on }}">
-                                {{ member.created_on | date : 'mediumDate' }} &middot; {{ member.created_on |
+                                {{ member.created_on | localTime | date : 'mediumDate' }} &middot; {{
+                                member.created_on |
                                 localTime | date:'h:mm' }} {{ member.created_on | localTime | date:'a' }}
                             </time>
                         </span>
@@ -97,7 +98,8 @@
                     <div class="flex flex-dir-row flex-nwrap flex-align-center">
                         <div class="info-tip"
                              data-ng-if="tipManager.confirmed === member.id && member.confirmed">
-                            Confirmed by {{ member.confirmed_by.name }} on {{ member.confirmed_at | date : 'fullDate'
+                            Confirmed by {{ member.confirmed_by.name }} on {{ member.confirmed_at | localTime | date :
+                            'fullDate'
                             }}.
                         </div>
                         <div class="info-tip"
@@ -107,7 +109,8 @@
                         <span data-ng-if="member.confirmed">
                             <time datetime="{{ member.confirmed_at }}"
                                   title="{{ member.confirmed_at }}">
-                                {{ member.confirmed_at | date : 'mediumDate' }} &middot; {{ member.confirmed_at |
+                                {{ member.confirmed_at | localTime | date : 'mediumDate' }} &middot; {{
+                                member.confirmed_at |
                                 localTime | date:'h:mm' }} {{ member.confirmed_at | localTime | date:'a' }}
                             </time>
                         </span>

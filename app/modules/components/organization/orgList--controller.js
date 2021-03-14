@@ -91,7 +91,9 @@ angular.module('FieldDoc')
                     // Load organization data
                     //
 
-                    self.memberships = $rootScope.user.memberships;
+                    self.memberships = [
+                        $rootScope.user.membership
+                    ];
 
                     self.status.loading = false;
 

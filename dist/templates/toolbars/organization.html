@@ -26,6 +26,14 @@
             </a>
         </li>
         <li data-ng-if="page.permissions.write && page.feature.has_owner"
+            title="Invite user">
+            <a data-ng-click="page.modalDisplay.inviteUser = !page.modalDisplay.inviteUser">
+                <span class="material-icons">
+                    person_add
+                </span>
+            </a>
+        </li>
+        <li data-ng-if="page.permissions.write && page.feature.has_owner"
             data-ng-class="{active: $root.toolbarState.edit}"
             title="Edit">
             <a href="/organizations/{{ page.feature.id }}/edit">

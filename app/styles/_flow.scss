@@ -4328,7 +4328,7 @@
 
             }
 
-            a:first-of-type {
+            > a {
                 display: flex;
                 flex-flow: column nowrap;
                 color: #212121 !important;

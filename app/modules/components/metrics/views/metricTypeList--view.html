@@ -104,12 +104,12 @@
                                         metric
                                         </i>
                                     </a> -->
-                                    <a class="snapshot--title" href="/metrics/{{ metric.id }}/edit" title="Edit metric" data-ng-if="$root.user.id === metric.creator.id || $root.user.organization_id === metric.organization.id || $root.user.is_admin || $root.user.is_manager">
+                                    <a class="snapshot--title" href="/metrics/{{ metric.id }}/edit" title="Edit metric" data-ng-if="$root.user.id === metric.creator.id || $root.user.membership.organization.id === metric.organization.id || $root.user.is_admin || $root.user.is_manager">
                                         <i class="material-icons">
                                         edit
                                         </i>
                                     </a>
-                                    <a class="snapshot--title" href="#" title="Delete metric" data-ng-click="page.confirmDelete(metric)" data-ng-if="($root.user.id === metric.creator.id || $root.user.organization_id === metric.organization.id || $root.user.is_admin) && !metric.automated && !metric.locked">
+                                    <a class="snapshot--title" href="#" title="Delete metric" data-ng-click="page.confirmDelete(metric)" data-ng-if="($root.user.id === metric.creator.id || $root.user.membership.organization.id === metric.organization.id || $root.user.is_admin) && !metric.automated && !metric.locked">
                                         <i class="material-icons">
                                         delete
                                         </i>

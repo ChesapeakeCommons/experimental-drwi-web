@@ -1,0 +1,51 @@
+<main role="main" id="access-form" class="site--content--flow">
+
+    <div id="password-reset" style="width: 100%;">
+
+        <section class="centered watermark-logo" style="text-align: center; opacity: 0.9; padding: 2em 0 0;">
+            <a href="/">
+                <img src="/images/logo-FieldDoc.png" width="240" alt="" title="" />
+            </a>
+        </section>
+
+        <div class="site-content" style="float: none; height: auto; min-height: 0; margin: 2em auto; width: 50%; max-width: 640px; padding: 2em; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); border: 1px solid #2d3946; border-radius: 4px;">
+
+            <div class="page-content-form">
+
+                <p style="color: #f5f5f5; font-size: 1.25rem; font-style: normal; margin: 0 0 1rem;">
+                    Membership confirmed.
+                </p>
+
+                <p style="color: #e0e0e0; font-size: 1rem; font-style: normal;"
+                   data-ng-if="page.membership.organization">
+                    You’re now a member of the {{ page.membership.organization.name }} project.
+                </p>
+
+                <p style="color: #e0e0e0; font-size: 1rem; font-style: normal;"
+                   data-ng-if="page.membership.project">
+                    You’re now a member of the {{ page.membership.project.name }} project.
+                </p>
+
+                <a href="/login" class="flex pad-0 pad-t-1 pad-b-1 pad-l-2 pad-r-2 margin-t-2"
+                   style="color: #FFFFFF; border-radius: .5rem; background: #2196F3;">
+                    Login
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="transient--notification" data-ng-class="{show: $root.alerts.length}">
+        <div class="event--container">
+            <div data-ng-repeat="alert in $root.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+                <span class="event--message">{{ alert.msg }}</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div class="dark-footer" style="padding-bottom: 2em; background-color: #252f3a;" data-ng-include="'/templates/footer--view.html'"></div>

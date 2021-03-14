@@ -26,7 +26,7 @@
     </a>
 
     <div data-ng-if="type === 'project'"
-         class="status-wrapper"
+         class="status-wrapper margin-b-1"
          title="Status: {{ feature.status | capitalAttribute }}">
         <div class="status status-{{ feature.status }}">
             <span class="dot"></span>
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div class="body">
+    <div class="body pad-0 pad-l-1 pad-r-1 pad-b-1">
 
         <div class="confirm--delete" data-ng-if="deletionTarget.id === feature.id">
             <p>Do you want to delete this {{ label }}?</p>

@@ -46,7 +46,7 @@
 
                     <p class="reveal fade-in t0" data-ng-if="group.selectable && !group.internal && ($root.user.is_admin || $root.user.is_manager)" style="font-style: normal; font-size: 1em; color: #616161;">This tag category is <strong>selectable</strong>. If added to one of your grant programs, grantees will be able to select a tag from this group when editing their projects.</p>
 
-                    <p class="reveal fade-in t0" data-ng-if="group.internal && ($root.user.organization_id === group.organization.id)" style="font-style: normal; font-size: 1em; color: #616161;">This tag category is <strong>internal to your organization</strong>. When added to a project, site, or practice, its tags will only be visible to you and other people in your organization.</p>
+                    <p class="reveal fade-in t0" data-ng-if="group.internal && ($root.user.membership.organization.id === group.organization.id)" style="font-style: normal; font-size: 1em; color: #616161;">This tag category is <strong>internal to your organization</strong>. When added to a project, site, or practice, its tags will only be visible to you and other people in your organization.</p>
 
                     <ul class="snapshot--cards list-unstyled" style="margin-top: 2em;">
 
