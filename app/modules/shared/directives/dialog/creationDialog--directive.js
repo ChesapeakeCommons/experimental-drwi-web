@@ -59,7 +59,7 @@
 
                         }
 
-                        scope.programs = [];
+
 
                         scope.closeChildModal = function() {
 
@@ -213,6 +213,9 @@
 
                         };
 
+                        /*START Multi program select logic*/
+
+                        scope.programs = [];
 
                         scope.selectProgram = function (feature_id,index){
 
@@ -234,9 +237,29 @@
                                 i = i+1;
                             });
 
-                           // scope.programs.push(feature_id);
-                          //  console.log(" scope.programs -->", scope.programs);
                         }
+
+                        scope.getDefaultProgram = function (){
+
+                            if(scope.availableprograms){
+
+                                let i = 0;
+
+                                scope.availableprograms.forEach(function(ap){
+
+                                    if(ap.main === true){
+
+                                        scope.selectProgram(ap.program.id, i);
+
+                                    }
+                                    i = i+1;
+
+                                });
+                            }
+
+                        };
+
+                        /*END Multi program select logic*/
 
                         scope.searchPrograms = function(value) {
 
@@ -269,6 +292,21 @@
                             if (typeof newVal === 'string') {
 
                                 scope.label = newVal.replace(/_/g, ' ');
+
+                            }
+
+
+                        });
+
+                        scope.$watch('visible', function (newVal) {
+
+                            if(scope.visible === true){
+
+                                scope.getDefaultProgram()
+
+                            }else{
+
+                                scope.programs = [];
 
                             }
 

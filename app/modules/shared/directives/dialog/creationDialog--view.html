@@ -11,7 +11,7 @@
                 </div>
             </div>
         </div>
-        <div class="inputs">
+        <div class="inputs" data-ng-if="availableprograms.length > 0">
             <div>
                 <span class="prompt">
                     Enter a name for this {{ label }}.
@@ -37,17 +37,18 @@
                 <div class="classification--list" style="margin-top: 24px; font-size: 0.9rem" data-ng-if="availableprograms">
                     <ul>
                         <li data-ng-repeat="a_program in availableprograms track by $index">
-                             <span style="width:80%; display:inline-block;">
+                             <span style="border:0px solid red; width:calc(100% - 26px); display:inline-block;">
                                         <a href="/programs/{{a_program.program.id}}">{{ a_program.program.name }}
                                         </a>
                              </span>
-                            <span >
+                            <span style="border:0px solid red;">
                                  <i class="material-icons"
                                     data-ng-if="programs.indexOf(a_program.program.id) == -1"
                                     data-ng-click = "selectProgram(a_program.program.id,$index)";>
                                                     radio_button_unchecked
                                  </i>
                                 <i class="material-icons"
+                                   style="color: #0366d6;"
                                    data-ng-if="programs.indexOf(a_program.program.id) > -1"
                                    data-ng-click = "deselectProgram(a_program.program.id,$index)";>
                                     radio_button_checked
@@ -56,11 +57,29 @@
 
                         </li>
 
-                        {{programs}}
                     </ul>
                 </div>
             </div>
         </div>
+        <div class="inputs" data-ng-if="availableprograms.length == 0">
+            <div >
+
+                <!-- style=" float:right;display:inline-block; margin-right:10px; background:#fff4b7; border:1px solid #ffd806; border-radius:4px; padding:0px 8px 0px 12px;"-->
+                A program must be added to your
+                <a href="/organizations/{{organization}}">organization
+                    <sub>
+                        <i class="material-icons" style="position:relative; top: 3px;">
+                            group
+                        </i>
+                    </sub>
+                </a>
+                before  a new project can be created.
+
+            </a>
+
+            </div>
+        </div>
+
         <div class="dialog-actions">
             <button type="button" class="cancel" data-ng-click="closeChildModal()">
                 Cancel
