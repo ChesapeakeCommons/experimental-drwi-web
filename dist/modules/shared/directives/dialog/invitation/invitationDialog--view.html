@@ -14,11 +14,20 @@
         </div>
         <div class="inputs">
             <div>
-                <span class="prompt">
-                    Enter the email address of a FieldDoc user. When you hit “send”, we’ll send them a message
-                    containing a private link. When they accept the invitation, the user can view this
-                    organization’s data and settings. They can also view and edit its projects but are not allowed to
-                    create or delete them.
+                <span class="prompt" data-ng-if="targetType === 'organization'">
+                    Enter the email address of a FieldDoc user. When you hit “send invitation”, we’ll deliver a
+                    message containing a private link. When they accept the invitation, the user can view this
+                    organization’s data and settings. They can also view and edit its projects but <strong>are
+                    not</strong> allowed to create or delete them (unless their role is later changed to <strong>
+                    “Owner”</strong>).
+                </span>
+                <span class="prompt" data-ng-if="targetType === 'project'">
+                    Enter the email address of a FieldDoc user. When you hit “send invitation”, we’ll deliver a
+                    message containing a private link. When they accept the invitation, the user can view this
+                    project’s data and settings, including other members, sites, practices, and reports. They can
+                    edit sites, practices, and reports. Members <strong>are not</strong> allowed to delete any
+                    project-related features that they didn’t create themselves. They can access those capabilities
+                    if an authorized project member changes their role to <strong>“Owner”</strong>.
                 </span>
                 <input type="text" style="margin: 1rem 0;"
                        data-ng-model="email" class="form-control animate"
