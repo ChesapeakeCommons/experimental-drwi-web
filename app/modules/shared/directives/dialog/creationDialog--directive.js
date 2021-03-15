@@ -298,7 +298,7 @@
 
                         });
 
-                        scope.$watch('visible', function (newVal) {
+                        scope.$watch('visible', function () {
 
                             if(scope.visible === true){
 
