@@ -18,7 +18,7 @@
                 },
                 getConfirmed: {
                     method: 'GET',
-                    url: '/v1/membership/confirmed/:targetType/:id',
+                    url: environment.apiUrl.concat('/v1/membership/confirmed/:targetType/:id'),
                     headers: {
                         'Authorization-Bypass': true
                     }

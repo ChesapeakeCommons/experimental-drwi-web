@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615775130274})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615775684822})
 
 ;
 /**
@@ -49783,64 +49783,64 @@ angular.module('FieldDoc')
      * @name
      * @description
      */
-     angular.module('FieldDoc')
-       .service('Preprocessors', function ($resource) {
+    angular.module('FieldDoc')
+        .service('Preprocessors', function ($resource) {
 
-         return {
-           geojson: function(raw) {
+            return {
+                geojson: function(raw) {
 
-             var self = this;
+                    var self = this;
 
-             if (raw && raw.id && !raw.properties) {
-               return {
-                 id: parseInt(raw.id)
-               };
-             }
-             else if (raw && !raw.id && !raw.properties) {
-               return;
-             }
+                    if (raw && raw.id && !raw.properties) {
+                        return {
+                            id: parseInt(raw.id)
+                        };
+                    }
+                    else if (raw && !raw.id && !raw.properties) {
+                        return;
+                    }
 
-             var feature = {};
+                    var feature = {};
 
-             //
-             // Process all of the object, array, string, numeric, and boolean
-             // fields; Adding them to the main feature object;
-             //
-             angular.forEach(raw.properties, function(attribute, index) {
+                    //
+                    // Process all of the object, array, string, numeric, and boolean
+                    // fields; Adding them to the main feature object;
+                    //
+                    angular.forEach(raw.properties, function(attribute, index) {
 
-               var value = null;
+                        var value = null;
 
-               if (angular.isArray(attribute)) {
-                 var newArray = [];
+                        if (angular.isArray(attribute)) {
+                            var newArray = [];
 
-                 angular.forEach(attribute, function (childObject) {
-                   newArray.push(self.geojson(childObject));
-                 });
+                            angular.forEach(attribute, function (childObject) {
+                                newArray.push(self.geojson(childObject));
+                            });
 
-                 value = newArray;
-               }
-               else if (angular.isObject(attribute)) {
-                 value = self.geojson(attribute);
-               }
-               else {
-                 value = attribute;
-               }
-               feature[index] = value;
-             });
+                            value = newArray;
+                        }
+                        else if (angular.isObject(attribute)) {
+                            value = self.geojson(attribute);
+                        }
+                        else {
+                            value = attribute;
+                        }
+                        feature[index] = value;
+                    });
 
-             //
-             // If a `geometry` attribute is present add it to the main feature
-             // object;
-             //
-             if (raw.geometry) {
-               feature.geometry = raw.geometry;
-             }
+                    //
+                    // If a `geometry` attribute is present add it to the main feature
+                    // object;
+                    //
+                    if (raw.geometry) {
+                        feature.geometry = raw.geometry;
+                    }
 
-             return feature;
-           }
-         };
+                    return feature;
+                }
+            };
 
-       });
+        });
 
 }());
 
@@ -50001,7 +50001,7 @@ angular.module('FieldDoc')
                 },
                 getConfirmed: {
                     method: 'GET',
-                    url: '/v1/membership/confirmed/:targetType/:id',
+                    url: environment.apiUrl.concat('/v1/membership/confirmed/:targetType/:id'),
                     headers: {
                         'Authorization-Bypass': true
                     }
