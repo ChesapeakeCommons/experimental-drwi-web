@@ -17,17 +17,6 @@ angular.module('FieldDoc')
                 controller: 'MembershipConfirmationController',
                 controllerAs: 'page',
                 resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    },
                     membership: function(Membership, $route) {
 
                         return Membership.getConfirmed({
