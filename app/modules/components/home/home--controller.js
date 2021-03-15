@@ -243,6 +243,14 @@
 
                 };
 
+                /*The loadOrganization code block below is duplicated in
+                  * the home controller.
+                  * It is present for the creationDialog directive to create
+                  * a list of available programs to display in the model.
+                  * This should be moved into the creationDialog directive
+                  * 2021-03-15 RZT
+                  * */
+
                 self.loadOrganization = function(organization_id){
 
                     Organization.profile({
