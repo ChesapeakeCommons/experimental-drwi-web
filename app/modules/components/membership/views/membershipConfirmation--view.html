@@ -1,6 +1,7 @@
 <main role="main" id="access-form" class="site--content--flow">
 
-    <div id="password-reset" style="width: 100%;">
+    <div id="password-reset" style="width: 100%;"
+         data-ng-if="!page.status.loading">
 
         <section class="centered watermark-logo" style="text-align: center; opacity: 0.9; padding: 2em 0 0;">
             <a href="/">
@@ -21,12 +22,13 @@
                     You’re now a member of the {{ page.membership.organization.name }} organization.
                 </p>
 
-                <p style="color: #e0e0e0; font-size: 1rem; font-style: normal;"
+                <p style="color: #e0e0e0; font-size: 1rem; font-style: normal;" class="margin-0"
                    data-ng-if="page.membership.project">
                     You’re now a member of the {{ page.membership.project.name }} project.
                 </p>
 
-                <a href="/login" class="flex pad-0 pad-t-1 pad-b-1 pad-l-2 pad-r-2 margin-t-2"
+                <a href="/login"
+                   class="flex flex-justify-center flex-align-center pad-0 pad-t-1 pad-b-1 pad-l-2 pad-r-2 margin-t-2"
                    style="color: #FFFFFF; border-radius: .25rem; background: #2196F3; text-decoration: none;">
                     Login
                 </a>
@@ -48,4 +50,5 @@
 
 </main>
 
-<div class="dark-footer" style="padding-bottom: 2em; background-color: #252f3a;" data-ng-include="'/templates/footer--view.html'"></div>
+<div class="dark-footer" style="padding-bottom: 2em; background-color: #252f3a;" data-ng-if="!page.status.loading"
+     data-ng-include="'/templates/footer--view.html'"></div>

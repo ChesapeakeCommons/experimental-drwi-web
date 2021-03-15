@@ -44,6 +44,8 @@
 
                     self.membership = successResponse;
 
+                    self.status.loading = false;
+
                 }).catch(function(errorResponse) {
 
                     $location.path('/');
