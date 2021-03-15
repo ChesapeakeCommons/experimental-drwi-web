@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615777233056})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615809292356})
 
 ;
 /**
@@ -825,13 +825,16 @@ angular.module('FieldDoc')
 
                     var sessionCookie = ipCookie('FIELDDOC_SESSION');
 
+                    var path = $location.path();
+
                     //
                     // Configure our headers to contain the appropriate tags
                     //
 
                     config.headers = config.headers || {};
 
-                    if (config.headers['Authorization-Bypass'] === true) {
+                    if (config.headers['Authorization-Bypass'] === true ||
+                        path.indexOf('membership-confirmation') >= 0) {
 
                         delete config.headers['Authorization-Bypass'];
 
@@ -839,14 +842,20 @@ angular.module('FieldDoc')
 
                     }
 
+                    console.log(
+                        'AuthorizationInterceptor::Request',
+                        'No bypass, standard auth.',
+                        config
+                    );
+
                     if (sessionCookie) {
 
                         config.headers.Authorization = 'Bearer ' + sessionCookie;
 
                     } else if (!sessionCookie &&
-                        $location.path() !== '/register' &&
-                        $location.path() !== '/reset' &&
-                        $location.path().lastIndexOf('/dashboard', 0) !== 0) {
+                        path !== '/register' &&
+                        path !== '/reset' &&
+                        path.lastIndexOf('/dashboard', 0) !== 0) {
                         /**
                          * Remove all cookies present for authentication
                          */
@@ -13549,6 +13558,13 @@ angular.module('FieldDoc')
                     self.status.loading = false;
 
                 }).catch(function(errorResponse) {
+
+                    console.log(
+                        'MembershipConfirmationController:',
+                        'membership:',
+                        'errorResponse:',
+                        errorResponse
+                    );
 
                     $location.path('/');
 

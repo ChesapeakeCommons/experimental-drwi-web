@@ -17,13 +17,16 @@
 
                     var sessionCookie = ipCookie('FIELDDOC_SESSION');
 
+                    var path = $location.path();
+
                     //
                     // Configure our headers to contain the appropriate tags
                     //
 
                     config.headers = config.headers || {};
 
-                    if (config.headers['Authorization-Bypass'] === true) {
+                    if (config.headers['Authorization-Bypass'] === true ||
+                        path.indexOf('membership-confirmation') >= 0) {
 
                         delete config.headers['Authorization-Bypass'];
 
@@ -31,14 +34,20 @@
 
                     }
 
+                    console.log(
+                        'AuthorizationInterceptor::Request',
+                        'No bypass, standard auth.',
+                        config
+                    );
+
                     if (sessionCookie) {
 
                         config.headers.Authorization = 'Bearer ' + sessionCookie;
 
                     } else if (!sessionCookie &&
-                        $location.path() !== '/register' &&
-                        $location.path() !== '/reset' &&
-                        $location.path().lastIndexOf('/dashboard', 0) !== 0) {
+                        path !== '/register' &&
+                        path !== '/reset' &&
+                        path.lastIndexOf('/dashboard', 0) !== 0) {
                         /**
                          * Remove all cookies present for authentication
                          */

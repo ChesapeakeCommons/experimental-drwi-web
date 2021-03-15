@@ -48,6 +48,13 @@
 
                 }).catch(function(errorResponse) {
 
+                    console.log(
+                        'MembershipConfirmationController:',
+                        'membership:',
+                        'errorResponse:',
+                        errorResponse
+                    );
+
                     $location.path('/');
 
                 });
