@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615765513771})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615773613723})
 
 ;
 /**
@@ -13469,6 +13469,105 @@ angular.module('FieldDoc')
             }
 
         });
+'use strict';
+
+/**
+ * @ngdoc overview
+ * @name FieldDoc
+ * @description
+ * # FieldDoc
+ *
+ * Main module of the application.
+ */
+angular.module('FieldDoc')
+    .config(function($routeProvider, environment) {
+
+        $routeProvider
+            .when('/membership-confirmation/:targetType/:id', {
+                templateUrl: '/modules/components/membership/views/membershipConfirmation--view.html?t=' + environment.version,
+                controller: 'MembershipConfirmationController',
+                controllerAs: 'page',
+                resolve: {
+                    user: function(Account, $rootScope, $document) {
+
+                        $rootScope.targetPath = document.location.pathname;
+
+                        if (Account.userObject && !Account.userObject.id) {
+                            return Account.getUser();
+                        }
+
+                        return Account.userObject;
+
+                    },
+                    membership: function(Membership, $route) {
+
+                        return Membership.getConfirmed({
+                            id: $route.current.params.id,
+                            targetType: $route.current.params.targetType
+                        });
+
+                    }
+                }
+            });
+
+    });
+(function() {
+
+    'use strict';
+
+    /**
+     * @ngdoc function
+     * @name
+     * @description
+     */
+    angular.module('FieldDoc')
+        .controller('MembershipConfirmationController', [
+            'Account',
+            '$location',
+            '$timeout',
+            '$log',
+            '$rootScope',
+            '$route',
+            '$window',
+            'membership',
+            function(Account, $location, $timeout, $log, $rootScope,
+                $route, $window, membership) {
+
+                var self = this;
+
+                $rootScope.viewState = {
+                    'membershipConfirmation': true
+                };
+
+                $rootScope.page = {};
+
+                self.status = {
+                    loading: true
+                };
+
+                self.alerts = [];
+
+                function closeAlerts() {
+
+                    self.alerts = [];
+
+                }
+
+                membership.$promise.then(function(successResponse) {
+
+                    self.membership = successResponse;
+
+                }).catch(function(errorResponse) {
+
+                    $location.path('/');
+
+                });
+
+            }
+
+        ]);
+
+}());
 'use strict';
 
 /**
