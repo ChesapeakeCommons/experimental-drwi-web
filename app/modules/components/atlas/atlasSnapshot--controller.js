@@ -533,7 +533,8 @@ angular.module('FieldDoc')
 
                     frame.src = [
                         environment.waterReportApiUrl.concat('/v2/embed/station/'),
-                        self.station.properties.id
+                        self.station.properties.id,
+                        '?t=' + Date.now()
                     ].join('');
 
                 }, 10);

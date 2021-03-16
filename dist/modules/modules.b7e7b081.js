@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615897813162})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615899883246})
 
 ;
 /**
@@ -39114,7 +39114,8 @@ angular.module('FieldDoc')
 
                     frame.src = [
                         environment.waterReportApiUrl.concat('/v2/embed/station/'),
-                        self.station.properties.id
+                        self.station.properties.id,
+                        '?t=' + Date.now()
                     ].join('');
 
                 }, 10);
@@ -40722,7 +40723,8 @@ angular.module('FieldDoc')
 
                     frame.src = [
                         environment.waterReportApiUrl.concat('/v2/embed/station/'),
-                        self.station.properties.id
+                        self.station.properties.id,
+                        '?t=' + Date.now()
                     ].join('');
 
                 }, 10);
