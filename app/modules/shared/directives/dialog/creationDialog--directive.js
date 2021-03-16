@@ -18,7 +18,7 @@
             'SearchService',
             '$timeout',
             function(environment, $routeParams, $filter, $parse, $location, Project,
-                     Site, Practice, Report, MetricType, PracticeType, Filters,
+                     Site, Practice, Report, MetricType, PracticeType,
                      SearchService, $timeout) {
                 return {
                     restrict: 'EA',
@@ -216,39 +216,6 @@
                         /*START Multi program select logic*/
 
                         scope.programs = [];
-
-/*
-                        scope.loadOrganization = function(){
-
-                            console.log("creationDialog --> organization id -->", scope.organization);
-
-                            Organization.profile({
-                                id: scope.organization
-                            }).$promise.then(function(successResponse) {
-
-                                console.log('self.organization', successResponse);
-
-                             //   self.organization = successResponse;
-
-                                $scope.availablePrograms = successResponse.programs;
-
-
-                           //     console.log("self.availablePrograms -->",$scope.availablePrograms);
-
-                            }, function(errorResponse) {
-
-                                console.error('Unable to load organization.');
-
-                                //     self.loadProject();
-
-                                //    self.status.loading = false;
-
-                            });
-
-
-                        }
-*/
-                  //      scope.loadOrganization();
 
                         scope.selectProgram = function (feature_id,index){
 
