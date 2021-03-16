@@ -461,14 +461,6 @@
 
             </section>
 
-            <!-- Begin practice batch import -->
-
-            <div batch-upload feature-type="{{ page.childType }}" form-action="page.uploadShapefile('practice')"
-                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
-                 data-ng-if="page.permissions.can_edit"></div>
-
-            <!-- End practice batch import -->
-
             <!-- END PRACTICE PANEL -->
 
             <section class="reveal fade-in t3 pad-0">
@@ -610,18 +602,6 @@
                 </div>
 
             </section>
-
-            <!-- Begin site batch import -->
-
-<!--            <div batch-upload feature-type="site" form-action="page.uploadShapefile('site')"-->
-<!--                 model="page.fileImport" upload-error="page.uploadError"-->
-<!--                 data-ng-if="page.permissions.can_edit"></div>-->
-
-            <div batch-upload feature-type="{{ page.childType }}" form-action="page.uploadShapefile('site')"
-                 model="page.fileImport" upload-error="page.uploadError" visible="page.showUploadModal"
-                 data-ng-if="page.permissions.can_edit"></div>
-
-            <!-- End site batch import -->
 
             <section class="reveal fade-in t3" style="padding: 0;" data-ng-if="page.partnerships.length">
                 <h2 class="">Partners</h2>

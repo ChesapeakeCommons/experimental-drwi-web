@@ -26,6 +26,11 @@
                      A list of deferred upload requests
                      */
 
+                    console.log(
+                        'Media.preupload.filesList',
+                        filesList
+                    );
+
                     var self = this,
                         modelCls = (model === 'document') ? GenericFile : Image,
                         savedQueries = [],

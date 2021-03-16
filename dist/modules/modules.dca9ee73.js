@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1615876031279})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1615880815532})
 
 ;
 /**
@@ -47866,6 +47866,11 @@ angular
                      A list of deferred upload requests
                      */
 
+                    console.log(
+                        'Media.preupload.filesList',
+                        filesList
+                    );
+
                     var self = this,
                         modelCls = (model === 'document') ? GenericFile : Image,
                         savedQueries = [],
@@ -54588,7 +54593,7 @@ angular.module('FieldDoc')
                             scope.progressMessage = 'Uploading…';
 
                             var savedQueries = scope.mediaManager.preupload(
-                                scope.mediaManager.images,
+                                scope.mediaManager.images[0],
                                 'image',
                                 scope.featureType,
                                 scope.parent.id);
@@ -54948,7 +54953,7 @@ angular.module('FieldDoc')
                             scope.progressMessage = 'Uploading…';
 
                             var savedQueries = scope.mediaManager.preupload(
-                                scope.mediaManager.documents,
+                                scope.mediaManager.documents[0],
                                 'file',
                                 scope.featureType,
                                 scope.parent.id,

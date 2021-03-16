@@ -173,7 +173,7 @@
                             scope.progressMessage = 'Uploading…';
 
                             var savedQueries = scope.mediaManager.preupload(
-                                scope.mediaManager.images,
+                                scope.mediaManager.images[0],
                                 'image',
                                 scope.featureType,
                                 scope.parent.id);
