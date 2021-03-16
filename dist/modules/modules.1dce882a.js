@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1615882863117})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615897413953})
 
 ;
 /**
@@ -50628,7 +50628,7 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .service('WaterReporterInterface', function(environment, Preprocessors, $resource) {
 
-            return $resource('https://dev.api.waterreporter.org/v2/feature-layer/:id', {
+            return $resource(environment.waterReportApiUrl.concat('/v2/feature-layer/:id'), {
                 id: '@id'
             }, {
                 query: {
@@ -50637,7 +50637,7 @@ angular.module('FieldDoc')
                 featureLayer: {
                     method: 'GET',
                     cache: true,
-                    url: 'https://dev.api.waterreporter.org/v2/feature-layer/:featureType/:geometryType'
+                    url: environment.waterReportApiUrl.concat('/v2/feature-layer/:featureType/:geometryType')
                 },
                 nodeLayer: {
                     method: 'GET',

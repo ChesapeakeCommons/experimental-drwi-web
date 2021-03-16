@@ -58,6 +58,7 @@ module.exports = function(grunt) {
                         dnrUrl: 'http://127.0.0.1:4000',
                         siteUrl: 'http://127.0.0.1:9000',
                         clientId: 'sL3yMmmnSNszktuQGVBCasZ6mCy7DahS',
+                        waterReportApiUrl: 'https://dev.api.waterreporter.org',
                         version: version
                     }
                 }
@@ -75,6 +76,7 @@ module.exports = function(grunt) {
                         dnrUrl: 'https://dev.dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'https://dev.fielddoc.org',
                         clientId: '2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',
+                        waterReportApiUrl: 'https://dev.api.waterreporter.org',
                         version: version
                     }
                 }
@@ -92,6 +94,7 @@ module.exports = function(grunt) {
                         dnrUrl: 'https://dev.dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'http://127.0.0.1:9000',
                         clientId: 'sL3yMmmnSNszktuQGVBCasZ6mCy7DahS',
+                        waterReportApiUrl: 'https://dev.api.waterreporter.org',
                         version: version
                     }
                 }
@@ -109,6 +112,7 @@ module.exports = function(grunt) {
                         dnrUrl: 'https://dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'https://drwi.chesapeakecommons.org',
                         clientId: 'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',
+                        waterReportApiUrl: 'https://dev.api.waterreporter.org',
                         version: version
                     }
                 }
@@ -124,6 +128,7 @@ module.exports = function(grunt) {
                         authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         siteUrl: 'https://www.fielddoc.org',
                         clientId: 'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',
+                        waterReportApiUrl: 'https://api.waterreporter.org',
                         version: version
                     }
                 }
@@ -139,6 +144,7 @@ module.exports = function(grunt) {
                         authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         siteUrl: 'http://127.0.0.1:9000',
                         clientId: 'sL3yMmmnSNszktuQGVBCasZ6mCy7DahS',
+                        waterReportApiUrl: 'https://api.waterreporter.org',
                         version: version
                     }
                 }

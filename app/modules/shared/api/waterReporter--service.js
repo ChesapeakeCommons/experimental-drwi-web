@@ -10,7 +10,7 @@
     angular.module('FieldDoc')
         .service('WaterReporterInterface', function(environment, Preprocessors, $resource) {
 
-            return $resource('https://dev.api.waterreporter.org/v2/feature-layer/:id', {
+            return $resource(environment.waterReportApiUrl.concat('/v2/feature-layer/:id'), {
                 id: '@id'
             }, {
                 query: {
@@ -19,7 +19,7 @@
                 featureLayer: {
                     method: 'GET',
                     cache: true,
-                    url: 'https://dev.api.waterreporter.org/v2/feature-layer/:featureType/:geometryType'
+                    url: environment.waterReportApiUrl.concat('/v2/feature-layer/:featureType/:geometryType')
                 },
                 nodeLayer: {
                     method: 'GET',
