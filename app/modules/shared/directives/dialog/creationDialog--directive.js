@@ -31,7 +31,7 @@
                         'type': '=?',
                         'visible': '=?',
                         'availableprograms' : '=?',
-                        'programs': '=?',
+
                     },
                     templateUrl: function(elem, attrs) {
 
