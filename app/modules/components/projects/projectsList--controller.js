@@ -321,7 +321,7 @@ angular.module('FieldDoc')
             * This should be moved into the creationDialog directive
             * 2021-03-15 RZT
             * */
-            self.loadOrganization = function(organization_id){
+      /*      self.loadOrganization = function(organization_id){
 
                 Organization.profile({
                     id: organization_id
@@ -348,7 +348,7 @@ angular.module('FieldDoc')
 
 
             }
-
+*/
             //
             // Verify Account information for proper UI element display
             //
@@ -358,7 +358,11 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
+                    console.log("  $rootScope.user-->" ,  $rootScope.user);
+
                     self.user = userResponse;
+
+                    self.availablePrograms = self.user.memberships[0].organization.programs;
 
                     self.permissions = {};
 
@@ -407,7 +411,7 @@ angular.module('FieldDoc')
                     // Get organization programs
                     //
 
-                    self.loadOrganization($rootScope.user.organization_id)
+               //     self.loadOrganization($rootScope.user.organization_id)
 
 
                 });

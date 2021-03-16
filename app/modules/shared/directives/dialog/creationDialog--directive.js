@@ -217,6 +217,39 @@
 
                         scope.programs = [];
 
+/*
+                        scope.loadOrganization = function(){
+
+                            console.log("creationDialog --> organization id -->", scope.organization);
+
+                            Organization.profile({
+                                id: scope.organization
+                            }).$promise.then(function(successResponse) {
+
+                                console.log('self.organization', successResponse);
+
+                             //   self.organization = successResponse;
+
+                                $scope.availablePrograms = successResponse.programs;
+
+
+                           //     console.log("self.availablePrograms -->",$scope.availablePrograms);
+
+                            }, function(errorResponse) {
+
+                                console.error('Unable to load organization.');
+
+                                //     self.loadProject();
+
+                                //    self.status.loading = false;
+
+                            });
+
+
+                        }
+*/
+                  //      scope.loadOrganization();
+
                         scope.selectProgram = function (feature_id,index){
 
                             scope.programs.push(feature_id);
