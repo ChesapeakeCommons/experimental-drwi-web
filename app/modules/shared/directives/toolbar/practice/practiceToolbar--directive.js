@@ -79,7 +79,7 @@
 
                         }
 
-                        scope.loadFeature = function() {
+                        scope._loadFeature = function() {
 
                             scope.loadFeature({});
 
