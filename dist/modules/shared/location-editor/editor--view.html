@@ -83,9 +83,15 @@
         maximum total size of all <strong>un-compressed</strong> files.
     </p>
 
-    <input type="file" class="form-control" id="file-input" name="file-input"
-           accept=".json,.geojson,.zip" data-ng-if="page.setFileInput" file-upload
-           file-model="page.fileImport" file-on-change="page.uploadShapefile()" />
+    <input type="file"
+           class="form-control"
+           id="file-input"
+           name="file-input"
+           accept=".json,.geojson,.zip"
+           data-ng-if="page.setFileInput"
+           file-upload
+           file-model="page.fileImport"
+           file-on-change="page.uploadShapefile()" />
 
     <div class="upload-error" style="margin: 1rem 0; padding: 1rem; border: 1px solid #d70000; border-radius: 4px;
     background: #ffebeb;" data-ng-if="page.uploadError">

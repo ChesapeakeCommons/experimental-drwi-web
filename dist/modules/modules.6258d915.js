@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1615872865279})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',version:1615875710250})
 
 ;
 /**
@@ -6301,6 +6301,10 @@ angular.module('FieldDoc')
                     Shapefile.upload({}, fileData, function(successResponse) {
 
                         console.log('successResponse', successResponse);
+
+                        self.showUploadModal = false;
+
+                        self.showChildModal = false;
 
                         self.uploadError = null;
 
@@ -13887,6 +13891,16 @@ angular.module('FieldDoc')
 
                 };
 
+                self.presentUploadModal = function(featureType) {
+
+                    if (featureType !== 'practice') return;
+
+                    self.showUploadModal = true;
+
+                    self.childType = featureType;
+
+                };
+
                 self.presentChildModal = function(featureType) {
 
                     if (featureType !== 'practice') return;
@@ -14798,6 +14812,10 @@ angular.module('FieldDoc')
 
                             console.log('successResponse', successResponse);
 
+                            self.showUploadModal = false;
+
+                            self.showChildModal = false;
+
                             self.uploadError = null;
 
                             self.fileImport = null;
@@ -15230,9 +15248,10 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .controller('SiteLocationController',
             function(Account, environment, $http, $location, mapbox,
-                Notifications, Site, site, $rootScope, $route,
-                $scope, $timeout, $interval, user, Shapefile,
-                Utility, Task, $window) {
+                     Notifications, Site, site, $rootScope, $route,
+                     $scope, $timeout, $interval, user, Shapefile,
+                     Utility, Task, LayerService, MapManager,
+                     Project,$window) {
 
                 var self = this;
 
@@ -15274,6 +15293,22 @@ angular.module('FieldDoc')
                             } else {
 
                                 self.createMap(self.mapOptions);
+                                if(self.practices != undefined) {
+                                    MapManager.drawOtherGeometries(
+                                        'secondary_practices',
+                                        self.map,
+                                        self.practices,
+                                        self.site,
+                                        MapManager.addFeature
+                                    );
+                                }
+                                MapManager.drawOtherGeometries(
+                                    'secondary_sites',
+                                    self.map,
+                                    self.sites,
+                                    self.site,
+                                    MapManager.addFeature
+                                );
 
                             }
 
@@ -15687,15 +15722,75 @@ angular.module('FieldDoc')
 
                         $rootScope.page.title = self.site.name;
 
+                        self.loadPractices();
+
+                 //       self.showElements();
+
+                    }, function(errorResponse) {
+
+                        self.loadPractices();
+
+                     //   self.showElements();
+
+                    });
+
+                };
+
+                /* START PRACTICES PANEL */
+                self.loadPractices = function() {
+                    Site.practices({
+                        id: self.site.id,
+                        limit: 24,
+                        page: 1,
+                        t: Date.now()
+                    }).$promise.then(function(successResponse) {
+
+                        self.practices = successResponse.features;
+
+                        self.practicesSummary = successResponse.summary;
+
+                        //  self.showElements();
+
+                        self.loadSites();
+
+
+                    }, function(errorResponse) {
+
+                        //  self.showElements();
+                        self.loadSites();
+
+                    });
+
+                };
+
+                /* START SITES PANEL */
+
+                self.loadSites = function(params) {
+
+                    Project.sites({
+                        id: self.site.properties.project_id,
+                        limit: 24,
+                        t: Date.now()}).$promise.then(function(successResponse) {
+
+                        console.log('Project sites --> ', successResponse);
+
+                        self.sites = successResponse.features;
+
                         self.showElements();
 
                     }, function(errorResponse) {
+
+                        console.log('loadSites.errorResponse', errorResponse);
+
+
 
                         self.showElements();
 
                     });
 
                 };
+
+                /* END SITES PANEL */
 
                 self.updateGeometry = function(event) {
 
@@ -15849,15 +15944,265 @@ angular.module('FieldDoc')
                            */
                         }
 
+                        var map_ctrl_linestring = true;
+                        var map_ctrl_point = true;
+                        var map_ctrl_polygon = true;
+
                         self.drawControls = new MapboxDraw({
                             displayControlsDefault: false,
                             controls: {
-                                line_string: true,
-                                point: true,
-                                polygon: true,
+                                line_string: map_ctrl_linestring,
+                                point: map_ctrl_point,
+                                polygon: map_ctrl_polygon,
                                 trash: true
-                            }
+                            },
+                            userProperties: true,
+                            styles: [
+                                {
+                                    'id': 'gl-draw-polygon-fill-inactive',
+                                    'type': 'fill',
+                                    'filter': ['all', ['==', 'active', 'false'],
+                                        ['==', '$type', 'Polygon'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'paint': {
+                                        'fill-color': '#06aadf',
+                                        'fill-outline-color': '#06aadf',
+                                        'fill-opacity': 0.5
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-fill-active',
+                                    'type': 'fill',
+                                    'filter': ['all', ['==', 'active', 'true'],
+                                        ['==', '$type', 'Polygon']
+                                    ],
+                                    'paint': {
+                                        'fill-color': '#06aadf',
+                                        'fill-outline-color': '#06aadf',
+                                        'fill-opacity': 0.1
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-midpoint',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', '$type', 'Point'],
+                                        ['==', 'meta', 'midpoint']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 3,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-stroke-inactive',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', 'active', 'false'],
+                                        ['==', '$type', 'Polygon'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#06aadf',
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-stroke-active',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', 'active', 'true'],
+                                        ['==', '$type', 'Polygon']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#06aadf',
+                                        'line-dasharray': [0.2, 2],
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-line-inactive',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', 'active', 'false'],
+                                        ['==', '$type', 'LineString'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#06aadf',
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-line-active',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', '$type', 'LineString'],
+                                        ['==', 'active', 'true']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#06aadf',
+                                        'line-dasharray': [0.2, 2],
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', 'meta', 'vertex'],
+                                        ['==', '$type', 'Point'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 5,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-and-line-vertex-inactive',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', 'meta', 'vertex'],
+                                        ['==', '$type', 'Point'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 3,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-point-point-stroke-inactive',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', 'active', 'false'],
+                                        ['==', '$type', 'Point'],
+                                        ['==', 'meta', 'feature'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 5,
+                                        'circle-opacity': 1,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-point-inactive',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', 'active', 'false'],
+                                        ['==', '$type', 'Point'],
+                                        ['==', 'meta', 'feature'],
+                                        ['!=', 'mode', 'static']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 3,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-point-stroke-active',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', '$type', 'Point'],
+                                        ['==', 'active', 'true'],
+                                        ['!=', 'meta', 'midpoint']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 7,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-point-active',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', '$type', 'Point'],
+                                        ['!=', 'meta', 'midpoint'],
+                                        ['==', 'active', 'true']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 5,
+                                        'circle-color': '#06aadf'
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-fill-static',
+                                    'type': 'fill',
+                                    'filter': ['all', ['==', 'mode', 'static'],
+                                        ['==', '$type', 'Polygon']
+                                    ],
+                                    'paint': {
+                                        'fill-color': '#404040',
+                                        'fill-outline-color': '#404040',
+                                        'fill-opacity': 0.1
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-polygon-stroke-static',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', 'mode', 'static'],
+                                        ['==', '$type', 'Polygon']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#404040',
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-line-static',
+                                    'type': 'line',
+                                    'filter': ['all', ['==', 'mode', 'static'],
+                                        ['==', '$type', 'LineString']
+                                    ],
+                                    'layout': {
+                                        'line-cap': 'round',
+                                        'line-join': 'round'
+                                    },
+                                    'paint': {
+                                        'line-color': '#404040',
+                                        'line-width': 2
+                                    }
+                                },
+                                {
+                                    'id': 'gl-draw-point-static',
+                                    'type': 'circle',
+                                    'filter': ['all', ['==', 'mode', 'static'],
+                                        ['==', '$type', 'Point']
+                                    ],
+                                    'paint': {
+                                        'circle-radius': 5,
+                                        'circle-color': '#404040'
+                                    }
+                                }
+                            ]
+
+
+
                         });
+
+
+                        /*    self.drawControls = new MapboxDraw({
+                                displayControlsDefault: false,
+                                controls: {
+                                    line_string: true,
+                                    point: true,
+                                    polygon: true,
+                                    trash: true
+                                }
+                            });
+                        s*/
 
                         console.log('drawControls', self.drawControls);
 
@@ -23425,7 +23770,7 @@ angular.module('FieldDoc')
 
                 self.practice = data.properties || data;
 
-                if(self.practice.custom_extent == null){
+                if(self.practice.custom_extent === null && self.practice.geometry.type !== 'Point'){
                     self.practice.custom_extent = self.practice.calculated_extent.converted;
                 }
 
@@ -46147,27 +46492,30 @@ angular.module('FieldDoc')
                 var geometryLineColor           = 'rgba(6, 170, 223, 0.8)';
 
                 if(featureType != null){
-                    //            console.log("C");
+
                     if(featureType == 'site'){
-                        //               console.log("D");
+                        geometryFillColor = '#06aadf';
+                        geometryCircleStrokeColor = 'rgba(6, 170, 223, 0.5)';
+                        geometryLineColor = 'rgba(6, 170, 223, 0.8)';
+
                     }else if(featureType == 'practice'){
-                        //               console.log("E");
-                        //df063e
+
                         geometryFillColor = '#df063e';
                         geometryCircleStrokeColor = 'rgba(223, 6, 62, 0.5)';
                         geometryLineColor = 'rgba(223, 6, 62, 0.8)';
+
                     }else if(featureType == 'secondary_practices') {
-                        //                console.log("F");
 
                         geometryFillColor = 'rgba(223, 6, 62, 0.5)';
                         geometryCircleStrokeColor = 'rgba(223, 6, 62, 0.1)';
                         geometryLineColor = 'rgba(223, 6, 62, 0.25)';
+
                     }else if(featureType == 'secondary_sites') {
-                        //                console.log("F");
 
                         geometryFillColor = 'rgba(6, 170, 223, 0.5)';
                         geometryCircleStrokeColor = 'rgba(6, 170, 223, 0.1)';
                         geometryLineColor = 'rgba(6, 170, 223, 0.25)';
+                        
                     }
 
 
@@ -47027,9 +47375,14 @@ angular
 
                     var modelSetter = model.assign;
 
-                    var handler = $parse(attrs.fileOnChange)
+                    var handler = $parse(attrs.fileOnChange);
 
                     element.bind('change', function() {
+
+                        console.log(
+                            'dir:fileUpload:model',
+                            model
+                        );
 
                         scope.$apply(function() {
 
@@ -48748,7 +49101,7 @@ angular.module('FieldDoc')
 
                     simplified = turf.simplify(geometry, simplify_options);
 
-                }else if(lengthCheck > 1024){
+                }else if(lengthCheck > 3072){
 
                     let simplify_options = {tolerance: 0.3, highQuality: true, mutate: false};
 
@@ -50977,15 +51330,33 @@ angular.module('FieldDoc')
     .directive('fileModel', function($parse) {
         return {
             restrict: 'A',
+            scope: {
+                handler: '&'
+            },
             link: function(scope, element, attrs) {
+
                 var model = $parse(attrs.fileModel);
+
                 var modelSetter = model.assign;
 
                 element.bind('change', function() {
 
+                    console.log(
+                        'dir:fileModel:model',
+                        model
+                    );
+
                     scope.$apply(function() {
 
                         modelSetter(scope, element[0].files[0]);
+
+                        if (scope.handler) {
+
+                            scope.handler({
+                                files: element[0].files
+                            });
+
+                        }
 
                         var fileObject = element[0].files[0];
 
@@ -52431,7 +52802,7 @@ angular.module('FieldDoc')
                 return {
                     restrict: 'EA',
                     scope: {
-                        'featureType': '@',
+                        'featureType': '=?',
                         'model': '=?',
                         'formAction': '&',
                         'uploadError': '=?',
@@ -52473,13 +52844,28 @@ angular.module('FieldDoc')
 
                         };
 
+                        scope.setFiles = function(files) {
+
+                            scope.model = files[0];
+
+                        };
+
                         scope.uploadFile = function() {
 
                             scope.formAction({
-                                _page: scope.page
+                                _featureType: scope.featureType
                             });
 
                         };
+
+                        scope.$watch('model', function (newVal) {
+
+                            console.log(
+                                'batchUpload:model:',
+                                newVal
+                            );
+
+                        });
 
                     }
 
