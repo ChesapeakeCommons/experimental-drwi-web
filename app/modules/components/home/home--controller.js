@@ -243,44 +243,6 @@
 
                 };
 
-                /*The loadOrganization code block below is duplicated in
-                  * the home controller.
-                  * It is present for the creationDialog directive to create
-                  * a list of available programs to display in the model.
-                  * This should be moved into the creationDialog directive
-                  * 2021-03-15 RZT
-                  * */
-
-           /*     self.loadOrganization = function(organization_id){
-
-                    Organization.profile({
-                        id: organization_id
-                    }).$promise.then(function(successResponse) {
-
-                        console.log('self.organization', successResponse);
-
-                        self.organization = successResponse;
-
-                        $scope.availablePrograms = self.availablePrograms = self.organization.programs;
-
-
-                        console.log("self.availablePrograms -->",self.availablePrograms);
-
-                    }, function(errorResponse) {
-
-                        console.error('Unable to load organization.');
-
-                   //     self.loadProject();
-
-                        //    self.status.loading = false;
-
-                    });
-
-
-                }
-
-            */
-
                 //
                 // Verify Account information for proper UI element display
                 //
@@ -293,7 +255,7 @@
                         self.user = userResponse;
 
                         self.availablePrograms = self.user.memberships[0].organization.programs;
-                        
+
                         console.log("self.user -->", self.user);
 
                         if ($rootScope.user.organization_id ||
