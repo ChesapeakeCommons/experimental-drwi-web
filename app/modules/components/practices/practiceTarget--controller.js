@@ -213,7 +213,7 @@ angular.module('FieldDoc')
 
                 self.practice = data.properties || data;
 
-                if(self.practice.custom_extent == null){
+                if(self.practice.custom_extent === null && self.practice.geometry.type !== 'Point'){
                     self.practice.custom_extent = self.practice.calculated_extent.converted;
                 }
 

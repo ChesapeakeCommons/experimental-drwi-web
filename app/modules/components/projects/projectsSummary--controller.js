@@ -1258,6 +1258,10 @@ angular.module('FieldDoc')
 
                         console.log('successResponse', successResponse);
 
+                        self.showUploadModal = false;
+
+                        self.showChildModal = false;
+
                         self.uploadError = null;
 
                         self.fileImport = null;

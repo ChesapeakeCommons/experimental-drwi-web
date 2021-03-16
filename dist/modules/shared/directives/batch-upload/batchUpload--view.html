@@ -27,7 +27,7 @@
                 <strong>Tips</strong>
             </p>
 
-            <p style="font-style: normal; font-size: 1em; margin-top: 1em;">
+            <p style="font-style: normal; font-size: 0.9rem; margin-top: 1em;">
                 In addition to the mandatory <span class="monospace-highlight">.shp</span>, <span class="monospace-highlight">.shx
             </span>, and <span class="monospace-highlight">.dbf</span> files, shapefile archives must include a
                 <span class="monospace-highlight">.prj</span> file that describes the coordinate system and
@@ -36,7 +36,7 @@
                 the files it contains should share the same name. File names must not contain spaces.
             </p>
 
-            <p style="font-style: normal; font-size: 1em; margin-top: 1em;">
+            <p style="font-style: normal; font-size: 0.9rem; margin-top: 1em;">
                 GeoJSON files must use the <span class="monospace-highlight">.json</span> or <span class="monospace-highlight">
                 .geojson</span> file extensions and follow the format described in <a
                     href="https://tools.ietf.org/html/rfc7946" target="_blank">this specification</a>. We recommend
@@ -44,12 +44,17 @@
                 it to FieldDoc. See <a href="https://www.mapbox.com/help/define-geojson/" target="_blank">here</a>
                 for more help with the GeoJSON format.</p>
 
-            <p style="font-style: normal; font-size: 1em; margin: 1em 0;">
+            <p style="font-style: normal; font-size: 0.9rem; margin: 1em 0;">
+                FieldDoc uses the World Geodetic System (WGS84, EPSG:4326) as its reference coordinate
+                system. FieldDoc does not support other coordinate systems or projections.
+            </p>
+
+            <p style="font-style: normal; font-size: 0.9rem; margin: 1em 0;">
                 Regardless of type, file uploads cannot exceed 100MB. For shapefile archives, this is the
                 maximum total size of all <strong>un-compressed</strong> files.
             </p>
 
-            <p style="font-style: normal; font-size: 1em;" class="margin-0 margin-b-1">
+            <p style="font-style: normal; font-size: 0.9rem;" class="margin-0 margin-b-1">
                 Batch import is optimized for 100 {{ featureType }}s or fewer. Refer to our <a
                     href="https://help.fielddoc.org/en/articles/2905849-faq-upload-or-add-locations-in-projects"
                     target="_blank">help documentation</a> for more guidance on batch imports and upload requirements.
@@ -65,9 +70,12 @@
 
             <div class="form-field" style="width:100%;">
 
-                <input type="file" class="form-control margin-b-1" id="file-{{ featureType }}-input"
+                <input type="file"
+                       class="form-control margin-b-1"
+                       id="file-{{ featureType }}-input"
                        accept=".geojson,.json,.zip"
-                       file-upload file-model="model"/>
+                       handler="setFiles(files)"
+                       file-model="model" />
 
                 <div class="upload-error" style="margin: 1rem 0; padding: 1rem; border: 1px solid #d70000; border-radius:
              4px; background: #ffebeb;" data-ng-if="uploadError">
@@ -91,8 +99,9 @@
                 <button type="button" class="cancel" data-ng-click="closeChildModal()">
                     Cancel
                 </button>
-                <button type="submit" class="confirm" data-ng-class="{complete: uploadComplete}"
-                        data-ng-click="uploadFile()">
+                <button type="submit"
+                        class="confirm"
+                        data-ng-class="{complete: uploadComplete}">
                     <span class="material-icons margin-r-50p" data-ng-if="!uploadComplete">
                         cloud_upload
                     </span>

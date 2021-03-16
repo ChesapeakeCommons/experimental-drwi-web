@@ -168,7 +168,7 @@ angular.module('FieldDoc')
 
                     simplified = turf.simplify(geometry, simplify_options);
 
-                }else if(lengthCheck > 1024){
+                }else if(lengthCheck > 3072){
 
                     let simplify_options = {tolerance: 0.3, highQuality: true, mutate: false};
 

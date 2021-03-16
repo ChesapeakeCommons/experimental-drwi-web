@@ -18,7 +18,7 @@
                 return {
                     restrict: 'EA',
                     scope: {
-                        'featureType': '@',
+                        'featureType': '=?',
                         'model': '=?',
                         'formAction': '&',
                         'uploadError': '=?',
@@ -60,13 +60,28 @@
 
                         };
 
+                        scope.setFiles = function(files) {
+
+                            scope.model = files[0];
+
+                        };
+
                         scope.uploadFile = function() {
 
                             scope.formAction({
-                                _page: scope.page
+                                _featureType: scope.featureType
                             });
 
                         };
+
+                        scope.$watch('model', function (newVal) {
+
+                            console.log(
+                                'batchUpload:model:',
+                                newVal
+                            );
+
+                        });
 
                     }
 

@@ -127,7 +127,7 @@
                     <!-- END HANDLING FOR COUNT BASED UNIT TYPES -->
 
                     <li style="margin-bottom:20px;"
-                        data-ng-if="page.practice.extent.calculated.converted && page.geometryMismatch == false">
+                        data-ng-if="page.practice.extent.calculated.converted && page.geometryMismatch == false && page.practice_category.unit.unit.plural != 'count'">
 
                         <div data-ng-if="page.practice_category.unit.unit.plural == 'acres' || page.practice_category.unit.unit.plural == 'linear feet'">
                             Estimated {{ page.practice_category.unit.dimension }} value

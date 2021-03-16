@@ -35,6 +35,16 @@
 
                 };
 
+                self.presentUploadModal = function(featureType) {
+
+                    if (featureType !== 'practice') return;
+
+                    self.showUploadModal = true;
+
+                    self.childType = featureType;
+
+                };
+
                 self.presentChildModal = function(featureType) {
 
                     if (featureType !== 'practice') return;
@@ -945,6 +955,10 @@
                         Shapefile.upload({}, fileData, function(successResponse) {
 
                             console.log('successResponse', successResponse);
+
+                            self.showUploadModal = false;
+
+                            self.showChildModal = false;
 
                             self.uploadError = null;
 
