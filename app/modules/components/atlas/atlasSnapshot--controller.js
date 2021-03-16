@@ -292,6 +292,10 @@ angular.module('FieldDoc')
 
                 } else {
 
+                    params.defer = true;
+
+                    params.access_token = self.accessToken;
+
                     MapInterface.featureLayer(
                         params
                     ).$promise.then(function (successResponse) {
@@ -369,7 +373,9 @@ angular.module('FieldDoc')
                 if (cls === undefined) return;
 
                 var params = {
+                    access_token: self.accessToken,
                     id: featureId,
+                    defer: true,
                     src: 'atlas'
                 };
 
@@ -539,7 +545,9 @@ angular.module('FieldDoc')
                 self.primaryNode = undefined;
 
                 MapInterface.get({
-                    id: $routeParams.id
+                    access_token: self.accessToken,
+                    id: $routeParams.id,
+                    defer: true
                 }).$promise.then(function(successResponse) {
 
                     self.summary = successResponse;
@@ -1306,7 +1314,9 @@ angular.module('FieldDoc')
             self.loadMetrics = function(featureId) {
 
                 self.featureClass.progress({
-                    id: featureId
+                    access_token: self.accessToken,
+                    id: featureId,
+                    defer: true
                 }).$promise.then(function(successResponse) {
 
                     self.processMetrics(successResponse);
@@ -1343,6 +1353,10 @@ angular.module('FieldDoc')
                     }
                 );
 
+                urlParams.access_token = encodeURIComponent(
+                    self.accessToken
+                ).replace(/\./g, '%2E');
+
                 console.log(
                     'self.updateUrlParams:urlParams',
                     urlParams
@@ -1365,6 +1379,14 @@ angular.module('FieldDoc')
                     'extractUrlParams:params:',
                     params
                 );
+
+                if (params.access_token) {
+
+                    self.accessToken = decodeURIComponent(
+                        params.access_token
+                    );
+
+                }
 
                 self.origin = AtlasDataManager.getOrigin(params);
 
@@ -1393,11 +1415,13 @@ angular.module('FieldDoc')
                     self.storedFilters
                 );
 
-                if (!angular.isDefined(self.map)) {
+                self.loadUser();
 
-                    self.stageMap(true);
-
-                }
+                // if (!angular.isDefined(self.map)) {
+                //
+                //     self.stageMap(true);
+                //
+                // }
 
             };
 
@@ -1525,9 +1549,12 @@ angular.module('FieldDoc')
             // Verify Account information for proper UI element display
             //
 
-            if (Account.userObject && user) {
+            self.loadUser = function () {
 
-                user.$promise.then(function(userResponse) {
+                User.me({
+                    access_token: self.accessToken,
+                    defer: true
+                }).$promise.then(function(userResponse) {
 
                     $rootScope.user = Account.userObject = userResponse;
 
@@ -1537,24 +1564,57 @@ angular.module('FieldDoc')
 
                     $rootScope.page.title = 'Atlas';
 
+                    if (!angular.isDefined(self.map)) {
+
+                        self.stageMap(true);
+
+                    }
+
                     //
                     // Assign map to a scoped variable
                     //
 
-                    var params = $location.search();
-
-                    self.extractUrlParams(params, true);
-
-                    // self.loadFilterOptions();
-
-                    // self.fetchMap();
+                    // var params = $location.search();
+                    //
+                    // self.extractUrlParams(params, true);
 
                 });
 
-            } else {
+            };
 
-                $location.path('/logout');
+            //
+            // Assign map to a scoped variable
+            //
 
-            }
+            var params = $location.search();
+
+            self.extractUrlParams(params, true);
+
+            // if (Account.userObject && user) {
+            //
+            //     User.me({
+            //         access_token: self.accessToken,
+            //         defer: true
+            //     }).$promise.then(function(userResponse) {
+            //
+            //         $rootScope.user = Account.userObject = userResponse;
+            //
+            //         self.permissions = {};
+            //
+            //         self.user = $rootScope.user;
+            //
+            //         $rootScope.page.title = 'Atlas';
+            //
+            //         //
+            //         // Assign map to a scoped variable
+            //         //
+            //
+            //         var params = $location.search();
+            //
+            //         self.extractUrlParams(params, true);
+            //
+            //     });
+            //
+            // }
 
         });

@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615814451014})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615868670357})
 
 ;
 /**
@@ -818,7 +818,8 @@ angular.module('FieldDoc')
      * Service in the FieldDoc.
      */
     angular.module('FieldDoc')
-        .factory('AuthorizationInterceptor', function($location, $q, ipCookie, $log) {
+        .factory('AuthorizationInterceptor', function($location, $q, ipCookie,
+                                                      $log, environment) {
 
             return {
                 request: function(config) {
@@ -832,6 +833,13 @@ angular.module('FieldDoc')
                     //
 
                     config.headers = config.headers || {};
+
+                    if (config.params &&
+                        config.params.defer) {
+
+                        config.headers['Authorization-Deferral'] = environment.authDeferralKey;
+
+                    }
 
                     if (config.headers['Authorization-Bypass'] === true ||
                         path.indexOf('membership-confirmation') >= 0) {
@@ -40128,6 +40136,10 @@ angular.module('FieldDoc')
 
                 } else {
 
+                    params.defer = true;
+
+                    params.access_token = self.accessToken;
+
                     MapInterface.featureLayer(
                         params
                     ).$promise.then(function (successResponse) {
@@ -40205,7 +40217,9 @@ angular.module('FieldDoc')
                 if (cls === undefined) return;
 
                 var params = {
+                    access_token: self.accessToken,
                     id: featureId,
+                    defer: true,
                     src: 'atlas'
                 };
 
@@ -40375,7 +40389,9 @@ angular.module('FieldDoc')
                 self.primaryNode = undefined;
 
                 MapInterface.get({
-                    id: $routeParams.id
+                    access_token: self.accessToken,
+                    id: $routeParams.id,
+                    defer: true
                 }).$promise.then(function(successResponse) {
 
                     self.summary = successResponse;
@@ -41142,7 +41158,9 @@ angular.module('FieldDoc')
             self.loadMetrics = function(featureId) {
 
                 self.featureClass.progress({
-                    id: featureId
+                    access_token: self.accessToken,
+                    id: featureId,
+                    defer: true
                 }).$promise.then(function(successResponse) {
 
                     self.processMetrics(successResponse);
@@ -41179,6 +41197,10 @@ angular.module('FieldDoc')
                     }
                 );
 
+                urlParams.access_token = encodeURIComponent(
+                    self.accessToken
+                ).replace(/\./g, '%2E');
+
                 console.log(
                     'self.updateUrlParams:urlParams',
                     urlParams
@@ -41201,6 +41223,14 @@ angular.module('FieldDoc')
                     'extractUrlParams:params:',
                     params
                 );
+
+                if (params.access_token) {
+
+                    self.accessToken = decodeURIComponent(
+                        params.access_token
+                    );
+
+                }
 
                 self.origin = AtlasDataManager.getOrigin(params);
 
@@ -41229,11 +41259,13 @@ angular.module('FieldDoc')
                     self.storedFilters
                 );
 
-                if (!angular.isDefined(self.map)) {
+                self.loadUser();
 
-                    self.stageMap(true);
-
-                }
+                // if (!angular.isDefined(self.map)) {
+                //
+                //     self.stageMap(true);
+                //
+                // }
 
             };
 
@@ -41361,9 +41393,12 @@ angular.module('FieldDoc')
             // Verify Account information for proper UI element display
             //
 
-            if (Account.userObject && user) {
+            self.loadUser = function () {
 
-                user.$promise.then(function(userResponse) {
+                User.me({
+                    access_token: self.accessToken,
+                    defer: true
+                }).$promise.then(function(userResponse) {
 
                     $rootScope.user = Account.userObject = userResponse;
 
@@ -41373,25 +41408,58 @@ angular.module('FieldDoc')
 
                     $rootScope.page.title = 'Atlas';
 
+                    if (!angular.isDefined(self.map)) {
+
+                        self.stageMap(true);
+
+                    }
+
                     //
                     // Assign map to a scoped variable
                     //
 
-                    var params = $location.search();
-
-                    self.extractUrlParams(params, true);
-
-                    // self.loadFilterOptions();
-
-                    // self.fetchMap();
+                    // var params = $location.search();
+                    //
+                    // self.extractUrlParams(params, true);
 
                 });
 
-            } else {
+            };
 
-                $location.path('/logout');
+            //
+            // Assign map to a scoped variable
+            //
 
-            }
+            var params = $location.search();
+
+            self.extractUrlParams(params, true);
+
+            // if (Account.userObject && user) {
+            //
+            //     User.me({
+            //         access_token: self.accessToken,
+            //         defer: true
+            //     }).$promise.then(function(userResponse) {
+            //
+            //         $rootScope.user = Account.userObject = userResponse;
+            //
+            //         self.permissions = {};
+            //
+            //         self.user = $rootScope.user;
+            //
+            //         $rootScope.page.title = 'Atlas';
+            //
+            //         //
+            //         // Assign map to a scoped variable
+            //         //
+            //
+            //         var params = $location.search();
+            //
+            //         self.extractUrlParams(params, true);
+            //
+            //     });
+            //
+            // }
 
         });
 'use strict';
@@ -44832,7 +44900,7 @@ angular.module('FieldDoc')
         function(Account, $location, $log, MapInterface, Tag,
                  $rootScope, $scope, Site, User, user, mapbox,
                  $interval, $timeout, Utility, QueryParamManager,
-                 AtlasDataManager) {
+                 AtlasDataManager, AccessToken) {
 
             var self = this;
 
@@ -44983,6 +45051,15 @@ angular.module('FieldDoc')
                             }
                         );
 
+                        feature.path = [
+                            '/atlas/',
+                            feature.id,
+                            '?',
+                            feature.atlasParams,
+                            '&access_token=',
+                            self.defaultToken.token
+                        ].join('');
+
                     });
 
                     self.maps = successResponse.features;
@@ -44996,6 +45073,38 @@ angular.module('FieldDoc')
                     console.log('errorResponse', errorResponse);
 
                     self.showElements();
+
+                });
+
+            };
+
+            self.loadTokens = function () {
+
+                AccessToken.query().$promise.then(function(successResponse) {
+
+                    console.log(
+                        'self.loadTokens:successResponse',
+                        successResponse);
+
+                    self.accessTokens = successResponse.features;
+
+                    self.accessTokens.forEach(function (token) {
+
+                        if (token.default) {
+
+                            self.defaultToken = token;
+
+                        }
+
+                    });
+
+                    self.loadMaps();
+
+                }, function(errorResponse) {
+
+                    console.log(
+                        'self.loadTokens:errorResponse',
+                        errorResponse);
 
                 });
 
@@ -45048,7 +45157,7 @@ angular.module('FieldDoc')
 
                     self.queryParams = QueryParamManager.getParams();
 
-                    self.loadMaps();
+                    self.loadTokens();
 
                     self.loadFilterOptions();
 
@@ -46941,6 +47050,45 @@ angular
 
     /**
      * @ngdoc service
+     * @name WaterReporter
+     * @description
+     * Provides access to the User endpoint of the WaterReporter API
+     * Service in the WaterReporter.
+     */
+    angular.module('FieldDoc')
+        .service('AccessToken', [
+            'environment',
+            '$window',
+            '$resource',
+            function(environment, $window, $resource) {
+                return $resource(environment.apiUrl.concat('/v1/tokens/:id'), {
+                    id: '@id'
+                }, {
+                    query: {
+                        isArray: false
+                    },
+                    update: {
+                        method: 'PATCH'
+                    },
+                    create: {
+                        method: 'POST',
+                        url: environment.apiUrl.concat('/v1/tokens')
+                    },
+                    remove: {
+                        method: 'DELETE'
+                    }
+                });
+            }
+        ]);
+
+}());
+
+(function() {
+
+    'use strict';
+
+    /**
+     * @ngdoc service
      * @name
      * @description
      */
@@ -47601,7 +47749,8 @@ angular
      * @description
      */
     angular.module('FieldDoc')
-        .service('Practice', function(environment, Preprocessors, $resource) {
+        .service('Practice', function(environment, Preprocessors,
+                                      $resource) {
             return $resource(environment.apiUrl.concat('/v1/data/practice/:id'), {
                 'id': '@id',
                 'target_id': '@target_id',
@@ -48060,7 +48209,8 @@ angular
      * @description
      */
     angular.module('FieldDoc')
-        .service('Project', function(environment, Preprocessors, $resource) {
+        .service('Project', function(environment, Preprocessors,
+                                     $resource) {
             return $resource(environment.apiUrl.concat('/v1/data/project/:id'), {
                 id: '@id'
             }, {
@@ -48306,7 +48456,8 @@ angular
      * @description
      */
     angular.module('FieldDoc')
-        .service('Site', function(environment, Preprocessors, $resource) {
+        .service('Site', function(environment, Preprocessors,
+                                  $resource) {
             return $resource(environment.apiUrl.concat('/v1/data/site/:id'), {
                 id: '@id'
             }, {
@@ -50042,7 +50193,8 @@ angular.module('FieldDoc')
      * @description
      */
     angular.module('FieldDoc')
-        .service('MapInterface', function(environment, Preprocessors, $resource) {
+        .service('MapInterface', function(environment, Preprocessors,
+                                          $resource) {
 
             return $resource(environment.apiUrl.concat('/v1/map/:id'), {
                 id: '@id'
@@ -50050,14 +50202,10 @@ angular.module('FieldDoc')
                 query: {
                     isArray: false
                 },
-                // featureLayer: {
-                //     method: 'GET',
-                //     url: environment.apiUrl.concat('/v1/feature-layer')
-                // },
                 featureLayer: {
                     method: 'GET',
                     cache: true,
-                    url: environment.apiUrl.concat('/v1/feature-layer/:featureType/:geometryType')
+                    url: environment.apiUrl.concat('/v1/feature-layer/:featureType/:geometryType'),
                 },
                 nodeLayer: {
                     method: 'GET',

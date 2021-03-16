@@ -10,7 +10,7 @@ angular.module('FieldDoc')
         function(Account, $location, $log, MapInterface, Tag,
                  $rootScope, $scope, Site, User, user, mapbox,
                  $interval, $timeout, Utility, QueryParamManager,
-                 AtlasDataManager) {
+                 AtlasDataManager, AccessToken) {
 
             var self = this;
 
@@ -161,6 +161,15 @@ angular.module('FieldDoc')
                             }
                         );
 
+                        feature.path = [
+                            '/atlas/',
+                            feature.id,
+                            '?',
+                            feature.atlasParams,
+                            '&access_token=',
+                            self.defaultToken.token
+                        ].join('');
+
                     });
 
                     self.maps = successResponse.features;
@@ -174,6 +183,38 @@ angular.module('FieldDoc')
                     console.log('errorResponse', errorResponse);
 
                     self.showElements();
+
+                });
+
+            };
+
+            self.loadTokens = function () {
+
+                AccessToken.query().$promise.then(function(successResponse) {
+
+                    console.log(
+                        'self.loadTokens:successResponse',
+                        successResponse);
+
+                    self.accessTokens = successResponse.features;
+
+                    self.accessTokens.forEach(function (token) {
+
+                        if (token.default) {
+
+                            self.defaultToken = token;
+
+                        }
+
+                    });
+
+                    self.loadMaps();
+
+                }, function(errorResponse) {
+
+                    console.log(
+                        'self.loadTokens:errorResponse',
+                        errorResponse);
 
                 });
 
@@ -226,7 +267,7 @@ angular.module('FieldDoc')
 
                     self.queryParams = QueryParamManager.getParams();
 
-                    self.loadMaps();
+                    self.loadTokens();
 
                     self.loadFilterOptions();
 

@@ -10,7 +10,8 @@
      * Service in the FieldDoc.
      */
     angular.module('FieldDoc')
-        .factory('AuthorizationInterceptor', function($location, $q, ipCookie, $log) {
+        .factory('AuthorizationInterceptor', function($location, $q, ipCookie,
+                                                      $log, environment) {
 
             return {
                 request: function(config) {
@@ -24,6 +25,13 @@
                     //
 
                     config.headers = config.headers || {};
+
+                    if (config.params &&
+                        config.params.defer) {
+
+                        config.headers['Authorization-Deferral'] = environment.authDeferralKey;
+
+                    }
 
                     if (config.headers['Authorization-Bypass'] === true ||
                         path.indexOf('membership-confirmation') >= 0) {

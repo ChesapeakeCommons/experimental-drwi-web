@@ -8,7 +8,8 @@
      * @description
      */
     angular.module('FieldDoc')
-        .service('Project', function(environment, Preprocessors, $resource) {
+        .service('Project', function(environment, Preprocessors,
+                                     $resource) {
             return $resource(environment.apiUrl.concat('/v1/data/project/:id'), {
                 id: '@id'
             }, {

@@ -53,6 +53,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'local',
                         apiUrl: 'http://127.0.0.1:5000',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         castUrl: 'http://127.0.0.1:4000',
                         dnrUrl: 'http://127.0.0.1:4000',
                         siteUrl: 'http://127.0.0.1:9000',
@@ -69,6 +70,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'development',
                         apiUrl: 'https://dev.api.fielddoc.org',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         castUrl: 'https://dev.cast.fielddoc.chesapeakecommons.org',
                         dnrUrl: 'https://dev.dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'https://dev.fielddoc.org',
@@ -85,6 +87,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'livedev',
                         apiUrl: 'https://dev.api.fielddoc.org',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         castUrl: 'https://dev.cast.fielddoc.chesapeakecommons.org',
                         dnrUrl: 'https://dev.dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'http://127.0.0.1:9000',
@@ -101,6 +104,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'staging',
                         apiUrl: 'https://api.drwi.chesapeakecommons.org',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         castUrl: 'https://cast.fielddoc.chesapeakecommons.org',
                         dnrUrl: 'https://dnr.fielddoc.chesapeakecommons.org',
                         siteUrl: 'https://drwi.chesapeakecommons.org',
@@ -117,6 +121,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'production',
                         apiUrl: 'https://api.fielddoc.org',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         siteUrl: 'https://www.fielddoc.org',
                         clientId: 'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',
                         version: version
@@ -131,6 +136,7 @@ module.exports = function(grunt) {
                     environment: {
                         name: 'production_local',
                         apiUrl: 'https://api.fielddoc.org',
+                        authDeferralKey: 'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',
                         siteUrl: 'http://127.0.0.1:9000',
                         clientId: 'sL3yMmmnSNszktuQGVBCasZ6mCy7DahS',
                         version: version
