@@ -532,7 +532,7 @@ angular.module('FieldDoc')
                     frame.allowTransparency = 'true';
 
                     frame.src = [
-                        'https://dev.api.waterreporter.org/v2/embed/station/',
+                        environment.waterReportApiUrl.concat('/v2/embed/station/'),
                         self.station.properties.id
                     ].join('');
 
