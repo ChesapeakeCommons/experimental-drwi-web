@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615868670357})
+.constant('environment', {name:'development',apiUrl:'https://dev.api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',castUrl:'https://dev.cast.fielddoc.chesapeakecommons.org',dnrUrl:'https://dev.dnr.fielddoc.chesapeakecommons.org',siteUrl:'https://dev.fielddoc.org',clientId:'2yg3Rjc7qlFCq8mXorF9ldWFM4752a5z',version:1615869894831})
 
 ;
 /**
@@ -41198,8 +41198,8 @@ angular.module('FieldDoc')
                 );
 
                 urlParams.access_token = encodeURIComponent(
-                    self.accessToken
-                ).replace(/\./g, '%2E');
+                    btoa(self.accessToken)
+                );
 
                 console.log(
                     'self.updateUrlParams:urlParams',
@@ -41226,8 +41226,8 @@ angular.module('FieldDoc')
 
                 if (params.access_token) {
 
-                    self.accessToken = decodeURIComponent(
-                        params.access_token
+                    self.accessToken = atob(
+                        decodeURIComponent(params.access_token)
                     );
 
                 }
@@ -45057,7 +45057,11 @@ angular.module('FieldDoc')
                             '?',
                             feature.atlasParams,
                             '&access_token=',
-                            self.defaultToken.token
+                            encodeURIComponent(
+                                btoa(
+                                    self.defaultToken.token
+                                )
+                            )
                         ].join('');
 
                     });

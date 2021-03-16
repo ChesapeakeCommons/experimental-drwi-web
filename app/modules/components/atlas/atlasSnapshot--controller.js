@@ -1354,8 +1354,8 @@ angular.module('FieldDoc')
                 );
 
                 urlParams.access_token = encodeURIComponent(
-                    self.accessToken
-                ).replace(/\./g, '%2E');
+                    btoa(self.accessToken)
+                );
 
                 console.log(
                     'self.updateUrlParams:urlParams',
@@ -1382,8 +1382,8 @@ angular.module('FieldDoc')
 
                 if (params.access_token) {
 
-                    self.accessToken = decodeURIComponent(
-                        params.access_token
+                    self.accessToken = atob(
+                        decodeURIComponent(params.access_token)
                     );
 
                 }

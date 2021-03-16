@@ -167,7 +167,11 @@ angular.module('FieldDoc')
                             '?',
                             feature.atlasParams,
                             '&access_token=',
-                            self.defaultToken.token
+                            encodeURIComponent(
+                                btoa(
+                                    self.defaultToken.token
+                                )
+                            )
                         ].join('');
 
                     });
