@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615909181949})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615918756154})
 
 ;
 /**
@@ -821,6 +821,88 @@ angular.module('FieldDoc')
         .factory('AuthorizationInterceptor', function($location, $q, ipCookie,
                                                       $log, environment) {
 
+            function inspectDeferralState(config, path, params) {
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState'
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'path',
+                    path
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'params',
+                    params
+                );
+
+                params = (params === undefined) ? {} : params;
+
+                var cond1 = path.indexOf('atlas/') >= 0;
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond1',
+                    cond1
+                );
+
+                var atlasId = path.split('/').pop();
+
+                var cond2 = Number.isInteger(parseInt(atlasId, 10));
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond2',
+                    cond2
+                );
+
+                var cond3 = typeof params.access_token === 'string';
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond3',
+                    cond3
+                );
+
+                return cond1 && cond2 && cond3;
+
+                // if (typeof config.url === 'string') {
+                //
+                //     console.log(
+                //         'AuthorizationInterceptor::inspectDeferralState:',
+                //         'config.url',
+                //         config.url
+                //     );
+                //
+                //     if (config.url.indexOf('html') > 0 &&
+                //         config.url.indexOf('atlasSnapshot') > 0) {
+                //
+                //         return true;
+                //
+                //     }
+                //
+                // }
+
+                // console.log(
+                //     'AuthorizationInterceptor::inspectDeferralState:',
+                //     'config.params',
+                //     config.params
+                // );
+                //
+                // if (config.params &&
+                //     (config.params.defer || config.params.access_token)) {
+                //
+                //     return true;
+                //
+                // }
+                //
+                // return false;
+
+            }
+
             return {
                 request: function(config) {
 
@@ -828,16 +910,25 @@ angular.module('FieldDoc')
 
                     var path = $location.path();
 
+                    var params = $location.search();
+
                     //
                     // Configure our headers to contain the appropriate tags
                     //
 
                     config.headers = config.headers || {};
 
-                    if (config.params &&
-                        config.params.defer) {
+                    if (inspectDeferralState(config, path, params)) {
+
+                        console.log(
+                            'AuthorizationInterceptor::Deferral',
+                            'Aborting standard auth.',
+                            config
+                        );
 
                         config.headers['Authorization-Deferral'] = environment.authDeferralKey;
+
+                        return config || $q.when(config);
 
                     }
 
@@ -888,7 +979,9 @@ angular.module('FieldDoc')
                     //
                     config.params = (config.params === undefined) ? {} : config.params;
 
-                    console.log('SecurityInterceptor::Request', config || $q.when(config));
+                    console.log(
+                        'AuthorizationInterceptor::Request[2]',
+                        config || $q.when(config));
 
                     return config || $q.when(config);
 
@@ -38539,23 +38632,10 @@ angular.module('FieldDoc')
                 }
             })
             .when('/atlas/:id', {
-                templateUrl: '/modules/components/atlas/views/atlasSnapshot--view.html?t=' + environment.version,
+                templateUrl: '/modules/components/atlas/views/atlasSnapshot--view.html?&t=' + environment.version,
                 controller: 'AtlasSnapshotController',
                 controllerAs: 'page',
-                reloadOnSearch: false,
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
+                reloadOnSearch: false
             });
 
     });
@@ -40200,7 +40280,7 @@ angular.module('FieldDoc')
 angular.module('FieldDoc')
     .controller('AtlasSnapshotController',
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
-                 $scope, $location, mapbox, Site, user, $window, $timeout,
+                 $scope, $location, mapbox, Site, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
                  DataLayer, HighlightLayer, WaterReporterInterface, GeographyService, User) {
@@ -41097,7 +41177,17 @@ angular.module('FieldDoc')
 
                 if (!options) return;
 
-                self.map = new mapboxgl.Map(options);
+                try {
+
+                    self.map = new mapboxgl.Map(options);
+
+                } catch (e) {
+
+                    console.log(e);
+
+                    return;
+
+                }
 
                 self.map.on('click', function (e) {
 
@@ -41732,7 +41822,7 @@ angular.module('FieldDoc')
                 //
                 // LayerUtil.resetSources(self.map);
 
-                self.map.remove();
+                if (angular.isDefined(self.map)) self.map.remove();
 
             });
 
@@ -43908,7 +43998,11 @@ angular.module('FieldDoc')
 
                 var elem = document.querySelector('.sidebar');
 
-                elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
+                if (elem && angular.isDefined(elem)) {
+
+                    elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
+
+                }
 
             }
         };
@@ -45408,8 +45502,7 @@ angular.module('FieldDoc')
                                 btoa(
                                     self.defaultToken.token
                                 )
-                            ),
-                            '&defer=true'
+                            )
                         ].join('');
 
                     });

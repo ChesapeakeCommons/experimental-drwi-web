@@ -13,6 +13,88 @@
         .factory('AuthorizationInterceptor', function($location, $q, ipCookie,
                                                       $log, environment) {
 
+            function inspectDeferralState(config, path, params) {
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState'
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'path',
+                    path
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'params',
+                    params
+                );
+
+                params = (params === undefined) ? {} : params;
+
+                var cond1 = path.indexOf('atlas/') >= 0;
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond1',
+                    cond1
+                );
+
+                var atlasId = path.split('/').pop();
+
+                var cond2 = Number.isInteger(parseInt(atlasId, 10));
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond2',
+                    cond2
+                );
+
+                var cond3 = typeof params.access_token === 'string';
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond3',
+                    cond3
+                );
+
+                return cond1 && cond2 && cond3;
+
+                // if (typeof config.url === 'string') {
+                //
+                //     console.log(
+                //         'AuthorizationInterceptor::inspectDeferralState:',
+                //         'config.url',
+                //         config.url
+                //     );
+                //
+                //     if (config.url.indexOf('html') > 0 &&
+                //         config.url.indexOf('atlasSnapshot') > 0) {
+                //
+                //         return true;
+                //
+                //     }
+                //
+                // }
+
+                // console.log(
+                //     'AuthorizationInterceptor::inspectDeferralState:',
+                //     'config.params',
+                //     config.params
+                // );
+                //
+                // if (config.params &&
+                //     (config.params.defer || config.params.access_token)) {
+                //
+                //     return true;
+                //
+                // }
+                //
+                // return false;
+
+            }
+
             return {
                 request: function(config) {
 
@@ -20,16 +102,25 @@
 
                     var path = $location.path();
 
+                    var params = $location.search();
+
                     //
                     // Configure our headers to contain the appropriate tags
                     //
 
                     config.headers = config.headers || {};
 
-                    if (config.params &&
-                        config.params.defer) {
+                    if (inspectDeferralState(config, path, params)) {
+
+                        console.log(
+                            'AuthorizationInterceptor::Deferral',
+                            'Aborting standard auth.',
+                            config
+                        );
 
                         config.headers['Authorization-Deferral'] = environment.authDeferralKey;
+
+                        return config || $q.when(config);
 
                     }
 
@@ -80,7 +171,9 @@
                     //
                     config.params = (config.params === undefined) ? {} : config.params;
 
-                    console.log('SecurityInterceptor::Request', config || $q.when(config));
+                    console.log(
+                        'AuthorizationInterceptor::Request[2]',
+                        config || $q.when(config));
 
                     return config || $q.when(config);
 

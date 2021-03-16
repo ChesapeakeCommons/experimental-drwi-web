@@ -92,7 +92,11 @@ angular.module('FieldDoc')
 
                 var elem = document.querySelector('.sidebar');
 
-                elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
+                if (elem && angular.isDefined(elem)) {
+
+                    elem.style.height = (body.offsetHeight - BOTTOM_OFFSET) + 'px';
+
+                }
 
             }
         };

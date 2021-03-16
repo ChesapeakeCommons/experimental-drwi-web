@@ -171,8 +171,7 @@ angular.module('FieldDoc')
                                 btoa(
                                     self.defaultToken.token
                                 )
-                            ),
-                            '&defer=true'
+                            )
                         ].join('');
 
                     });

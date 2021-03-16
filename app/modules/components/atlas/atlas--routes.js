@@ -32,23 +32,10 @@ angular.module('FieldDoc')
                 }
             })
             .when('/atlas/:id', {
-                templateUrl: '/modules/components/atlas/views/atlasSnapshot--view.html?t=' + environment.version,
+                templateUrl: '/modules/components/atlas/views/atlasSnapshot--view.html?&t=' + environment.version,
                 controller: 'AtlasSnapshotController',
                 controllerAs: 'page',
-                reloadOnSearch: false,
-                resolve: {
-                    user: function(Account, $rootScope, $document) {
-
-                        $rootScope.targetPath = document.location.pathname;
-
-                        if (Account.userObject && !Account.userObject.id) {
-                            return Account.getUser();
-                        }
-
-                        return Account.userObject;
-
-                    }
-                }
+                reloadOnSearch: false
             });
 
     });

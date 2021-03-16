@@ -10,7 +10,7 @@
 angular.module('FieldDoc')
     .controller('AtlasSnapshotController',
         function(environment, Account, Notifications, $rootScope, $http, MapInterface, $routeParams,
-                 $scope, $location, mapbox, Site, user, $window, $timeout,
+                 $scope, $location, mapbox, Site, $window, $timeout,
                  Utility, $interval, AtlasDataManager, AtlasLayoutUtil, ipCookie, ZoomUtil,
                  Practice, Project, Program, LayerUtil, SourceUtil, PopupUtil, MapUtil, LabelLayer,
                  DataLayer, HighlightLayer, WaterReporterInterface, GeographyService, User) {
@@ -907,7 +907,17 @@ angular.module('FieldDoc')
 
                 if (!options) return;
 
-                self.map = new mapboxgl.Map(options);
+                try {
+
+                    self.map = new mapboxgl.Map(options);
+
+                } catch (e) {
+
+                    console.log(e);
+
+                    return;
+
+                }
 
                 self.map.on('click', function (e) {
 
@@ -1542,7 +1552,7 @@ angular.module('FieldDoc')
                 //
                 // LayerUtil.resetSources(self.map);
 
-                self.map.remove();
+                if (angular.isDefined(self.map)) self.map.remove();
 
             });
 
