@@ -251,7 +251,7 @@
                   * 2021-03-15 RZT
                   * */
 
-                self.loadOrganization = function(organization_id){
+           /*     self.loadOrganization = function(organization_id){
 
                     Organization.profile({
                         id: organization_id
@@ -279,6 +279,8 @@
 
                 }
 
+            */
+
                 //
                 // Verify Account information for proper UI element display
                 //
@@ -290,6 +292,8 @@
 
                         self.user = userResponse;
 
+                        self.availablePrograms = self.user.memberships[0].organization.programs;
+                        
                         console.log("self.user -->", self.user);
 
                         if ($rootScope.user.organization_id ||
@@ -303,7 +307,7 @@
 
                             self.loadProjects();
 
-                            self.loadOrganization($rootScope.user.organization_id)
+                       //     self.loadOrganization($rootScope.user.organization_id)
 
                         } else {
 
