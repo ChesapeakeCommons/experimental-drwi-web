@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1615918756154})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1616024313865})
 
 ;
 /**
@@ -48009,7 +48009,13 @@ angular
                     var request = modelCls.upload({
                         target: parent + ':' + parentId
                     }, fileData, function() {
+
                         defer.resolve(request);
+
+                    }, function(errorResponse) {
+
+                        defer.reject(errorResponse);
+
                     });
 
                     return defer.promise;
@@ -54695,13 +54701,15 @@ angular.module('FieldDoc')
                                 scope.parent.id);
 
                             console.log(
-                                'ProjectImageController:saveImage:savedQueries:',
+                                'imageUploadDialog:saveImage:savedQueries:',
                                 savedQueries
                             );
 
                             $q.all(savedQueries).then(function(successResponse) {
 
-                                console.log('Images::successResponse', successResponse);
+                                console.log(
+                                    'imageUploadDialog::successResponse',
+                                    successResponse);
 
                                 angular.forEach(successResponse, function(image) {
 
@@ -54714,6 +54722,10 @@ angular.module('FieldDoc')
                                 scope.model.update({
                                     id: scope.parent.id
                                 }, imageCollection).$promise.then(function(successResponse) {
+
+                                    console.log(
+                                        'imageUploadDialog:successResponse',
+                                        successResponse);
 
                                     scope.progressMessage = 'Complete';
 
@@ -54729,7 +54741,9 @@ angular.module('FieldDoc')
 
                                 }, function(errorResponse) {
 
-                                    console.log('errorResponse', errorResponse);
+                                    console.log(
+                                        'imageUploadDialog:errorResponse[1]',
+                                        errorResponse);
 
                                     scope.uploadError = errorResponse.data;
 
@@ -54739,11 +54753,23 @@ angular.module('FieldDoc')
 
                             }, function(errorResponse) {
 
-                                console.log('errorResponse', errorResponse);
+                                console.log(
+                                    'imageUploadDialog:errorResponse[2]',
+                                    errorResponse);
 
-                                scope.uploadError = errorResponse.data;
+                                scope.uploadError = errorResponse.data || {};
+
+                                console.log(
+                                    'imageUploadDialog:uploadError[2]',
+                                    scope.uploadError);
 
                                 scope.resetFileInput(input);
+
+                            }).catch(function (errorResponse) {
+
+                                console.log(
+                                    'imageUploadDialog:errorResponse[3]',
+                                    errorResponse);
 
                             });
 
@@ -55062,7 +55088,9 @@ angular.module('FieldDoc')
 
                             $q.all(savedQueries).then(function(successResponse) {
 
-                                console.log('Documents::successResponse', successResponse);
+                                console.log(
+                                    'documentUploadDialog::successResponse',
+                                    successResponse);
 
                                 angular.forEach(successResponse, function(document) {
 
@@ -55090,9 +55118,11 @@ angular.module('FieldDoc')
 
                                 }, function(errorResponse) {
 
-                                    console.log('errorResponse', errorResponse);
+                                    console.log(
+                                        'documentUploadDialog:errorResponse',
+                                        errorResponse);
 
-                                    scope.uploadError = errorResponse.data;
+                                    scope.uploadError = errorResponse.data || {};
 
                                     scope.resetFileInput(input);
 
@@ -55100,9 +55130,11 @@ angular.module('FieldDoc')
 
                             }, function(errorResponse) {
 
-                                console.log('errorResponse', errorResponse);
+                                console.log(
+                                    'documentUploadDialog:errorResponse',
+                                    errorResponse);
 
-                                scope.uploadError = errorResponse.data;
+                                scope.uploadError = errorResponse.data || {};
 
                                 scope.resetFileInput(input);
 

@@ -73,7 +73,13 @@
                     var request = modelCls.upload({
                         target: parent + ':' + parentId
                     }, fileData, function() {
+
                         defer.resolve(request);
+
+                    }, function(errorResponse) {
+
+                        defer.reject(errorResponse);
+
                     });
 
                     return defer.promise;

@@ -16,7 +16,11 @@
             <div>
 
                 <span class="prompt">
-                    Select an image file to upload. FieldDoc currently supports PNG and JPEG formats.
+                    Select an image file to upload. FieldDoc currently supports PNG, JPEG, GIF, and TIFF formats.
+                </span>
+
+                <span class="prompt margin-t-1" style="display: block;">
+                    The maximum image size is <strong>20 MB</strong>.
                 </span>
 
                 <input type="file"
@@ -41,7 +45,8 @@
                         {{ uploadError.message || 'Unable to read file.'}}
                     </p>
                     <p style="margin: 0; font-size: 0.9rem;">
-                        Please double check that your image file is supported.
+                        Please double check that your file is one of the supported types and doesn’t exceed the 20 MB
+                        size limit.
                     </p>
                 </div>
 

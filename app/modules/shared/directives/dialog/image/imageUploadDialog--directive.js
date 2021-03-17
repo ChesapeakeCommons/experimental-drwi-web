@@ -179,13 +179,15 @@
                                 scope.parent.id);
 
                             console.log(
-                                'ProjectImageController:saveImage:savedQueries:',
+                                'imageUploadDialog:saveImage:savedQueries:',
                                 savedQueries
                             );
 
                             $q.all(savedQueries).then(function(successResponse) {
 
-                                console.log('Images::successResponse', successResponse);
+                                console.log(
+                                    'imageUploadDialog::successResponse',
+                                    successResponse);
 
                                 angular.forEach(successResponse, function(image) {
 
@@ -198,6 +200,10 @@
                                 scope.model.update({
                                     id: scope.parent.id
                                 }, imageCollection).$promise.then(function(successResponse) {
+
+                                    console.log(
+                                        'imageUploadDialog:successResponse',
+                                        successResponse);
 
                                     scope.progressMessage = 'Complete';
 
@@ -213,7 +219,9 @@
 
                                 }, function(errorResponse) {
 
-                                    console.log('errorResponse', errorResponse);
+                                    console.log(
+                                        'imageUploadDialog:errorResponse[1]',
+                                        errorResponse);
 
                                     scope.uploadError = errorResponse.data;
 
@@ -223,11 +231,23 @@
 
                             }, function(errorResponse) {
 
-                                console.log('errorResponse', errorResponse);
+                                console.log(
+                                    'imageUploadDialog:errorResponse[2]',
+                                    errorResponse);
 
-                                scope.uploadError = errorResponse.data;
+                                scope.uploadError = errorResponse.data || {};
+
+                                console.log(
+                                    'imageUploadDialog:uploadError[2]',
+                                    scope.uploadError);
 
                                 scope.resetFileInput(input);
+
+                            }).catch(function (errorResponse) {
+
+                                console.log(
+                                    'imageUploadDialog:errorResponse[3]',
+                                    errorResponse);
 
                             });
 

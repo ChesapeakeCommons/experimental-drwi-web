@@ -20,6 +20,10 @@
                     .docx, .geojson, .json, .pdf, .txt, .xls, .xlsm, xlsx, .zip.
                 </span>
 
+                <span class="prompt margin-t-1" style="display: block;">
+                    The maximum file size is <strong>20 MB</strong>.
+                </span>
+
                 <input type="file"
                        class="form-control"
                        id="{{ fileInput }}"
@@ -42,7 +46,8 @@
                         {{ uploadError.message || 'Unable to read file.'}}
                     </p>
                     <p style="margin: 0; font-size: 0.9rem;">
-                        Please double check that your file type is supported.
+                        Please double check that your file is one of the supported types and doesn’t exceed the 20 MB
+                        size limit.
                     </p>
                 </div>
 

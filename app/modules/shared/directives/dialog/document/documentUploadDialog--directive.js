@@ -182,7 +182,9 @@
 
                             $q.all(savedQueries).then(function(successResponse) {
 
-                                console.log('Documents::successResponse', successResponse);
+                                console.log(
+                                    'documentUploadDialog::successResponse',
+                                    successResponse);
 
                                 angular.forEach(successResponse, function(document) {
 
@@ -210,9 +212,11 @@
 
                                 }, function(errorResponse) {
 
-                                    console.log('errorResponse', errorResponse);
+                                    console.log(
+                                        'documentUploadDialog:errorResponse',
+                                        errorResponse);
 
-                                    scope.uploadError = errorResponse.data;
+                                    scope.uploadError = errorResponse.data || {};
 
                                     scope.resetFileInput(input);
 
@@ -220,9 +224,11 @@
 
                             }, function(errorResponse) {
 
-                                console.log('errorResponse', errorResponse);
+                                console.log(
+                                    'documentUploadDialog:errorResponse',
+                                    errorResponse);
 
-                                scope.uploadError = errorResponse.data;
+                                scope.uploadError = errorResponse.data || {};
 
                                 scope.resetFileInput(input);
 
