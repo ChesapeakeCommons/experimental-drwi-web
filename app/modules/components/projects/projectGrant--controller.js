@@ -70,32 +70,6 @@ angular.module('FieldDoc')
 
             };
 
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = userResponse;
-
-                    self.permissions = {
-                        can_edit: false,
-                        can_delete: false
-                    };
-
-                    console.log("user -->",  $rootScope.user);
-
-                    self.loadOrganization(Account.userObject.organization_id);
-
-
-                });
-
-            } else {
-
-                $location.path('/logout');
-
-            }
 
 
             /*Load Organization*/
@@ -434,87 +408,7 @@ angular.module('FieldDoc')
                 self.saveProject();
             }
 
-         /*   self.searchPrograms = function(value) {
 
-                return SearchService.program({
-                    q: value
-                }).$promise.then(function(response) {
-
-                    console.log('SearchService.program response', response);
-
-                    response.results.forEach(function(result) {
-
-                        result.category = null;
-
-                    });
-
-                    return response.results.slice(0, 5);
-
-                });
-
-            };
-
-            self.searchOrganizations = function(value) {
-
-                return SearchService.organization({
-                    q: value
-                }).$promise.then(function(response) {
-
-                    console.log('SearchService.organization response', response);
-
-                    response.results.forEach(function(result) {
-
-                        result.category = null;
-
-                    });
-
-                    return response.results.slice(0, 5);
-
-                });
-
-            };
-
-            self.addRelation = function(item, model, label, collection, queryAttr) {
-
-                var _datum = {
-                    id: item.id,
-                    properties: item
-                };
-
-                collection.push(_datum);
-
-                queryAttr = null;
-
-                console.log('Updated ' + collection + ' (addition)', collection);
-
-            };
-
-            self.removeRelation = function(id, collection) {
-
-                var _index;
-
-                collection.forEach(function(item, idx) {
-
-                    if (item.id === id) {
-
-                        _index = idx;
-
-                    }
-
-                });
-
-                console.log('Remove item at index', _index);
-
-                if (typeof _index === 'number') {
-
-                    collection.splice(_index, 1);
-
-                }
-
-                console.log('Updated ' + collection + ' (removal)', collection);
-
-            };
-        */
             self.processRelations = function(list) {
 
                 var _list = [];
@@ -551,21 +445,6 @@ angular.module('FieldDoc')
 
             };
 
-        /*    self.setProgram = function(item, model, label) {
-
-                self.project.program_id = item.id;
-
-            };
-
-            self.unsetProgram = function() {
-
-                self.project.program_id = null;
-
-                self.program = null;
-
-            };
-
-         */
 
             self.scrubFeature = function(feature) {
 
@@ -676,72 +555,35 @@ angular.module('FieldDoc')
 
             };
 
-            /*
-            self.deleteFeature = function() {
 
-                var targetId;
+            //
+            // Verify Account information for proper UI element display
+            //
+            if (Account.userObject && user) {
 
-                if (self.project) {
+                user.$promise.then(function(userResponse) {
 
-                    targetId = self.project.id;
+                    $rootScope.user = Account.userObject = userResponse;
 
-                } else {
+                    console.log("$rootScope.user -->",$rootScope.user);
 
-                    targetId = self.project.id;
+                    self.permissions = {
+                        can_edit: false,
+                        can_delete: false
+                    };
 
-                }
+                    console.log("user -->",  $rootScope.user);
 
-                Project.delete({
-                    id: +targetId
-                }).$promise.then(function(data) {
+                    self.loadOrganization(Account.userObject.organization_id);
 
-                    self.alerts.push({
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Successfully deleted this project.',
-                        'prompt': 'OK'
-                    });
-
-                    $timeout(self.closeRoute, 2000);
-
-                }).catch(function(errorResponse) {
-
-                    console.log('self.deleteFeature.errorResponse', errorResponse);
-
-                    if (errorResponse.status === 409) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Unable to delete “' + self.project.name + '”. There are pending tasks affecting this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else if (errorResponse.status === 403) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'You don’t have permission to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Something went wrong while attempting to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    }
-
-                    $timeout(self.closeAlerts, 2000);
 
                 });
 
-            };
-            */
+            } else {
+
+                $location.path('/logout');
+
+            }
+
 
         });
