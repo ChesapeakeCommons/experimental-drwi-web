@@ -724,7 +724,7 @@ angular.module('FieldDoc')
                     var featureType = components[1];
 
                     var layerTypes = [
-                        'line',
+                        'linestring',
                         'point',
                         'polygon'
                     ];
@@ -1147,7 +1147,7 @@ angular.module('FieldDoc')
                         var featureType = components[1];
 
                         var layerTypes = [
-                            'line',
+                            'linestring',
                             'point',
                             'polygon'
                         ];

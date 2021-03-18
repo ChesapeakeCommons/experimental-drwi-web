@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1616024313865})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1616026455882})
 
 ;
 /**
@@ -39365,7 +39365,7 @@ angular.module('FieldDoc')
                     var featureType = components[1];
 
                     var layerTypes = [
-                        'line',
+                        'linestring',
                         'point',
                         'polygon'
                     ];
@@ -39788,7 +39788,7 @@ angular.module('FieldDoc')
                         var featureType = components[1];
 
                         var layerTypes = [
-                            'line',
+                            'linestring',
                             'point',
                             'polygon'
                         ];
@@ -41038,7 +41038,7 @@ angular.module('FieldDoc')
                     var featureType = components[1];
 
                     var layerTypes = [
-                        'line',
+                        'linestring',
                         'point',
                         'polygon'
                     ];
@@ -41436,7 +41436,7 @@ angular.module('FieldDoc')
                         var featureType = components[1];
 
                         var layerTypes = [
-                            'line',
+                            'linestring',
                             'point',
                             'polygon'
                         ];
@@ -42258,15 +42258,21 @@ angular.module('FieldDoc')
             },
             'practice': {
                 'centroid': {},
-                'line': {},
+                'linestring': {},
                 'point': {},
-                'polygon': {}
+                'polygon': {},
+                'multilinestring': {},
+                'multipoint': {},
+                'multipolygon': {}
             },
             'site': {
                 'centroid': {},
-                'line': {},
+                'linestring': {},
                 'point': {},
-                'polygon': {}
+                'polygon': {},
+                'multilinestring': {},
+                'multipoint': {},
+                'multipolygon': {}
             },
             'project': {
                 'point': {}
@@ -42720,11 +42726,17 @@ angular.module('FieldDoc')
                 'fd.drainage.polygon': AUTO_SOURCE,
                 'fd.practice.centroid': BASE_SOURCE,
                 'fd.practice.point': BASE_SOURCE,
-                'fd.practice.line': BASE_SOURCE,
+                'fd.practice.multipoint': BASE_SOURCE,
+                'fd.practice.linestring': BASE_SOURCE,
+                'fd.practice.multilinestring': BASE_SOURCE,
                 'fd.practice.polygon': BASE_SOURCE,
+                'fd.practice.multipolygon': BASE_SOURCE,
                 'fd.site.point': BASE_SOURCE,
-                'fd.site.line': BASE_SOURCE,
+                'fd.site.multipoint': BASE_SOURCE,
+                'fd.site.linestring': BASE_SOURCE,
+                'fd.site.multilinestring': BASE_SOURCE,
                 'fd.site.polygon': BASE_SOURCE,
+                'fd.site.multipolygon': BASE_SOURCE,
                 'fd.project.point': BASE_SOURCE,
                 'wr.station.point': BASE_SOURCE
             };
@@ -42807,13 +42819,19 @@ angular.module('FieldDoc')
             var URL_COMPONENTS = [
                 // ['post', 'point'],
                 ['practice', 'centroid'],
-                ['practice', 'line'],
+                ['practice', 'linestring'],
                 ['practice', 'point'],
                 ['practice', 'polygon'],
+                ['practice', 'multilinestring'],
+                ['practice', 'multipoint'],
+                ['practice', 'multipolygon'],
                 ['site', 'centroid'],
-                ['site', 'line'],
+                ['site', 'linestring'],
                 ['site', 'point'],
                 ['site', 'polygon'],
+                ['site', 'multilinestring'],
+                ['site', 'multipoint'],
+                ['site', 'multipolygon'],
                 ['station', 'point'],
                 ['project', 'point'],
             ];
@@ -43490,7 +43508,23 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
-            'fd.practice.line': {
+            'fd.practice.multipoint': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.linestring': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.multilinestring': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -43506,6 +43540,14 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
+            'fd.practice.multipolygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
             'fd.site.point': {
                 type: 'geojson',
                 data: {
@@ -43514,7 +43556,23 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
-            'fd.site.line': {
+            'fd.site.multipoint': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.linestring': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.multilinestring': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -43523,6 +43581,14 @@ angular.module('FieldDoc')
                 generateId: true
             },
             'fd.site.polygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.multipolygon': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -44682,8 +44748,55 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.practice.line',
-                    'source': 'fd.practice.line',
+                    'id': 'fd.practice.multipolygon',
+                    'source': 'fd.practice.multipolygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.linestring',
+                    'source': 'fd.practice.linestring',
+                    'type': 'line',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'line-width': 2
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.multilinestring',
+                    'source': 'fd.practice.multilinestring',
                     'type': 'line',
                     'minzoom': zoomConfig.practice.min,
                     'maxzoom': zoomConfig.practice.max,
@@ -44707,6 +44820,37 @@ angular.module('FieldDoc')
                 config: {
                     'id': 'fd.practice.point',
                     'source': 'fd.practice.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.practice.min,
+                    'maxzoom': zoomConfig.practice.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#3fd48a'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'project-index'
+            },
+            {
+                config: {
+                    'id': 'fd.practice.multipoint',
+                    'source': 'fd.practice.multipoint',
                     'type': 'circle',
                     'minzoom': zoomConfig.practice.min,
                     'maxzoom': zoomConfig.practice.max,
@@ -44760,8 +44904,55 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.site.line',
-                    'source': 'fd.site.line',
+                    'id': 'fd.site.multipolygon',
+                    'source': 'fd.site.multipolygon',
+                    'type': 'fill',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'fill-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'fill-opacity': 0.4,
+                        'fill-outline-color': '#005e7d'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.linestring',
+                    'source': 'fd.site.linestring',
+                    'type': 'line',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'line-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'line-width': 2
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.multilinestring',
+                    'source': 'fd.site.multilinestring',
                     'type': 'line',
                     'minzoom': zoomConfig.site.min + 1,
                     'maxzoom': zoomConfig.site.max,
@@ -44785,6 +44976,37 @@ angular.module('FieldDoc')
                 config: {
                     'id': 'fd.site.point',
                     'source': 'fd.site.point',
+                    'type': 'circle',
+                    'minzoom': zoomConfig.site.min + 1,
+                    'maxzoom': zoomConfig.site.max + 1,
+                    'layout': {
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-color': [
+                            'case',
+                            ['boolean', ['get', 'focus'], false],
+                            '#C81E1E',
+                            '#a94efe'
+                        ],
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [
+                                [12, 4],
+                                [22, 24]
+                            ]
+                        },
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': '#FFFFFF'
+                    },
+                    'filter': ['get', 'focus']
+                },
+                beforeId: 'practice-index'
+            },
+            {
+                config: {
+                    'id': 'fd.site.multipoint',
+                    'source': 'fd.site.multipoint',
                     'type': 'circle',
                     'minzoom': zoomConfig.site.min + 1,
                     'maxzoom': zoomConfig.site.max + 1,
@@ -44981,8 +45203,8 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.practice.line-highlight',
-                    'source': 'fd.practice.line',
+                    'id': 'fd.practice.linestring-highlight',
+                    'source': 'fd.practice.linestring',
                     'type': 'line',
                     'minzoom': zoomConfig.practice.min,
                     'maxzoom': zoomConfig.practice.max,
@@ -45044,8 +45266,8 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.site.line-highlight',
-                    'source': 'fd.site.line',
+                    'id': 'fd.site.linestring-highlight',
+                    'source': 'fd.site.linestring',
                     'type': 'line',
                     'minzoom': zoomConfig.site.min + 1,
                     'maxzoom': zoomConfig.site.max,
@@ -46662,7 +46884,7 @@ angular.module('FieldDoc')
 
                     if (addToMap) {
                         //           console.log("J");
-                        if (geometryType === 'Point') {
+                        if (geometryType === 'Point' || geometryType === 'MultiPoint') {
                             //    console.log("K");
                             map.addLayer({
                                 'id': 'feature-circle-' + Date.now(),

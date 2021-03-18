@@ -24,15 +24,21 @@ angular.module('FieldDoc')
             },
             'practice': {
                 'centroid': {},
-                'line': {},
+                'linestring': {},
                 'point': {},
-                'polygon': {}
+                'polygon': {},
+                'multilinestring': {},
+                'multipoint': {},
+                'multipolygon': {}
             },
             'site': {
                 'centroid': {},
-                'line': {},
+                'linestring': {},
                 'point': {},
-                'polygon': {}
+                'polygon': {},
+                'multilinestring': {},
+                'multipoint': {},
+                'multipolygon': {}
             },
             'project': {
                 'point': {}

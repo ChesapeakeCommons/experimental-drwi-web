@@ -27,7 +27,23 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
-            'fd.practice.line': {
+            'fd.practice.multipoint': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.linestring': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.practice.multilinestring': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -43,6 +59,14 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
+            'fd.practice.multipolygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
             'fd.site.point': {
                 type: 'geojson',
                 data: {
@@ -51,7 +75,23 @@ angular.module('FieldDoc')
                 },
                 generateId: true
             },
-            'fd.site.line': {
+            'fd.site.multipoint': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.linestring': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.multilinestring': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -60,6 +100,14 @@ angular.module('FieldDoc')
                 generateId: true
             },
             'fd.site.polygon': {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                },
+                generateId: true
+            },
+            'fd.site.multipolygon': {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',

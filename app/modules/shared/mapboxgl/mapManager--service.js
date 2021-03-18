@@ -162,7 +162,7 @@ angular.module('FieldDoc')
 
                     if (addToMap) {
                         //           console.log("J");
-                        if (geometryType === 'Point') {
+                        if (geometryType === 'Point' || geometryType === 'MultiPoint') {
                             //    console.log("K");
                             map.addLayer({
                                 'id': 'feature-circle-' + Date.now(),

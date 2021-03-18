@@ -112,8 +112,8 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.practice.line-highlight',
-                    'source': 'fd.practice.line',
+                    'id': 'fd.practice.linestring-highlight',
+                    'source': 'fd.practice.linestring',
                     'type': 'line',
                     'minzoom': zoomConfig.practice.min,
                     'maxzoom': zoomConfig.practice.max,
@@ -175,8 +175,8 @@ angular.module('FieldDoc')
             },
             {
                 config: {
-                    'id': 'fd.site.line-highlight',
-                    'source': 'fd.site.line',
+                    'id': 'fd.site.linestring-highlight',
+                    'source': 'fd.site.linestring',
                     'type': 'line',
                     'minzoom': zoomConfig.site.min + 1,
                     'maxzoom': zoomConfig.site.max,
