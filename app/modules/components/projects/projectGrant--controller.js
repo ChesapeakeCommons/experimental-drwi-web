@@ -230,7 +230,7 @@ angular.module('FieldDoc')
                         });
                     }
 
-
+                    self.checkUserRoles();
 
 
                     self.status.loading = false;
@@ -246,6 +246,132 @@ angular.module('FieldDoc')
                     self.showElements();
 
                 });
+            }
+
+            /*Chech user roles
+            * Okay, so now we need to set up a function
+            * which will inspect the
+            * 1) availablePrograms id,
+            * 2) user' organization id, the users' programs, and user's role
+            * 3) the project's status, organization id
+            * to determine what actions the user can take on this view.
+            * I don't believe we need to be concerned with the organization id,
+            * however, if a manager is under the organization, then conflicts of permission
+            * state will need to be avoided.
+            * In a draft project, A grantee user can add or remove programs
+            * In a draft project, A manager can add or remove their program
+            * In an active project, a grantee can add programs.
+            * In an active project, a manager can remove their program.
+            *
+            * */
+
+            self.checkUserRoles = function(){
+
+                console.log("self.checkUserRoles -->");
+                console.log("self.$rootScope.user -->", $rootScope.user);
+                console.log("self.project -->", self.project);
+                console.log("self.availablePrograms -->", self.availablePrograms);
+                console.log("self.project.status -->", self.project.status);
+                console.log("$rootScope.user.programs-->", $rootScope.user.programs);
+                console.log("$rootScope.user.roles-->", $rootScope.user.roles);
+
+
+
+
+                let is_availableManager = false;
+
+                let status = self.project.status;
+                let roles = $rootScope.user.roles;
+
+                let is_manager = $rootScope.user.is_manager;
+                let is_admin = $rootScope.user.is_admin;
+                let is_grantee = false;
+
+                if(is_manager === false && is_admin === false){
+                    is_grantee = true;
+                }
+
+                let i = 0;
+
+                i = 0;
+
+                self.availablePrograms.forEach(function(availProgram){
+
+                    /*First we're going to loop through all
+                     * the available programs and create an 'editable' attribute
+                    * and set it to false*/
+
+                    self.availablePrograms[i].editable = false;
+
+                    /*If the project is active*/
+                    if(status === 'active') {
+                        if (is_admin === true) {
+
+                            self.availablePrograms[i].editable = true;
+
+                        }else if(is_grantee === true) {
+                            if (availProgram.active === false) {
+
+                                self.availablePrograms[i].editable = true;
+
+                            } else if (availProgram.active === true) {
+
+                                self.availablePrograms[i].editable = false;
+                            }
+
+                        }else {
+                                $rootScope.user.programs.forEach(function (user_program) {
+
+                                    if (user_program.id === availProgram.program.id) {
+
+                                        if (availProgram.active === false && is_manager === true) {
+
+                                            self.availablePrograms[i].editable = true;
+
+                                        } else if (availProgram.active === true && is_manager === true) {
+
+                                            self.availablePrograms[i].editable = true;
+                                        }
+                                    }
+                                });
+                            }
+
+
+                        /*If the project is draft*/
+
+                    }else if(status === 'draft'){
+
+                        if (is_admin === true || is_grantee === true) {
+
+                            self.availablePrograms[i].editable = true;
+
+                        }else {
+
+                            $rootScope.user.programs.forEach(function (user_program) {
+
+                                if (user_program.id === availProgram.program.id) {
+
+                                    if (availProgram.active === false && is_manager === true) {
+
+                                        self.availablePrograms[i].editable = true;
+
+                                    } else if (availProgram.active === true && is_manager === true) {
+
+                                        self.availablePrograms[i].editable = true;
+                                    }
+                                }
+                            });
+                        }
+
+
+
+                    }
+
+
+                    i = i + 1;
+                });
+
+
             }
 
             /*add program to project
@@ -313,6 +439,7 @@ angular.module('FieldDoc')
 
 
             }
+
             /*Confirm deletion
             * This is logic for the confirm popup dialog
             * */
@@ -428,6 +555,7 @@ angular.module('FieldDoc')
                 return _list;
 
             };
+
 
             self.processFeature = function(data) {
 
