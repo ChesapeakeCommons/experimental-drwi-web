@@ -364,9 +364,13 @@ angular.module('FieldDoc')
 
             self.saveProject = function() {
 
+                console.log("Status -->", self.project.status);
+
                 self.status.processing = true;
 
                 self.scrubFeature(self.project);
+
+                console.log("Status -->", self.project.status);
 
                 console.log("!!!     self.project -->", self.project);
 
@@ -441,6 +445,8 @@ angular.module('FieldDoc')
                 }
 
                 console.log(" self.project.funded_date -->",  self.project.funded_on);
+
+                self.project.status = self.project.status;
 
                 console.log("Save self.project -->", self.project);
 
