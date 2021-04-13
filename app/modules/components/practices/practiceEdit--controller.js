@@ -373,70 +373,92 @@ angular.module('FieldDoc')
 
                 self.practiceTypes = tempLetters.reduce((acc,curr)=> (acc[curr]=[],acc),{});
 
-                console.log(" self.letters -->", self.letters);
+               /*Okay, so first let copy (not reference) our practiceType list
+               * so we get an object of letters each set to an empty array, yay!*/
 
-                console.log("self.practiceTypes -->",self.practiceTypes)
+                let allPracticeTypes = Object.assign({}, self.practiceTypes);
 
-                /*So, letters through our list of letters
-                * and within each letter, loop through are each program set (practiceType_arr)
-                * and see if the letter is present as a key*/
+                /*Now, loop over our programs*/
 
-                /*loop through the simple letter array*/
+                program_arr.forEach(function(program){
 
-                self.letters.forEach(function(letter){
+                    /*loop through the simple letter array*/
 
-                    console.log('letter', letter);
+                    self.letters.forEach(function(letter){
 
-                    /*loop over the programs*/
-
-                    program_arr.forEach(function(program){
-
-                        /*checking if letter key is present in program practice types*/
+                        /*Check if the current letter exists in the program, if it does
+                        * concat the array to our allPracticeTypes array for the letter */
 
                         if(program.practiceTypes[letter]){
 
-                            /* it the letter key is defined,
-                            loop over the practice types object in that letter group array */
+                            allPracticeTypes[letter] = allPracticeTypes[letter].concat(program.practiceTypes[letter]);
 
-                            program.practiceTypes[letter].forEach(function(glyph){
-
-                                /*See if that letter group array has any values*/
-
-                                if(self.practiceTypes[letter].length > 0){
-
-                                    let i = 0;
-
-                                    self.practiceTypes[letter].forEach(function(value){
-
-                                        if(self.practiceTypes[letter][i].name === value.name){
-
-                                            console.log("Match");
-                                        }
-
-
-                                    })
-
-                                    console.log("(self.practiceTypes[letter].length",self.practiceTypes[letter].length);
-
-
-                                }else{
-                                    console.log("is Zero",program.practiceTypes[letter].length);
-                                    self.practiceTypes[letter].push(glyph);
-                                }
-
-
-
-
-                            });
-
-                        }else{
-
-                            console.log(letter+' not in program '+program.program_name);
                         }
 
                     });
 
-               });
+                });
+
+                /*Now, lets make a new copy (not reference) of our letter object with empty arrays.
+                * This is so we have a data structure ready to put our culled items into*/
+
+                let tempPracticeTypes = Object.assign({}, self.practiceTypes);
+
+                /*And we loop over the letters again*/
+
+                self.letters.forEach(function(letter){
+
+                    /*And then loop over list of all practices types for that letter*/
+
+                    allPracticeTypes[letter].forEach(function(item,index){
+
+                        /*We set a flag, assuming no duplicate name has been found*/
+
+                        let found = false;
+
+                        /*Okay, so, remember that ready data structure,
+                        * well, now we're going to check if the current letter group array has any elements.
+                        * If it doesn't, we push the current item from the allPracticeTypes letter group into it (see else{} below)
+                        */
+
+                        if(tempPracticeTypes[letter].length > 0){
+
+                        /* If it does have length, the we need to compare the value of 'name'
+                            from the current item from the allPracticeTypes list to every item in our
+                            subject data structure. We do this with a loop.
+                        */
+
+                            tempPracticeTypes[letter].forEach(function(addedItem, index2){
+
+                                /*Check the name value, if true, it's been found.*/
+
+                                if(addedItem.name == allPracticeTypes[letter][index].name){
+
+                                    found = true;
+
+                                }
+
+                            });
+
+                            /*If found remains false after our loop over added items, we push
+                            * the item from the allPracticeType list into our data struct*/
+
+                            if(found === false){
+
+                                tempPracticeTypes[letter].push(allPracticeTypes[letter][index]);
+
+                            }
+
+                        }else{
+
+                            tempPracticeTypes[letter].push(allPracticeTypes[letter][index]);
+
+                        }
+
+                    });
+
+                });
+                    
 
                 console.log(' self.practiceTypes-->', self.practiceTypes);
 
