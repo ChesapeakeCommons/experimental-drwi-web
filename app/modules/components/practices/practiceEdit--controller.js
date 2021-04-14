@@ -297,8 +297,6 @@ angular.module('FieldDoc')
 
                         if(i == program_arr.length){
 
-                            console.log( "self.practiceTypeSets",  self.practiceTypeSets);
-
                             self.processPracticeTypes(self.practiceTypeSets);
 
                         }
@@ -340,19 +338,13 @@ angular.module('FieldDoc')
                 /*  Practice Type Letters
                 * Okay, so we're going to loop over the program array
                 * we then concat all the letter arrays into one.
-
                 * */
 
                 let tempLetters = [];
-            //    let tempSummary = 0;
 
                 program_arr.forEach(function(program){
 
-                    console.log("program.letters", program.letters);
-
                     tempLetters = tempLetters.concat(program.letters);
-
-               //     tempSummary = program.summary.matches + tempSummary;
 
                 });
 
@@ -378,9 +370,20 @@ angular.module('FieldDoc')
 
                 let allPracticeTypes = Object.assign({}, self.practiceTypes);
 
+                /*We're also going to now make an object to store some info
+                * about the programs, we'll use later to track info
+                * about our consolidated practice types*/
+
+                let program_list = {};
+
                 /*Now, loop over our programs*/
 
-                program_arr.forEach(function(program){
+                program_arr.forEach(function(program,index){
+
+                    /*now's a good time to populate our program list,
+                    * keying by id, value is the program name*/
+
+                    program_list[program.program_id] = program.program_name;
 
                     /*loop through the simple letter array*/
 
@@ -398,6 +401,8 @@ angular.module('FieldDoc')
                     });
 
                 });
+
+                console.log('program_list',program_list);
 
                 /*Now, lets make a new copy (not reference) of our letter object with empty arrays.
                 * This is so we have a data structure ready to put our culled items into*/
@@ -432,9 +437,24 @@ angular.module('FieldDoc')
 
                                 /*Check the name value, if true, it's been found.*/
 
-                                if(addedItem.name == allPracticeTypes[letter][index].name){
+                                if(addedItem.name == item.name){
 
                                     found = true;
+
+                                    /*See below, the only difference is here, is we are not pushing
+                                    the whole practice type nor creating empty properties,
+                                    but instead, updating practice_type_id array and program_data array with a new item.*/
+
+                                    tempPracticeTypes[letter][index2].practice_type_ids.push(item.id);
+
+                                    tempPracticeTypes[letter][index2].program_data.push(
+                                        {
+                                            'practice_type_id'  :   item.id,
+                                            'program_name'      :   program_list[item.program_id],
+                                            'program_id'        :   item.program_id
+                                        }
+
+                                    );
 
                                 }
 
@@ -445,20 +465,72 @@ angular.module('FieldDoc')
 
                             if(found === false){
 
-                                tempPracticeTypes[letter].push(allPracticeTypes[letter][index]);
+                                tempPracticeTypes[letter].push(item);
+
+                                /*See below, the only difference is here, we checking the length
+                                * of our new list so we can add to last item.*/
+
+                                let curLength = tempPracticeTypes[letter].length - 1;
+
+                                tempPracticeTypes[letter][curLength].practice_type_ids = [];
+
+                               tempPracticeTypes[letter][curLength].practice_type_ids.push(item.id);
+
+                               tempPracticeTypes[letter][curLength].program_data = [];
+
+                               tempPracticeTypes[letter][curLength].program_data.push(
+                                   {
+                                       'practice_type_id'  :   item.id,
+                                       'program_name'      :   program_list[item.program_id],
+                                       'program_id'        :   item.program_id
+                                   }
+
+                               );
 
                             }
 
                         }else{
 
-                            tempPracticeTypes[letter].push(allPracticeTypes[letter][index]);
+                            /*Add the item to our letter group*/
+
+                            tempPracticeTypes[letter].push(item);
+
+                            /*Now we're going to add some additional info
+                            * to our newly add item.*/
+
+                            /*This is repeated above within our loop over letter group
+                            for our previously added practice type items in tempPracticeTypes*/
+
+                            /*first, we create an empty array to store the ids of practice types.
+                            * since this is the first item, we can assume its array position is 0.
+                            * We then push the practice types id to that array*/
+
+                            tempPracticeTypes[letter][0].practice_type_ids = [];
+
+                            tempPracticeTypes[letter][0].practice_type_ids.push(item.id);
+
+                            /*And we do the same thing for the program info,
+                            * only this time we use an object as the array value.
+                            * This is when we use our program list item from above*/
+
+                            tempPracticeTypes[letter][0].program_data = [];
+
+                            tempPracticeTypes[letter][0].program_data.push(
+                                    {
+                                        'practice_type_id'  :   item.id,
+                                        'program_name'      :   program_list[item.program_id],
+                                        'program_id'        :   item.program_id
+                                    }
+                                );
+
 
                         }
 
                     });
 
                 });
-                    
+
+                self.practiceTypes = tempPracticeTypes;
 
                 console.log(' self.practiceTypes-->', self.practiceTypes);
 
