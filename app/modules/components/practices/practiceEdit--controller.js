@@ -329,11 +329,14 @@ angular.module('FieldDoc')
                 self.practiceTypes = {}
 
                 /*self.summary is a simple object*/
-                self.summary = {}
+                self.summary = {
+                    'matches' : 0,
+                    'all_matches' : 0,
+                    'total': program_arr[0].summary.total
+                }
 
                 /*self.letters is a simple array*/
                 self.letters = []
-
 
                 /*  Practice Type Letters
                 * Okay, so we're going to loop over the program array
@@ -383,7 +386,11 @@ angular.module('FieldDoc')
                     /*now's a good time to populate our program list,
                     * keying by id, value is the program name*/
 
-                    program_list[program.program_id] = program.program_name;
+                    program_list[program.program_id] =
+                        {
+                           'name' : program.program_name,
+                            'summary' :  program.summary
+                        };
 
                     /*loop through the simple letter array*/
 
@@ -435,7 +442,7 @@ angular.module('FieldDoc')
 
                             tempPracticeTypes[letter].forEach(function(addedItem, index2){
 
-                                /*Check the name value, if true, it's been found.*/
+                                /*Check the name value, if it's been found, set found to true.*/
 
                                 if(addedItem.name == item.name){
 
@@ -450,7 +457,7 @@ angular.module('FieldDoc')
                                     tempPracticeTypes[letter][index2].program_data.push(
                                         {
                                             'practice_type_id'  :   item.id,
-                                            'program_name'      :   program_list[item.program_id],
+                                            'program_name'      :   program_list[item.program_id].name,
                                             'program_id'        :   item.program_id
                                         }
 
@@ -481,7 +488,7 @@ angular.module('FieldDoc')
                                tempPracticeTypes[letter][curLength].program_data.push(
                                    {
                                        'practice_type_id'  :   item.id,
-                                       'program_name'      :   program_list[item.program_id],
+                                       'program_name'      :   program_list[item.program_id].name,
                                        'program_id'        :   item.program_id
                                    }
 
@@ -505,20 +512,20 @@ angular.module('FieldDoc')
                             * since this is the first item, we can assume its array position is 0.
                             * We then push the practice types id to that array*/
 
-                            tempPracticeTypes[letter][0].practice_type_ids = [];
-
-                            tempPracticeTypes[letter][0].practice_type_ids.push(item.id);
-
                             /*And we do the same thing for the program info,
                             * only this time we use an object as the array value.
                             * This is when we use our program list item from above*/
+
+                            tempPracticeTypes[letter][0].practice_type_ids = [];
+
+                            tempPracticeTypes[letter][0].practice_type_ids.push(item.id);
 
                             tempPracticeTypes[letter][0].program_data = [];
 
                             tempPracticeTypes[letter][0].program_data.push(
                                     {
                                         'practice_type_id'  :   item.id,
-                                        'program_name'      :   program_list[item.program_id],
+                                        'program_name'      :   program_list[item.program_id].name,
                                         'program_id'        :   item.program_id
                                     }
                                 );
@@ -528,9 +535,24 @@ angular.module('FieldDoc')
 
                     });
 
+
+                    self.summary.matches =  self.summary.matches + tempPracticeTypes[letter].length;
+
                 });
 
+                /*And finally, let's set our scoped object to the temp object we've been working with*/
+
                 self.practiceTypes = tempPracticeTypes;
+
+                /*And finally, again, we need to get our */
+
+                for (const program_id in program_list) {
+
+                    self.summary.all_matches =  self.summary.all_matches + program_list[program_id].summary.matches;
+
+                }
+
+                console.log("self.summary",self.summary);
 
                 console.log(' self.practiceTypes-->', self.practiceTypes);
 
