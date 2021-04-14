@@ -544,6 +544,8 @@ angular.module('FieldDoc')
 
                 self.practiceTypes = tempPracticeTypes;
 
+                self.program_list = program_list;
+
                 /*And finally, again, we need to get our */
 
                 for (const program_id in program_list) {

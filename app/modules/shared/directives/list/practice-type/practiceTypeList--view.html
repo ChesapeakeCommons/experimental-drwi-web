@@ -18,6 +18,13 @@
         <ng-pluralize count="summary.matches"
                       when="{'one': 'type','other': 'types'}"></ng-pluralize>. Type in the box below to search
         practice types by name or use the letters to browse the list alphabetically.
+
+        <div ng-repeat="(id,p) in program">
+
+            <a href="/programs/{{id}}">{{p.name}}</a>
+
+        </div>
+
     </p>
 
     <div data-ng-if="practiceType && selectionId && !practice.misaligned" style="padding-bottom: 2rem;">
