@@ -911,32 +911,34 @@
 
                     self.targets.inactive.forEach(function(ia_target){
 
-                        let item = ia_target;
+                        if(ia_target.practice_target > 0) {
+                            let item = ia_target;
 
-                        console.log('ia_target', item);
+                            console.log('ia_target', item);
 
-                        item.value = item.practice_target;
+                            item.value = item.practice_target;
 
-                        if (typeof item.value !== 'number') {
+                            if (typeof item.value !== 'number') {
 
-                            item.value = 0;
+                                item.value = 0;
 
-                        };
+                            }
+                            ;
 
 
-                        item.action = 'add';
+                            item.action = 'add';
 
-                        if (!item.metric ||
-                            typeof item.metric === 'undefined') {
+                            if (!item.metric ||
+                                typeof item.metric === 'undefined') {
 
-                            item.metric_id = item.id;
+                                item.metric_id = item.id;
 
-                            delete item.id;
+                                delete item.id;
 
+                            }
+
+                            self.targets.active.push(item);
                         }
-
-                        self.targets.active.push(item);
-
                     });
 
                     self.targets.inactive = [];
