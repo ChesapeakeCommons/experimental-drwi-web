@@ -882,18 +882,47 @@
 
                     console.log("Auto Fill");
 
+
+                    /*If an active target has a zero 0 report_target value,
+                      * we want to set it's report_target to it's practice_target.
+                      If it has a non zero value, ignore it.
+                     */
+
+                    self.targets.active.forEach(function(a_target,index){
+
+                        let item = a_target;
+
+                        if(item.value > 0){
+
+                        }else{
+
+                            self.targets.active[index].value = item.practice_target;
+
+                        }
+
+                    });
+
+
+                    /*We loop through all inactive targets,
+                    * set them to active and set it's report_target value
+                    * to it's practice_target
+                    *
+                    * */
+
                     self.targets.inactive.forEach(function(ia_target){
 
                         let item = ia_target;
 
                         console.log('ia_target', item);
 
-                        if (!item.value ||
-                            typeof item.value !== 'number') {
+                        item.value = item.practice_target;
+
+                        if (typeof item.value !== 'number') {
 
                             item.value = 0;
 
                         };
+
 
                         item.action = 'add';
 
@@ -911,6 +940,12 @@
                     });
 
                     self.targets.inactive = [];
+
+
+                    /*Next we create / update a flag to see if auto fill
+                    * is available. If there no non zero report values,
+                    * and all have*/
+
 
                     console.log("self.targets-->",self.targets);
 
