@@ -695,7 +695,7 @@ angular.module('FieldDoc')
 
                     /*Now however, we will be setting it to an array of ids*/
 
-                    self.practice.practice_type_id = self.practiceType.practice_type_ids;
+                    self.practice.practice_type_id = self.practiceType.practice_type_ids[0];
 
                 }
 
