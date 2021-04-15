@@ -9,7 +9,7 @@
      */
     angular.module('FieldDoc')
         .controller('ReportEditController',
-            function(Account, $location, MetricType, Organization,
+            function(Account, $location, MetricType, Organization, Project,
                 Practice, Report, ReportMetric, ReportMonitoring, report,
                 $rootScope, $route, $scope, user, Utility,
                 $timeout, report_metrics, $filter, $interval, Program) {
@@ -291,7 +291,7 @@
 
                     for(let program of self.programs){
 
-                        if (program.program_id === program_id) {
+                        if (program.id === program_id) {
 
                             self.currentProgram = program;
 
@@ -400,7 +400,8 @@
 
                         }
 
-                        self.loadOrganization(self.practice.organization.id);
+                   //     self.loadOrganization(self.practice.organization.id);
+                        self.loadProject(self.practice.project.id);
 
 
                         // self.loadMetricTypes(self.practice.project);
@@ -416,7 +417,7 @@
                 /*
                 START Program context switch logic
                 Note: we are currently loading in Organization Programs
-                This is to be replaced with
+                This is to be replaced with load project programs.
                 */
 
                 self.loadOrganization = function(organizationId) {
@@ -443,10 +444,10 @@
                                               It has been added here to enable debugging of other areas.
                                            */
                         if(self.programs[0] !== undefined) {
-                            self.loadMetrics(self.practice.id, self.currentProgram.program_id);
+                            self.loadMetrics(self.practice.id, self.currentProgram.id);
                         }
 
-                        self.loadMatrix(self.report.id, self.currentProgram.program_id);
+                        self.loadMatrix(self.report.id, self.currentProgram.id);
 
                         self.status.loading = false;
 
@@ -460,6 +461,79 @@
                     });
 
                 };
+
+                /*
+         START Program context switch logic
+         Note: we are currently loading in Organization Programs
+         This needs to be updated to loadProject
+          */
+                self.loadProject = function(projectId){
+
+
+                    var exclude = [
+                        'centroid',
+                        'creator',
+                        'dashboards',
+                        'extent',
+                        'geometry',
+                        'members',
+                        'metric_types',
+                        // 'partners',
+                        'practices',
+                        'practice_types',
+                        'properties',
+                        'tags',
+                        'targets',
+                        'tasks',
+                        'sites'
+                    ].join(',');
+
+                    Project.getSingle({
+                        id: projectId,
+                        exclude: exclude
+                    }).$promise.then(function(successResponse) {
+
+
+                        console.log("project response -->",successResponse);
+
+                        self.project = successResponse;
+
+                        self.programs = successResponse.programs;
+
+                        console.log("project programs -->", self.programs);
+
+                        console.log("self.programs.length",self.programs.length);
+
+                        self.programSummary.program_count = self.programs.length;
+
+
+
+                        if(self.programs.length > 0 && self.currentProgram == undefined){
+                            self.currentProgram = self.programs[0];
+                        }
+
+                        console.log('self.programs[0]',self.programs[0]);
+                        console.log('self.practice.id',self.practice.id);
+                        console.log('self.currentProgram.id',self.currentProgram.id);
+                        console.log('self.report.id',self.report.id);
+
+                        if(self.programs[0] !== undefined) {
+                            self.loadMetrics(self.practice.id, self.currentProgram.id);
+                        }
+
+                        self.loadMatrix(self.report.id, self.currentProgram.id);
+
+                        self.status.loading = false;
+
+                    }, function(errorResponse) {
+
+                        console.log('Unable to load request project');
+
+                        //     self.showElements();
+
+                    });
+
+                }
 
                 /*
                 END Program context switch logic
@@ -812,6 +886,8 @@
 
                         let item = ia_target;
 
+                        console.log('ia_target', item);
+
                         if (!item.value ||
                             typeof item.value !== 'number') {
 
@@ -873,7 +949,7 @@
 
                     var data = {
                         targets: self.targets.active.slice(0),
-                        program: self.currentProgram.program_id
+                        program: self.currentProgram.id
                     };
 
                     self.targets.inactive.forEach(function(item) {
@@ -899,7 +975,7 @@
                             'prompt': 'OK'
                         }];
 
-                        self.loadMatrix(self.report.id, self.currentProgram.program_id);
+                        self.loadMatrix(self.report.id, self.currentProgram.id);
 
                         $timeout(self.closeAlerts, 2000);
 
