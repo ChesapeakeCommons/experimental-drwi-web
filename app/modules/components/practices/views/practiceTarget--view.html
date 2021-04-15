@@ -328,6 +328,7 @@
                     </span>
 
                     <input id="programMetric_type_id" name="programMetric_type_id" type="text"
+                           autocomplete="off"
                            placeholder="Search metrics" data-ng-model="page.programMetric"
                            uib-typeahead="programMetric as programMetric.name for programMetric in page.programMetrics | filter:{name: $viewValue} | limitTo:5"
                            typeahead-on-select="page.addMetric($item,$model,$label)" typeahead-min-length="0"

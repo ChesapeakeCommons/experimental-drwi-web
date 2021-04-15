@@ -7,9 +7,9 @@
  */
 angular.module('FieldDoc')
     .controller('PracticeEditController',
-        function(Account, Image, $log, $location, Media, Practice,
-                 PracticeType, practice, Project, $q, $rootScope,
-                 $route, $scope, $timeout, $interval, site, user, Utility) {
+        function(Account,  Image, $log, $location, Media, Practice,
+                 PracticeType, practice, $q, $rootScope,
+                 $route, $scope, $timeout, $interval, site, user, Project, Utility) {
 
             var self = this;
 
@@ -66,7 +66,7 @@ angular.module('FieldDoc')
 
                     self.site = successResponse;
 
-                    self.loadPractice();
+                  //  self.loadPractice();
 
                 }, function(errorResponse) {
 
@@ -96,6 +96,8 @@ angular.module('FieldDoc')
                     self.permissions.can_edit = successResponse.permissions.write;
                     self.permissions.can_delete = successResponse.permissions.write;
 
+                    self.project_id = successResponse.project_id;
+
                     if (successResponse.practice_type) {
 
                         self.practiceType = successResponse.practice_type;
@@ -115,6 +117,12 @@ angular.module('FieldDoc')
                     //
                     // Load practice types
                     //
+
+                   self.loadProject(self.project_id);
+
+                    self.showElements();
+                    /*
+                    console.log("self.practice.project -->",self.practice.project);
 
                     PracticeType.collection({
                         program: self.practice.project.program_id,
@@ -141,14 +149,422 @@ angular.module('FieldDoc')
                         self.showElements();
 
                     });
-
+                    */
                 }, function(errorResponse) {
 
                     //
+                    self.showElements();
 
                 });
 
             };
+
+            /*START Practice Type list creation*/
+
+
+            /*processFeature is a helper function for LoadProject*/
+            self.processFeature = function(data) {
+
+                self.project = data;
+
+                if (self.project.program) {
+
+                    self.program = self.project.program;
+
+                }
+
+                self.tempPartners = self.project.partners;
+
+                self.status.processing = false;
+
+            };
+
+            self.loadProject = function(projectId){
+
+                var exclude = [
+                    'centroid',
+                    'creator',
+                    'dashboards',
+                    'extent',
+                    'geometry',
+                    'members',
+                    'metric_types',
+                    // 'partners',
+                    'practices',
+                    'practice_types',
+                    'properties',
+                    'tags',
+                    'targets',
+                    'tasks',
+                    'sites'
+                ].join(',');
+
+                //
+                // Assign project to a scoped variable
+                //
+                Project.getSingle({
+                    id: projectId,
+                    exclude: exclude
+                }).$promise.then(function(successResponse) {
+
+                    console.log("self.project-->",successResponse);
+
+                    self.project = successResponse;
+
+                    self.projectPrograms = self.project.programs;
+
+                    if (!successResponse.permissions.read &&
+                        !successResponse.permissions.write) {
+
+                        self.makePrivate = true;
+
+                    } else {
+
+                        self.processFeature(successResponse);
+
+                        self.permissions.can_edit = successResponse.permissions.write;
+                        self.permissions.can_delete = successResponse.permissions.write;
+
+                        $rootScope.page.title = 'Edit Project';
+
+                    }
+
+                    console.log("Project Programs -->", self.projectPrograms)
+
+                    self.status.loading = false;
+
+                    self.loadPracticeTypes(self.projectPrograms);
+
+                    self.showElements();
+
+                }, function(errorResponse) {
+
+                    console.log('Unable to load request project');
+
+                    self.status.loading = false;
+
+                    self.showElements();
+
+                });
+            }
+
+            self.loadPracticeTypes = function(program_arr){
+
+                self.practiceTypeSets = [];
+
+                let i = 1;
+
+                console.log("program_arr-->", program_arr);
+
+                /*Let's first loop over the program arr recieved from the
+                * project*/
+
+                program_arr.forEach(function(program){
+
+                    /*for each program, we're going to create an object
+                    * to store the data we'll need later. Part of of this object
+                    * are set as empty arrays, and will be filled by the return results*/
+
+                    let set = {
+                        'program_id' : program.id,
+                        'program_name' : program.name,
+                        'practiceTypes' : [],
+                        'letters' : [],
+                        'summary' : []
+                    };
+
+                    PracticeType.collection({
+                        program: program.id,
+                        group: 'alphabet'
+                    }).$promise.then(function(successResponse) {
+
+                        /*Now lets populate our locally scoped program object
+                        * with the return results*/
+
+                        set.practiceTypes = successResponse.features.groups;
+
+                        set.letters = successResponse.features.letters;
+
+                        set.summary = successResponse.summary;
+
+                        self.practiceTypeSets.push(set);
+
+                        /*Here we're going to check the length of our new array of against
+                        * the length of the original array.
+                        * This is to overcome latency of requests and javascript's asychronis threads
+                        * Only after the array lengths match, will we call the method
+                        * needed to start reconciling them.
+                        * */
+
+                        if(i == program_arr.length){
+
+                            self.processPracticeTypes(self.practiceTypeSets);
+
+                        }
+
+                        i=i+1;
+
+                    }, function(errorResponse) {
+
+                        console.log('errorResponse', errorResponse);
+
+                    });
+
+                   // console.log( "XXX self.practiceTypeSets",  self.practiceTypeSets);
+                });
+
+            };
+
+            self.processPracticeTypes = function(program_arr){
+
+                console.log( "self.practiceTypeSets",  program_arr);
+
+                /* practiceType_arr is expected to have the following structure:
+                *   Array (self)
+                *   ↳ Object (program group)
+                *   ↳↳ Array (letter group)
+                *   ↳↳↳ Object (practice type)
+                * */
+
+                /*self.practiceTypes is an object of arrays*/
+                self.practiceTypes = {}
+
+                /*self.summary is a simple object*/
+                self.summary = {
+                    'matches' : 0,
+                    'all_matches' : 0,
+                    'total': program_arr[0].summary.total
+                }
+
+                /*self.letters is a simple array*/
+                self.letters = []
+
+                /*  Practice Type Letters
+                * Okay, so we're going to loop over the program array
+                * we then concat all the letter arrays into one.
+                * */
+
+                let tempLetters = [];
+
+                program_arr.forEach(function(program){
+
+                    tempLetters = tempLetters.concat(program.letters);
+
+                });
+
+                /*We then convert the concatenated array of letters to set,
+                * eliminating duplicates.
+                * We then convert it back to an array, and sort
+                * to arrange it alphabetically.*/
+
+                tempLetters = new Set(tempLetters);
+
+                tempLetters = Array.from(tempLetters);
+
+                tempLetters.sort();
+
+                self.letters = tempLetters;
+
+                /*Now we reduce the letter array to an object of empty arrays*/
+
+                self.practiceTypes = tempLetters.reduce((acc,curr)=> (acc[curr]=[],acc),{});
+
+               /*Okay, so first let copy (not reference) our practiceType list
+               * so we get an object of letters each set to an empty array, yay!*/
+
+                let allPracticeTypes = Object.assign({}, self.practiceTypes);
+
+                /*We're also going to now make an object to store some info
+                * about the programs, we'll use later to track info
+                * about our consolidated practice types*/
+
+                let program_list = {};
+
+                /*Now, loop over our programs*/
+
+                program_arr.forEach(function(program,index){
+
+                    /*now's a good time to populate our program list,
+                    * keying by id, value is the program name*/
+
+                    program_list[program.program_id] =
+                        {
+                           'name' : program.program_name,
+                            'summary' :  program.summary
+                        };
+
+                    /*loop through the simple letter array*/
+
+                    self.letters.forEach(function(letter){
+
+                        /*Check if the current letter exists in the program, if it does
+                        * concat the array to our allPracticeTypes array for the letter */
+
+                        if(program.practiceTypes[letter]){
+
+                            allPracticeTypes[letter] = allPracticeTypes[letter].concat(program.practiceTypes[letter]);
+
+                        }
+
+                    });
+
+                });
+
+                console.log('program_list',program_list);
+
+                /*Now, lets make a new copy (not reference) of our letter object with empty arrays.
+                * This is so we have a data structure ready to put our culled items into*/
+
+                let tempPracticeTypes = Object.assign({}, self.practiceTypes);
+
+                /*And we loop over the letters again*/
+
+                self.letters.forEach(function(letter){
+
+                    /*And then loop over list of all practices types for that letter*/
+
+                    allPracticeTypes[letter].forEach(function(item,index){
+
+                        /*We set a flag, assuming no duplicate name has been found*/
+
+                        let found = false;
+
+                        /*Okay, so, remember that ready data structure,
+                        * well, now we're going to check if the current letter group array has any elements.
+                        * If it doesn't, we push the current item from the allPracticeTypes letter group into it (see else{} below)
+                        */
+
+                        if(tempPracticeTypes[letter].length > 0){
+
+                        /* If it does have length, the we need to compare the value of 'name'
+                            from the current item from the allPracticeTypes list to every item in our
+                            subject data structure. We do this with a loop.
+                        */
+
+                            tempPracticeTypes[letter].forEach(function(addedItem, index2){
+
+                                /*Check the name value, if it's been found, set found to true.*/
+
+                                if(addedItem.name == item.name){
+
+                                    found = true;
+
+                                    /*See below, the only difference is here, is we are not pushing
+                                    the whole practice type nor creating empty properties,
+                                    but instead, updating practice_type_id array and program_data array with a new item.*/
+
+                                    tempPracticeTypes[letter][index2].practice_type_ids.push(item.id);
+
+                                    tempPracticeTypes[letter][index2].program_data.push(
+                                        {
+                                            'practice_type_id'  :   item.id,
+                                            'program_name'      :   program_list[item.program_id].name,
+                                            'program_id'        :   item.program_id
+                                        }
+
+                                    );
+
+                                }
+
+                            });
+
+                            /*If found remains false after our loop over added items, we push
+                            * the item from the allPracticeType list into our data struct*/
+
+                            if(found === false){
+
+                                tempPracticeTypes[letter].push(item);
+
+                                /*See below, the only difference is here, we checking the length
+                                * of our new list so we can add to last item.*/
+
+                                let curLength = tempPracticeTypes[letter].length - 1;
+
+                                tempPracticeTypes[letter][curLength].practice_type_ids = [];
+
+                               tempPracticeTypes[letter][curLength].practice_type_ids.push(item.id);
+
+                               tempPracticeTypes[letter][curLength].program_data = [];
+
+                               tempPracticeTypes[letter][curLength].program_data.push(
+                                   {
+                                       'practice_type_id'  :   item.id,
+                                       'program_name'      :   program_list[item.program_id].name,
+                                       'program_id'        :   item.program_id
+                                   }
+
+                               );
+
+                            }
+
+                        }else{
+
+                            /*Add the item to our letter group*/
+
+                            tempPracticeTypes[letter].push(item);
+
+                            /*Now we're going to add some additional info
+                            * to our newly added item.*/
+
+                            /*This is repeated above within our loop over letter group
+                            for our previously added practice type items in tempPracticeTypes*/
+
+                            /*first, we create an empty array to store the ids of practice types.
+                            * since this is the first item, we can assume its array position is 0.
+                            * We then push the practice types id to that array*/
+
+                            /*And we do the same thing for the program info,
+                            * only this time we use an object as the array value.
+                            * This is when we use our program list item from above*/
+
+                            tempPracticeTypes[letter][0].practice_type_ids = [];
+
+                            tempPracticeTypes[letter][0].practice_type_ids.push(item.id);
+
+                            tempPracticeTypes[letter][0].program_data = [];
+
+                            tempPracticeTypes[letter][0].program_data.push(
+                                    {
+                                        'practice_type_id'  :   item.id,
+                                        'program_name'      :   program_list[item.program_id].name,
+                                        'program_id'        :   item.program_id
+                                    }
+                                );
+
+
+                        }
+
+                    });
+
+
+                    self.summary.matches =  self.summary.matches + tempPracticeTypes[letter].length;
+
+                });
+
+                /*And finally, let's set our scoped object to the temp object we've been working with*/
+
+                self.practiceTypes = tempPracticeTypes;
+
+                /*set scope var to the program list, in case we need it.*/
+
+                self.program_list = program_list;
+
+                /*And finally, again, we need to get our matches, ie practice type count.*/
+
+                for (const program_id in program_list) {
+
+                    self.summary.all_matches =  self.summary.all_matches + program_list[program_id].summary.matches;
+
+                }
+
+                console.log("self.summary",self.summary);
+
+                console.log(' self.practiceTypes-->', self.practiceTypes);
+
+            };
+
+            /*END Practice Type list creation*/
+
 
             /*START STATE CALC*/
 
@@ -270,11 +686,20 @@ angular.module('FieldDoc')
 
                 self.scrubFeature(self.practice);
 
+                /*Check if a practice type hase indeed been selected*/
                 if (self.practiceType) {
 
-                    self.practice.practice_type_id = self.practiceType.id;
+                    /*Here's the legacy code, where we were setting it to a single id*/
+
+                 //   self.practice.practice_type_id = self.practiceType.id;
+
+                    /*Now however, we will be setting it to an array of ids*/
+
+                    self.practice.practice_type_id = self.practiceType.practice_type_ids[0];
 
                 }
+
+                console.log("self.practice",self.practice);
 
                 var invalid = [];
 
@@ -360,9 +785,11 @@ angular.module('FieldDoc')
 
             /*END STATE CALC*/
 
+            /*Is the controller set practice type method below defunct ?*/
+
             self.setPracticeType = function($item, $model, $label) {
 
-                console.log('self.practiceType', $item);
+                console.log('XY self.practiceType', $item);
 
                 self.practiceType = $item;
 
@@ -390,9 +817,13 @@ angular.module('FieldDoc')
 
                     $rootScope.user = Account.userObject = userResponse;
 
+                    self.user = Account.userObject = userResponse;
+
                     self.permissions = {
                         can_edit: false
                     };
+
+//                    self.loadProject();
 
                     self.loadPractice();
                 });

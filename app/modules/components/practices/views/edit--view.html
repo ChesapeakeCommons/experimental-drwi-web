@@ -155,7 +155,7 @@
                                     {{ page.programSummary.program_count | number }}
                                 </span>
 
-                                    {{page.currentProgram.program.name}}
+                                    {{page.currentProgram.name}}
 
                                 </h2>
 
@@ -269,7 +269,7 @@
                                                     style="z-index:999; position:relative;"
                                                     >
                                                 <i class="material-icons" style="color:#0e8bb6;">
-                                                    radio_button_checked
+                                                    check_box
                                                 </i>
                                                 <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:0%; top:0%;"
                                                      data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == target.metric_id)">
@@ -330,11 +330,14 @@
                                         </div>
                                     </li>
                                     <!-- Inactive -->
-                                    <li data-ng-repeat="target in page.targets.inactive" style="margin-bottom: 2rem; background-color: #ffffff;
+                                    <li data-ng-repeat="target in page.targets.inactive"
+                                        data-ng-if="target.practice_target > 0"
+                                        style="margin-bottom: 2rem; background-color: #ffffff;
                                     flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom:16px;">
                                         <div class="measurement">
                                             <div>{{ target.name || target.metric.name }}</div>
                                             <input type="number" class="form-control" style="padding: 1rem;"
+                                                   data-ng-if="target.practice_target > 0"
                                                    data-ng-model="target.value"
                                                    data-ng-model-options="{ debounce: 1000 }"
                                                    id="name-inactive-{{ $index }}" name="name-inactive-{{ $index }}"
@@ -342,25 +345,35 @@
                                                    placeholder="0" step="0.0001" min="0" autocomplete="off"/>
                                             <button type="button" class="add-item"
                                                     data-ng-click="page.addTarget(target, $index)"
+                                                    data-ng-if="target.practice_target > 0"
                                                     data-ng-disabled="(page.status.processing) || (!page.editingEnabled)">
                                                 <i class="material-icons">
-                                                    radio_button_unchecked
+                                                    check_box_outline_blank
                                                 </i>
                                             </button>
+                                            <button data-ng-if="target.practice_target == 0">
+
+                                                <i class="material-icons" style="color:#9e9e9e;">
+                                                    error_outline
+                                                </i>
+
+                                            </button>
                                         </div>
-                                        <div class="report-tgt-meter">
+                                        <div class="report-tgt-meter" data-ng-if="target.practice_target > 0">
                                             <!--data-ng-if="target.practice_target-->
-                                            <div class="labels">
-                                                <div>
-                                                    <strong>Total reported</strong>
+
+                                                <div class="labels" >
+                                                    <div>
+                                                        <strong>Total reported</strong>
+                                                    </div>
+                                                    <div>
+                                                        <strong>Practice target</strong>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <strong>Practice target</strong>
+                                                <div class="meter-bar" style="background: #e0e0e0;">
+                                                    <div style="width: {{ target.width }}%;"></div>
                                                 </div>
-                                            </div>
-                                            <div class="meter-bar" style="background: #e0e0e0;">
-                                                <div style="width: {{ target.width }}%;"></div>
-                                            </div>
+
                                             <div class="labels">
                                                 <div style="color:#aaaaaa;">
                                                     Click button on left to include in report
@@ -394,8 +407,97 @@
                                         </div>
                                     </li>
 
+                                    <!-- No Practice Target Set -->
+
+                                    <li data-ng-repeat="target in page.targets.inactive"
+                                        data-ng-if="target.practice_target == 0"
+                                        style="margin-bottom: 2rem; background-color: #ffffff;
+                                    flex-flow: column; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom:16px;">
+                                        <div class="measurement">
+                                            <div>{{ target.name || target.metric.name }}</div>
+
+                                            <div data-ng-if="!target.practice_target" style="margin-top:-0px;">
+                                              <!--  <a style="color:red;padding:3px 0px 5px 12px;">
+                                                <sub>
+                                                    <i class="material-icons" style="position:relative; top: 3px;">
+                                                        error_outline
+                                                    </i>
+                                                </sub>
+                                                </a>
+                                                -->
+                                                <span style="color:#9e9e9e; font-size: 0.9rem;">cannot be added to report: &nbsp;</span>
+                                                <a href="/practices/{{page.practice.id}}/targets"
+                                                   style="font-size: 0.9rem;background:#fff4b7; border:1px solid #ffd806; border-radius:4px; padding:3px 8px 5px 12px;">
+                                                    Target not set
+                                                    <sub>
+                                                        <i class="material-icons" style="position:relative; top: 3px;">
+                                                            multiline_chart
+                                                        </i>
+                                                    </sub>
+                                                </a>
+                                            </div>
+
+                                           <!-- <button data-ng-if="target.practice_target == 0">
+
+
+
+                                            </button>-->
+                                        </div>
+                                        <div class="report-tgt-meter" data-ng-if="target.practice_target > 0">
+                                            <!--data-ng-if="target.practice_target-->
+
+                                            <div class="labels" >
+                                                <div>
+                                                    <strong>Total reported</strong>
+                                                </div>
+                                                <div>
+                                                    <strong>Practice target</strong>
+                                                </div>
+                                            </div>
+                                            <div class="meter-bar" style="background: #e0e0e0;">
+                                                <div style="width: {{ target.width }}%;"></div>
+                                            </div>
+
+                                            <div class="labels">
+                                                <div style="color:#aaaaaa;">
+                                                    Click button on left to include in report
+                                                </div>
+                                                <!--
+                                                <div data-ng-if="target.width < 1">
+
+                                                    {{ (target.total_reported | number:2) || ("0.00") }} (<1% of goal)
+                                                </div>
+
+                                                <div data-ng-if="target.width >= 1">
+
+                                                    {{ (target.total_reported | number:2) || ("0.00") }} ({{ target.width | number:0
+                                                    }}% of goal)
+                                                </div>
+                                                -->
+                                                <div data-ng-if="target.practice_target" style="color:#aaaaaa;">
+                                                    {{ target.practice_target | number:2 }}
+                                                </div>
+                                                <div data-ng-if="!target.practice_target" style="margin-top:-5px;">
+                                                    <a href="/practices/{{page.practice.id}}/targets"
+                                                       style="background:#fff4b7; border:1px solid #ffd806; border-radius:4px; padding:3px 8px 5px 12px;">
+                                                        Target not set
+                                                        <sub>
+                                                            <i class="material-icons" style="position:relative; top: 3px;">
+                                                                multiline_chart
+                                                            </i>
+                                                        </sub>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
 
                                 </ul>
+
+
+                                </ul>
+
 
 
                                 <!-- END Targets Input-->
