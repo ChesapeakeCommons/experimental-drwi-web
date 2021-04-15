@@ -178,6 +178,7 @@ angular.module('FieldDoc')
                 self.status.processing = false;
 
             };
+
             self.loadProject = function(projectId){
 
                 var exclude = [
@@ -503,7 +504,7 @@ angular.module('FieldDoc')
                             tempPracticeTypes[letter].push(item);
 
                             /*Now we're going to add some additional info
-                            * to our newly add item.*/
+                            * to our newly added item.*/
 
                             /*This is repeated above within our loop over letter group
                             for our previously added practice type items in tempPracticeTypes*/
@@ -544,9 +545,11 @@ angular.module('FieldDoc')
 
                 self.practiceTypes = tempPracticeTypes;
 
+                /*set scope var to the program list, in case we need it.*/
+
                 self.program_list = program_list;
 
-                /*And finally, again, we need to get our */
+                /*And finally, again, we need to get our matches, ie practice type count.*/
 
                 for (const program_id in program_list) {
 
@@ -683,11 +686,20 @@ angular.module('FieldDoc')
 
                 self.scrubFeature(self.practice);
 
+                /*Check if a practice type hase indeed been selected*/
                 if (self.practiceType) {
 
-                    self.practice.practice_type_id = self.practiceType.id;
+                    /*Here's the legacy code, where we were setting it to a single id*/
+
+                 //   self.practice.practice_type_id = self.practiceType.id;
+
+                    /*Now however, we will be setting it to an array of ids*/
+
+                    self.practice.practice_type_id = self.practiceType.practice_type_ids;
 
                 }
+
+                console.log("self.practice",self.practice);
 
                 var invalid = [];
 
@@ -773,9 +785,11 @@ angular.module('FieldDoc')
 
             /*END STATE CALC*/
 
+            /*Is the controller set practice type method below defunct ?*/
+
             self.setPracticeType = function($item, $model, $label) {
 
-                console.log('self.practiceType', $item);
+                console.log('XY self.practiceType', $item);
 
                 self.practiceType = $item;
 
