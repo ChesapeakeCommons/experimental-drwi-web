@@ -328,7 +328,7 @@ angular.module('FieldDoc')
                     'images',
                     'last_modified_by',
                     'organization',
-                    'programs',
+                    'program',
                     'tags',
                     'tasks'
                 ];
@@ -362,156 +362,6 @@ angular.module('FieldDoc')
 
             };
 
-            self.saveProject = function() {
-
-                console.log("Status -->", self.project.status);
-
-                self.status.processing = true;
-
-                console.log("XXX     self.project -->", self.project);
-                console.log("XXX     self.project -->", self.project.programs);
-
-                self.scrubFeature(self.project);
-
-
-                console.log("Status -->", self.project.status);
-
-                console.log("!!!     self.project -->", self.project);
-
-                /*Format completed date and append as
-                * sub object to self.project
-                * prior to api submission*/
-                if (self.completed_date !== undefined) {
-
-                    if ( (typeof self.completed_date.month === 'string' ||  typeof self.completed_date.month.name === 'string') &&
-                        typeof self.completed_date.date === 'number' &&
-                        typeof self.completed_date.year === 'number') {
-
-                        self.months.forEach(function(m){
-
-                           if (m.name === self.completed_date.month) {
-                               self.completed_date.month = m;
-                           }
-
-                        });
-
-                        self.project.completed_on = [
-                            self.completed_date.year,
-                            self.completed_date.month.numeric,
-                            self.completed_date.date
-                        ].join('-');
-
-                    } else {
-
-                        self.project.completed_on = null;
-
-                    }
-
-                }else{
-
-                    console.log("COMPLETED DATE UNDEFINED");
-                }
-                console.log(" self.project.completed_on -->",  self.project.completed_on);
-
-                /*Format funded date and append as
-               * sub object to self.project
-               * prior to api submission*/
-                if (self.funded_date !== undefined) {
-
-                    if ( (typeof self.funded_date.month === 'string' || typeof self.funded_date.month.name === 'string')&&
-                        typeof self.funded_date.date === 'number' &&
-                        typeof self.funded_date.year === 'number') {
-
-                        self.months.forEach(function(m){
-
-                            if (m.name === self.funded_date.month) {
-                                self.funded_date.month = m;
-                            }
-
-                        });
-
-                        self.project.funded_on = [
-                            self.funded_date.year,
-                            self.funded_date.month.numeric,
-                            self.funded_date.date
-                        ].join('-');
-
-                    } else {
-
-                        self.project.funded_on = null;
-
-                    }
-
-                }else{
-
-                    console.log("COMPLETED DATE UNDEFINED");
-
-                }
-
-                console.log(" self.project.funded_date -->",  self.project.funded_on);
-
-                self.project.status = self.project.status;
-
-                console.log("Save self.project -->", self.project);
-
-                self.project.partners = self.processRelations(self.tempPartners);
-
-                var exclude = [
-                    'centroid',
-                    'creator',
-                    'dashboards',
-                    'extent',
-                    'geometry',
-                    'members',
-                    'metric_types',
-                    // 'partners',
-                    'practices',
-                    'practice_types',
-                    'properties',
-                    'tags',
-                    'targets',
-                    'tasks',
-                    'sites'
-                ].join(',');
-
-                console.log("self.project --> submit", self.project);
-
-                Project.update({
-                    id: $route.current.params.projectId,
-                    exclude: exclude
-                }, self.project).then(function(successResponse) {
-
-                    console.log('successResponse-->',successResponse);
-
-                    self.processFeature(successResponse);
-
-                    self.alerts = [{
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Project changes saved.',
-                        'prompt': 'OK'
-                    }];
-
-                    $timeout(self.closeAlerts, 2000);
-
-                }).catch(function(error) {
-
-                    // Do something with the error
-
-                    self.alerts = [{
-                        'type': 'error',
-                        'flag': 'Error!',
-                        'msg': 'Something went wrong and the changes could not be saved.',
-                        'prompt': 'OK'
-                    }];
-
-                    $timeout(self.closeAlerts, 2000);
-
-                    self.status.processing = false;
-
-                });
-
-            };
 
             self.deleteFeature = function() {
 
@@ -640,12 +490,9 @@ angular.module('FieldDoc')
 
             self.loadProject = function() {
 
-                //
-                // Assign project to a scoped variable
-                //
                 project.$promise.then(function (successResponse) {
 
-                    console.log("self.project-->", successResponse);
+                    /* Assign project to a scoped variable */
 
                     self.project = successResponse;
 
@@ -665,13 +512,11 @@ angular.module('FieldDoc')
 
                         $rootScope.page.title = 'Edit Project';
 
-
                         /*Get completed_date to controller scope var*/
 
                         if (self.project.completed_on) {
 
                             let project_completed = parseISOLike(self.project.completed_on);
-
 
                             self.completed_date = {
                                 month: self.months[project_completed.getMonth()],
@@ -679,7 +524,9 @@ angular.module('FieldDoc')
                                 day: self.days[project_completed.getDay()],
                                 year: project_completed.getFullYear()
                             };
+
                         }else{
+
                             self.completed_date = {
                                 month: '',
                                 date: '',
@@ -689,8 +536,6 @@ angular.module('FieldDoc')
                         }
 
                         /*Get funded to controller scope var*/
-
-                        console.log("project.completed_on -->", self.project.completed_on);
 
                         if (self.project.funded_on) {
 
@@ -703,6 +548,7 @@ angular.module('FieldDoc')
                                 day: self.days[project_funded.getDay()],
                                 year: project_funded.getFullYear()
                             };
+
                         }else{
                             self.funded_date = {
                                 month: '',
@@ -712,12 +558,8 @@ angular.module('FieldDoc')
                             };
                         }
 
-                        console.log("project.funded_on -->", self.project.funded_on);
-
 
                     }
-
-                    console.log("available programs -->", self.availablePrograms);
 
                     /*So, we're going to use some temporary controller array of objects
                     * (self.availableProgram and self.projectsProgram to track what programs
@@ -728,16 +570,25 @@ angular.module('FieldDoc')
                     * */
 
                     let i = 0;
+
                     self.availablePrograms.forEach(function (availProgram) {
+
                         self.availablePrograms[i].active = false;
+
                         self.projectPrograms.forEach(function (projProgram) {
+
                             if (availProgram.program.id == projProgram.id) {
+
                                 self.availablePrograms[i].active = true;
+
                                 self.availablePrograms[i].is_organization_program = true;
+
                             }
 
                         });
+
                         i = i + 1;
+
                     });
 
                     /*The below logic should not need to be used, as a program must be added to a
@@ -761,8 +612,6 @@ angular.module('FieldDoc')
 
                      */
 
-                    console.log("available programs updated-->", self.availablePrograms);
-
                     /*Because programs being associated with organization is new feature as of this
                     * comment (2.4.2021) we can assume there will be a mismatch between the
                     * organization programs and those (one actually) currently associated with existing projects.
@@ -770,19 +619,23 @@ angular.module('FieldDoc')
                     * */
 
                     if (self.projectPrograms.length != 0) {
-                        //   i = 0;
 
                         self.projectPrograms.forEach(function (projProgram) {
-                            //  let i2 = 0;
+
                             let exists_in_program = false;
+
                             self.availablePrograms.forEach(function (availProgram) {
+
                                 if (availProgram.program.id == projProgram.id) {
+
                                     exists_in_program = true;
+
                                 }
 
-                                //   i2 = i2+1;
                             });
+
                             if (exists_in_program == false) {
+
                                 let legacy_program = {
                                     active: true,
                                     is_organization_program: false,
@@ -790,16 +643,15 @@ angular.module('FieldDoc')
                                     program_id: projProgram.id
 
                                 }
+
                                 self.availablePrograms.push(legacy_program);
+
                             }
 
-
-                            //  i = i+1;
                         });
                     }
 
-                    self.checkUserRoles();
-
+                 //   self.checkUserRoles();
 
                     self.status.loading = false;
 
@@ -832,6 +684,8 @@ angular.module('FieldDoc')
 
             self.addProgram = function($event,program_id){
 
+                /*Set the flags*/
+
                 self.showDeletionDialog = false;
 
                 self.deletionId = undefined;
@@ -840,14 +694,24 @@ angular.module('FieldDoc')
 
                 console.log("Adding program to project-->",program_id);
 
+                /*Stop the mouse click behavior to prevent bubbling through dom elements.
+                * This probably isn't needed here, but it is in the removeProgram function
+                * given it's use of clicks within a child of an interactive parent dom element.
+                * But, let's stop the mouse event anyway*/
+
                 if($event){
                     $event.stopPropagation();
                     $event.preventDefault();
                 }
 
+                /*set an iterator*/
+
                 let i = 0;
 
-                /*Set the new program to active in our availableProgram array*/
+                /*Set the new program to active in our availableProgram array,
+                * loop through the availablePrograms and compare to the
+                * method parameter id. if a match, set properties active
+                   and is_organization_program to true.*/
 
                 self.availablePrograms.forEach(function(availProgram){
 
@@ -855,6 +719,7 @@ angular.module('FieldDoc')
 
                         self.availablePrograms[i].active = true;
                         self.availablePrograms[i].is_organization_program = true;
+
                     }
 
                     i = i +1;
@@ -862,26 +727,36 @@ angular.module('FieldDoc')
 
                 /*Update the project object*/
 
+                /*rest the iterator*/
+
                 i = 0;
-                let tempActivePrograms = [];
+
+                /*Declare an empty array to hold our matched ids*/
+
+                self.tempActivePrograms = [];
+
+                /*Loop over the available programs, check if active is true.
+                * If so, push to the holder array*/
+
                 self.availablePrograms.forEach(function(availProgram){
+
                     if(availProgram.active == true){
 
-                        tempActivePrograms.push({"id":availProgram.program.id});
+                        self.tempActivePrograms.push({"id":availProgram.program.id});
 
                     }
+
                     i=i+1
                 });
 
-                console.log("self.project.programs -->",self.project.programs);
+                /*Set the scoped var property to the holder array*/
 
-                self.project.programs = tempActivePrograms;
-
-                console.log("self.project.programs updated-->",self.project.programs);
+                self.project.programs = self.tempActivePrograms;
 
                 /*Save, Save, Save the project - and your money - it's never to late to start.*/
 
-                self.saveProject();
+                self.saveProject(self.project.programs);
+
 
 
             }
@@ -1111,6 +986,152 @@ angular.module('FieldDoc')
 
 
             }
+
+
+            self.saveProject = function(programs = null) {
+
+                self.status.processing = true;
+
+                self.scrubFeature(self.project);
+
+                /*Format completed date and append as
+                * sub object to self.project
+                * prior to api submission*/
+                if (self.completed_date !== undefined) {
+
+                    if ( (typeof self.completed_date.month === 'string' ||  typeof self.completed_date.month.name === 'string') &&
+                        typeof self.completed_date.date === 'number' &&
+                        typeof self.completed_date.year === 'number') {
+
+                        self.months.forEach(function(m){
+
+                            if (m.name === self.completed_date.month) {
+                                self.completed_date.month = m;
+                            }
+
+                        });
+
+                        self.project.completed_on = [
+                            self.completed_date.year,
+                            self.completed_date.month.numeric,
+                            self.completed_date.date
+                        ].join('-');
+
+                    } else {
+
+                        self.project.completed_on = null;
+
+                    }
+
+                }else{
+
+                    console.log("COMPLETED DATE UNDEFINED");
+                }
+                console.log(" self.project.completed_on -->",  self.project.completed_on);
+
+                /*Format funded date and append as
+               * sub object to self.project
+               * prior to api submission*/
+                if (self.funded_date !== undefined) {
+
+                    if ( (typeof self.funded_date.month === 'string' || typeof self.funded_date.month.name === 'string')&&
+                        typeof self.funded_date.date === 'number' &&
+                        typeof self.funded_date.year === 'number') {
+
+                        self.months.forEach(function(m){
+
+                            if (m.name === self.funded_date.month) {
+                                self.funded_date.month = m;
+                            }
+
+                        });
+
+                        self.project.funded_on = [
+                            self.funded_date.year,
+                            self.funded_date.month.numeric,
+                            self.funded_date.date
+                        ].join('-');
+
+                    } else {
+
+                        self.project.funded_on = null;
+
+                    }
+
+                }else{
+
+                    console.log("COMPLETED DATE UNDEFINED");
+
+                }
+
+                console.log(" self.project.funded_date -->",  self.project.funded_on);
+
+           //     self.project.status = self.project.status;
+
+                console.log("Save self.project -->", self.project);
+
+                self.project.partners = self.processRelations(self.tempPartners);
+
+                var exclude = [
+                    'centroid',
+                    'creator',
+                    'dashboards',
+                    'extent',
+                    'geometry',
+                    'members',
+                    'metric_types',
+                    // 'partners',
+                    'practices',
+                    'practice_types',
+                    'properties',
+                    'tags',
+                    'targets',
+                    'tasks',
+                    'sites'
+                ].join(',');
+
+                console.log("self.project --> submit", self.project);
+
+                Project.update({
+                    id: $route.current.params.projectId,
+                    exclude: exclude
+                }, self.project).then(function(successResponse) {
+
+                    console.log('successResponse-->',successResponse);
+
+                    self.processFeature(successResponse);
+
+                    self.alerts = [{
+                        'type': 'success',
+                        'flag': 'Success!',
+                        'msg': 'Project changes saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                }).catch(function(error) {
+
+                    // Do something with the error
+
+                    self.alerts = [{
+                        'type': 'error',
+                        'flag': 'Error!',
+                        'msg': 'Something went wrong and the changes could not be saved.',
+                        'prompt': 'OK'
+                    }];
+
+                    $timeout(self.closeAlerts, 2000);
+
+                    self.status.processing = false;
+
+                });
+
+            };
+
+
+
+
 
             //
             // Verify Account information for proper UI element display
