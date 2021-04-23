@@ -368,7 +368,11 @@ angular.module('FieldDoc')
 
                 self.status.processing = true;
 
+                console.log("XXX     self.project -->", self.project);
+                console.log("XXX     self.project -->", self.project.programs);
+
                 self.scrubFeature(self.project);
+
 
                 console.log("Status -->", self.project.status);
 
@@ -476,6 +480,8 @@ angular.module('FieldDoc')
                     id: $route.current.params.projectId,
                     exclude: exclude
                 }, self.project).then(function(successResponse) {
+
+                    console.log('successResponse-->',successResponse);
 
                     self.processFeature(successResponse);
 
@@ -857,11 +863,11 @@ angular.module('FieldDoc')
                 /*Update the project object*/
 
                 i = 0;
-                self.tempActivePrograms = [];
+                let tempActivePrograms = [];
                 self.availablePrograms.forEach(function(availProgram){
                     if(availProgram.active == true){
 
-                        self.tempActivePrograms.push({"id":availProgram.program.id});
+                        tempActivePrograms.push({"id":availProgram.program.id});
 
                     }
                     i=i+1
@@ -869,7 +875,7 @@ angular.module('FieldDoc')
 
                 console.log("self.project.programs -->",self.project.programs);
 
-                self.project.programs = self.tempActivePrograms;
+                self.project.programs = tempActivePrograms;
 
                 console.log("self.project.programs updated-->",self.project.programs);
 
@@ -965,8 +971,10 @@ angular.module('FieldDoc')
                 });
 
                 console.log("self.project.programs -->",self.project.programs);
+               // $scope.$apply(function () {
 
-                self.project.programs = self.tempActivePrograms;
+                         self.project.programs = self.tempActivePrograms;
+               // });
 
                 console.log("self.project.programs updated-->",self.project.programs);
 

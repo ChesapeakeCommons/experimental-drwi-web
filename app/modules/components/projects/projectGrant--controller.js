@@ -230,7 +230,7 @@ angular.module('FieldDoc')
                         });
                     }
 
-                    self.checkUserRoles();
+                  //  self.checkUserRoles();
 
 
                     self.status.loading = false;
