@@ -44,32 +44,10 @@
 
                     <form role="form" class="row form" id="form--ProjectGrant" name="form--ProjectGrant" style="overflow: visible;" data-ng-submit="page.saveProject()" autocomplete="off">
 
-                        <!-- <section class="reveal fade-in t0" style="padding: 2em 0 0;">
 
-                            <h2>Profile</h2>
-
-                            <div class="form-element">
-                                <span class="meta-label"><b>Name</b></span>
-                                <input type="text" data-ng-model="page.project.name" class="form-control animate" id="name" name="name" placeholder="Project name" />
-                            </div>
-
-                            <div class="form-element">
-                                <span class="meta-label"><b>Description</b></span>
-                                <textarea class="form-control animate" data-ng-model="page.project.description" msd-elastic id="description" name="description" rows="10" maxlength="1000">{{ page.project.description }}</textarea>
-                                <p style="color: #616161; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                                    Descriptions may contain up to 1,000 characters, including spaces and punctuation. <strong>({{ (page.project.description.length || 0) | number }} used)</strong>
-                                </p>
-                            </div>
-
-                            <div class="form-element">
-                                <span class="meta-label"><b>Organization</b></span>
-                                <input type="text" class="form-control" id="email" name="email" disabled="disabled" data-ng-model="page.project.organization.name" readonly />
-                                <p style="color: #9e9e9e; font-size: 0.9em; font-style: normal; margin-top: 0.5em;">
-                                    The project’s organization cannot be changed.
-                                </p>
-                            </div>
-
-                        </section> -->
+                        <!--
+                        START Grant Selection Lead Section / instrustions
+                        -->
 
                         <h2>Grant Program</h2>
 
@@ -86,91 +64,143 @@
                                     </sub>
                                 </a>
                             </p>
-                        <!--    <input type="search" class="search" value="" placeholder="Search programs" data-ng-model="page.programQuery" uib-typeahead="suggestion as suggestion.name for suggestion in page.searchPrograms($viewValue)" typeahead-on-select="page.setProgram($item, $model, $label)" typeahead-wait-ms="100" typeahead-template-url="templates/search--tpl.html">
-                        -->
+
                         </div>
 
+                        <!--
+                       END Grant Selection Lead Section / instrustions
+                       -->
+
+                        <!--
+                       START Grant list selection
+                       -->
 
                         <div class="classification--list" style="margin-top: 24px;" data-ng-if="page.feature.programs">
                             <ul>
                                 <li data-ng-repeat="program in page.availablePrograms track by $index"
                                     style="height:46px;">
-                                    <!-- <i class="material-icons">
-                                        account_balance
-                                    </i> -->
+
                                     <span style="width:60%; display:inline-block;">
                                         <a href="/programs/{{program.program.id}}">{{ program.program.name }}
                                         </a>
                                     </span>
                                     <div class="button--container">
+
                                         <div class="selection-input" style="float:left; vertical-align: middle; padding:0px;display:block;border:0px solid green;">
 
-                                            <div data-ng-if="(program.active === false) && (page.status.processing == true)"
-                                                 style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
-                                                <i class="material-icons">
-                                                    radio_button_unchecked
-                                                </i>
-                                            </div>
+                                            <!-- Permission to edit is true -->
 
-                                            <div data-ng-if="(program.active === true) && (page.status.processing == true)"
-                                                 style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
-                                                <i class="material-icons">
-                                                    radio_button_checked
-                                                </i>
-                                            </div>
+                                            <if data-ng-if="program.editable == true">
 
-                                            <div data-ng-if="(program.active === false) && (page.status.processing == false)"
-                                                 data-ng-click = "page.addProgram($event,program.program.id)";
-                                                 style="float:right; display:inline-block;border:0px solid red;">
-                                                <i class="material-icons">
-                                                    radio_button_unchecked
-                                                </i>
-                                            </div>
-                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === true) && (page.status.processing == false)"
-                                                 data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
-                                                 style="color:#0366d6;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
-                                                <i class="material-icons">
-                                                    radio_button_checked
-                                                </i>
-                                                <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:30px; top:0px; box-shadow: 1px 1px 6px #AAAAAA;"
-                                                     data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == program.program.id)">
-                                                    <p>Do you want to remove this program?
-                                                    </p>
-                                                    <div class="actions">
-                                                        <a class="snapshot--title" title="Remove Program"
-                                                           data-ng-click="page.removeProgram($event,program.program.id)">
-                                                            Yes
-                                                        </a>
-                                                        <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelProgramDelete($event)">
-                                                            Cancel
-                                                        </a>
+                                                <!-- disabled buttons while processing -->
+
+                                                <div data-ng-if="(program.active === false) && (page.status.processing == true)"
+                                                     style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                    <i class="material-icons">
+                                                        radio_button_unchecked
+                                                    </i>
+                                                </div>
+
+                                                <div data-ng-if="(program.active === true) && (page.status.processing == true)"
+                                                     style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                    <i class="material-icons">
+                                                        radio_button_checked
+                                                    </i>
+                                                </div>
+
+                                                <!-- available program that can be added -->
+
+                                                <div data-ng-if="(program.active === false) && (page.status.processing == false)"
+                                                     data-ng-click = "page.addProgram($event,program.program.id)";
+                                                     style="color:#0366d6; float:right; display:inline-block;border:0px solid red;">
+                                                    <i class="material-icons">
+                                                        radio_button_unchecked
+                                                    </i>
+                                                </div>
+
+                                                <!-- only one active program -->
+
+                                                <div data-ng-if="(program.active === true) && (program.is_organization_program === true) && (page.status.processing == false) && (page.project.programs.length === 1)"
+                                                     style="color:#aaaaaa;float:right; display:inline-block;"
+                                                >
+                                                    <i class="material-icons">
+                                                        radio_button_checked
+                                                    </i>
+
+                                                </div>
+
+                                                <!-- more than one active program -->
+
+                                                <div data-ng-if="(program.active === true) && (program.is_organization_program === true) && (page.status.processing == false) && (page.project.programs.length > 1)"
+                                                     data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
+                                                     style="color:#0366d6;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
+                                                    <i class="material-icons">
+                                                        radio_button_checked
+                                                    </i>
+                                                    <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:30px; top:0px; box-shadow: 1px 1px 6px #AAAAAA;"
+                                                         data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == program.program.id)">
+                                                        <p>Do you want to remove this program?
+                                                        </p>
+                                                        <div class="actions">
+                                                            <a class="snapshot--title" title="Remove Program"
+                                                               data-ng-click="page.removeProgram($event,program.program.id)">
+                                                                Yes
+                                                            </a>
+                                                            <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelProgramDelete($event)">
+                                                                Cancel
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div data-ng-if="(program.active === true) && (program.is_organization_program === false) && (page.status.processing == false)"
-                                                 data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
-                                                 style="color:#ff0000;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
-                                                <i class="material-icons">
-                                                    radio_button_checked
-                                                </i>
-                                                <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:30px; top:0px; box-shadow: 1px 1px 6px #AAAAAA;"
-                                                     data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == program.program.id)">
-                                                    <p>Do you want to remove this program?
-                                                        <span style="font-size: 0.8em; color:#777777; margin-top: 10px;">After leaving this page, it cannot be added to this project
-                                                            until it is added to your organization.</span>
-                                                    </p>
-                                                    <div class="actions">
-                                                        <a class="snapshot--title" title="Remove Program"
-                                                           data-ng-click="page.removeProgram($event,program.program.id)">
-                                                            Yes
-                                                        </a>
-                                                        <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelProgramDelete($event)">
-                                                            Cancel
-                                                        </a>
+
+                                                <!-- active program that is not part of organization -->
+
+                                                <div data-ng-if="(program.active === true) && (program.is_organization_program === false) && (page.status.processing == false)"
+                                                     data-ng-click = "page.confirmProgramDelete($event,program.program.id)";
+                                                     style="color:#ff0000;  float:right; display:inline-block; border:0px solid red; z-index:999;position:relative; float:right;">
+                                                    <i class="material-icons">
+                                                        radio_button_checked
+                                                    </i>
+                                                    <div class="confirm--delete--popup" style="position:absolute; z-index:9999; right:30px; top:0px; box-shadow: 1px 1px 6px #AAAAAA;"
+                                                         data-ng-if="(page.showDeletionDialog == true) && (page.deletionId == program.program.id)">
+                                                        <p>Do you want to remove this program?
+                                                            <span style="font-size: 0.8em; color:#777777; margin-top: 10px;">After leaving this page, it cannot be added to this project
+                                                                until it is added to your organization.</span>
+                                                        </p>
+                                                        <div class="actions">
+                                                            <a class="snapshot--title" title="Remove Program"
+                                                               data-ng-click="page.removeProgram($event,program.program.id)">
+                                                                Yes
+                                                            </a>
+                                                            <a class="snapshot--title" title="Cancel" data-ng-click="page.cancelProgramDelete($event)">
+                                                                Cancel
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div data-ng-if="program.main === true" style="float:right;display:inline-block; margin-right:10px;"><i >Default Program</i></div>
+
+                                            </if>
+
+                                            <!-- Permission to edit is false -->
+                                            <if data-ng-if="program.editable == false">
+
+                                                <div data-ng-if="(program.active === false)"
+                                                     style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                    <i class="material-icons">
+                                                        radio_button_unchecked
+                                                    </i>
+                                                </div>
+
+                                                <div data-ng-if="(program.active === true)"
+                                                     style="color:#aaaaaa; float:right; display:inline-block;border:0px solid red;">
+                                                    <i class="material-icons">
+                                                        radio_button_checked
+                                                    </i>
+                                                </div>
+                                            </if>
+                                            <!-- inline notifications-->
+
+                                            <div data-ng-if="program.main === true" style="float:right;display:inline-block; margin-right:10px;"><i>Default Program</i></div>
                                             <div data-ng-if="program.is_organization_program === false"
                                                  style=" float:right;display:inline-block; margin-right:10px; background:#fff4b7; border:1px solid #ffd806; border-radius:4px; padding:0px 8px 0px 12px;">
                                                 <a href="/organizations/"><i>Not added to organization</i></a>
@@ -181,6 +211,7 @@
                                                         </i>
                                                     </sub>
                                                 </a>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -188,32 +219,10 @@
                             </ul>
                         </div>
 
-                        <!-- <h2>Privacy</h2>
+                        <!--
+                     END Grant list selection
+                     -->
 
-                        <div class="scope--control">
-                            <span>Off</span>
-                            <label class="switch">
-                                <input class="inputdemo" type="checkbox" data-ng-model="page.project.private" data-ng-checked="page.project.private">
-                                <div class="slider round"></div>
-                            </label>
-                            <span data-ng-class="{on: page.site.private}">On</span>
-                        </div>
-
-                        <p data-ng-if="page.project.private" style="font-style: normal; font-size: 1em; color: #616161;">This project is <strong>private</strong>. It can only be viewed and edited by project collaborators and program managers. Geographic data related to this project <strong>will not</strong> appear on dashboard maps.</p>
-
-                        <p data-ng-if="!page.project.private" style="font-style: normal; font-size: 1em; color: #616161;">This project is <strong>public</strong>. It can only be viewed and edited by project collaborators and program managers. Geographic data related to this project <strong>will</strong> appear on dashboard maps.</p> -->
-
-                      <!--  <div class="save--action--wrapper save--action--bottom" style="position: relative; z-index: 1;">
-                            <button type="submit" data-ng-disabled="page.status.processing" title="Save">
-                                <i class="material-icons" data-ng-if="page.status.processing">
-                                    more_horiz
-                                </i>
-                                <i class="material-icons" data-ng-if="!page.status.processing">
-                                    done
-                                </i>
-                            </button>
-                        </div>
-                        -->
 
                     </form>
 
@@ -224,6 +233,8 @@
         </div>
 
     </div>
+
+    <!-- START Toolbar -->
 
     <nav id="toolbar" class="toolbar" style="float: none; width: auto;" data-ng-if="$root.user.id">
         <ul>
@@ -304,6 +315,8 @@
             </li>
         </ul>
     </nav>
+
+    <!-- END Toolbar -->
 
     <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
         <div class="event--container">

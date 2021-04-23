@@ -70,32 +70,6 @@ angular.module('FieldDoc')
 
             };
 
-            //
-            // Verify Account information for proper UI element display
-            //
-            if (Account.userObject && user) {
-
-                user.$promise.then(function(userResponse) {
-
-                    $rootScope.user = Account.userObject = userResponse;
-
-                    self.permissions = {
-                        can_edit: false,
-                        can_delete: false
-                    };
-
-                    console.log("user -->",  $rootScope.user);
-
-                    self.loadOrganization(Account.userObject.organization_id);
-
-
-                });
-
-            } else {
-
-                $location.path('/logout');
-
-            }
 
 
             /*Load Organization*/
@@ -256,7 +230,7 @@ angular.module('FieldDoc')
                         });
                     }
 
-
+                   self.checkUserRoles();
 
 
                     self.status.loading = false;
@@ -272,6 +246,132 @@ angular.module('FieldDoc')
                     self.showElements();
 
                 });
+            }
+
+            /*Chech user roles
+            * Okay, so now we need to set up a function
+            * which will inspect the
+            * 1) availablePrograms id,
+            * 2) user' organization id, the users' programs, and user's role
+            * 3) the project's status, organization id
+            * to determine what actions the user can take on this view.
+            * I don't believe we need to be concerned with the organization id,
+            * however, if a manager is under the organization, then conflicts of permission
+            * state will need to be avoided.
+            * In a draft project, A grantee user can add or remove programs
+            * In a draft project, A manager can add or remove their program
+            * In an active project, a grantee can add programs.
+            * In an active project, a manager can remove their program.
+            *
+            * */
+
+            self.checkUserRoles = function(){
+
+                console.log("self.checkUserRoles -->");
+                console.log("self.$rootScope.user -->", $rootScope.user);
+                console.log("self.project -->", self.project);
+                console.log("self.availablePrograms -->", self.availablePrograms);
+                console.log("self.project.status -->", self.project.status);
+                console.log("$rootScope.user.programs-->", $rootScope.user.programs);
+                console.log("$rootScope.user.roles-->", $rootScope.user.roles);
+
+
+
+
+                let is_availableManager = false;
+
+                let status = self.project.status;
+                let roles = $rootScope.user.roles;
+
+                let is_manager = $rootScope.user.is_manager;
+                let is_admin = $rootScope.user.is_admin;
+                let is_grantee = false;
+
+                if(is_manager === false && is_admin === false){
+                    is_grantee = true;
+                }
+
+                let i = 0;
+
+                i = 0;
+
+                self.availablePrograms.forEach(function(availProgram){
+
+                    /*First we're going to loop through all
+                     * the available programs and create an 'editable' attribute
+                    * and set it to false*/
+
+                    self.availablePrograms[i].editable = false;
+
+                    /*If the project is active*/
+                    if(status === 'active') {
+                        if (is_admin === true) {
+
+                            self.availablePrograms[i].editable = true;
+
+                        }else if(is_grantee === true) {
+                            if (availProgram.active === false) {
+
+                                self.availablePrograms[i].editable = true;
+
+                            } else if (availProgram.active === true) {
+
+                                self.availablePrograms[i].editable = false;
+                            }
+
+                        }else {
+                                $rootScope.user.programs.forEach(function (user_program) {
+
+                                    if (user_program.id === availProgram.program.id) {
+
+                                        if (availProgram.active === false && is_manager === true) {
+
+                                            self.availablePrograms[i].editable = true;
+
+                                        } else if (availProgram.active === true && is_manager === true) {
+
+                                            self.availablePrograms[i].editable = true;
+                                        }
+                                    }
+                                });
+                            }
+
+
+                        /*If the project is draft*/
+
+                    }else if(status === 'draft'){
+
+                        if (is_admin === true || is_grantee === true) {
+
+                            self.availablePrograms[i].editable = true;
+
+                        }else {
+
+                            $rootScope.user.programs.forEach(function (user_program) {
+
+                                if (user_program.id === availProgram.program.id) {
+
+                                    if (availProgram.active === false && is_manager === true) {
+
+                                        self.availablePrograms[i].editable = true;
+
+                                    } else if (availProgram.active === true && is_manager === true) {
+
+                                        self.availablePrograms[i].editable = true;
+                                    }
+                                }
+                            });
+                        }
+
+
+
+                    }
+
+
+                    i = i + 1;
+                });
+
+
             }
 
             /*add program to project
@@ -327,18 +427,13 @@ angular.module('FieldDoc')
                    i=i+1
                 });
 
-                console.log("self.project.programs -->",self.project.programs);
-
                 self.project.programs = self.tempActivePrograms;
-
-                console.log("self.project.programs updated-->",self.project.programs);
-
-                /*Save, Save, Save the project - and your money - it's never to late to start.*/
 
                 self.saveProject();
 
 
             }
+
             /*Confirm deletion
             * This is logic for the confirm popup dialog
             * */
@@ -434,87 +529,7 @@ angular.module('FieldDoc')
                 self.saveProject();
             }
 
-         /*   self.searchPrograms = function(value) {
 
-                return SearchService.program({
-                    q: value
-                }).$promise.then(function(response) {
-
-                    console.log('SearchService.program response', response);
-
-                    response.results.forEach(function(result) {
-
-                        result.category = null;
-
-                    });
-
-                    return response.results.slice(0, 5);
-
-                });
-
-            };
-
-            self.searchOrganizations = function(value) {
-
-                return SearchService.organization({
-                    q: value
-                }).$promise.then(function(response) {
-
-                    console.log('SearchService.organization response', response);
-
-                    response.results.forEach(function(result) {
-
-                        result.category = null;
-
-                    });
-
-                    return response.results.slice(0, 5);
-
-                });
-
-            };
-
-            self.addRelation = function(item, model, label, collection, queryAttr) {
-
-                var _datum = {
-                    id: item.id,
-                    properties: item
-                };
-
-                collection.push(_datum);
-
-                queryAttr = null;
-
-                console.log('Updated ' + collection + ' (addition)', collection);
-
-            };
-
-            self.removeRelation = function(id, collection) {
-
-                var _index;
-
-                collection.forEach(function(item, idx) {
-
-                    if (item.id === id) {
-
-                        _index = idx;
-
-                    }
-
-                });
-
-                console.log('Remove item at index', _index);
-
-                if (typeof _index === 'number') {
-
-                    collection.splice(_index, 1);
-
-                }
-
-                console.log('Updated ' + collection + ' (removal)', collection);
-
-            };
-        */
             self.processRelations = function(list) {
 
                 var _list = [];
@@ -535,6 +550,7 @@ angular.module('FieldDoc')
 
             };
 
+
             self.processFeature = function(data) {
 
                 self.project = data;
@@ -551,21 +567,6 @@ angular.module('FieldDoc')
 
             };
 
-        /*    self.setProgram = function(item, model, label) {
-
-                self.project.program_id = item.id;
-
-            };
-
-            self.unsetProgram = function() {
-
-                self.project.program_id = null;
-
-                self.program = null;
-
-            };
-
-         */
 
             self.scrubFeature = function(feature) {
 
@@ -615,7 +616,6 @@ angular.module('FieldDoc')
                 self.status.processing = true;
 
                 self.scrubFeature(self.project);
-
 
                 self.project.partners = self.processRelations(self.tempPartners);
 
@@ -676,72 +676,35 @@ angular.module('FieldDoc')
 
             };
 
-            /*
-            self.deleteFeature = function() {
 
-                var targetId;
+            //
+            // Verify Account information for proper UI element display
+            //
+            if (Account.userObject && user) {
 
-                if (self.project) {
+                user.$promise.then(function(userResponse) {
 
-                    targetId = self.project.id;
+                    $rootScope.user = Account.userObject = userResponse;
 
-                } else {
+                    console.log("$rootScope.user -->",$rootScope.user);
 
-                    targetId = self.project.id;
+                    self.permissions = {
+                        can_edit: false,
+                        can_delete: false
+                    };
 
-                }
+                    console.log("user -->",  $rootScope.user);
 
-                Project.delete({
-                    id: +targetId
-                }).$promise.then(function(data) {
+                    self.loadOrganization(Account.userObject.organization_id);
 
-                    self.alerts.push({
-                        'type': 'success',
-                        'flag': 'Success!',
-                        'msg': 'Successfully deleted this project.',
-                        'prompt': 'OK'
-                    });
-
-                    $timeout(self.closeRoute, 2000);
-
-                }).catch(function(errorResponse) {
-
-                    console.log('self.deleteFeature.errorResponse', errorResponse);
-
-                    if (errorResponse.status === 409) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Unable to delete “' + self.project.name + '”. There are pending tasks affecting this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else if (errorResponse.status === 403) {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'You don’t have permission to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    } else {
-
-                        self.alerts = [{
-                            'type': 'error',
-                            'flag': 'Error!',
-                            'msg': 'Something went wrong while attempting to delete this project.',
-                            'prompt': 'OK'
-                        }];
-
-                    }
-
-                    $timeout(self.closeAlerts, 2000);
 
                 });
 
-            };
-            */
+            } else {
+
+                $location.path('/logout');
+
+            }
+
 
         });
