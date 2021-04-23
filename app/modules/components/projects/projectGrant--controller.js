@@ -230,7 +230,7 @@ angular.module('FieldDoc')
                         });
                     }
 
-                  //  self.checkUserRoles();
+                   self.checkUserRoles();
 
 
                     self.status.loading = false;
@@ -427,13 +427,7 @@ angular.module('FieldDoc')
                    i=i+1
                 });
 
-                console.log("self.project.programs -->",self.project.programs);
-
                 self.project.programs = self.tempActivePrograms;
-
-                console.log("self.project.programs updated-->",self.project.programs);
-
-                /*Save, Save, Save the project - and your money - it's never to late to start.*/
 
                 self.saveProject();
 
@@ -622,7 +616,6 @@ angular.module('FieldDoc')
                 self.status.processing = true;
 
                 self.scrubFeature(self.project);
-
 
                 self.project.partners = self.processRelations(self.tempPartners);
 
