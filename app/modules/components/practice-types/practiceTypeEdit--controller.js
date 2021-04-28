@@ -260,20 +260,6 @@ angular.module('FieldDoc')
 
         };
 
-        self.extractPrograms = function(user) {
-
-            var _programs = [];
-
-            user.programs.forEach(function(program) {
-
-                _programs.push(program.properties);
-
-            });
-
-            return _programs;
-
-        };
-
         //
         // Verify Account information for proper UI element display
         //
@@ -286,8 +272,6 @@ angular.module('FieldDoc')
                 self.permissions = {
                     can_edit: false
                 };
-
-                self.programs = self.extractPrograms($rootScope.user);
 
                 self.loadPracticeType();
 

@@ -8,7 +8,7 @@
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('AtlasDataManager', function() {
+    .service('AtlasDataManager', function(Utility) {
 
         var queryFeatures = [];
 
@@ -97,7 +97,16 @@ angular.module('FieldDoc')
 
                 var style = (angular.isDefined(options) && options.style) ? options.style : 'mapbox://styles/mapbox/streets-v11';
 
-                var zoom = (angular.isDefined(options) && options.zoom) ? options.zoom : 12;
+                var zoom = 12;
+
+                if (angular.isDefined(options) && options.zoom) {
+
+                    zoom = Utility.precisionRound(
+                        options.zoom,
+                        2
+                    );
+
+                }
 
                 // try {
                 //

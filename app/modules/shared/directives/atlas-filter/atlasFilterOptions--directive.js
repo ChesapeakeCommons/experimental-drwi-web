@@ -5,7 +5,8 @@
     angular.module('FieldDoc')
         .directive('atlasFilterOptions', [
             'environment',
-            function (environment) {
+            'AtlasFilterManager',
+            function (environment, AtlasFilterManager) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -59,11 +60,33 @@
 
                         };
 
+                        scope.resetSelections = function () {
+
+                            scope.activeFilters[scope.filterKey] = [];
+
+                            scope.filterSet.forEach(function (feature) {
+
+                                feature.selected = false;
+
+                            });
+
+                        };
+
                         scope.resetActiveFilters = function () {
+
+                            scope.resetSelections();
+
+                            scope.filterSet = undefined;
+
+                            scope.filterKey = undefined;
 
                             scope.bookmarkReady = false;
 
                             scope.activeFilters = {};
+
+                            scope.filterOptions = JSON.parse(
+                                JSON.stringify(scope.filterOptions)
+                            );
 
                             var categories = Object.keys(scope.filterOptions);
 
@@ -73,28 +96,32 @@
 
                             });
 
-                            for (var key in scope.filterOptions) {
-
-                                if (key !== 'layers' &&
-                                    scope.filterOptions.hasOwnProperty(key)) {
-
-                                    var options = scope.filterOptions;
-
-                                    if (Array.isArray(options)) {
-
-                                        options.forEach(function (options) {
-
-                                            option.selected = false;
-
-                                        });
-
-                                        scope.filterOptions[key] = options;
-
-                                    }
-
-                                }
-
-                            }
+                            // for (var key in scope.filterOptions) {
+                            //
+                            //     if (key !== 'layers' &&
+                            //         scope.filterOptions.hasOwnProperty(key)) {
+                            //
+                            //         var rawOptions = scope.filterOptions[key];
+                            //
+                            //         var cp = [];
+                            //
+                            //         if (Array.isArray(rawOptions)) {
+                            //
+                            //             rawOptions.forEach(function (option) {
+                            //
+                            //                 option.selected = false;
+                            //
+                            //                 cp.push(option);
+                            //
+                            //             });
+                            //
+                            //             scope.filterOptions[key] = cp;
+                            //
+                            //         }
+                            //
+                            //     }
+                            //
+                            // }
 
                         };
 
@@ -104,7 +131,7 @@
 
                             scope.filterKey = key;
 
-                            scope.filterSet = group;
+                            scope.filterSet = scope.filterOptions[key];
 
                             scope.modalDisplay.options = false;
 

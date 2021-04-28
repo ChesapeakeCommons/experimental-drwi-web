@@ -5,16 +5,8 @@
     angular.module('FieldDoc')
         .directive('atlasFilterSet', [
             'environment',
-            '$window',
-            '$rootScope',
-            '$routeParams',
-            '$filter',
-            '$parse',
-            '$location',
-            'Practice',
-            '$timeout',
-            function (environment, $window, $rootScope, $routeParams, $filter,
-                      $parse, $location, Practice, $timeout) {
+            'AtlasFilterManager',
+            function (environment, AtlasFilterManager) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -63,29 +55,7 @@
 
                         scope.closeModal = function(refresh) {
 
-                            scope.visible = false;
-
-                            scope.q = {};
-
-                            if (scope.dismissAction) scope.dismissAction({});
-
-                        };
-
-                        scope.setFilter = function (category, arr) {
-
-                            scope.activeFilters[category] = [];
-
-                            arr.forEach(function (feature) {
-
-                                if (feature.selected) {
-
-                                    scope.bookmarkReady = true;
-
-                                    scope.activeFilters[category].push(feature);
-
-                                }
-
-                            });
+                            // scope.visible = false;
 
                             scope.filterSet = undefined;
 
@@ -107,6 +77,68 @@
 
                             }
 
+                            if (scope.dismissAction) scope.dismissAction({});
+
+                        };
+
+                        scope.resetSelections = function (category, arr) {
+
+                            scope.activeFilters[category] = [];
+
+                            scope.features = JSON.parse(JSON.stringify(scope.filterSet));
+
+                            // arr.forEach(function (feature) {
+                            //
+                            //     feature.selected = false;
+                            //
+                            // });
+
+                            scope.q = {};
+
+                        };
+
+                        scope.setFilter = function (category, arr) {
+
+                            scope.activeFilters[category] = [];
+
+                            scope.features.forEach(function (feature) {
+
+                                if (feature.selected) {
+
+                                    scope.bookmarkReady = true;
+
+                                    scope.activeFilters[category].push(feature);
+
+                                }
+
+                            });
+
+                            scope.closeModal();
+
+                        };
+
+                        scope.syncSelections = function () {
+
+                            var activeSelections = scope.activeFilters[scope.filterKey];
+
+                            var idx = [];
+
+                            activeSelections.forEach(function (feature) {
+
+                                idx.push(feature.id);
+
+                            });
+
+                            scope.features.forEach(function (feature) {
+
+                                if (idx.indexOf(feature.id) >= 0) {
+
+                                    feature.selected = true;
+
+                                }
+
+                            });
+
                         };
 
                         scope.$watch('newMap', function (newVal) {
@@ -114,6 +146,20 @@
                             if (newVal) {
 
                                 scope.newMap = newVal;
+
+                            }
+
+                        });
+
+                        scope.$watch('filterSet', function (newVal) {
+
+                            if (Array.isArray(newVal)) {
+
+                                scope.features = JSON.parse(JSON.stringify(newVal));
+
+                                scope.syncSelections();
+
+                                // scope.newMap = newVal;
 
                             }
 

@@ -159,7 +159,7 @@
         <div class="map--style--list">
             <ul>
                 <li data-ng-repeat="style in mapStyles"
-                    data-ng-click="setNewMapStyle(style); modalDisplay.creationStep = 5">
+                    data-ng-click="setNewMapStyle(style)">
                     <div class="thumbnail"
                          style="background-image: url({{ style.staticSrc }});">
                         <div class="check" data-ng-if="style.id === newMap.style">
@@ -214,8 +214,8 @@
         </div>
         <div class="inputs" style="overflow: auto;">
             <span class="flex prompt margin-b-1">
-                Add filter categories to map a subset of your projects. Note that filters override other map
-                settings and data, including projects currently in view.
+                Add filter categories to map a subset of your projects. Available filter options are based on the
+                data present in your project collection.
             </span>
             <div class="pad-b-50p"
                  data-ng-repeat="(key, group) in filterOptions"

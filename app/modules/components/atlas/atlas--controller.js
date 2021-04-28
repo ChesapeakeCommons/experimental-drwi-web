@@ -170,7 +170,12 @@ angular.module('FieldDoc')
 
                 if (self.map === undefined) return;
 
-                var zoom = self.map.getZoom();
+                // var zoom = self.map.getZoom();
+
+                var zoom = Utility.precisionRound(
+                    self.map.getZoom(),
+                    2
+                );
 
                 if (zoom < 14 &&
                     nodeType === 'practice' &&
@@ -182,15 +187,46 @@ angular.module('FieldDoc')
 
                 var boundsArray = self.map.getBounds().toArray();
 
-                boundsArray = [
-                    boundsArray[0].join(','),
-                    boundsArray[1].join(',')
-                ].join(',');
+                // boundsArray = [
+                //     boundsArray[0].join(','),
+                //     boundsArray[1].join(',')
+                // ].join(',');
+                //
+                // console.log(
+                //     'self.updateNodeLayer:boundsArray:',
+                //     boundsArray
+                // );
 
-                console.log(
-                    'self.updateNodeLayer:boundsArray:',
-                    boundsArray
-                );
+                var simplifiedBounds = [[], []];
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[0][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[0].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[1][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[1].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
+                boundsArray = [
+                    simplifiedBounds[0].join(','),
+                    simplifiedBounds[1].join(',')
+                ].join(',');
 
                 console.log(
                     'self.updateNodeLayer:urlData:',

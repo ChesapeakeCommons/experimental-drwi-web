@@ -83,7 +83,7 @@ angular.module('FieldDoc')
 
                 console.log('$filter.elapsedTime --> minutes', minutes);
 
-                period = minutes > 0 ? minutes + ' minutes ago' : 'moments ago';
+                period = minutes > 1 ? minutes + ' minutes ago' : 'moments ago';
 
             }
 

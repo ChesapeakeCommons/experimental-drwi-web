@@ -171,7 +171,10 @@ angular.module('FieldDoc')
 
                 if (self.map === undefined) return;
 
-                var zoom = self.map.getZoom();
+                var zoom = Utility.precisionRound(
+                    self.map.getZoom(),
+                    2
+                );
 
                 if (zoom < 14 &&
                     nodeType === 'practice' &&
@@ -183,9 +186,35 @@ angular.module('FieldDoc')
 
                 var boundsArray = self.map.getBounds().toArray();
 
+                var simplifiedBounds = [[], []];
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[0][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[0].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[1][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[1].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
                 boundsArray = [
-                    boundsArray[0].join(','),
-                    boundsArray[1].join(',')
+                    simplifiedBounds[0].join(','),
+                    simplifiedBounds[1].join(',')
                 ].join(',');
 
                 console.log(
@@ -701,7 +730,7 @@ angular.module('FieldDoc')
 
                 $http({
                     method: 'POST',
-                    url: 'http://watersheds.cci.drexel.edu/api/watershedboundary/',
+                    url: 'https://watersheds.cci.drexel.edu/api/watershedboundary/',
                     data: feature.geometry,
                     headers: {
                         'Authorization-Bypass': true
