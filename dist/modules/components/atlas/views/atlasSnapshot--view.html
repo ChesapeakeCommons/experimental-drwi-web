@@ -46,7 +46,21 @@
                                title="{{ style.name }}">
                             <input type="radio" id="base-style-{{ $index }}" name="active-style"
                                    data-ng-model="page.activeStyle" data-ng-value="{{ $index }}"
-                                   data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
+                                   data-ng-change="page.switchMapStyle(style, $index)">
+                            <span> {{ style.name }}</span>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="page.activeStyle === $index">
+                                <span class="material-icons md-18 margin-0">
+                                    radio_button_checked
+                                </span>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="page.activeStyle !== $index">
+                                <span style="color: #616161;"
+                                      class="material-icons md-18 margin-0">
+                                    radio_button_unchecked
+                                </span>
+                            </div>
                         </label>
                     </form>
                     <div style="font-size: .75rem; font-weight: bold; text-transform: uppercase; padding: .5rem
@@ -58,26 +72,60 @@
                                data-ng-repeat="layer in page.layers"
                                data-ng-if="layer.id !== 'fd.drainage.polygon' && layer.id !== 'wr.station.point'"
                                data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
-                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
-                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                            <input type="checkbox"
+                                   id="layer-{{ $index }}"
+                                   name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected"
+                                   data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
-                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
-                                <div class="color" data-ng-repeat="color in layer.symbol.colors"
+                            <div class="symbol-group"
+                                 data-ng-if="layer.symbol && layer.symbol.colors">
+                                <div class="color"
+                                     data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="layer.selected">
+                                <span class="material-icons md-18 margin-0">
+                                    check_box
+                                </span>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="!layer.selected">
+                                <span style="color: #616161;"
+                                      class="material-icons md-18 margin-0">
+                                    check_box_outline_blank
+                                </span>
                             </div>
                         </label>
                         <label for="layer-{{ $index }}" style="font-weight: normal;"
                                data-ng-repeat="layer in page.layers"
                                data-ng-if="layer.id === 'wr.station.point' && $root.user.wr_token"
                                data-ng-class="{'active': layer.selected}" title="{{ layer.name }}">
-                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
-                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                            <input type="checkbox"
+                                   id="layer-{{ $index }}"
+                                   name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected"
+                                   data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
                             <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
                                 <div class="color" data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="layer.selected">
+                                <span class="material-icons md-18 margin-0">
+                                    check_box
+                                </span>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="!layer.selected">
+                                <span style="color: #616161;"
+                                      class="material-icons md-18 margin-0">
+                                    check_box_outline_blank
+                                </span>
                             </div>
                         </label>
                         <label for="layer-{{ $index }}" style="font-weight: normal;"
@@ -85,13 +133,28 @@
                                data-ng-class="{'active': layer.selected}"
                                data-ng-if="layer.id === 'fd.drainage.polygon' && (page.primaryNode.properties.type === 'site' || page.primaryNode.properties.type === 'practice')"
                                title="{{ layer.name }}">
-                            <input type="checkbox" id="layer-{{ $index }}" name="layer-{{ $index }}"
-                                   data-ng-model="layer.selected" data-ng-value="{{ $index }}"
+                            <input type="checkbox"
+                                   id="layer-{{ $index }}"
+                                   name="layer-{{ $index }}"
+                                   data-ng-model="layer.selected"
+                                   data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
                             <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
                                 <div class="color" data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="layer.selected">
+                                <span class="material-icons md-18 margin-0">
+                                    check_box
+                                </span>
+                            </div>
+                            <div class="selection-ctrl flex flex-dir-row flex-align-center flex-justify-end"
+                                 data-ng-if="!layer.selected">
+                                <span class="material-icons md-18 margin-0">
+                                    check_box_outline_blank
+                                </span>
                             </div>
                         </label>
                     </form>

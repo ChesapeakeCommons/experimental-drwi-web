@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619655774465})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619710614078})
 
 ;
 /**
@@ -40547,10 +40547,18 @@ angular.module('FieldDoc')
 
                 if (self.map === undefined) return;
 
+                //
+                // Round zoom values.
+                //
+
                 var zoom = Utility.precisionRound(
                     self.map.getZoom(),
                     2
                 );
+
+                //
+                // Abort requests beyond acceptable zoom levels.
+                //
 
                 if (zoom < 14 &&
                     nodeType === 'practice' &&
@@ -40560,72 +40568,70 @@ angular.module('FieldDoc')
                     nodeType === 'site' &&
                     geometryType !== 'centroid') return;
 
+                //
+                // Set default parameters.
+                //
+
                 var params = {
-                    // bbox: boundsArray,
-                    // exclude: exclude,
                     featureType: nodeType,
-                    // focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };
 
-                if (!self.singleProjectMode) {
+                //
+                // Extract and round map bounds to avoid
+                // extraneous requests triggered by micro
+                // map movements.
+                //
 
-                    var boundsArray = self.map.getBounds().toArray();
+                var boundsArray = self.map.getBounds().toArray();
 
-                    var simplifiedBounds = [[], []];
+                var simplifiedBounds = [[], []];
 
-                    for (
-                        var i = 0, point;
-                        point = boundsArray[0][i];
-                        i++
-                    ) {
+                for (
+                    var i = 0, point;
+                    point = boundsArray[0][i];
+                    i++
+                ) {
 
-                        simplifiedBounds[0].push(
-                            Utility.precisionRound(point, 4)
-                        );
-
-                    }
-
-                    for (
-                        var i = 0, point;
-                        point = boundsArray[1][i];
-                        i++
-                    ) {
-
-                        simplifiedBounds[1].push(
-                            Utility.precisionRound(point, 4)
-                        );
-
-                    }
-
-                    var bbox = [
-                        simplifiedBounds[0].join(','),
-                        simplifiedBounds[1].join(',')
-                    ].join(',');
-
-                    console.log(
-                        'self.updateNodeLayer:bbox:',
-                        bbox
+                    simplifiedBounds[0].push(
+                        Utility.precisionRound(point, 4)
                     );
 
-                    params.bbox = bbox;
+                }
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[1][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[1].push(
+                        Utility.precisionRound(point, 4)
+                    );
 
                 }
+
+                var bbox = [
+                    simplifiedBounds[0].join(','),
+                    simplifiedBounds[1].join(',')
+                ].join(',');
+
+                console.log(
+                    'self.updateNodeLayer:bbox:',
+                    bbox
+                );
+
+                params.bbox = bbox;
 
                 console.log(
                     'self.updateNodeLayer:urlData:',
                     self.urlData
                 );
 
-                // var params = {
-                //     bbox: boundsArray,
-                //     // exclude: exclude,
-                //     featureType: nodeType,
-                //     // focus: focus,
-                //     geometryType: geometryType,
-                //     zoom: zoom
-                // };
+                //
+                // Extract and set ``focus`` parameter.
+                //
 
                 try {
 
@@ -40643,10 +40649,9 @@ angular.module('FieldDoc')
 
                 }
 
-                // if (!self.singleProjectMode &&
-                //     angular.isDefined(self.urlData.filters) &&
-                //     typeof self.urlData.filters === 'string' &&
-                //     self.urlData.filters.length) {
+                //
+                // Set ``filters`` parameter.
+                //
 
                 if (!self.singleProjectMode &&
                     angular.isDefined(self.filterString) &&
@@ -40657,15 +40662,21 @@ angular.module('FieldDoc')
 
                     params.t = Date.now();
 
-                    // delete params.focus;
-
                 }
+
+                //
+                // Set ``program`` parameter.
+                //
 
                 if (programId) {
 
                     params.program = programId;
 
                 }
+
+                //
+                // Dispatch request to correct resource.
+                //
 
                 if (nodeType === 'post' ||
                     nodeType === 'station') {
@@ -40680,8 +40691,6 @@ angular.module('FieldDoc')
                             'updateNodeLayer:successResponse:',
                             successResponse
                         );
-
-                        // self.nodeLayer = successResponse;
 
                         successResponse.features.forEach(function (feature) {
 
