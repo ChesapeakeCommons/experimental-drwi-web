@@ -66,6 +66,8 @@
                 );
 
                 var cond4 = (
+                    config.url.indexOf('module') >= 0 ||
+                    config.url.indexOf('template') >= 0 ||
                     config.url.indexOf('fielddoc.org') > 0 ||
                     config.url.indexOf('waterreporter.org') > 0
                 );

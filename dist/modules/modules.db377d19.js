@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619710614078})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619712505362})
 
 ;
 /**
@@ -874,6 +874,8 @@ angular.module('FieldDoc')
                 );
 
                 var cond4 = (
+                    config.url.indexOf('module') >= 0 ||
+                    config.url.indexOf('template') >= 0 ||
                     config.url.indexOf('fielddoc.org') > 0 ||
                     config.url.indexOf('waterreporter.org') > 0
                 );
