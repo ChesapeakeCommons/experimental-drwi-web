@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1616026455882})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619655531917})
 
 ;
 /**
@@ -829,6 +829,12 @@ angular.module('FieldDoc')
 
                 console.log(
                     'AuthorizationInterceptor::inspectDeferralState:',
+                    'config',
+                    config
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
                     'path',
                     path
                 );
@@ -867,7 +873,18 @@ angular.module('FieldDoc')
                     cond3
                 );
 
-                return cond1 && cond2 && cond3;
+                var cond4 = (
+                    config.url.indexOf('fielddoc.org') > 0 ||
+                    config.url.indexOf('waterreporter.org') > 0
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond4',
+                    cond4
+                );
+
+                return cond1 && cond2 && cond3 && cond4;
 
                 // if (typeof config.url === 'string') {
                 //
@@ -972,7 +989,16 @@ angular.module('FieldDoc')
 
                     }
 
-                    config.headers['Cache-Control'] = 'no-cache, max-age=0, must-revalidate';
+                    var commonsUrl = (
+                        config.url.indexOf('fielddoc.org') > 0 ||
+                        config.url.indexOf('waterreporter.org') > 0
+                    );
+
+                    if (commonsUrl) {
+
+                        config.headers['Cache-Control'] = 'no-cache, max-age=0, must-revalidate';
+
+                    }
 
                     //
                     // Configure or override parameters where necessary
@@ -25462,20 +25488,6 @@ angular.module('FieldDoc')
 
         };
 
-        self.extractPrograms = function(user) {
-
-            var _programs = [];
-
-            user.programs.forEach(function(program) {
-
-                _programs.push(program.properties);
-
-            });
-
-            return _programs;
-
-        };
-
         //
         // Verify Account information for proper UI element display
         //
@@ -25488,8 +25500,6 @@ angular.module('FieldDoc')
                 self.permissions = {
                     can_edit: false
                 };
-
-                self.programs = self.extractPrograms($rootScope.user);
 
                 self.loadPracticeType();
 
@@ -26431,20 +26441,6 @@ angular.module('FieldDoc')
 
         };
 
-        self.extractPrograms = function(user) {
-
-            var _programs = [];
-
-            user.programs.forEach(function(program) {
-
-                _programs.push(program.properties);
-
-            });
-
-            return _programs;
-
-        };
-
         //
         // Verify Account information for proper UI element display
         //
@@ -26455,8 +26451,6 @@ angular.module('FieldDoc')
                 $rootScope.user = Account.userObject = userResponse;
 
                 self.permissions = {};
-
-                self.programs = self.extractPrograms($rootScope.user);
 
                 self.loadMetricType();
 
@@ -38811,7 +38805,12 @@ angular.module('FieldDoc')
 
                 if (self.map === undefined) return;
 
-                var zoom = self.map.getZoom();
+                // var zoom = self.map.getZoom();
+
+                var zoom = Utility.precisionRound(
+                    self.map.getZoom(),
+                    2
+                );
 
                 if (zoom < 14 &&
                     nodeType === 'practice' &&
@@ -38823,15 +38822,46 @@ angular.module('FieldDoc')
 
                 var boundsArray = self.map.getBounds().toArray();
 
-                boundsArray = [
-                    boundsArray[0].join(','),
-                    boundsArray[1].join(',')
-                ].join(',');
+                // boundsArray = [
+                //     boundsArray[0].join(','),
+                //     boundsArray[1].join(',')
+                // ].join(',');
+                //
+                // console.log(
+                //     'self.updateNodeLayer:boundsArray:',
+                //     boundsArray
+                // );
 
-                console.log(
-                    'self.updateNodeLayer:boundsArray:',
-                    boundsArray
-                );
+                var simplifiedBounds = [[], []];
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[0][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[0].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
+                for (
+                    var i = 0, point;
+                    point = boundsArray[1][i];
+                    i++
+                ) {
+
+                    simplifiedBounds[1].push(
+                        Utility.precisionRound(point, 4)
+                    );
+
+                }
+
+                boundsArray = [
+                    simplifiedBounds[0].join(','),
+                    simplifiedBounds[1].join(',')
+                ].join(',');
 
                 console.log(
                     'self.updateNodeLayer:urlData:',
@@ -39663,7 +39693,83 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.refreshFeatureLayers();
+                    var center = self.map.getCenter();
+
+                    console.log(
+                        'self.map.moveend:center:',
+                        center
+                    );
+
+                    if (!self.mapCenter) {
+
+                        self.mapCenter = center;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.mapCenter:',
+                        self.mapCenter
+                    );
+
+                    var zoom = Utility.precisionRound(
+                        self.map.getZoom(),
+                        2
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoom:',
+                        zoom
+                    );
+
+                    if (!self.trackedZoom) {
+
+                        self.trackedZoom = zoom;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.trackedZoom:',
+                        self.trackedZoom
+                    );
+
+                    var zoomDelta = Math.abs(
+                        Math.floor(zoom) - Math.floor(self.trackedZoom)
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoomDelta:',
+                        zoomDelta
+                    );
+
+                    var lngDelta = Math.abs(center.lng - self.mapCenter.lng);
+
+                    console.log(
+                        'self.map.moveend:lngDelta:',
+                        lngDelta
+                    );
+
+                    var latDelta = Math.abs(center.lat - self.mapCenter.lat);
+
+                    console.log(
+                        'self.map.moveend:latDelta:',
+                        latDelta
+                    );
+
+                    var tolerance = 0.001;
+
+                    if (zoomDelta > 0 ||
+                        lngDelta >= tolerance ||
+                        latDelta >= tolerance) {
+
+                        self.mapCenter = center;
+
+                        self.trackedZoom = zoom;
+
+                        self.refreshFeatureLayers();
+
+                    }
+
+                    // self.refreshFeatureLayers();
 
                 });
 
@@ -40441,7 +40547,10 @@ angular.module('FieldDoc')
 
                 if (self.map === undefined) return;
 
-                var zoom = self.map.getZoom();
+                var zoom = Utility.precisionRound(
+                    self.map.getZoom(),
+                    2
+                );
 
                 if (zoom < 14 &&
                     nodeType === 'practice' &&
@@ -40451,31 +40560,72 @@ angular.module('FieldDoc')
                     nodeType === 'site' &&
                     geometryType !== 'centroid') return;
 
-                var boundsArray = self.map.getBounds().toArray();
-
-                boundsArray = [
-                    boundsArray[0].join(','),
-                    boundsArray[1].join(',')
-                ].join(',');
-
-                console.log(
-                    'self.updateNodeLayer:boundsArray:',
-                    boundsArray
-                );
-
-                console.log(
-                    'self.updateNodeLayer:urlData:',
-                    self.urlData
-                );
-
                 var params = {
-                    bbox: boundsArray,
+                    // bbox: boundsArray,
                     // exclude: exclude,
                     featureType: nodeType,
                     // focus: focus,
                     geometryType: geometryType,
                     zoom: zoom
                 };
+
+                if (!self.singleProjectMode) {
+
+                    var boundsArray = self.map.getBounds().toArray();
+
+                    var simplifiedBounds = [[], []];
+
+                    for (
+                        var i = 0, point;
+                        point = boundsArray[0][i];
+                        i++
+                    ) {
+
+                        simplifiedBounds[0].push(
+                            Utility.precisionRound(point, 4)
+                        );
+
+                    }
+
+                    for (
+                        var i = 0, point;
+                        point = boundsArray[1][i];
+                        i++
+                    ) {
+
+                        simplifiedBounds[1].push(
+                            Utility.precisionRound(point, 4)
+                        );
+
+                    }
+
+                    var bbox = [
+                        simplifiedBounds[0].join(','),
+                        simplifiedBounds[1].join(',')
+                    ].join(',');
+
+                    console.log(
+                        'self.updateNodeLayer:bbox:',
+                        bbox
+                    );
+
+                    params.bbox = bbox;
+
+                }
+
+                console.log(
+                    'self.updateNodeLayer:urlData:',
+                    self.urlData
+                );
+
+                // var params = {
+                //     bbox: boundsArray,
+                //     // exclude: exclude,
+                //     featureType: nodeType,
+                //     // focus: focus,
+                //     geometryType: geometryType,
+                //     zoom: zoom
+                // };
 
                 try {
 
@@ -40493,11 +40643,17 @@ angular.module('FieldDoc')
 
                 }
 
-                if (angular.isDefined(self.urlData.filters) &&
-                    typeof self.urlData.filters === 'string' &&
-                    self.urlData.filters.length) {
+                // if (!self.singleProjectMode &&
+                //     angular.isDefined(self.urlData.filters) &&
+                //     typeof self.urlData.filters === 'string' &&
+                //     self.urlData.filters.length) {
 
-                    params.filters = self.urlData.filters;
+                if (!self.singleProjectMode &&
+                    angular.isDefined(self.filterString) &&
+                    typeof self.filterString === 'string' &&
+                    self.filterString.length) {
+
+                    params.filters = self.filterString;
 
                     params.t = Date.now();
 
@@ -40686,8 +40842,6 @@ angular.module('FieldDoc')
 
                     delete successResponse.$resolved;
 
-                    self.summary = successResponse;
-
                     self.permissions = successResponse.permissions;
 
                     self.primaryNode = successResponse;
@@ -40815,6 +40969,22 @@ angular.module('FieldDoc')
 
                 self.primaryNode = undefined;
 
+                if (angular.isDefined(self.mapSummary) &&
+                    angular.isDefined(self.map)) {
+
+                    self.processMetrics(self.primaryMetrics);
+
+                    MapUtil.fitMap(
+                        self.map,
+                        self.mapSummary,
+                        self.padding,
+                        false
+                    );
+
+                    return;
+
+                }
+
                 MapInterface.get({
                     access_token: self.accessToken,
                     id: $routeParams.id,
@@ -40827,37 +40997,75 @@ angular.module('FieldDoc')
 
                     self.featureClass = MapInterface;
 
-                    self.loadMetrics($routeParams.id);
+                    self.loadMetrics($routeParams.id, true);
 
-                    MapUtil.fitMap(
-                        self.map,
-                        self.mapSummary,
-                        self.padding,
-                        false
+                    self.filterString = AtlasDataManager.createFilterString(
+                        successResponse
                     );
 
-                    // if (featureType === 'territory') {
+                    LayerUtil.setGlobalLabelColor(successResponse.style);
+
+                    if (!angular.isDefined(self.map)) {
+
+                        self.stageMap(true);
+
+                    }
+
+                    // var projects = successResponse.projects;
                     //
-                    //     self.processMetrics(
-                    //         successResponse.metric_progress
-                    //     );
+                    // console.log(
+                    //     'fetchMap:projects',
+                    //     projects
+                    // );
                     //
-                    // } else {
+                    // if (Array.isArray(projects)) {
                     //
-                    //     self.loadMetrics();
+                    //     if (projects.length === 1) {
+                    //
+                    //         self.singleProjectMode = true;
+                    //
+                    //         delete self.urlData.filters;
+                    //
+                    //         self.urlData.node = [
+                    //             'project.',
+                    //             projects[0].id
+                    //         ].join('');
+                    //
+                    //         self.refreshFeatureLayers();
+                    //
+                    //     }
                     //
                     // }
 
-                    LayerUtil.setProgramId(0);
-
-                    LayerUtil.addCustomLayers(
-                        successResponse.layers,
-                        self.layers,
-                        self.padding,
-                        self.map,
-                        self.fetchPrimaryNode);
-
-                    self.updateUrlParams(self.urlData.filters);
+                    // // MapUtil.fitMap(
+                    // //     self.map,
+                    // //     self.mapSummary,
+                    // //     self.padding,
+                    // //     false
+                    // // );
+                    //
+                    // // if (featureType === 'territory') {
+                    // //
+                    // //     self.processMetrics(
+                    // //         successResponse.metric_progress
+                    // //     );
+                    // //
+                    // // } else {
+                    // //
+                    // //     self.loadMetrics();
+                    // //
+                    // // }
+                    //
+                    // LayerUtil.setProgramId(0);
+                    //
+                    // LayerUtil.addCustomLayers(
+                    //     successResponse.layers,
+                    //     self.layers,
+                    //     self.padding,
+                    //     self.map,
+                    //     self.fetchPrimaryNode);
+                    //
+                    // self.updateUrlParams(self.urlData.filters);
 
                     // LayerUtil.fetchCustomLayers(
                     //     null,
@@ -40971,11 +41179,8 @@ angular.module('FieldDoc')
 
                 $http({
                     method: 'POST',
-                    url: 'http://watersheds.cci.drexel.edu/api/watershedboundary/',
-                    data: feature.geometry,
-                    headers: {
-                        'Authorization-Bypass': true
-                    }
+                    url: 'https://watersheds.cci.drexel.edu/api/watershedboundary/',
+                    data: feature.geometry
                 }).then(function successCallback(successResponse) {
 
                     console.log(
@@ -41113,7 +41318,7 @@ angular.module('FieldDoc')
 
                 self.activeStyle = 0;
 
-                var styleString = self.urlData.style;
+                var styleString = self.mapSummary.style;
 
                 console.log(
                     'self.getMapOptions:styleString:',
@@ -41122,11 +41327,17 @@ angular.module('FieldDoc')
 
                 self.mapStyles.forEach(function (style, index) {
 
-                    if (style.name.toLowerCase() === styleString) {
+                    if (style.url === styleString) {
 
                         self.activeStyle = index;
 
                     }
+
+                    // if (style.name.toLowerCase() === styleString) {
+                    //
+                    //     self.activeStyle = index;
+                    //
+                    // }
 
                 });
 
@@ -41336,13 +41547,142 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.refreshFeatureLayers();
+                    // if (self.singleProjectMode) return;
+
+                    // if (angular.isDefined(self.mapSummary) &&
+                    //     !self.singleProjectMode) {
+                    //
+                    //     var projects = self.mapSummary.projects;
+                    //
+                    //     console.log(
+                    //         'self.map.moveend:projects',
+                    //         projects
+                    //     );
+                    //
+                    //     if (Array.isArray(projects)) {
+                    //
+                    //         if (projects.length === 1) {
+                    //
+                    //             self.singleProjectMode = true;
+                    //
+                    //             delete self.urlData.filters;
+                    //
+                    //             self.urlData.node = [
+                    //                 'project.',
+                    //                 projects[0].id
+                    //             ].join('');
+                    //
+                    //             self.refreshFeatureLayers();
+                    //
+                    //             return;
+                    //
+                    //         }
+                    //
+                    //     }
+                    //
+                    // }
+
+                    var center = self.map.getCenter();
+
+                    console.log(
+                        'self.map.moveend:center:',
+                        center
+                    );
+
+                    if (!self.mapCenter) {
+
+                        self.mapCenter = center;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.mapCenter:',
+                        self.mapCenter
+                    );
+
+                    var zoom = Utility.precisionRound(
+                        self.map.getZoom(),
+                        2
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoom:',
+                        zoom
+                    );
+
+                    if (!self.trackedZoom) {
+
+                        self.trackedZoom = zoom;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.trackedZoom:',
+                        self.trackedZoom
+                    );
+
+                    var zoomDelta = Math.abs(
+                        Math.floor(zoom) - Math.floor(self.trackedZoom)
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoomDelta:',
+                        zoomDelta
+                    );
+
+                    var lngDelta = Math.abs(center.lng - self.mapCenter.lng);
+
+                    console.log(
+                        'self.map.moveend:lngDelta:',
+                        lngDelta
+                    );
+
+                    var latDelta = Math.abs(center.lat - self.mapCenter.lat);
+
+                    console.log(
+                        'self.map.moveend:latDelta:',
+                        latDelta
+                    );
+
+                    var tolerance = 0.001;
+
+                    if (zoomDelta > 0 ||
+                        lngDelta >= tolerance ||
+                        latDelta >= tolerance) {
+
+                        self.mapCenter = center;
+
+                        self.trackedZoom = zoom;
+
+                        self.refreshFeatureLayers();
+
+                    }
+
+                    // self.refreshFeatureLayers();
 
                 });
 
                 self.map.on('load', function() {
 
                     console.log("Loading Map");
+
+                    // MapUtil.fitMap(
+                    //     self.map,
+                    //     self.mapSummary,
+                    //     self.padding,
+                    //     false
+                    // );
+                    //
+                    // LayerUtil.setProgramId(0);
+                    //
+                    // LayerUtil.addCustomLayers(
+                    //     self.mapSummary.layers,
+                    //     self.layers,
+                    //     self.padding,
+                    //     self.map,
+                    //     self.fetchPrimaryNode);
+                    //
+                    // self.updateUrlParams(self.urlData.filters);
 
                     var scale = new mapboxgl.ScaleControl({
                         maxWidth: 80,
@@ -41413,7 +41753,65 @@ angular.module('FieldDoc')
 
                     // self.updateUrlParams();
 
-                    self.fetchMap();
+                    // self.fetchMap();
+
+                    //
+                    // Make adjustments dictated by core map summary object.
+                    //
+
+                    if (angular.isDefined(self.mapSummary)) {
+
+                        var projects = self.mapSummary.projects;
+
+                        console.log(
+                            'self.map.load:projects',
+                            projects
+                        );
+
+                        if (Array.isArray(projects)) {
+
+                            if (projects.length === 1) {
+
+                                self.singleProjectMode = true;
+
+                                // delete self.urlData.filters;
+
+                                self.urlData.node = [
+                                    'project.',
+                                    projects[0].id
+                                ].join('');
+
+                                self.refreshFeatureLayers();
+
+                                // return;
+
+                            }
+
+                        }
+
+                    }
+
+                    MapUtil.fitMap(
+                        self.map,
+                        self.mapSummary,
+                        self.padding,
+                        false
+                    );
+
+                    LayerUtil.setProgramId(0);
+
+                    LayerUtil.addCustomLayers(
+                        self.mapSummary.layers,
+                        self.layers,
+                        self.padding,
+                        self.map,
+                        self.fetchPrimaryNode);
+
+                    if (!self.singleProjectMode) {
+
+                        self.updateUrlParams(self.urlData.filters);
+
+                    }
 
                     self.showElements();
 
@@ -41592,13 +41990,19 @@ angular.module('FieldDoc')
 
             }
 
-            self.loadMetrics = function(featureId) {
+            self.loadMetrics = function(featureId, primary) {
 
                 self.featureClass.progress({
                     access_token: self.accessToken,
                     id: featureId,
                     defer: true
                 }).$promise.then(function(successResponse) {
+
+                    if (primary) {
+
+                        self.primaryMetrics = successResponse;
+
+                    }
 
                     self.processMetrics(successResponse);
 
@@ -41683,20 +42087,24 @@ angular.module('FieldDoc')
                     dataObj
                 );
 
-                self.urlData = dataObj;
+                self.urlData = dataObj || {};
 
-                LayerUtil.setGlobalLabelColor(self.urlData.style);
+                // LayerUtil.setGlobalLabelColor(self.urlData.style);
 
-                self.storedFilters = AtlasDataManager.getUrlFilters(
-                    self.urlData
-                );
+                // self.storedFilters = AtlasDataManager.getUrlFilters(
+                //     self.urlData
+                // );
+                //
+                // console.log(
+                //     'extractUrlParams:storedFilters:',
+                //     self.storedFilters
+                // );
 
-                console.log(
-                    'extractUrlParams:storedFilters:',
-                    self.storedFilters
-                );
+                if (!self.user) {
 
-                self.loadUser();
+                    self.loadUser();
+
+                }
 
                 // if (!angular.isDefined(self.map)) {
                 //
@@ -41845,19 +42253,13 @@ angular.module('FieldDoc')
 
                     $rootScope.page.title = 'Atlas';
 
-                    if (!angular.isDefined(self.map)) {
+                    self.fetchMap();
 
-                        self.stageMap(true);
-
-                    }
-
+                    // if (!angular.isDefined(self.map)) {
                     //
-                    // Assign map to a scoped variable
+                    //     self.stageMap(true);
                     //
-
-                    // var params = $location.search();
-                    //
-                    // self.extractUrlParams(params, true);
+                    // }
 
                 });
 
@@ -41871,32 +42273,7 @@ angular.module('FieldDoc')
 
             self.extractUrlParams(params, true);
 
-            // if (Account.userObject && user) {
-            //
-            //     User.me({
-            //         access_token: self.accessToken,
-            //         defer: true
-            //     }).$promise.then(function(userResponse) {
-            //
-            //         $rootScope.user = Account.userObject = userResponse;
-            //
-            //         self.permissions = {};
-            //
-            //         self.user = $rootScope.user;
-            //
-            //         $rootScope.page.title = 'Atlas';
-            //
-            //         //
-            //         // Assign map to a scoped variable
-            //         //
-            //
-            //         var params = $location.search();
-            //
-            //         self.extractUrlParams(params, true);
-            //
-            //     });
-            //
-            // }
+            // self.loadUser();
 
         });
 'use strict';
@@ -42242,7 +42619,7 @@ angular.module('FieldDoc')
  * Provider in the FieldDoc.
  */
 angular.module('FieldDoc')
-    .service('AtlasDataManager', function() {
+    .service('AtlasDataManager', function(Utility) {
 
         var queryFeatures = [];
 
@@ -42331,7 +42708,16 @@ angular.module('FieldDoc')
 
                 var style = (angular.isDefined(options) && options.style) ? options.style : 'mapbox://styles/mapbox/streets-v11';
 
-                var zoom = (angular.isDefined(options) && options.zoom) ? options.zoom : 12;
+                var zoom = 12;
+
+                if (angular.isDefined(options) && options.zoom) {
+
+                    zoom = Utility.precisionRound(
+                        options.zoom,
+                        2
+                    );
+
+                }
 
                 // try {
                 //
@@ -45466,6 +45852,78 @@ angular.module('FieldDoc')
 'use strict';
 
 /**
+ * @ngdoc service
+ * @name FieldDoc.template
+ * @description
+ * # template
+ * Provider in the FieldDoc.
+ */
+angular.module('FieldDoc')
+    .service('AtlasFilterManager', [
+        '$location',
+        function($location) {
+
+            var baseOptions = {};
+
+            var activeFilters = {};
+
+            var filterSet = undefined;
+
+            var filterKey = undefined;
+
+            return {
+                setOptions: function (options) {
+
+                    console.log(
+                        'AtlasFilterManager:options:',
+                        options
+                    );
+
+                    baseOptions = options;
+
+                },
+                getOptions: function () {
+
+                    return JSON.parse(JSON.stringify(baseOptions));
+
+                },
+                getFilters: function () {
+
+                    return JSON.parse(JSON.stringify(activeFilters));
+
+                },
+                setFilter: function (category, arr) {
+
+                    activeFilters[category] = [];
+
+                    arr.forEach(function (feature) {
+
+                        if (feature.selected) {
+
+                            activeFilters[category].push(feature);
+
+                        }
+
+                    });
+
+                },
+                resetFilter: function (category, arr) {
+
+                    activeFilters[category] = [];
+
+                    arr.forEach(function (feature) {
+
+                        feature.selected = false;
+
+                    });
+
+                }
+            };
+
+        }]);
+'use strict';
+
+/**
  * @ngdoc overview
  * @name FieldDoc
  * @description
@@ -45705,21 +46163,32 @@ angular.module('FieldDoc')
                             filterString
                         );
 
-                        feature.atlasParams = AtlasDataManager.createURLData(
-                            null,
-                            true,
-                            {
-                                filterString: filterString,
-                                style: feature.style
-                            }
-                        );
+                        // feature.atlasParams = AtlasDataManager.createURLData(
+                        //     null,
+                        //     true,
+                        //     {
+                        //         filterString: filterString,
+                        //         style: feature.style
+                        //     }
+                        // );
+                        //
+                        // feature.path = [
+                        //     '/atlas/',
+                        //     feature.id,
+                        //     '?',
+                        //     feature.atlasParams,
+                        //     '&access_token=',
+                        //     encodeURIComponent(
+                        //         btoa(
+                        //             self.defaultToken.token
+                        //         )
+                        //     )
+                        // ].join('');
 
                         feature.path = [
                             '/atlas/',
                             feature.id,
-                            '?',
-                            feature.atlasParams,
-                            '&access_token=',
+                            '?access_token=',
                             encodeURIComponent(
                                 btoa(
                                     self.defaultToken.token
@@ -56251,7 +56720,8 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .directive('atlasFilterOptions', [
             'environment',
-            function (environment) {
+            'AtlasFilterManager',
+            function (environment, AtlasFilterManager) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -56305,11 +56775,33 @@ angular.module('FieldDoc')
 
                         };
 
+                        scope.resetSelections = function () {
+
+                            scope.activeFilters[scope.filterKey] = [];
+
+                            scope.filterSet.forEach(function (feature) {
+
+                                feature.selected = false;
+
+                            });
+
+                        };
+
                         scope.resetActiveFilters = function () {
+
+                            scope.resetSelections();
+
+                            scope.filterSet = undefined;
+
+                            scope.filterKey = undefined;
 
                             scope.bookmarkReady = false;
 
                             scope.activeFilters = {};
+
+                            scope.filterOptions = JSON.parse(
+                                JSON.stringify(scope.filterOptions)
+                            );
 
                             var categories = Object.keys(scope.filterOptions);
 
@@ -56319,28 +56811,32 @@ angular.module('FieldDoc')
 
                             });
 
-                            for (var key in scope.filterOptions) {
-
-                                if (key !== 'layers' &&
-                                    scope.filterOptions.hasOwnProperty(key)) {
-
-                                    var options = scope.filterOptions;
-
-                                    if (Array.isArray(options)) {
-
-                                        options.forEach(function (options) {
-
-                                            option.selected = false;
-
-                                        });
-
-                                        scope.filterOptions[key] = options;
-
-                                    }
-
-                                }
-
-                            }
+                            // for (var key in scope.filterOptions) {
+                            //
+                            //     if (key !== 'layers' &&
+                            //         scope.filterOptions.hasOwnProperty(key)) {
+                            //
+                            //         var rawOptions = scope.filterOptions[key];
+                            //
+                            //         var cp = [];
+                            //
+                            //         if (Array.isArray(rawOptions)) {
+                            //
+                            //             rawOptions.forEach(function (option) {
+                            //
+                            //                 option.selected = false;
+                            //
+                            //                 cp.push(option);
+                            //
+                            //             });
+                            //
+                            //             scope.filterOptions[key] = cp;
+                            //
+                            //         }
+                            //
+                            //     }
+                            //
+                            // }
 
                         };
 
@@ -56350,7 +56846,7 @@ angular.module('FieldDoc')
 
                             scope.filterKey = key;
 
-                            scope.filterSet = group;
+                            scope.filterSet = scope.filterOptions[key];
 
                             scope.modalDisplay.options = false;
 
@@ -56382,16 +56878,8 @@ angular.module('FieldDoc')
     angular.module('FieldDoc')
         .directive('atlasFilterSet', [
             'environment',
-            '$window',
-            '$rootScope',
-            '$routeParams',
-            '$filter',
-            '$parse',
-            '$location',
-            'Practice',
-            '$timeout',
-            function (environment, $window, $rootScope, $routeParams, $filter,
-                      $parse, $location, Practice, $timeout) {
+            'AtlasFilterManager',
+            function (environment, AtlasFilterManager) {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -56440,29 +56928,7 @@ angular.module('FieldDoc')
 
                         scope.closeModal = function(refresh) {
 
-                            scope.visible = false;
-
-                            scope.q = {};
-
-                            if (scope.dismissAction) scope.dismissAction({});
-
-                        };
-
-                        scope.setFilter = function (category, arr) {
-
-                            scope.activeFilters[category] = [];
-
-                            arr.forEach(function (feature) {
-
-                                if (feature.selected) {
-
-                                    scope.bookmarkReady = true;
-
-                                    scope.activeFilters[category].push(feature);
-
-                                }
-
-                            });
+                            // scope.visible = false;
 
                             scope.filterSet = undefined;
 
@@ -56484,6 +56950,68 @@ angular.module('FieldDoc')
 
                             }
 
+                            if (scope.dismissAction) scope.dismissAction({});
+
+                        };
+
+                        scope.resetSelections = function (category, arr) {
+
+                            scope.activeFilters[category] = [];
+
+                            scope.features = JSON.parse(JSON.stringify(scope.filterSet));
+
+                            // arr.forEach(function (feature) {
+                            //
+                            //     feature.selected = false;
+                            //
+                            // });
+
+                            scope.q = {};
+
+                        };
+
+                        scope.setFilter = function (category, arr) {
+
+                            scope.activeFilters[category] = [];
+
+                            scope.features.forEach(function (feature) {
+
+                                if (feature.selected) {
+
+                                    scope.bookmarkReady = true;
+
+                                    scope.activeFilters[category].push(feature);
+
+                                }
+
+                            });
+
+                            scope.closeModal();
+
+                        };
+
+                        scope.syncSelections = function () {
+
+                            var activeSelections = scope.activeFilters[scope.filterKey];
+
+                            var idx = [];
+
+                            activeSelections.forEach(function (feature) {
+
+                                idx.push(feature.id);
+
+                            });
+
+                            scope.features.forEach(function (feature) {
+
+                                if (idx.indexOf(feature.id) >= 0) {
+
+                                    feature.selected = true;
+
+                                }
+
+                            });
+
                         };
 
                         scope.$watch('newMap', function (newVal) {
@@ -56491,6 +57019,20 @@ angular.module('FieldDoc')
                             if (newVal) {
 
                                 scope.newMap = newVal;
+
+                            }
+
+                        });
+
+                        scope.$watch('filterSet', function (newVal) {
+
+                            if (Array.isArray(newVal)) {
+
+                                scope.features = JSON.parse(JSON.stringify(newVal));
+
+                                scope.syncSelections();
+
+                                // scope.newMap = newVal;
 
                             }
 
@@ -57228,7 +57770,7 @@ angular.module('FieldDoc')
 
                 console.log('$filter.elapsedTime --> minutes', minutes);
 
-                period = minutes > 0 ? minutes + ' minutes ago' : 'moments ago';
+                period = minutes > 1 ? minutes + ' minutes ago' : 'moments ago';
 
             }
 

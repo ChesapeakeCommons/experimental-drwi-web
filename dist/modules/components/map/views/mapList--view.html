@@ -25,6 +25,7 @@
                 </h1>
                 <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
                         data-ng-disabled="!page.filterOptions"
+                        data-ng-if="page.maps.length"
                         data-ng-click="page.modalDisplay.creationStep = 2">
                     <span class="material-icons margin-r-50p">
                         add
@@ -39,7 +40,7 @@
                 flex-grow: 1;"
                      data-ng-if="!page.status.loading">
 
-                    <div data-ng-if="!page.status.loading"
+                    <div data-ng-if="!page.status.loading && page.maps.length > 10"
                          pagination
                          summary="page.summary"
                          rotate="page.loadProjects(page.queryParams)"
@@ -52,11 +53,12 @@
 
             <div class="features--container" data-ng-if="!page.status.loading">
 
-                <div data-ng-if="!page.maps.length" style="width: 100%; display: flex; flex-grow: 1; flex-shrink:
-                0;">
+                <div data-ng-if="!page.maps.length"
+                     class="flex flex-dir-col flex-justify-center flex-align-center"
+                     style="width: 100%; display: flex; flex-grow: 1; flex-shrink: 0;">
 
                     <ul class="selectable-group-items list-unstyled margin-t-2"
-                        style="grid-template-columns: repeat(1, 1fr);">
+                        style="grid-template-columns: repeat(1, 1fr); max-width: 640px;">
 
                         <li class="card reveal fade-in">
 
@@ -66,11 +68,44 @@
 
                                 <div class="description" style="width: 100%; border-right: none;">
 
-                                    <div class="body" style="padding: 4rem 0;">
-                                        <p style="font-style: normal; font-size: 1.2em; padding: 0; margin: 0;
-                                        text-align: center;">
-                                            <em>No maps found.</em>
+                                    <div class="pad-0 margin-t-2 margin-b-1 center">
+                                        <span class="material-icons md-36">
+                                            map
+                                        </span>
+                                    </div>
+
+                                    <div class="pad-0 pad-b-1">
+                                        <p style="font-style: normal; font-weight: bold; font-size: 1.125rem;
+                                        padding: 0; margin: 0; text-align: center;">
+                                            Make your first map
                                         </p>
+                                    </div>
+
+                                    <div class="pad-0 pad-b-1">
+                                        <p style="font-style: normal; font-size: 1rem; padding: 0; margin: 0;">
+                                            Maps stored in your account track data updates and refresh when project
+                                            information or metric summaries change. They also come with ready-to-use
+                                            links that can be shared outside FieldDoc.
+                                        </p>
+                                    </div>
+
+                                    <div class="pad-0 pad-b-2">
+                                        <p style="font-style: normal; font-size: 1rem; padding: 0; margin: 0;">
+                                            Projects are the core building blocks of maps. You can select projects
+                                            from your collection one-at-a-time or use filters to control which
+                                            projects appear on a map.
+                                        </p>
+                                    </div>
+
+                                    <div class="create-heading flex-justify-center flex-align-center">
+                                        <button type="button" style="padding: .5rem 1rem .5rem .7rem;"
+                                                data-ng-disabled="!page.filterOptions"
+                                                data-ng-click="page.modalDisplay.creationStep = 2">
+                                            <span class="material-icons margin-r-50p">
+                                                add
+                                            </span>
+                                            Create
+                                        </button>
                                     </div>
 
                                 </div>
@@ -78,6 +113,8 @@
                             </div>
 
                         </li>
+
+                        <li class="card reveal fade-in"></li>
 
                     </ul>
 
@@ -184,7 +221,7 @@
 
             </div>
 
-            <div data-ng-if="!page.status.loading"
+            <div data-ng-if="!page.status.loading && page.maps.length > 10"
                  pagination
                  summary="page.summary"
                  rotate="page.loadProjects(page.queryParams)"

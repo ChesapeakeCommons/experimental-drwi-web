@@ -152,21 +152,32 @@ angular.module('FieldDoc')
                             filterString
                         );
 
-                        feature.atlasParams = AtlasDataManager.createURLData(
-                            null,
-                            true,
-                            {
-                                filterString: filterString,
-                                style: feature.style
-                            }
-                        );
+                        // feature.atlasParams = AtlasDataManager.createURLData(
+                        //     null,
+                        //     true,
+                        //     {
+                        //         filterString: filterString,
+                        //         style: feature.style
+                        //     }
+                        // );
+                        //
+                        // feature.path = [
+                        //     '/atlas/',
+                        //     feature.id,
+                        //     '?',
+                        //     feature.atlasParams,
+                        //     '&access_token=',
+                        //     encodeURIComponent(
+                        //         btoa(
+                        //             self.defaultToken.token
+                        //         )
+                        //     )
+                        // ].join('');
 
                         feature.path = [
                             '/atlas/',
                             feature.id,
-                            '?',
-                            feature.atlasParams,
-                            '&access_token=',
+                            '?access_token=',
                             encodeURIComponent(
                                 btoa(
                                     self.defaultToken.token

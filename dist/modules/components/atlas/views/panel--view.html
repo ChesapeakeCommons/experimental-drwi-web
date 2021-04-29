@@ -31,8 +31,14 @@
 
         <div class="metadata--card">
 
-            <h1 class="margin-0 pad-0" data-ng-if="!page.status.loading">
-                {{ page.summary.name || page.primaryNode.properties.name }}
+            <h1 class="margin-0 pad-0"
+                data-ng-if="!page.status.loading && page.primaryNode">
+                {{ page.primaryNode.properties.name }}
+            </h1>
+
+            <h1 class="margin-0 pad-0"
+                data-ng-if="!page.status.loading && !page.primaryNode">
+                {{ page.summary.name }}
             </h1>
 
             <div class="stat--group margin-0 pad-0 margin-t-50p"

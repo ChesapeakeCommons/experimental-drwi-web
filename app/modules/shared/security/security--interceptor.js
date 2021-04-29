@@ -21,6 +21,12 @@
 
                 console.log(
                     'AuthorizationInterceptor::inspectDeferralState:',
+                    'config',
+                    config
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
                     'path',
                     path
                 );
@@ -59,7 +65,18 @@
                     cond3
                 );
 
-                return cond1 && cond2 && cond3;
+                var cond4 = (
+                    config.url.indexOf('fielddoc.org') > 0 ||
+                    config.url.indexOf('waterreporter.org') > 0
+                );
+
+                console.log(
+                    'AuthorizationInterceptor::inspectDeferralState:',
+                    'cond4',
+                    cond4
+                );
+
+                return cond1 && cond2 && cond3 && cond4;
 
                 // if (typeof config.url === 'string') {
                 //
@@ -164,7 +181,16 @@
 
                     }
 
-                    config.headers['Cache-Control'] = 'no-cache, max-age=0, must-revalidate';
+                    var commonsUrl = (
+                        config.url.indexOf('fielddoc.org') > 0 ||
+                        config.url.indexOf('waterreporter.org') > 0
+                    );
+
+                    if (commonsUrl) {
+
+                        config.headers['Cache-Control'] = 'no-cache, max-age=0, must-revalidate';
+
+                    }
 
                     //
                     // Configure or override parameters where necessary

@@ -8,7 +8,7 @@
             </span>
             <div class="dismiss-container">
                 <div class="dismiss"
-                     data-ng-click="setFilter(filterKey, filterSet)">
+                     data-ng-click="closeModal()">
                     <div class="halo"></div>
                     <span class="material-icons">
                         close
@@ -24,7 +24,7 @@
         <div style="padding: 1rem 1.5rem; overflow: auto;">
             <ul class="option-list margin-0 pad-0 margin-b-1">
                 <li class="pad-y-50p flex flex-dir-row flex-align-center"
-                    data-ng-repeat="feature in filterSet | filter:q.token">
+                    data-ng-repeat="feature in features | filter:q.token">
                     <div class="filter-option-name">
                         <span style="display: block;">
                             {{ feature.name }}
@@ -49,6 +49,28 @@
                     </div>
                 </li>
             </ul>
+        </div>
+        <div class="dialog-actions pad-1"
+             style="border-top: 1px solid #E0E0E0;">
+            <div class="pad-r-1"
+                 style="display: flex; flex-flow: row nowrap; align-items: center; justify-content: flex-start;
+                     flex-grow: 1; flex-shrink: 1;">
+                <button type="button"
+                        class="cancel"
+                        data-ng-click="resetSelections(filterKey, filterSet)">
+                    Clear all
+                </button>
+            </div>
+            <button type="button"
+                    class="cancel"
+                    data-ng-click="closeModal()">
+                Cancel
+            </button>
+            <button type="submit"
+                    class="confirm"
+                    data-ng-click="setFilter(filterKey, filterSet)">
+                Save
+            </button>
         </div>
     </div>
 </div>

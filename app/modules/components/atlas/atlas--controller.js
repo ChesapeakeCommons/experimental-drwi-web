@@ -1058,7 +1058,83 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    self.refreshFeatureLayers();
+                    var center = self.map.getCenter();
+
+                    console.log(
+                        'self.map.moveend:center:',
+                        center
+                    );
+
+                    if (!self.mapCenter) {
+
+                        self.mapCenter = center;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.mapCenter:',
+                        self.mapCenter
+                    );
+
+                    var zoom = Utility.precisionRound(
+                        self.map.getZoom(),
+                        2
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoom:',
+                        zoom
+                    );
+
+                    if (!self.trackedZoom) {
+
+                        self.trackedZoom = zoom;
+
+                    }
+
+                    console.log(
+                        'self.map.moveend:self.trackedZoom:',
+                        self.trackedZoom
+                    );
+
+                    var zoomDelta = Math.abs(
+                        Math.floor(zoom) - Math.floor(self.trackedZoom)
+                    );
+
+                    console.log(
+                        'self.map.moveend:zoomDelta:',
+                        zoomDelta
+                    );
+
+                    var lngDelta = Math.abs(center.lng - self.mapCenter.lng);
+
+                    console.log(
+                        'self.map.moveend:lngDelta:',
+                        lngDelta
+                    );
+
+                    var latDelta = Math.abs(center.lat - self.mapCenter.lat);
+
+                    console.log(
+                        'self.map.moveend:latDelta:',
+                        latDelta
+                    );
+
+                    var tolerance = 0.001;
+
+                    if (zoomDelta > 0 ||
+                        lngDelta >= tolerance ||
+                        latDelta >= tolerance) {
+
+                        self.mapCenter = center;
+
+                        self.trackedZoom = zoom;
+
+                        self.refreshFeatureLayers();
+
+                    }
+
+                    // self.refreshFeatureLayers();
 
                 });
 

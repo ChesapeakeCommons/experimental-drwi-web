@@ -5,19 +5,27 @@
 <div style="position:relative; border-radius: 4px; overflow: hidden;">
 
     <div id="primary--map" class="map tall" style="border-radius: 4px; overflow: hidden;">
-        <div class="mapboxgl-layer-ctrl" data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
+        <div class="mapboxgl-layer-ctrl"
+             data-ng-click="page.showLayerOptions = !page.showLayerOptions" title="Switch layers">
             <i class="material-icons">
                 layers
             </i>
             <div class="layer-group" data-ng-show="page.showLayerOptions">
-                <label data-ng-repeat="style in page.mapStyles" data-ng-class="{'active': page.activeStyle === $index}" title="{{ style.name }}">
-                    <input type="radio" id="base-style-{{ $index }}" name="active-style" data-ng-model="page.activeStyle" data-ng-value="{{ $index }}" data-ng-change="page.switchMapStyle(style, $index)"><span> {{ style.name }}</span>
+                <label data-ng-repeat="style in page.mapStyles"
+                       data-ng-class="{'active': page.activeStyle === $index}"
+                       title="{{ style.name }}">
+                    <input type="radio" id="base-style-{{ $index }}"
+                           name="active-style" data-ng-model="page.activeStyle"
+                           data-ng-value="{{ $index }}"
+                           data-ng-change="page.switchMapStyle(style, $index)">
+                    <span> {{ style.name }}</span>
                 </label>
             </div>
         </div>
     </div>
 
-    <div style="background: #fff;" class="progress--modal" data-ng-if="page.progressValue && page.progressValue > 0">
+    <div style="background: #fff;" class="progress--modal"
+         data-ng-if="page.progressValue && page.progressValue > 0">
         <div class="progress--container">
             <p style="text-align: left;">
                 <strong>{{ page.progressMessage }}</strong>
@@ -32,7 +40,9 @@
 
 <!-- Estimated geometry measurement -->
 
-<div est-extent options="page.dimension" feature-type="{{ page.featureType }}" data-ng-if="page.dimension"></div>
+<div est-extent options="page.dimension"
+     feature-type="{{ page.featureType }}"
+     data-ng-if="page.dimension"></div>
 
 <!-- Draw instructions -->
 
@@ -43,9 +53,9 @@
     <p style="font-style: normal; font-size: 1em; margin: 1rem 0;">
         If you do not have GeoJSON data or a shapefile of your {{ page.featureType }} area then you can draw your {{
         page.featureType
-        }} directly on the map below. To draw a polygon, select select the square polygon draw tool, third from the
-        bottom of available tools. Estimate your practice area and double click to complete the shape. FieldDoc uses the
-        delineated polygon area to perform model calculations.
+        }} directly on the map. To draw a polygon, select the square polygon draw tool, second from the
+        top of available tools. Estimate your {{ page.featureType }} area and double click to complete the shape.
+        FieldDoc uses the delineated polygon area to perform model calculations.
     </p>
     <p style="margin: 0 0 1rem;" data-ng-if="page.featureType === 'practice'">
         <strong>IMPORTANT:</strong> Reference the practice type description for instructions on which
@@ -79,7 +89,7 @@
         for more help with the GeoJSON format.</p>
 
     <p style="font-style: normal; font-size: 1em; margin: 1em 0 2rem;">
-        Regardless of type, file uploads cannot exceed 100MB. For shapefile archives, this is the
+        Regardless of type, file uploads cannot exceed 20 MB. For shapefile archives, this is the
         maximum total size of all <strong>un-compressed</strong> files.
     </p>
 
