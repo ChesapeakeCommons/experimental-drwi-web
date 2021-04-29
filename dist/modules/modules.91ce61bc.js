@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619712505362})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619715278956})
 
 ;
 /**
@@ -839,31 +839,48 @@ angular.module('FieldDoc')
                     path
                 );
 
+                params = (config.params) ? config.params : {};
+
                 console.log(
                     'AuthorizationInterceptor::inspectDeferralState:',
                     'params',
                     params
                 );
 
-                params = (params === undefined) ? {} : params;
+                // params = (params === undefined) ? {} : params;
 
-                var cond1 = path.indexOf('atlas/') >= 0;
+                // params = (config.params) ? config.params : {};
 
-                console.log(
-                    'AuthorizationInterceptor::inspectDeferralState:',
-                    'cond1',
-                    cond1
-                );
+                var pathCondition = path.indexOf('atlas/') >= 0;
 
                 var atlasId = path.split('/').pop();
 
-                var cond2 = Number.isInteger(parseInt(atlasId, 10));
+                var idCondition = Number.isInteger(parseInt(atlasId, 10));
 
-                console.log(
-                    'AuthorizationInterceptor::inspectDeferralState:',
-                    'cond2',
-                    cond2
+                var templateCondition = (
+                    config.url.indexOf('module') >= 0 ||
+                    config.url.indexOf('template') >= 0
                 );
+
+                if (pathCondition && idCondition && templateCondition) return true;
+
+                // console.log(
+                //     'AuthorizationInterceptor::inspectDeferralState:',
+                //     'cond1',
+                //     cond1
+                // );
+                //
+                // var atlasId = path.split('/').pop();
+                //
+                // var cond2 = Number.isInteger(parseInt(atlasId, 10));
+                //
+                // console.log(
+                //     'AuthorizationInterceptor::inspectDeferralState:',
+                //     'cond2',
+                //     cond2
+                // );
+
+                // var cond3 = typeof params.access_token === 'string';
 
                 var cond3 = typeof params.access_token === 'string';
 
@@ -886,7 +903,9 @@ angular.module('FieldDoc')
                     cond4
                 );
 
-                return cond1 && cond2 && cond3 && cond4;
+                // return cond1 && cond2 && cond3 && cond4;
+
+                return cond3 && cond4;
 
                 // if (typeof config.url === 'string') {
                 //
@@ -973,6 +992,7 @@ angular.module('FieldDoc')
                     } else if (!sessionCookie &&
                         path !== '/register' &&
                         path !== '/reset' &&
+                        path.lastIndexOf('/atlas/', 0) !== 0 &&
                         path.lastIndexOf('/dashboard', 0) !== 0) {
                         /**
                          * Remove all cookies present for authentication
