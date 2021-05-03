@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1619715707237})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1620075323464})
 
 ;
 /**
@@ -39822,16 +39822,6 @@ angular.module('FieldDoc')
 
                     document.querySelector('.geocoder').appendChild(geocoder.onAdd(self.map));
 
-                    if (self.layers && self.layers.length) {
-
-                        // self.addLayers(self.layers);
-
-                    } else {
-
-                        // self.fetchLayers();
-
-                    }
-
                     self.padding.left = AtlasLayoutUtil.getLeftMapOffset();
 
                     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);
@@ -40705,6 +40695,8 @@ angular.module('FieldDoc')
 
                     params.access_token = self.user.wr_token;
 
+                    if (!params.access_token) return;
+
                     WaterReporterInterface.featureLayer(
                         params
                     ).$promise.then(function (successResponse) {
@@ -41041,70 +41033,6 @@ angular.module('FieldDoc')
                         self.stageMap(true);
 
                     }
-
-                    // var projects = successResponse.projects;
-                    //
-                    // console.log(
-                    //     'fetchMap:projects',
-                    //     projects
-                    // );
-                    //
-                    // if (Array.isArray(projects)) {
-                    //
-                    //     if (projects.length === 1) {
-                    //
-                    //         self.singleProjectMode = true;
-                    //
-                    //         delete self.urlData.filters;
-                    //
-                    //         self.urlData.node = [
-                    //             'project.',
-                    //             projects[0].id
-                    //         ].join('');
-                    //
-                    //         self.refreshFeatureLayers();
-                    //
-                    //     }
-                    //
-                    // }
-
-                    // // MapUtil.fitMap(
-                    // //     self.map,
-                    // //     self.mapSummary,
-                    // //     self.padding,
-                    // //     false
-                    // // );
-                    //
-                    // // if (featureType === 'territory') {
-                    // //
-                    // //     self.processMetrics(
-                    // //         successResponse.metric_progress
-                    // //     );
-                    // //
-                    // // } else {
-                    // //
-                    // //     self.loadMetrics();
-                    // //
-                    // // }
-                    //
-                    // LayerUtil.setProgramId(0);
-                    //
-                    // LayerUtil.addCustomLayers(
-                    //     successResponse.layers,
-                    //     self.layers,
-                    //     self.padding,
-                    //     self.map,
-                    //     self.fetchPrimaryNode);
-                    //
-                    // self.updateUrlParams(self.urlData.filters);
-
-                    // LayerUtil.fetchCustomLayers(
-                    //     null,
-                    //     null,
-                    //     self.layers,
-                    //     self.padding,
-                    //     self.map,
-                    //     self.fetchPrimaryNode);
 
                 }, function(errorResponse) {
 
@@ -41695,26 +41623,6 @@ angular.module('FieldDoc')
 
                 self.map.on('load', function() {
 
-                    console.log("Loading Map");
-
-                    // MapUtil.fitMap(
-                    //     self.map,
-                    //     self.mapSummary,
-                    //     self.padding,
-                    //     false
-                    // );
-                    //
-                    // LayerUtil.setProgramId(0);
-                    //
-                    // LayerUtil.addCustomLayers(
-                    //     self.mapSummary.layers,
-                    //     self.layers,
-                    //     self.padding,
-                    //     self.map,
-                    //     self.fetchPrimaryNode);
-                    //
-                    // self.updateUrlParams(self.urlData.filters);
-
                     var scale = new mapboxgl.ScaleControl({
                         maxWidth: 80,
                         unit: 'imperial'
@@ -41738,16 +41646,6 @@ angular.module('FieldDoc')
 
                     document.querySelector('.geocoder').appendChild(geocoder.onAdd(self.map));
 
-                    if (self.layers && self.layers.length) {
-
-                        // self.addLayers(self.layers);
-
-                    } else {
-
-                        // self.fetchLayers();
-
-                    }
-
                     self.padding.left = AtlasLayoutUtil.getLeftMapOffset();
 
                     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);
@@ -41768,23 +41666,12 @@ angular.module('FieldDoc')
 
                     LayerUtil.resetSources(self.map);
 
-                    if (angular.isDefined(self.storedFilters)) {
+                    //
+                    // Remove default project layer filter since
+                    // all snapshot features are pre-filtered.
+                    //
 
-                        LayerUtil.removeProjectFilter(self.map);
-
-                    }
-
-                    // LayerUtil.fetchCustomLayers(
-                    //     null,
-                    //     null,
-                    //     self.layers,
-                    //     self.padding,
-                    //     self.map,
-                    //     self.fetchPrimaryNode);
-
-                    // self.updateUrlParams();
-
-                    // self.fetchMap();
+                    LayerUtil.removeProjectFilter(self.map);
 
                     //
                     // Make adjustments dictated by core map summary object.
@@ -41805,16 +41692,12 @@ angular.module('FieldDoc')
 
                                 self.singleProjectMode = true;
 
-                                // delete self.urlData.filters;
-
                                 self.urlData.node = [
                                     'project.',
                                     projects[0].id
                                 ].join('');
 
                                 self.refreshFeatureLayers();
-
-                                // return;
 
                             }
 
@@ -41840,7 +41723,7 @@ angular.module('FieldDoc')
 
                     if (!self.singleProjectMode) {
 
-                        self.updateUrlParams(self.urlData.filters);
+                        self.updateUrlParams(self.filterString);
 
                     }
 
@@ -42120,110 +42003,13 @@ angular.module('FieldDoc')
 
                 self.urlData = dataObj || {};
 
-                // LayerUtil.setGlobalLabelColor(self.urlData.style);
-
-                // self.storedFilters = AtlasDataManager.getUrlFilters(
-                //     self.urlData
-                // );
-                //
-                // console.log(
-                //     'extractUrlParams:storedFilters:',
-                //     self.storedFilters
-                // );
-
                 if (!self.user) {
 
                     self.loadUser();
 
                 }
 
-                // if (!angular.isDefined(self.map)) {
-                //
-                //     self.stageMap(true);
-                //
-                // }
-
             };
-
-            // self.syncActiveFilters = function () {
-            //
-            //     if (!angular.isDefined(self.storedFilters)) return;
-            //
-            //     for (var key in self.filterOptions) {
-            //
-            //         if (self.filterOptions.hasOwnProperty(key)) {
-            //
-            //             var options = self.filterOptions[key];
-            //
-            //             console.log(
-            //                 'self.syncActiveFilters:options',
-            //                 options
-            //             );
-            //
-            //             if (options.length) {
-            //
-            //                 var storedIds = self.storedFilters[key];
-            //
-            //                 console.log(
-            //                     'self.syncActiveFilters:storedIds',
-            //                     storedIds
-            //                 );
-            //
-            //                 if (Array.isArray(storedIds)) {
-            //
-            //                     options.forEach(function (feature) {
-            //
-            //                         if (storedIds.indexOf(feature.id) >= 0) {
-            //
-            //                             feature.selected = true;
-            //
-            //                             self.bookmarkReady = true;
-            //
-            //                             self.activeFilters[key].push(feature);
-            //
-            //                         }
-            //
-            //                     });
-            //
-            //                 }
-            //
-            //             }
-            //
-            //         }
-            //
-            //     }
-            //
-            // };
-
-            // self.resetActiveFilters = function () {
-            //
-            //     self.bookmarkReady = false;
-            //
-            //     self.activeFilters = {};
-            //
-            //     var categories = Object.keys(self.filterOptions);
-            //
-            //     categories.forEach(function (category) {
-            //
-            //         self.activeFilters[category] = [];
-            //
-            //     });
-            //
-            // };
-
-            // self.loadFilterOptions = function () {
-            //
-            //     User.atlasFilters().$promise.then(function(successResponse) {
-            //
-            //         self.filterOptions = successResponse;
-            //
-            //         self.resetActiveFilters();
-            //
-            //         self.syncActiveFilters();
-            //
-            //     });
-            //
-            // };
 
             window.addEventListener('popstate', function (event) {
                 // The popstate event is fired each time when the current history entry changes.
@@ -42232,14 +42018,14 @@ angular.module('FieldDoc')
 
                 self.extractUrlParams(params);
 
-                var nodeString = self.urlData.node;
-
-                var nodeTokens = nodeString.split('.');
-
-                self.fetchPrimaryNode(
-                    nodeTokens[0],
-                    +nodeTokens[1]
-                );
+                // var nodeString = self.urlData.node;
+                //
+                // var nodeTokens = nodeString.split('.');
+                //
+                // self.fetchPrimaryNode(
+                //     nodeTokens[0],
+                //     +nodeTokens[1]
+                // );
 
             }, false);
 
@@ -42286,12 +42072,6 @@ angular.module('FieldDoc')
 
                     self.fetchMap();
 
-                    // if (!angular.isDefined(self.map)) {
-                    //
-                    //     self.stageMap(true);
-                    //
-                    // }
-
                 });
 
             };
@@ -42303,8 +42083,6 @@ angular.module('FieldDoc')
             var params = $location.search();
 
             self.extractUrlParams(params, true);
-
-            // self.loadUser();
 
         });
 'use strict';
@@ -46830,7 +46608,7 @@ angular.module('Mapbox')
             {
                 'label': 'Streets',
                 'id': 'mapbox://styles/mapbox/streets-v11',
-                'staticSrc': 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/-122.463,37.7648,10.05/300x200?access_token=' + accessToken
+                'staticSrc': 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/-73.985656,40.748433,10/100x100@2x?access_token=' + accessToken
             },
             {
                 'label': 'Outdoors',

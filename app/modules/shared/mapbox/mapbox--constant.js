@@ -37,7 +37,7 @@ angular.module('Mapbox')
             {
                 'label': 'Streets',
                 'id': 'mapbox://styles/mapbox/streets-v11',
-                'staticSrc': 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/-122.463,37.7648,10.05/300x200?access_token=' + accessToken
+                'staticSrc': 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/-73.985656,40.748433,10/100x100@2x?access_token=' + accessToken
             },
             {
                 'label': 'Outdoors',

@@ -1165,16 +1165,6 @@ angular.module('FieldDoc')
 
                     document.querySelector('.geocoder').appendChild(geocoder.onAdd(self.map));
 
-                    if (self.layers && self.layers.length) {
-
-                        // self.addLayers(self.layers);
-
-                    } else {
-
-                        // self.fetchLayers();
-
-                    }
-
                     self.padding.left = AtlasLayoutUtil.getLeftMapOffset();
 
                     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);

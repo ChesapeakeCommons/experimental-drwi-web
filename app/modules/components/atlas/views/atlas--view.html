@@ -96,7 +96,8 @@
                                    data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
-                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                            <div class="symbol-group margin-r-1"
+                                 data-ng-if="layer.symbol && layer.symbol.colors">
                                 <div class="color" data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
                             </div>
@@ -125,7 +126,8 @@
                                    data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
-                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                            <div class="symbol-group margin-r-1"
+                                 data-ng-if="layer.symbol && layer.symbol.colors">
                                 <div class="color" data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
                             </div>
@@ -155,7 +157,8 @@
                                    data-ng-value="{{ $index }}"
                                    data-ng-change="page.toggleLayer(layer.id)">
                             <span> {{ layer.name }}</span>
-                            <div class="symbol-group" data-ng-if="layer.symbol && layer.symbol.colors">
+                            <div class="symbol-group margin-r-1"
+                                 data-ng-if="layer.symbol && layer.symbol.colors">
                                 <div class="color" data-ng-repeat="color in layer.symbol.colors"
                                      style="background: {{ color }};"></div>
                             </div>
