@@ -53,26 +53,6 @@ angular.module('FieldDoc')
                     name: 'Sites',
                     selected: true
                 },
-                // {
-                //     id: 'fd.site.line',
-                //     name: 'Site lines',
-                //     selected: true
-                // },
-                // {
-                //     id: 'fd.site.point',
-                //     name: 'Site points',
-                //     selected: true
-                // },
-                // {
-                //     id: 'fd.practice.polygon',
-                //     name: 'Practice polygons',
-                //     selected: true
-                // },
-                // {
-                //     id: 'fd.practice.line',
-                //     name: 'Practice lines',
-                //     selected: true
-                // },
                 {
                     id: 'fd.practice.*',
                     name: 'Practices',
@@ -83,11 +63,6 @@ angular.module('FieldDoc')
                     name: 'Water Reporter stations',
                     selected: false
                 },
-                // {
-                //     id: 'wr.post.point',
-                //     name: 'Water Reporter posts',
-                //     selected: true
-                // },
                 {
                     id: DRAINAGE_ID,
                     name: 'Drainage',
@@ -1113,6 +1088,13 @@ angular.module('FieldDoc')
                     //
 
                     SourceUtil.restoreSources(self.map);
+
+                    //
+                    // Remove default project layer filter since
+                    // all snapshot features are pre-filtered.
+                    //
+
+                    LayerUtil.removeProjectFilter(self.map);
 
                 });
 
