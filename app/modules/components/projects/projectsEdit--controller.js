@@ -494,7 +494,17 @@ angular.module('FieldDoc')
 
                     /* Assign project to a scoped variable */
 
-                    self.project = successResponse;
+                    if(successResponse.properties != undefined){
+                        
+                        self.project = successResponse.properties;
+
+                    }else{
+                        self.project = successResponse;
+                    }
+
+
+
+                    console.log("self.project",self.project);
 
                     self.projectPrograms = self.project.programs;
 
@@ -1066,7 +1076,7 @@ angular.module('FieldDoc')
 
                 console.log(" self.project.funded_date -->",  self.project.funded_on);
 
-           //     self.project.status = self.project.status;
+               self.project.status = self.project.status;
 
                 console.log("Save self.project -->", self.project);
 
