@@ -13,6 +13,7 @@
                     scope: {
                         'collection': '@collection',
                         'displayStates': '=?',
+                        'dropdownMinWidth': '=?',
                         'features': '=?',
                         'params': '=?',
                         'trackName': '=?',
@@ -35,6 +36,12 @@
                         if (typeof scope.trackName === 'undefined') {
 
                             scope.trackName = true;
+
+                        }
+
+                        if (typeof scope.dropdownMinWidth !== 'number') {
+
+                            scope.dropdownMinWidth = 240;
 
                         }
 

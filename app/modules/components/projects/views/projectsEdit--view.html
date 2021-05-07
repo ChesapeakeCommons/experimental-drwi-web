@@ -53,7 +53,7 @@
                     <div class="status_dropdown">
                         <div class="collection-filter drop-down">
                             <button type="button"
-                                    style="padding: .5rem .25rem .5rem .75rem; font-size: 1rem; background:
+                                    style="padding: .5rem .25rem .5rem .75rem; font-size: .9rem; background:
                                     transparent; border: 1px solid #e0e0e0; color: #212121;"
                                     data-ng-class="{'open-btn': page.showModal.status }"
                                     data-ng-click="page.showModal.status = !page.showModal.status">
@@ -71,19 +71,19 @@
                                  style="width: auto;"
                                  data-ng-if="page.showModal.status">
                                 <label data-ng-repeat="status in page.project_status"
-                                       data-ng-class="{'active': page.project_status == status}"
+                                       data-ng-class="{'active': page.project.status === status}"
                                        title="{{ status }}">
                                     <span class="input-mask"
-                                          data-ng-if="page.project.status == status">
-                                        <i class="material-icons">
+                                          data-ng-if="page.project.status === status">
+                                        <span class="material-icons md-18">
                                             radio_button_checked
-                                        </i>
+                                        </span>
                                     </span>
                                     <span class="input-mask"
-                                          data-ng-if="page.project.status != status">
-                                        <i class="material-icons">
+                                          data-ng-if="page.project.status !== status">
+                                        <span class="material-icons md-18">
                                             radio_button_unchecked
-                                        </i>
+                                        </span>
                                     </span>
                                     <input type="radio"
                                            id="status-option-{{ status }}"

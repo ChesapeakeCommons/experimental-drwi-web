@@ -40,25 +40,30 @@
                      collection="program"
                      features="page.programs"
                      display-states="page.showModal"
+                     dropdown-min-width="400"
                      params="page.queryParams"
                      track-name="true"
                      update="page.loadProjects(page.queryParams)"></div>
 
-                <div collection-filter collection="organization"
+                <div collection-filter
+                     collection="organization"
                      features="page.summary.organizations"
                      display-states="page.showModal"
+                     dropdown-min-width="400"
                      params="page.queryParams"
                      track-name="true"
                      update="page.loadProjects(page.queryParams)"></div>
 
-                <div collection-filter collection="tag"
+                <div collection-filter
+                     collection="tag"
                      features="page.tags"
                      display-states="page.showModal"
                      params="page.queryParams"
                      track-name="true"
                      update="page.loadProjects(page.queryParams)"></div>
 
-                <div collection-filter collection="status"
+                <div collection-filter
+                     collection="status"
                      features="page.projectStatuses"
                      display-states="page.showModal"
                      params="page.queryParams"

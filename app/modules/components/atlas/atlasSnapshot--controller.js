@@ -253,13 +253,12 @@ angular.module('FieldDoc')
                 //
 
                 if (!self.singleProjectMode &&
-                    angular.isDefined(self.filterString) &&
                     typeof self.filterString === 'string' &&
                     self.filterString.length) {
 
                     params.filters = self.filterString;
 
-                    params.t = Date.now();
+                    // params.t = Date.now();
 
                 }
 
@@ -375,6 +374,36 @@ angular.module('FieldDoc')
                     });
 
                 }
+
+            };
+
+            self.setProgram = function (token) {
+
+                console.log(
+                    'self.setProgram:token',
+                    token
+                );
+
+                console.log(
+                    'self.setProgram:programs',
+                    self.mapSummary.programs
+                );
+
+                self.programSelection = token;
+
+                self.mapSummary.programs.forEach(function (feature) {
+
+                    if (feature.name === token) {
+
+                        self.fetchPrimaryNode(
+                            'program',
+                            feature.id,
+                            feature.id
+                        );
+
+                    }
+
+                });
 
             };
 
@@ -576,6 +605,8 @@ angular.module('FieldDoc')
             };
 
             self.fetchMap = function () {
+
+                self.programSelection = undefined;
 
                 self.primaryNode = undefined;
 
