@@ -345,7 +345,7 @@ angular.module('FieldDoc')
 
                             self.availablePrograms[i].editable = true;
 
-                        }else {
+                        }else if(is_manager === true) {
 
                             $rootScope.user.programs.forEach(function (user_program) {
 
