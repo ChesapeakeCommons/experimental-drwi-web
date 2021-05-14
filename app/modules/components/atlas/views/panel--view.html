@@ -27,7 +27,7 @@
 
 <div class="main-content-container" style="height: 0; opacity: 0; padding-top: 1.5rem;">
 
-    <div class="main-content">
+    <div class="main-content" style="width: 100%;">
 
         <div class="metadata--card">
 
@@ -91,7 +91,8 @@
 
         </div>
 
-        <div style="margin: 0 1.5rem;" data-ng-if="!page.status.loading">
+        <div style="padding: 0 1.5rem; width: 100%;"
+             data-ng-if="!page.status.loading">
 
             <h2 data-ng-class="{'active': page.activeTab.collection === 'metric'}"
                 style="font-size: 1.25rem; font-weight: 500; line-height: 1.75rem;"
@@ -111,7 +112,8 @@
             <div class="collection-filter-group"
                  data-ng-if="page.mapSummary && page.mapSummary.programs.length > 1">
 
-                <div single-select
+                <div style="max-width: 100%;"
+                     single-select
                      allow-search="false"
                      attr-key="name"
                      noop="page.fetchMap()"

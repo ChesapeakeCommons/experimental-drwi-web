@@ -1,21 +1,23 @@
 <div class="collection-filter drop-down margin-0">
-    <button style="padding: .4rem .5rem .4rem .75rem; font-size: .9rem;"
-            class="relation-dialog-btn margin-r-1"
+    <button style="padding: .4rem .5rem .4rem .75rem; font-size: .9rem; width: 100%;"
+            class="relation-dialog-btn margin-r-1 flex-nwrap"
             data-ng-click="toggleModal('select')">
-        <span data-ng-if="selection">
+        <span data-ng-if="selection"
+              style="flex-grow: 1; flex-shrink: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
             {{ selection }}
         </span>
-        <span data-ng-if="!selection">
+        <span data-ng-if="!selection"
+              style="flex-grow: 1; flex-shrink: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
             {{ placeholder }}
         </span>
         <span class="material-icons md-18 margin-l-50p"
-              style="pointer-events: none;"
+              style="flex-grow: 0; flex-shrink: 0; pointer-events: none;"
               data-ng-click="toggleModal('select')"
               data-ng-if="!modalDisplay.select">
             arrow_drop_down
         </span>
         <span class="material-icons md-18 margin-l-50p"
-              style="pointer-events: none;"
+              style="flex-grow: 0; flex-shrink: 0; pointer-events: none;"
               data-ng-click="toggleModal('select')"
               data-ng-if="modalDisplay.select">
             arrow_drop_up
