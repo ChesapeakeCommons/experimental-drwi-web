@@ -19,7 +19,7 @@
         <li data-ng-if="practice.permissions.write && states.has_type"
             data-ng-class="{active: toolbarState === 'location'}">
             <div class="action-prompt"
-                 data-ng-if="nextAction === 'add_geometry' && toolbarState === 'summary'">
+                 data-ng-if="nextAction === 'add_geometry' && toolbarState === 'summary' && showPrompt === true">
                 <div class="step-icon">
                     <span class="material-icons">
                         next_plan
@@ -54,7 +54,7 @@
         <li data-ng-if="practice.permissions.write && states.has_geometry && states.has_type"
             data-ng-class="{active: toolbarState === 'targets'}">
             <div class="action-prompt"
-                 data-ng-if="nextAction === 'add_targets' && toolbarState === 'summary'">
+                 data-ng-if="nextAction === 'add_targets' && toolbarState === 'summary' && showPrompt === true">
                 <div class="step-icon">
                     <span class="material-icons">
                         next_plan
@@ -113,7 +113,7 @@
 
         <li data-ng-if="practice.permissions.write && nextAction === 'edit_targets'">
             <div class="action-prompt"
-                 data-ng-if="nextAction === 'edit_targets' && toolbarState === 'summary' && !states.has_reports">
+                 data-ng-if="nextAction === 'edit_targets' && toolbarState === 'summary' && !states.has_reports && showPrompt === true">
                 <div class="step-icon">
                     <span class="material-icons">
                         next_plan
