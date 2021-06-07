@@ -172,7 +172,7 @@
                                                 data-ng-disabled="page.status.processing"
                                                 style="margin-left: 1em; width: 100px; border: 1px solid red; white-space: nowrap;"
                                         >
-                                            <span>
+                                            <span data-ng-if = "!page.editingEnabled">
                                                 <sub>
                                                     <i class="material-icons" style="">
                                                         edit
@@ -181,6 +181,18 @@
                                                 Enable editing
 
                                             </span>
+
+                                            <span data-ng-if = "page.editingEnabled">
+                                                <sub>
+                                                    <i class="material-icons" style="">
+                                                        edit
+                                                    </i>
+                                                </sub>
+                                                Disable editing
+
+                                            </span>
+
+
 
                                         </button>
                                     </li>
