@@ -1,15 +1,30 @@
 <div class="card--content">
 
-    <a href="/{{ collectionLabel }}/{{ feature.id }}">
+    <a href="/{{ collectionLabel }}/{{ feature.id }}" >
 
-        <img data-ng-if="feature.staticURL"
-             data-ng-src="{{ feature.staticURL }}"
-             width="auto" height="auto" />
+               <div class='bg-image' data-ng-if="feature.picture"
+                    style="background-image: url('{{ feature.picture }}'); "></div>
 
-        <img data-ng-if="!feature.staticURL"
-             data-ng-src="{{ defaultStaticUrl }}"
-             width="auto" height="auto" />
+               <div class='bg-image' data-ng-if="feature.staticURL && !feature.picture"
+                    style="background-image: url('{{ feature.staticURL }}'); "></div>
 
+               <div class='bg-image' data-ng-if="!feature.staticURL && !feature.picture"
+                    style="background-image: url('{{ defaultStaticUrl }}'); "></div>
+
+        <!--
+                      <img data-ng-if="feature.picture"
+                             data-ng-src="{{ feature.picture }}"
+                           width="auto" height="auto"
+                             />
+
+                     <img data-ng-if="feature.staticURL && !feature.picture"
+                          data-ng-src="{{ feature.staticURL }}"
+                          width="auto" height="auto" />
+
+                     <img data-ng-if="!feature.staticURL"
+                          data-ng-src="{{ defaultStaticUrl }}"
+                          width="auto" height="auto" />
+        -->
         <div class="name"
              style="background: #fff; padding: 10px 16px 10px 16px; border-bottom: none;">
             <span>
