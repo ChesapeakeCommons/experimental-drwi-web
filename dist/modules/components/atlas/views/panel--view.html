@@ -141,92 +141,98 @@
 
                     </div>
 
-                    <div data-ng-if="page.metrics && page.metrics.has_models">
+                    <div data-ng-if="page.featureType !== 'program'"
+                         data-ng-include="'/modules/components/atlas/views/metric-summary/default-summary.html'"></div>
 
-                        <table class="table table-practices with-metrics" data-ng-repeat="model in page.metrics.models">
+                    <div data-ng-if="page.featureType === 'program'"
+                         data-ng-include="'/modules/components/atlas/views/metric-summary/program-summary.html'"></div>
 
-                            <thead>
-                            <tr>
-                                <th>
-                                    <span style="font-size: .9rem; font-weight: 500;">
-                                        {{ model.datum.name }}
-                                    </span>
-                                    <p style="margin: 0; padding-top: 2em; font-size: 0.8rem;">
-                                        The following metric values were generated using data and algorithms
-                                        supplied by the {{ model.datum.name }} model. You can find more
-                                        information about this model <a href="/models/{{ model.datum.id }}"
-                                                                         target="_blank">here</a>.
-                                    </p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                                <th class="table-metrics-header">Estimated value</th>
-                            </tr>
-                            </thead>
+<!--                    <div data-ng-if="page.metrics && page.metrics.has_models">-->
 
-                            <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">
-                            <tr class="metrics--metric">
-                                <td class="table-column-wide">
-                                    <p class="metric--title">
-                                        {{ metric.name }}
-                                    </p>
-                                </td>
-                                <td>
-                                    <strong class="metrics--metric--rollup--small">
-                                        {{ metric.current_value | number:2 }}
-                                    </strong> <span class="metrics--metric--rollup--label">
-                                        {{ metric.unit.plural }}</span><br />
-                                </td>
-                            </tr>
-                            </tbody>
+<!--                        <table class="table table-practices with-metrics" data-ng-repeat="model in page.metrics.models">-->
 
-                        </table>
+<!--                            <thead>-->
+<!--                            <tr>-->
+<!--                                <th>-->
+<!--                                    <span style="font-size: .9rem; font-weight: 500;">-->
+<!--                                        {{ model.datum.name }}-->
+<!--                                    </span>-->
+<!--                                    <p style="margin: 0; padding-top: 2em; font-size: 0.8rem;">-->
+<!--                                        The following metric values were generated using data and algorithms-->
+<!--                                        supplied by the {{ model.datum.name }} model. You can find more-->
+<!--                                        information about this model <a href="/models/{{ model.datum.id }}"-->
+<!--                                                                         target="_blank">here</a>.-->
+<!--                                    </p>-->
+<!--                                </th>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <th class="table-column-wide table-metrics-header">&nbsp;</th>-->
+<!--                                <th class="table-metrics-header">Estimated value</th>-->
+<!--                            </tr>-->
+<!--                            </thead>-->
 
-                    </div>
+<!--                            <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">-->
+<!--                            <tr class="metrics&#45;&#45;metric">-->
+<!--                                <td class="table-column-wide">-->
+<!--                                    <p class="metric&#45;&#45;title">-->
+<!--                                        {{ metric.name }}-->
+<!--                                    </p>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <strong class="metrics&#45;&#45;metric&#45;&#45;rollup&#45;&#45;small">-->
+<!--                                        {{ metric.current_value | number:2 }}-->
+<!--                                    </strong> <span class="metrics&#45;&#45;metric&#45;&#45;rollup&#45;&#45;label">-->
+<!--                                        {{ metric.unit.plural }}</span><br />-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            </tbody>-->
 
-                    <table class="table table-practices with-metrics" style="border-top: 1px solid #e0e0e0;"
-                           data-ng-if="page.metrics && page.metrics.generic.length">
+<!--                        </table>-->
 
-                        <thead>
-                        <tr>
-                            <th class="table-column-wide table-metrics-header">&nbsp;</th>
-                            <th class="table-metrics-header">Installed / Planned</th>
-                            <th class="table-metrics-header">% Installed</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                        </thead>
+<!--                    </div>-->
 
-                        <tbody class="metrics" data-ng-repeat="metric in page.metrics.generic track by $index" >
-                        <tr class="metrics--metric">
-                            <td class="table-column-wide">
-                                <p class="metric--title">
-                                    {{ metric.name }}
-                                </p>
-                            </td>
-                            <td>
-                                <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}<br />
-                                                    / {{ metric.self_target | number:2 }}</span>
-                            </td>
-                            <td>
-                                <strong class="metrics--metric--percentage">
-                                    {{ metric.selfProgress.value * 100 | number:1 }}%
-                                </strong>
-                            </td>
-                            <td>
-                                <progress-arc
-                                        size="32"
-                                        stroke="#2196F3"
-                                        stroke-width="4"
-                                        complete="metric.selfProgress.arcValue"
-                                        counter-clockwise="false"
-                                        background="rgba(0,0,0,0.2)">
-                                </progress-arc>
-                            </td>
-                        </tr>
-                        </tbody>
+<!--                    <table class="table table-practices with-metrics" style="border-top: 1px solid #e0e0e0;"-->
+<!--                           data-ng-if="page.metrics && page.metrics.generic.length">-->
 
-                    </table>
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th class="table-column-wide table-metrics-header">&nbsp;</th>-->
+<!--                            <th class="table-metrics-header">Installed / Planned</th>-->
+<!--                            <th class="table-metrics-header">% Installed</th>-->
+<!--                            <th>&nbsp;</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+
+<!--                        <tbody class="metrics" data-ng-repeat="metric in page.metrics.generic track by $index" >-->
+<!--                            <tr class="metrics&#45;&#45;metric">-->
+<!--                                <td class="table-column-wide">-->
+<!--                                    <p class="metric&#45;&#45;title">-->
+<!--                                        {{ metric.name }}-->
+<!--                                    </p>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <strong class="metrics&#45;&#45;metric&#45;&#45;rollup&#45;&#45;small">{{ metric.current_value | number:2 }}</strong> <span class="metrics&#45;&#45;metric&#45;&#45;rollup&#45;&#45;label">{{ metric.unit.plural }}<br />-->
+<!--                                                        / {{ metric.self_target | number:2 }}</span>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <strong class="metrics&#45;&#45;metric&#45;&#45;percentage">-->
+<!--                                        {{ metric.selfProgress.value * 100 | number:1 }}%-->
+<!--                                    </strong>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <progress-arc-->
+<!--                                            size="32"-->
+<!--                                            stroke="#2196F3"-->
+<!--                                            stroke-width="4"-->
+<!--                                            complete="metric.selfProgress.arcValue"-->
+<!--                                            counter-clockwise="false"-->
+<!--                                            background="rgba(0,0,0,0.2)">-->
+<!--                                    </progress-arc>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                        </tbody>-->
+
+<!--                    </table>-->
 
                 </div>
 

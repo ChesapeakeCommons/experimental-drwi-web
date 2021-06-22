@@ -1,0 +1,153 @@
+<div data-ng-if="page.metrics && page.metrics.has_models">
+
+    <table class="table table-practices with-metrics"
+           data-ng-repeat="model in page.metrics.models">
+
+        <thead>
+            <tr>
+                <th>
+                    <span style="font-size: .9rem; font-weight: 500;">
+                        {{ model.datum.name }}
+                    </span>
+                    <p style="margin: 0; padding-top: 2em; font-size: 0.8rem;">
+                        The following metric values were generated using data and algorithms
+                        supplied by the {{ model.datum.name }} model. You can find more
+                        information about this model <a href="/models/{{ model.datum.id }}"
+                                                        target="_blank">here</a>.
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <th class="table-column-wide table-metrics-header">&nbsp;</th>
+                <th class="table-metrics-header">Estimated value</th>
+            </tr>
+        </thead>
+
+        <tbody class="metrics"
+               data-ng-repeat="metric in model.collection track by $index">
+            <tr class="metrics--metric">
+                <td class="table-column-wide">
+                    <p class="metric--title">
+                        {{ metric.name }}
+                    </p>
+                </td>
+                <td>
+                    <strong class="metrics--metric--rollup--small">
+                        {{ metric.total_reported | number:2 }}
+                    </strong> <span class="metrics--metric--rollup--label">
+                                            {{ metric.unit.plural }}</span><br />
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<table class="table table-practices with-metrics" style="border-top: 1px solid #e0e0e0;"
+       data-ng-if="page.metrics && page.metrics.generic.length">
+
+    <thead>
+        <tr>
+            <th class="table-column-wide table-metrics-header">&nbsp;</th>
+            <th class="table-metrics-header">Installed / Planned</th>
+            <th class="table-metrics-header">% Installed</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+
+    <tbody class="metrics">
+
+        <tr class="metrics--metric"
+            data-ng-repeat="metric in page.metrics.generic | orderBy:'-percentComplete' track by $index"
+            data-ng-click="page.showMetricModal(metric)">
+            <td class="table-column-wide">
+                <p class="metric--title">
+                    {{ metric.name }}
+                </p>
+            </td>
+            <td style="width:200px;">
+
+                <!-- Display `metric.total_reported` with two decimal
+                places when `metric.total_reported` is greater than 0. -->
+
+                <strong class="metrics--metric--rollup--small"
+                        data-ng-if="metric.total_reported > 0">
+                    {{ metric.total_reported | number:2 }}
+                </strong>
+
+                <!-- Display `metric.total_reported` as `0` with no decimal
+                places when `metric.total_reported` is equal to 0. -->
+
+                <strong class="metrics--metric--rollup--small"
+                        data-ng-if="metric.total_reported === 0">
+                    0
+                </strong>
+
+                <!-- Display absolute metric target with two decimal
+                places when absolute metric target is greater than 0. -->
+
+                <span class="metrics--metric--rollup--label"
+                      data-ng-if="metric.target > 0">
+                    / {{ metric.target | number:2 }}
+                </span>
+
+                <!-- Display aggregate metric target with two decimal
+                places when absolute target is null or equal to 0 and
+                the aggregate target is greater than 0. -->
+
+                <span class="metrics--metric--rollup--label"
+                      data-ng-if="!metric.target && metric.agg_target > 0">
+                    / {{ metric.agg_target | number:2 }}
+                </span>
+                <span class="metrics--metric--rollup--label">
+                    {{ metric.unit.plural || '' }}
+                </span>
+            </td>
+
+            <!-- Display percent complete when the absolute metric target OR
+            the aggregate metric target is greater than 0. -->
+
+            <td data-ng-if="metric.target > 0 || metric.agg_target > 0">
+                <strong class="metrics--metric--percentage"
+                        data-ng-if="metric.total_reported > 0 && metric.percentComplete < 1">
+                    <1%
+                </strong>
+                <strong class="metrics--metric--percentage"
+                        data-ng-if="metric.total_reported === 0 && metric.percentComplete < 1">
+                    0%
+                </strong>
+                <strong class="metrics--metric--percentage"
+                        data-ng-if="metric.percentComplete >= 1">
+                    {{ metric.percentComplete | number:0 }}%
+                </strong>
+            </td>
+
+            <!-- Display progress arc when the absolute metric target OR
+            the aggregate metric target is greater than 0. -->
+
+            <td data-ng-if="metric.target > 0 || metric.agg_target > 0">
+                <progress-arc
+                        size="32"
+                        stroke="#2196F3"
+                        stroke-width="4"
+                        complete="metric.arcValue"
+                        counter-clockwise="false"
+                        background="rgba(0,0,0,0.2)">
+                </progress-arc>
+            </td>
+
+            <!-- Display `no target set` text when the absolute metric target AND
+            the aggregate metric target are both null or less than 1. -->
+
+            <td data-ng-if="!metric.target && !metric.agg_target">
+                <span style="font-size: 0.9rem;">
+                    No target set
+                </span>
+            </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
