@@ -141,10 +141,10 @@
 
                     </div>
 
-                    <div data-ng-if="page.featureType !== 'program'"
+                    <div data-ng-if="page.featureType !== 'program' && !page.promoteProgramMetrics"
                          data-ng-include="'/modules/components/atlas/views/metric-summary/default-summary.html'"></div>
 
-                    <div data-ng-if="page.featureType === 'program'"
+                    <div data-ng-if="page.featureType === 'program' || page.promoteProgramMetrics"
                          data-ng-include="'/modules/components/atlas/views/metric-summary/program-summary.html'"></div>
 
 <!--                    <div data-ng-if="page.metrics && page.metrics.has_models">-->

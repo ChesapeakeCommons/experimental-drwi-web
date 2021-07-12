@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1624374768513})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1626108652833})
 
 ;
 /**
@@ -40825,6 +40825,8 @@ angular.module('FieldDoc')
 
                 if (cls === undefined) return;
 
+                self.promoteProgramMetrics = false;
+
                 var params = {
                     access_token: self.accessToken,
                     id: featureId,
@@ -40915,7 +40917,10 @@ angular.module('FieldDoc')
 
                     } else {
 
-                        self.loadMetrics(self.primaryNode.properties.id);
+                        self.loadMetrics(
+                            self.featureClass,
+                            self.primaryNode.properties.id
+                        );
 
                     }
 
@@ -40994,12 +40999,16 @@ angular.module('FieldDoc')
 
             self.fetchMap = function () {
 
+                AtlasLayoutUtil.clearBannerImage();
+
                 self.programSelection = undefined;
 
                 self.primaryNode = undefined;
 
                 if (angular.isDefined(self.mapSummary) &&
                     angular.isDefined(self.map)) {
+
+                    self.promoteProgramMetrics = true;
 
                     self.processMetrics(self.primaryMetrics);
 
@@ -41026,7 +41035,30 @@ angular.module('FieldDoc')
 
                     self.featureClass = MapInterface;
 
-                    self.loadMetrics($routeParams.id, true);
+                    if (Array.isArray(self.mapSummary.programs) &&
+                        self.mapSummary.programs.length === 1) {
+
+                        self.promoteProgramMetrics = true;
+
+                        var featureClass = self.clsMap['program'];
+
+                        self.loadMetrics(
+                            featureClass,
+                            self.mapSummary.programs[0].id,
+                            true
+                        );
+
+                    } else {
+
+                        self.loadMetrics(
+                            self.featureClass,
+                            $routeParams.id,
+                            true
+                        );
+
+                    }
+
+                    // self.loadMetrics($routeParams.id, true);
 
                     self.filterString = AtlasDataManager.createFilterString(
                         successResponse
@@ -41519,41 +41551,6 @@ angular.module('FieldDoc')
 
                 self.map.on('moveend', function() {
 
-                    // if (self.singleProjectMode) return;
-
-                    // if (angular.isDefined(self.mapSummary) &&
-                    //     !self.singleProjectMode) {
-                    //
-                    //     var projects = self.mapSummary.projects;
-                    //
-                    //     console.log(
-                    //         'self.map.moveend:projects',
-                    //         projects
-                    //     );
-                    //
-                    //     if (Array.isArray(projects)) {
-                    //
-                    //         if (projects.length === 1) {
-                    //
-                    //             self.singleProjectMode = true;
-                    //
-                    //             delete self.urlData.filters;
-                    //
-                    //             self.urlData.node = [
-                    //                 'project.',
-                    //                 projects[0].id
-                    //             ].join('');
-                    //
-                    //             self.refreshFeatureLayers();
-                    //
-                    //             return;
-                    //
-                    //         }
-                    //
-                    //     }
-                    //
-                    // }
-
                     var center = self.map.getCenter();
 
                     console.log(
@@ -41917,9 +41914,9 @@ angular.module('FieldDoc')
 
             }
 
-            self.loadMetrics = function(featureId, primary) {
+            self.loadMetrics = function(featureClass, featureId, primary) {
 
-                self.featureClass.progress({
+                featureClass.progress({
                     access_token: self.accessToken,
                     id: featureId,
                     defer: true

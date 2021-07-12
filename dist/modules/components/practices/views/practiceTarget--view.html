@@ -67,6 +67,35 @@
                 </p>
             </div>
 
+            <div class="target-block-wrapper"
+                 data-ng-if="page.practice.practice_type.duration">
+
+                <div class="target-block-header">
+
+                    <div class="target-block-title">
+                        <strong>Practice duration</strong>
+                    </div>
+
+                </div>
+
+                <p>
+                    Provide a practice duration in years. The default for the <strong>{{
+                    page.practice.practice_type.name }}</strong> practice type is <strong>{{
+                    page.practice.practice_type.duration }} years</strong>.
+                </p>
+
+                <input type="number"
+                       class="form-control"
+                       style="max-width: 200px;"
+                       data-ng-model="page.practice.duration"
+                       data-ng-change="page.savePractice()"
+                       placeholder="0"
+                       step="0.5"
+                       min="0"
+                       autocomplete="off"/>
+
+            </div>
+
             <!-- START EXTENT -->
 
             <div class="target-block-wrapper">
