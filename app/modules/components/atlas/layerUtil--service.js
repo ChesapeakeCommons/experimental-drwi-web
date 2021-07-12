@@ -448,6 +448,8 @@ angular.module('FieldDoc')
 
                 },
                 removeProjectFilter: function(map) {
+                    
+                    if (!map) return;
 
                     var layerIds = [
                         'fd.project.point',
@@ -459,6 +461,27 @@ angular.module('FieldDoc')
                         if (map.getLayer(layerId)) {
 
                             map.setFilter(layerId, null);
+
+                        }
+
+                    });
+
+                },
+                setProgramFilter: function(map, programId) {
+
+                    var layerIds = [
+                        'fd.project.point',
+                        'fd.project.point-label'
+                    ];
+
+                    layerIds.forEach(function (layerId) {
+
+                        if (map.getLayer(layerId)) {
+
+                            map.setFilter(
+                                layerId,
+                                ['==', 'program_id', programId]
+                            );
 
                         }
 

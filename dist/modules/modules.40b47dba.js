@@ -157,7 +157,7 @@ angular.module('FieldDoc')
 
  angular.module('config', [])
 
-.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1626108652833})
+.constant('environment', {name:'production',apiUrl:'https://api.fielddoc.org',authDeferralKey:'qu8TTMdvJH1mrx6Zu6pbbwPGM0ULeoKb',siteUrl:'https://www.fielddoc.org',clientId:'lynCelX7eoAV1i7pcltLRcNXHvUDOML405kXYeJ1',waterReportApiUrl:'https://api.waterreporter.org',version:1626119789792})
 
 ;
 /**
@@ -40783,6 +40783,8 @@ angular.module('FieldDoc')
 
                     if (feature.name === token) {
 
+                        LayerUtil.setProgramFilter(self.map, feature.id);
+
                         self.fetchPrimaryNode(
                             'program',
                             feature.id,
@@ -41000,6 +41002,8 @@ angular.module('FieldDoc')
             self.fetchMap = function () {
 
                 AtlasLayoutUtil.clearBannerImage();
+
+                LayerUtil.removeProjectFilter(self.map);
 
                 self.programSelection = undefined;
 
@@ -43343,6 +43347,8 @@ angular.module('FieldDoc')
 
                 },
                 removeProjectFilter: function(map) {
+                    
+                    if (!map) return;
 
                     var layerIds = [
                         'fd.project.point',
@@ -43354,6 +43360,27 @@ angular.module('FieldDoc')
                         if (map.getLayer(layerId)) {
 
                             map.setFilter(layerId, null);
+
+                        }
+
+                    });
+
+                },
+                setProgramFilter: function(map, programId) {
+
+                    var layerIds = [
+                        'fd.project.point',
+                        'fd.project.point-label'
+                    ];
+
+                    layerIds.forEach(function (layerId) {
+
+                        if (map.getLayer(layerId)) {
+
+                            map.setFilter(
+                                layerId,
+                                ['==', 'program_id', programId]
+                            );
 
                         }
 

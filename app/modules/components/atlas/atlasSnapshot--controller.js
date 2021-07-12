@@ -395,6 +395,8 @@ angular.module('FieldDoc')
 
                     if (feature.name === token) {
 
+                        LayerUtil.setProgramFilter(self.map, feature.id);
+
                         self.fetchPrimaryNode(
                             'program',
                             feature.id,
@@ -612,6 +614,8 @@ angular.module('FieldDoc')
             self.fetchMap = function () {
 
                 AtlasLayoutUtil.clearBannerImage();
+
+                LayerUtil.removeProjectFilter(self.map);
 
                 self.programSelection = undefined;
 
