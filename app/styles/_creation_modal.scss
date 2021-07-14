@@ -91,17 +91,11 @@
                 position: absolute;
                 transform-origin: center;
                 transform: scale(0);
-
-                //&:hover {
-                //    transform: scale(1);
-                //}
-
             }
 
         }
 
         .dismiss:hover {
-            //background: #EEEEEE;
             .halo {
                 transform: scale(1);
             }

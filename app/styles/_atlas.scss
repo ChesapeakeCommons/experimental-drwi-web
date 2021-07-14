@@ -1359,17 +1359,20 @@ input:checked + .slider:before {
     flex-flow: column;
     justify-content: center;
     align-items: center;
+    background: rgba(0, 0, 0, 0.2);
     z-index: 99999999;
 
     .summary-card {
         position: relative;
         display: flex;
         flex-flow: column;
-        padding: 2em;
+        padding: 1.5rem;
         max-width: 40rem;
-        background-color: #252f3a;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-        border-radius: 4px;
+        background: #FAFAFA;
+        border: 1px solid #BDBDBD;
+        border-radius: 0.5rem;
+        //box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        //border-radius: 4px;
         overflow: hidden;
 
         .close {

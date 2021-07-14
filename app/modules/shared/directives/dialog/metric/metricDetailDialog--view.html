@@ -1,0 +1,73 @@
+<div class="creation-dialog-container" data-ng-if="visible">
+    <div class="dialog" style="width: auto; max-width: 40rem; padding: 1.5rem;">
+
+        <div class="flex flex-dir-row flex-nwrap flex-align-start">
+
+            <div style="font-size: 1.125rem;"
+                 class="metric--title margin-0 margin-b-1 pad-0 pad-r-50p">
+                <strong>{{ metric.name }}</strong>
+            </div>
+
+            <div class="dismiss-container"
+                 style="margin-right: -1rem; margin-top: -1rem;">
+                <div class="dismiss"
+                     data-ng-click="closeChildModal()"
+                     title="Close">
+                    <div class="halo"></div>
+                    <span class="material-icons">
+                        close
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="margin-0 pad-0">
+            {{ metric.description || 'No description for this metric.' }}
+        </p>
+
+        <div style="display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; padding: 1em 0; width: 100%;">
+
+            <div style="display: flex; flex-flow: column; flex-grow: 1; justify-content: center; align-items: center; ">
+                <span style="display: block; margin-bottom: 2em; text-transform: uppercase; font-size: .8em; letter-spacing: .05em;">Site progress</span>
+                <br/>
+                <progress-arc
+                        size="80"
+                        stroke="#2196F3"
+                        stroke-width="8"
+                        complete="metric.contextProgress.arcValue"
+                        counter-clockwise="false"
+                        background="rgba(0,0,0,0.2)">
+                </progress-arc>
+                <span style="display: block; margin-top: 2em;">
+                    {{ metric.current_value | number:2 }} / {{ metric.context_target | number:2 }}
+                </span>
+            </div>
+
+            <div style="display: flex; flex-flow: column; flex-grow: 1; justify-content: center; align-items: center;">
+                <span style="display: block; margin-bottom: 2em; text-transform: uppercase; font-size: .8em; letter-spacing: .05em;">Practice progress</span>
+                <br/>
+                <progress-arc
+                        size="80"
+                        stroke="#2196F3"
+                        stroke-width="8"
+                        complete="metric.selfProgress.arcValue"
+                        background="rgba(0,0,0,0.2)">
+                </progress-arc>
+                <span style="display: block; margin-top: 2em;">
+                    {{ metric.current_value | number:2 }} / {{ metric.self_target | number:2 }}
+                </span>
+            </div>
+
+        </div>
+
+        <p style="font-size: 0.9rem;"
+           class="margin-0 pad-t-2"
+           data-ng-if="metric.model">
+            This is an automated metric. The values above were generated using data and algorithms
+            supplied by the {{ metric.model.name }} model. You can find more information
+            about this model <a href="/models/{{ metric.model.id }}">here</a>.
+        </p>
+
+    </div>
+</div>

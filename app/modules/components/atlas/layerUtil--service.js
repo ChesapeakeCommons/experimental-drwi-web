@@ -448,7 +448,7 @@ angular.module('FieldDoc')
 
                 },
                 removeProjectFilter: function(map) {
-                    
+
                     if (!map) return;
 
                     var layerIds = [

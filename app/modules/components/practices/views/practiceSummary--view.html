@@ -239,65 +239,49 @@
                                 <tr>
                                     <th class="table-column-wide table-metrics-header">&nbsp;</th>
                                     <th class="table-metrics-header">Estimated value</th>
-                                    <!--
-                                       <th class="table-metrics-header" data-ng-if="model.datum.show_progress">Estimated progress</th>
-                                       -->
-                                    <!--
-                                       <th data-ng-if="model.datum.show_progress">&nbsp;</th>
-                                       -->
                                 </tr>
                                 </thead>
 
                                 <tbody class="metrics" data-ng-repeat="metric in model.collection track by $index">
-                                <tr class="metrics--metric" data-ng-click="page.showMetricModal(metric)">
-                                    <td class="table-column-wide">
-                                        <p class="metric--title">
-                                            {{ metric.name }}
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <strong class="metrics--metric--rollup--small">{{ metric.current_value |
-                                            number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span><br/>
-                                        <!--
-                                            <span class="metrics--metric--rollup--label" data-ng-if="model.datum.show_progress || metric.show_progress">of {{ metric.self_target | number:2 }}</span>
-                                        -->
-                                    </td>
-                                    <!--
-                                       <td data-ng-if="model.datum.show_progress || metric.show_progress">
-                                           <strong class="metrics--metric--percentage">
-                                               {{ metric.selfProgress.value * 100 | number:1 }}%
-                                           </strong>
-                                       </td>
-                                      -->
-                                    <!--
-                                       <td data-ng-if="model.datum.show_progress || metric.show_progress">
-                                           <progress-arc
-                                               size="32"
-                                               stroke="#2196F3"
-                                               stroke-width="4"
-                                               complete="metric.selfProgress.arcValue"
-                                               counter-clockwise="false"
-                                               background="rgba(0,0,0,0.2)">
-                                           </progress-arc>
-                                       </td>
-                                      -->
-                                </tr>
-                                <!-- Geography -->
-                                <!--
-                                 <tr class="metrics--metric" style="opacity: 0.72;" data-ng-repeat="geography in metric.geographies">
+                                    <tr class="metrics--metric" data-ng-click="page.showMetricModal(metric)">
                                         <td class="table-column-wide">
-                                            <a class="metric--title" style="display: flex; flex-flow: row nowrap; align-items: center; padding-left: 2em;" data-ng-href="/geographies/{{ geography.id }}">
-                                                <i class="material-icons">
+                                            <p class="metric--title">
+                                                {{ metric.name }}
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <strong class="metrics--metric--rollup--small">{{ metric.current_value |
+                                                number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span><br/>
+                                        </td>
+                                    </tr>
+                                    <!-- Geography -->
+                                    <tr class="metrics--metric" style="opacity: 0.72;"
+                                        data-ng-repeat="geography in metric.territories">
+                                        <td class="table-column-wide">
+                                            <a class="metric--title"
+                                               style="display: flex; flex-flow: row nowrap; align-items: center; padding-left: 2em;"
+                                               data-ng-href="/geographies/{{ geography.id }}">
+                                                <span class="material-icons">
                                                     public
-                                                </i>
+                                                </span>
                                                 &nbsp;
                                                 {{ geography.name }}
-                                                <span data-ng-if="geography.category">&nbsp;&middot; {{ geography.category }}</span>
+                                                <span data-ng-if="geography.category">
+                                                    &nbsp;&middot; {{ geography.category }}
+                                                </span>
                                             </a>
                                         </td>
                                         <td>
-                                            <strong class="metrics--metric--rollup--small">{{ metric.current_value | number:2 }}</strong> <span class="metrics--metric--rollup--label">{{ metric.unit.plural }}</span><br />
-                                                <span class="metrics--metric--rollup--label" data-ng-if="model.datum.show_progress || metric.show_progress">of {{ geography.target | number:2 }}</span>
+                                            <strong class="metrics--metric--rollup--small">
+                                                {{ metric.current_value | number:2 }}
+                                            </strong>
+                                            <span class="metrics--metric--rollup--label">
+                                                {{ metric.unit.plural }}
+                                            </span><br />
+                                            <span class="metrics--metric--rollup--label"
+                                                  data-ng-if="model.datum.show_progress || metric.show_progress">
+                                                of {{ geography.target | number:2 }}
+                                            </span>
                                         </td>
                                         <td data-ng-if="model.datum.show_progress || metric.show_progress">
                                             <strong class="metrics--metric--percentage">
@@ -311,12 +295,10 @@
                                                 stroke-width="4"
                                                 complete="geography.arc_value"
                                                 counter-clockwise="false"
-                                                background="rgba(0,0,0,0.2)">
-                                            </progress-arc>
+                                                background="rgba(0,0,0,0.2)"></progress-arc>
                                         </td>
-                                </tr>
-                                -->
-                                <!-- Geography -->
+                                    </tr>
+                                    <!-- Geography -->
                                 </tbody>
 
                             </table>
@@ -408,64 +390,10 @@
 
                 </div>
 
-                <div class="metric-modal" data-ng-if="page.displayModal" data-ng-click="page.closeMetricModal()">
-
-                    <div class="summary-card">
-
-                        <button class="close" type="button" data-ng-click="page.closeMetricModal()" title="Cancel">
-                            <i class="material-icons">
-                                clear
-                            </i>
-                        </button>
-
-                        <h2 class="metric--title"
-                            style="color: #e0e0e0; margin-bottom: 1em; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 1em;">
-                            {{ page.selectedMetric.name }}
-                        </h2>
-
-                        <p style="color: #e0e0e0;">{{ page.selectedMetric.description || 'No description' }}</p>
-
-                        <div style="display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; padding: 1em 0; width: 100%;">
-
-                            <div style="display: flex; flex-flow: column; flex-grow: 1; justify-content: center; align-items: center; ">
-                                <span style="display: block; margin-bottom: 2em; color: #e0e0e0; text-transform: uppercase; font-size: .8em; letter-spacing: .05em;">Site progress</span>
-                                <br/>
-                                <progress-arc
-                                        size="80"
-                                        stroke="#2196F3"
-                                        stroke-width="8"
-                                        complete="page.selectedMetric.contextProgress.arcValue"
-                                        counter-clockwise="false"
-                                        background="rgba(0,0,0,0.2)">
-                                </progress-arc>
-                                <span style="display: block; margin-top: 2em; color: #e0e0e0;">{{ page.selectedMetric.current_value | number:2 }} / {{ page.selectedMetric.context_target | number:2 }}</span>
-                            </div>
-
-                            <div style="display: flex; flex-flow: column; flex-grow: 1; justify-content: center; align-items: center;">
-                                <span style="display: block; margin-bottom: 2em; color: #e0e0e0; text-transform: uppercase; font-size: .8em; letter-spacing: .05em;">Practice progress</span>
-                                <br/>
-                                <progress-arc
-                                        size="80"
-                                        stroke="#2196F3"
-                                        stroke-width="8"
-                                        complete="page.selectedMetric.selfProgress.arcValue"
-                                        background="rgba(0,0,0,0.2)">
-                                </progress-arc>
-                                <span style="display: block; margin-top: 2em; color: #e0e0e0;">{{ page.selectedMetric.current_value | number:2 }} / {{ page.selectedMetric.self_target | number:2 }}</span>
-                            </div>
-
-                        </div>
-
-                        <p style="color: #e0e0e0; margin: 0; padding-top: 2em; font-size: 0.9em;"
-                           data-ng-if="page.selectedMetric.model">
-                            This is an automated metric. The values above were generated using data and algorithms
-                            supplied by the {{ page.selectedMetric.model.name }} model. You can find more information
-                            about this model <a href="/models/{{ page.selectedMetric.model.id }}">here</a>.
-                        </p>
-
-                    </div>
-
-                </div>
+                <div metric-detail-dialog
+                     alerts="page.alerts"
+                     metric="page.selectedMetric"
+                     visible="page.displayModal"></div>
 
             </div>
 

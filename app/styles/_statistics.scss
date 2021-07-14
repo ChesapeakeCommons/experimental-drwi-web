@@ -11,165 +11,165 @@ h6.rule-above.statistics--header {
 }
 
 .statistics--container {
-  display: table;
-  height: 128px;
-  width: 100%;
+    display: table;
+    height: 128px;
+    width: 100%;
 }
 
 .statistics,
 .row .row.statistics {
-  //background-color: $color-darkBlue-base;
-  //color: $color-white-default;
-  float: none;
-  display: table-row;
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  //padding: 2em 0 2.5em;
-  padding: 0;
-  margin-left: -1em;
-  margin-right: -1em;
-
-  &.project--summary {
-    //padding-left: 2em;
-    //padding-right: 2em;
-    margin-bottom: 4em;
-  }
-
-  &.statistics--navigation {
+    //background-color: $color-darkBlue-base;
+    //color: $color-white-default;
+    float: none;
+    display: table-row;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    //padding: 2em 0 2.5em;
     padding: 0;
+    margin-left: -1em;
+    margin-right: -1em;
 
-    .statistics--statistic {
-      cursor: pointer;
-      //padding: 2em 1em 2.5em;
+    &.project--summary {
+        //padding-left: 2em;
+        //padding-right: 2em;
+        margin-bottom: 4em;
     }
-  }
+
+    &.statistics--navigation {
+        padding: 0;
+
+        .statistics--statistic {
+            cursor: pointer;
+            //padding: 2em 1em 2.5em;
+        }
+    }
 }
 
 .statistics--statistic {
-  display: table-cell;
-  flex-basis: 0;
-  flex-grow: 1;
-  min-width: 33%;
-  max-width: 33.3333%;
-  padding-right: 1em;
-  padding-left: 1em;
-  height: 100%;
+    display: table-cell;
+    flex-basis: 0;
+    flex-grow: 1;
+    min-width: 33%;
+    max-width: 33.3333%;
+    padding-right: 1em;
+    padding-left: 1em;
+    height: 100%;
 
-  &.statistics--statistic--active {
-    background-color: #373F4A;
-  }
-
-  &.statistics--statistic--all {
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  .statistic--value {
-    //color: $color-white-default;
-    font-size: 24px;
-    font-weight: 400;
-    line-height: 1;
-    margin-bottom: 0.25em;
-    margin-top: 0.5em;
-  }
-  .statistic--valueLabel {
-    //color: $color-white-default;
-    font-size: 16px;
-  }
-
-  .statistic--title {
-    //color: $color-white-default;
-    font-size: 14px;
-    font-weight: 400;
-  }
-
-  .statistic--chart {
-    //background-color: #535A63;
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 6px;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    height: 8px;
-    margin-top: 1em;
-
-    .statistic--chart--value {
-      background-color: #00DBB0;
-      border-radius: 6px;
-      -webkit-border-radius: 6px;
-      -moz-border-radius: 6px;
-      -webkit-transition: width 2s;
-      height: 8px;
-      //min-width: 8px;
-      width: 8px;
-      max-width: 100%;
+    &.statistics--statistic--active {
+        background-color: #373F4A;
     }
-  }
+
+    &.statistics--statistic--all {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .statistic--value {
+        //color: $color-white-default;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1;
+        margin-bottom: 0.25em;
+        margin-top: 0.5em;
+    }
+    .statistic--valueLabel {
+        //color: $color-white-default;
+        font-size: 16px;
+    }
+
+    .statistic--title {
+        //color: $color-white-default;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .statistic--chart {
+        //background-color: #535A63;
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 6px;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        height: 8px;
+        margin-top: 1em;
+
+        .statistic--chart--value {
+            background-color: #00DBB0;
+            border-radius: 6px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            -webkit-transition: width 2s;
+            height: 8px;
+            //min-width: 8px;
+            width: 8px;
+            max-width: 100%;
+        }
+    }
 }
 
 .metrics {
-  background-color: #373F4A;
-  margin: 0 0 32px;
-  padding: 2em 2em 2.5em;
+    background-color: #373F4A;
+    margin: 0 0 32px;
+    padding: 2em 2em 2.5em;
 }
 
 
 .metrics--metric,
 .row .row.metrics--metric {
-  margin-bottom: 8px;
-  padding-left: 2em;
-  padding-right: 2em;
+    margin-bottom: 8px;
+    padding-left: 2em;
+    padding-right: 2em;
 
-  .metric--title {
-    //color: $color-white-default;
-    font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 4px;
-    padding-bottom: 0;
-
-    a,
-    a:active,
-    a:link,
-    a:visited {
-      //color: $color-white-default;
-      border-bottom: 1px dashed rgba($color-white-default, 0.5);
-      text-decoration: none;
-
-      &:hover {
+    .metric--title {
         //color: $color-white-default;
-        border-bottom: 1px dashed $color-white-default;
-        text-decoration: none;
-      }
-    }
-  }
+        font-size: 14px;
+        font-weight: 400;
+        margin-bottom: 4px;
+        padding-bottom: 0;
 
-  .metric--chart {
-    background-color: #434B55;
-    border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    height: 12px;
+        a,
+        a:active,
+        a:link,
+        a:visited {
+            //color: $color-white-default;
+            border-bottom: 1px dashed rgba($color-white-default, 0.5);
+            text-decoration: none;
 
-    .metric--chart--value {
-      background-color: #00DBB0;
-      border-radius: 6px;
-      -moz-border-radius: 6px;
-      -webkit-border-radius: 6px;
-      -webkit-transition: width 2s;
-      height: 12px;
-      min-width: 12px;
-      width: 12px;
-      max-width: 100%;
+            &:hover {
+                //color: $color-white-default;
+                border-bottom: 1px dashed $color-white-default;
+                text-decoration: none;
+            }
+        }
     }
-  }
-  .metric--help--text {
-    //color: $color-white-default;
-    font-size: 12px;
-    font-weight: 400;
-    margin-top: 2px;
-  }
+
+    .metric--chart {
+        background-color: #434B55;
+        border-radius: 6px;
+        -moz-border-radius: 6px;
+        -webkit-border-radius: 6px;
+        height: 12px;
+
+        .metric--chart--value {
+            background-color: #00DBB0;
+            border-radius: 6px;
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+            -webkit-transition: width 2s;
+            height: 12px;
+            min-width: 12px;
+            width: 12px;
+            max-width: 100%;
+        }
+    }
+    .metric--help--text {
+        //color: $color-white-default;
+        font-size: 12px;
+        font-weight: 400;
+        margin-top: 2px;
+    }
 
 }

@@ -6,31 +6,57 @@
 
     <div class="content--container" style="border-right: 1px solid #e0e0e0;">
 
-        <h1 class="inset">{{ page.geography.name }} &middot; Targets</h1>
+        <h1 class="inset">
+            {{ page.geography.name }} &middot; Targets
+        </h1>
 
         <div class="main--ui target-ui reveal fade-in t0">
 
-            <p>The metrics listed here include those that you created and any associated with the <strong>{{ page.geography.program.name }}</strong> conservation program. Assign targets to this geography by entering a numeric value for one or more metrics. If you try to add a geographic target that exceeds a metric’s baseline value, FieldDoc will cap the geographic target’s value for you.</p>
+            <p>The metrics listed here include those that you created and any associated with the <strong>{{
+                page.geography.program.name }}</strong> program. Assign targets to this geography by entering a
+                numeric value for one or more metrics. If you try to add a geographic target that exceeds a metric’s
+                baseline value, FieldDoc will cap the geographic target’s value for you.</p>
 
-            <h2 data-ng-if="page.targets && page.targets.active.length">Active targets</h2>
+            <h2 data-ng-if="page.targets && page.targets.active.length">
+                Active targets
+            </h2>
 
-            <ul class="target-lst" data-ng-if="page.targets && page.targets.active.length">
+            <ul class="target-lst"
+                data-ng-if="page.targets && page.targets.active.length">
                 <li data-ng-repeat="target in page.targets.active">
                     <div>{{ target.metric.name || target.name }}</div>
-                    <input type="number" class="form-control" data-ng-model="target.value" id="name" name="name" placeholder="0" step="0.0001" min="0" autocomplete="off" />
-                    <button type="button" class="add-item" data-ng-click="page.removeTarget(target, $index)" data-ng-disabled="page.status.processing">
+                    <input type="number"
+                           class="form-control"
+                           data-ng-model="target.value"
+                           id="{{ target.metric.id }}-active"
+                           name="{{ target.metric.id }}-active"
+                           placeholder="0"
+                           step="0.0001"
+                           min="0"
+                           autocomplete="off" />
+                    <button type="button"
+                            class="add-item"
+                            data-ng-click="page.removeTarget(target, $index)"
+                            data-ng-disabled="page.status.processing">
                         <i class="material-icons">
                             remove_circle
                         </i>
                     </button>
                 </li>
                 <li style="justify-content: flex-end; margin-top: 2em; border-top: 1px solid #e0e0e0; padding-top: 1em;">
-                    <button type="button" class="add-item" data-ng-click="page.removeAll()" data-ng-disabled="page.status.processing">
+                    <button type="button"
+                            class="add-item"
+                            data-ng-click="page.removeAll()"
+                            data-ng-disabled="page.status.processing">
                         <i class="material-icons">
                             delete_sweep
                         </i>
                     </button>
-                    <button type="button" class="add-item" style="margin-left: 1em;" data-ng-click="page.saveTargets()" data-ng-disabled="page.status.processing">
+                    <button type="button"
+                            class="add-item"
+                            style="margin-left: 1em;"
+                            data-ng-click="page.saveTargets()"
+                            data-ng-disabled="page.status.processing">
                         <i class="material-icons">
                             done
                         </i>
@@ -38,13 +64,26 @@
                 </li>
             </ul>
 
-            <h2 data-ng-if="page.targets && page.targets.inactive.length">Available metrics</h2>
+            <h2 data-ng-if="page.targets && page.targets.inactive.length">
+                Available metrics
+            </h2>
 
             <ul class="target-lst target-lst-inactive" data-ng-if="page.targets">
                 <li data-ng-repeat="target in page.targets.inactive">
                     <div>{{ target.name || target.metric.name }}</div>
-                    <input type="number" class="form-control" data-ng-model="target.value" id="name" name="name" placeholder="0" step="0.0001" min="0" autocomplete="off" />
-                    <button type="button" class="add-item" data-ng-click="page.addTarget(target, $index)" data-ng-disabled="page.status.processing">
+                    <input type="number"
+                           class="form-control"
+                           data-ng-model="target.value"
+                           id="{{ target.id }}-prov"
+                           name="{{ target.id }}-prov"
+                           placeholder="0"
+                           step="0.0001"
+                           min="0"
+                           autocomplete="off" />
+                    <button type="button"
+                            class="add-item"
+                            data-ng-click="page.addTarget(target, $index)"
+                            data-ng-disabled="page.status.processing">
                         <i class="material-icons">
                             add_circle
                         </i>
@@ -65,14 +104,16 @@
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editTargets}">
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.editTargets}">
                 <a href="/geographies/{{ page.geography.id }}/targets">
                     <i class="material-icons">
                         multiline_chart
                     </i>
                 </a>
             </li>
-            <li data-ng-if="page.permissions.can_edit" data-ng-class="{active: $root.toolbarState.editImages}">
+            <li data-ng-if="page.permissions.can_edit"
+                data-ng-class="{active: $root.toolbarState.editImages}">
                 <a href="/geographies/{{ page.geography.id }}/tags">
                     <i class="material-icons">
                         local_offer
@@ -82,9 +123,11 @@
         </ul>
     </nav>
 
-    <div class="transient--notification" data-ng-class="{show: page.alerts.length}">
+    <div class="transient--notification"
+         data-ng-class="{show: page.alerts.length}">
         <div class="event--container">
-            <div data-ng-repeat="alert in page.alerts" data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
+            <div data-ng-repeat="alert in page.alerts"
+                 data-ng-class="{error: alert.type == 'error', success: alert.type == 'success'}">
                 <span class="event--message">{{ alert.msg }}</span>
             </div>
         </div>
